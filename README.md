@@ -38,7 +38,7 @@ HZERO提供：
 
 - [通用数据导入](http://open.hand-china.com/document-center/doc/application/10023/10162?doc_id=5175) - 提供了通用的数据导入方案，用户仅需配置好导入模板即可在导入模板管理功能下实现数据导入功能，同时用户可以使用HZERO提供的通用导入组件来自定义实现数据导入（例如对导入的数据做一些自定义校验），支持Excel和CSV方式导入。此外，HZERO还提供了导入历史功能来查看数据导入的情况。
 
-另外，您可以查看的[屏幕快照](./SCREENSHOT.md)以最直观地了解HZERO，还可以访问[汉得开放平台](open.hand-china.com)的网站下[HZERO开源版](https://open.hand-china.com/document-center/doc/product/10067/10032?doc_id=5946)获取平台详细文档。
+另外，您可以查看的[屏幕快照](./SCREENSHOT.md)以最直观地了解HZERO，还可以访问[汉得开放平台](https://open.hand-china.com/open-source)的网站下[HZERO开源版](https://open.hand-china.com/document-center/doc/product/10067/10032?doc_id=5946)获取平台详细文档。
 
 ## 服务及组件关系列表
 欲获取HZERO详细的组件信息，请参考文档[组件说明](http://open.hand-china.com/document-center/doc/product/10067/10032?doc_id=6302)
