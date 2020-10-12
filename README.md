@@ -8,7 +8,7 @@
     </p>    
 </p>
 
-# HZERO-微服务应用开发平台
+# HZERO-基于微服务架构开源免费的企业级PaaS平台
 
 HZERO应用微服务、容器、DevOps等云原生技术，封装了大量技术开发包、技术应用组件、技术场景实现能力，并支持SaaS模式应用，提供了一个可支持企业各业务系统或产品快速开发实现的微服务应用数字化融合平台，富含各类开箱即用的组件G-General、A-AI、B-BigData、M-Mobile、D-DevOps，助力企业跨越Cloud（IaaS/PaaS）与自身数字化的鸿沟，共享业务服务的组合重用，为企业服务化中台整合、数字化转型提供强力支撑，也为企业提供了最佳架构实践。
 
@@ -195,3 +195,12 @@ HZERO微服务开发框架有两个方面，即 **微服务后端**和 **前端*
 ## 支持
 
 如果您有任何疑问并需要我们的支持，可以在[汉得开放平台](http://open.hand-china.com/)提交反馈或提交Issue。
+
+您也可以通过发送邮件到 openhand@vip.hand-china.com 邮箱联系到我们。
+
+## 关注公众号
+
+您可以关注我们『四海汉得』微信公众号，了解最新动态信息。
+<p align="left">
+    <img src="https://developer.open.hand-china.com/static/world-hand.48c87276.png" width="200">
+</p>
