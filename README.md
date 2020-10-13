@@ -167,7 +167,6 @@ HZERO微服务开发框架有两个方面，即 **微服务后端**和 **前端*
 - [hzero-register](https://github.com/open-hand/hzero-register) - 基于Eureka的平台注册中心服务，包括服务注册发现，服务健康检查，服务监控，注册中心其他功能。
 - [hzero-config](https://github.com/open-hand/hzero-config)  - 配置服务作为配置中心，为微服务体系中的其他服务提供配置存储、配置推送的服务。Spring Cloud 提供了默认配置中心的实现，包含svn、git等几种实现，hzero-config则是基于数据库的实现，可以管理大数据量的配置，并且有更快捷的配置推送方式。
 - [hzero-gateway](https://github.com/open-hand/hzero-gateway)  - HZERO网关服务，基于Spring Cloud Gateway进行二次封装，作为平台统一的对外出入口，主要有服务路由、鉴权、流量控制等管理功能。
-- [hzero-gateway-helper](https://github.com/open-hand/hzero-gateway-helper)  - 网关鉴权组件，提供鉴权的顶层接口端点以及鉴权过滤器接口，产品或项目完全可以自定义鉴权逻辑或者加入特定的鉴权逻辑。
 - [hzero-oauth](https://github.com/open-hand/hzero-oauth)  - hzero-oauth 服务是基于 Spring Security、Spring OAuth2、JWT 实现的统一认证服务中心，登录基于 spring security 的标准登录流程。客户端授权支持 oauth2.0 的四种授权模式：授权码模式、简化模式、密码模式、客户端模式，授权流程跟标准的 oauth2 流程一致。web 端采用简化模式(implicit)登录系统，移动端可使用密码模式(password)登录系统。同时还支持基于 Spring Social 的三方账号登录方式，如微信/QQ、支付宝、微博等，并提供拓展模式，支持更多三方渠道。
 - [hzero-swagger](https://github.com/open-hand/hzero-swagger)  - 用于对平台开发测试的API文档进行管理以及接口调试
 - [hzero-admin](https://github.com/open-hand/hzero-admin)  - 管理服务，基础服务之一，把路由、限流、熔断等功能易用化，集中在管理服务来管控，提供自动化的路由刷新、权限刷新、swagger信息刷新服务，提供界面化的服务、配置、路由、限流、熔断管理功能以及Spring Boot Admin控制台。
@@ -181,6 +180,7 @@ HZERO微服务开发框架有两个方面，即 **微服务后端**和 **前端*
 
 ### 服务插件
 - [hzero-plugin-parent](https://github.com/open-hand/hzero-plugin-parent) - 服务可插拔功能管理服务，针对服务可插拔功能统一进行管理，服务需要用到时通过POM依赖的方式进行部署。
+- [hzero-gateway-helper](https://github.com/open-hand/hzero-gateway-helper)  - 网关鉴权组件，提供鉴权的顶层接口端点以及鉴权过滤器接口，产品或项目完全可以自定义鉴权逻辑或者加入特定的鉴权逻辑。
 
 ### 服务客户端
 - [hzero-boot-parent](https://github.com/open-hand/hzero-boot-parent) - 服务客户端管理服务，针对HZERO使用频率较高的功能从相应服务中抽取出客户端组件，便于服务中使用和日后的维护，服务中需调用时仅需引入相应客户端依赖并注入对应的客户端入口类即可。例如，在服务中需使用值集相关的API则直接引入平台服务客户端组件依赖并注入值集客户端入口类即可。
