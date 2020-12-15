@@ -18,6 +18,12 @@ HZERO提供：
 
 - 一套基于Spring Cloud的微服务应用程序框架，可帮助公司更快，更高效地进行微服务开发。
 
+## 源码下载说明
+
+HZERO平台由多个微服务程序组成，各微服务的下载请参见下文 [HZERO的组成](https://github.com/open-hand/hzero#hzero%E7%9A%84%E7%BB%84%E6%88%90) 中列示的服务下载链接，或者切换到 [open-hand](https://github.com/open-hand) 父组织中搜索 hzero-xxx 代码仓库即可找到对应微服务的源码。
+
+本代码仓库仅作为HZERO平台使用的引导说明，不包含平台源码，请务必仔细阅读本文档以下内容。
+
 ## HZERO主要特征
 
 - [平台治理](http://open.hand-china.com/document-center/doc/application/10041/10148?doc_id=5133) - 提供了一系列的服务治理功能，用户可在该服务下快速实现服务的路由管理、熔断、限流以及API权限刷新等功能，以及可以通过服务监控控制台来监控已经部署的服务。功能点包含服务管理、服务配置、限流规则、熔断规则、服务监控控制台、API访问控制、请求链路追踪等。
