@@ -202,6 +202,10 @@ HZERO微服务开发框架有两个方面，即 **微服务后端**和 **前端*
 
 您还可以体验HZERO的[试用申请](http://open.hand-china.com/market-home/detail/29?from=myProduct)。
 
+## 更新计划
+
+计划2022年2月发1.5版本HZERO开源版。
+
 ## 支持
 
 如果您有任何疑问并需要我们的支持，可以在[汉得开放平台](http://open.hand-china.com/)提交反馈或提交Issue。
