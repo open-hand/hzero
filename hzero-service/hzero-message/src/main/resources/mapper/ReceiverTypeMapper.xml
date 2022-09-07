@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.message.infra.mapper.ReceiverTypeMapper">
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap id="BaseResultMap" type="org.hzero.message.domain.entity.ReceiverType">
+        <result column="receiver_type_id" property="receiverTypeId" jdbcType="DECIMAL"/>
+        <result column="type_code" property="typeCode" jdbcType="VARCHAR"/>
+        <result column="type_name" property="typeName" jdbcType="VARCHAR"/>
+        <result column="type_mode_code" property="typeModeCode" jdbcType="VARCHAR"/>
+        <result column="route_name" property="routeName" jdbcType="VARCHAR"/>
+        <result column="api_url" property="apiUrl" jdbcType="VARCHAR"/>
+        <result column="enabled_flag" property="enabledFlag" jdbcType="DECIMAL"/>
+        <result column="tenant_id" property="tenantId" jdbcType="DECIMAL"/>
+        <result column="object_version_number" property="objectVersionNumber" jdbcType="DECIMAL"/>
+        <result column="creation_date" property="creationDate" jdbcType="DATE"/>
+        <result column="created_by" property="createdBy" jdbcType="DECIMAL"/>
+        <result column="last_updated_by" property="lastUpdatedBy" jdbcType="DECIMAL"/>
+        <result column="last_update_date" property="lastUpdateDate" jdbcType="DATE"/>
+    </resultMap>
+    <resultMap id="DTOResultMap" type="org.hzero.message.api.dto.ReceiverTypeDTO">
+        <result column="tenant_name" property="tenantName" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <select id="selectReceiverType" parameterType="org.hzero.message.domain.entity.ReceiverType" resultMap="DTOResultMap">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()" />
+        SELECT
+            hrt.receiver_type_id,
+            hrt.tenant_id,
+            hrt.route_name,
+            hrt.type_code,
+            hrt.type_name,
+            hrt.type_mode_code,
+            hrt.api_url,
+            hrt.object_version_number,
+            hrt.created_by,
+            hrt.creation_date,
+            hrt.enabled_flag,
+            hrt.last_update_date,
+            hrt.last_updated_by,
+            ht.tenant_name
+        FROM
+            hmsg_receiver_type hrt,hpfm_tenant_tl ht
+        where 1 = 1
+        and hrt.tenant_id = ht.tenant_id
+        and ht.lang = #{lang}
+        <if test="tenantId != null">
+            and hrt.tenant_id = #{tenantId,jdbcType=DECIMAL}
+        </if>
+        <if test='typeCode != null'>
+            <bind name="typeCodeLike" value="'%' + typeCode + '%'" />
+            and hrt.type_code like #{typeCodeLike,jdbcType=VARCHAR}
+        </if>
+        <if test='typeName != null'>
+            <bind name="typeNameLike" value="'%' + typeName + '%'" />
+            and hrt.type_name like #{typeNameLike,jdbcType=VARCHAR}
+        </if>
+        <if test='typeModeCode != null'>
+            <bind name="typeModeCodeLike" value="'%' + typeModeCode + '%'" />
+            and hrt.type_mode_code like #{typeModeCodeLike,jdbcType=VARCHAR}
+        </if>
+    </select>
+</mapper>

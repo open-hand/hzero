@@ -1,0 +1,167 @@
+{
+  "name": "hzero-front-integration",
+  "version": "0.11.0",
+  "private": true,
+  "description": "HZero Front",
+  "scripts": {
+    "start": "cross-env NODE_PROFILE=development hzero-cli start",
+    "build": "npm run lint:fix && hzero-cli build --all-packages",
+    "build:production": "cross-env NODE_PROFILE=production SKIP_NO_CHANGE_MODULE=true hzero-cli build --only-build-micro --all-packages",
+    "build:analyze": "cross-env ANALYZE=true hzero-cli build",
+    "build:all-ms": "hzero-cli build --only-build-micro --all-packages",
+    "build:ms": "hzero-cli build --only-build-micro",
+    "build:ext-ms": "cross-env BUILD_PUBLIC_MS=true BUILD_DIST_PATH=./dist-ext BUILD_SKIP_PARENT=true hzero-cli build --only-build-micro",
+    "test": "node --max_old_space_size=5120 scripts/test.js",
+    "build:dll": "hzero-cli build --build-dll",
+    "build:dll-dev": "hzero-cli build --build-dll --build-dll-dev",
+    "transpile": "hzero-cli transpile --all",
+    "codeScan": "hzero codeScan",
+    "transpile:prod": "lerna run transpile",
+    "lint-style:src": "stylelint src/**/*.less --syntax less",
+    "lint-fix:src": "eslint --quiet --fix src/**/*.js && eslint --config .eslintrc.js --quiet --fix src/**/*.ts src/**/*.tsx",
+    "lint:src": "eslint --ext .js src",
+    "lint-style:packages": "stylelint packages/*/src/**/*.less --syntax less",
+    "lint-fix:packages": "eslint --quiet --fix packages/*/src/**/*.js && eslint --config .eslintrc.js --quiet --fix packages/*/src/**/*.ts packages/*/src/**/*.tsx",
+    "lint:packages": "eslint packages/*/src/**/*.js",
+    "lint": "npm run lint:src",
+    "lint:fix": "npm run lint-fix:src && npm run lint-fix:packages",
+    "lint:style": "npm run lint-style:src && npm run lint-style:packages",
+    "lint-staged": "lint-staged",
+    "changelog": "node node_modules/.bin/conventional-changelog -p eslint -i CHANGELOG.md -s -r 0 && git add CHANGELOG.md",
+    "prettier": "prettier --write ./src/**/**/**/* ./packages/*/src/**/*",
+    "tree": "tree -I node_modules -L 3",
+    "release": "standard-version",
+    "release-module": "node scripts/release.js",
+    "icon": "npx cross-env ICON_FONT_URL=//at.alicdn.com/t/font_1440728_2mntu9m71ej.css node scripts/icon.js",
+    "hzero-version": "node scripts/version.js"
+  },
+  "devDependencies": {
+    "@babel/plugin-proposal-class-properties": "7.7.4",
+    "@babel/plugin-proposal-decorators": "^7.7.4",
+    "@smock/umi-plugin-smock": "^0.1.29",
+    "@smock/umi-plugin-sproxy": "^0.1.20",
+    "@types/event-emitter": "^0.3.3",
+    "@typescript-eslint/eslint-plugin": "2.19.2",
+    "@typescript-eslint/parser": "2.19.0",
+    "conventional-changelog-cli": "^2.0.12",
+    "hzero-cli": "~2.1.44",
+    "hzero-boot": "~2.1.32",
+    "hzero-cli-preset-ui": "^2.1.17",
+    "lerna": "^3.13.1",
+    "standard-version": "^5.0.2",
+    "typescript": "3.7.4",
+    "yarn": "^1.13.0"
+  },
+  "dependencies": {
+    "@babel/runtime": "7.9.2",
+    "choerodon-ui": "^0.8.78-beta",
+    "core-js": "^3.6.4",
+    "react": "^16.8.3",
+    "react-dom": "^16.8.3"
+  },
+  "resolutions": {
+    "styled-components": "^5.1.1",
+    "conventional-changelog": "~3.0.6",
+    "browserslist": "4.8.5",
+    "choerodon-ui": "^0.8.78-beta",
+    "url-loader": "1.1.2",
+    "css-loader": "1.0.0",
+    "optimize-css-assets-webpack-plugin": "5.0.3",
+    "file-loader": "2.0.0",
+    "mini-css-extract-plugin": "0.9.0",
+    "less-loader": "5.0.0",
+    "caniuse-lite": "1.0.30001028",
+    "@babel/cli": "^7.8.4",
+    "webpack": "4.42.1",
+    "react": "16.12.0",
+    "react-router": "4.3.1",
+    "react-router-dom": "4.3.1",
+    "react-dom": "16.12.0",
+    "html-webpack-plugin": "4.0.0-alpha.2",
+    "typescript": "3.8.2",
+    "react-dnd": "10.0.2",
+    "hzero-ui": "1.0.80-beta.10",
+    "react-dnd-html5-backend": "10.0.2"
+  },
+  "eslintConfig": {
+    "extends": "react-app"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run lint-staged",
+      "post-merge": "git submodule update",
+      "post-checkout": "git submodule update"
+    }
+  },
+  "lint-staged": {
+    "src/**/*.{js,jsx,tsx,ts}": "eslint --quiet --fix",
+    "packages/**/src/**/*.{js,jsx,tsx,ts}": "eslint --quiet --fix",
+    "src/**/*.less": "stylelint --syntax less",
+    "packages/**/src/**/*.less": "stylelint --syntax less",
+    "src/**/*.{js,ts,tsx,jsx,less}": [
+      "prettier --write",
+      "git add"
+    ],
+    "packages/**/src/**/*.{js,ts,tsx,jsx,less}": [
+      "prettier --write",
+      "git add"
+    ]
+  },
+  "engines": {
+    "node": ">=8.10.0"
+  },
+  "jest": {
+    "collectCoverageFrom": [
+      "src/**/*.{js,jsx,ts,tsx}",
+      "!src/**/*.d.ts"
+    ],
+    "resolver": "jest-pnp-resolver",
+    "setupFiles": [
+      "react-app-polyfill/jsdom"
+    ],
+    "testMatch": [
+      "<rootDir>/src/**/__tests__/**/*.{js,jsx,ts,tsx}",
+      "<rootDir>/src/**/?(*.)(spec|test).{js,jsx,ts,tsx}"
+    ],
+    "testEnvironment": "jsdom",
+    "testURL": "http://localhost",
+    "transform": {
+      "^.+\\.(js|jsx|ts|tsx)$": "<rootDir>/node_modules/babel-jest",
+      "^.+\\.css$": "<rootDir>/config/jest/cssTransform.js",
+      "^(?!.*\\.(js|jsx|ts|tsx|css|json)$)": "<rootDir>/config/jest/fileTransform.js"
+    },
+    "transformIgnorePatterns": [
+      "[/\\\\]node_modules[/\\\\].+\\.(js|jsx|ts|tsx)$",
+      "^.+\\.module\\.(css|sass|scss)$"
+    ],
+    "moduleNameMapper": {
+      "^react-native$": "react-native-web",
+      "^.+\\.module\\.(css|sass|scss)$": "identity-obj-proxy"
+    },
+    "moduleFileExtensions": [
+      "web.js",
+      "js",
+      "web.ts",
+      "ts",
+      "web.tsx",
+      "tsx",
+      "json",
+      "web.jsx",
+      "jsx",
+      "node"
+    ],
+    "watchPlugins": [
+      "<rootDir>/node_modules/jest-watch-typeahead/filename.js",
+      "<rootDir>/node_modules/jest-watch-typeahead/testname.js"
+    ]
+  },
+  "workspaces": [
+    "packages/*"
+  ],
+  "browserslist": [
+    ">0.2%",
+    "not dead",
+    "not ie <= 10",
+    "not op_mini all"
+  ]
+}

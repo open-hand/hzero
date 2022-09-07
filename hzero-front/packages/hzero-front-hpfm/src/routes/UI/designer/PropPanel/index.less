@@ -1,0 +1,64 @@
+@import '../config';
+
+.prop-panel {
+  //width: @rightPropWidth;
+  //min-width: @rightPropWidth;
+
+  :global {
+    .ant-form-item-label {
+      // 右侧 label 的行高不需要这么高
+      line-height: normal;
+    }
+
+    .ant-form-item {
+      margin-bottom: 0;
+
+      &-label {
+        line-height: normal;
+      }
+
+      //&-control {
+      //  line-height: 28px;
+      //}
+    }
+
+    // 和下一个属性有直接关联 ( Checkbox )
+    .ant-form-item-checkbox-cascade-parent {
+      margin-bottom: 0;
+
+      .ant-form-item-control {
+        margin-top: 4px;
+        line-height: 18px;
+      }
+    }
+    // 和上一个属性有直接关联 ( 上一个属性是 Checkbox )s
+    .ant-form-item-checkbox-cascade-child {
+      .ant-form-item-control {
+        line-height: 1;
+        margin-top: 4px;
+        margin-bottom: 8px;
+      }
+    }
+
+    .ant-form-item-with-help {
+      margin-bottom: 14px;
+    }
+
+    //.ant-form-item-without-help {
+    //  margin-bottom: 0;
+    //
+    //  .ant-form-item-control {
+    //    line-height: 28px;
+    //  }
+    //
+    //  .ant-form-item-label {
+    //    line-height: normal;
+    //  }
+    //}
+  }
+}
+
+.border-error {
+  // 由于 Modal 和 界面的脱节了, 所以放到外面
+  border: 1px solid #f5222d;
+}

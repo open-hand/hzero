@@ -1,0 +1,72 @@
+@searchColor: #a5adbb;
+@searchBGC: #fff;
+
+@searchHistoryColor: #dfe2e7;
+@searchHistoryBGC: #616f88;
+
+@searchHeight: 28px;
+
+.search {
+  position: relative;
+
+  .icon {
+    position: absolute;
+    height: 12px;
+    width: 12px;
+    top: 14px;
+    left: 30px;
+    background-image: url('../../../assets/search.svg');
+    background-size: 12px;
+    background-repeat: no-repeat;
+    z-index: 1;
+  }
+
+  .input {
+    background-color: @searchBGC;
+    border-radius: 2px;
+    height: @searchHeight;
+    margin: 7px 20px;
+    width: 180px;
+    cursor: text;
+    font-size: 12px;
+    > div {
+      background-color: transparent;
+      border: 0 none;
+      height: @searchHeight;
+      padding-left: 22px; //由icon覆盖的区域
+      > div {
+        height: @searchHeight;
+        line-height: @searchHeight;
+
+        > :global(.ant-select-selection__placeholder) {
+          margin-top: -14px; // ant 的垂直居中
+          height: @searchHeight;
+          line-height: @searchHeight;
+          // opacity: 0.5;
+          color: @searchColor;
+        }
+      }
+    }
+
+    &:hover {
+      background-color: #fff;
+    }
+  }
+}
+
+.search.focus {
+  background-color: transparent;
+
+  //.icon {
+  //}
+
+  .input {
+    background-color: #fff;
+    color: #333;
+    opacity: 1;
+  }
+}
+
+.collapsed {
+  display: none;
+}

@@ -1,0 +1,7 @@
+{
+  "package": {
+    "initLoad": false,
+    "indexRouter": "/hsdr/conc-request",
+    "registerRegex": "(\\/(private|public|pub))?\\/hsdr\\/"
+  }
+}

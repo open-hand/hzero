@@ -1,0 +1,58 @@
+/**
+ * Author: yunqiang.wu
+ * Create on: 2017-9-05 17:40
+ * List通用组件
+ */
+.table {
+  td.avatar {
+    img {
+      border-radius: 50%;
+    }
+  }
+  .info {
+    text-align: left;
+    .descript {
+      margin-left: 16px;
+    }
+  }
+  &.singleCol > div > div > div > div > div > div > table {
+    display: block;
+    & > tbody {
+      display: block;
+      & > tr {
+        display: block;
+        & > td {
+          display: block;
+          &:hover {
+            background: #fff;
+          }
+        }
+      }
+    }
+  }
+  :global {
+    .ant-table-thead {
+      & > tr {
+        & > th {
+          text-align: center;
+          font-weight: bold;
+        }
+      }
+    }
+
+    .ant-table-tbody {
+      background: #fff;
+      & > tr {
+        &.ant-table-row-selected td {
+          background: #fefefe;
+        }
+        & > td {
+          text-align: center;
+        }
+        &.ant-table-expanded-row-level-1 > td {
+          height: auto;
+        }
+      }
+    }
+  }
+}

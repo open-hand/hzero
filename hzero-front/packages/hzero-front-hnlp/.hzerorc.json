@@ -1,0 +1,7 @@
+{
+  "package": {
+    "initLoad": false,
+    "indexRouter": "/hnlp",
+    "registerRegex": "(\\/(private|public|pub))?\\/hnlp\\/"
+  }
+}

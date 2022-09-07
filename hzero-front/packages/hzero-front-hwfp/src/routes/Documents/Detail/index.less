@@ -1,0 +1,69 @@
+/*
+ * index.less - 流程单据详情样式
+ * @date: 2019-04-30
+ * @author: HB <bin.huang02@hand-china.com>
+ * @version: 0.0.1
+ * @copyright Copyright (c) 2018, Hand
+ */
+// detail-form
+.detail-form {
+  :global {
+    .ant-form-explain {
+      margin-top: 2px;
+    }
+
+    // 单纯距上16px
+    .margin-top-row {
+      margin-top: 16px;
+    }
+
+    .ant-form-item-label label {
+      color: #666;
+    }
+  }
+}
+
+// 添加流程单据form样式
+.add-document-form {
+  margin-bottom: 0;
+}
+
+.list-margin-top {
+  margin-top: 16px;
+}
+
+// 左侧label空情况的右侧表单内容块样式
+.form-item-control-wrapper {
+  line-height: 28px;
+}
+
+.button-margin-bottom {
+  margin-bottom: 12px;
+}
+
+// 流程分类弹窗样式
+.category-add-modal {
+  :global {
+    .ant-modal-body {
+      padding-top: 16px;
+
+      .ant-form.ant-form-inline {
+        padding-bottom: 16px;
+      }
+    }
+  }
+}
+.form-desc {
+  font-weight: 600;
+  color: #666;
+}
+.form-code {
+  color: #a5a5a5;
+}
+.form-desc,
+.form-code {
+  width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

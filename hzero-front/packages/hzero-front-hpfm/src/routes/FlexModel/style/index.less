@@ -1,0 +1,170 @@
+.model-editor-form,
+.field-editor-form,
+.relation-modal-form {
+  & > div {
+    padding-bottom: 0 !important;
+  }
+  label {
+    width: 100% !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    &::before {
+      content: '' !important;
+      margin-right: 0 !important;
+    }
+  }
+  :global(.ant-form-item-control-wrapper) {
+    width: 100% !important;
+  }
+  :global(.ant-form-item-label) {
+    padding-bottom: 0 !important;
+    line-height: 25px !important;
+  }
+  :global(.ant-form-item-label .ant-form-item-required) {
+    i {
+      font-size: 12px !important;
+      font-weight: 100 !important;
+    }
+    &::after {
+      display: inline-block !important;
+      margin-right: 4px;
+      content: '*';
+      line-height: 1;
+      font-size: 12px;
+      color: #f5222d;
+    }
+  }
+}
+
+.model-table-list-search {
+  :global(.ant-form-item) {
+    width: 100%;
+  }
+  :global(.ant-form-item-label) {
+    text-align: left !important;
+  }
+}
+
+.model-editor-alert {
+  margin: -15px 0 10px !important;
+}
+
+.model-writable-row-custom {
+  :global(.ant-form-item) {
+    margin-bottom: 4px !important;
+  }
+  :global(.ant-form-item-label) {
+    text-align: left !important;
+  }
+}
+
+.virtual-field-radio-row {
+  :global(.ant-form-item-label) {
+    margin-left: 10px !important;
+  }
+}
+
+.modelInfo-form-modelName-label {
+  label::before {
+    content: '' !important;
+  }
+}
+
+.field-editor-form {
+  :global(.ant-input-number) {
+    width: 100% !important;
+  }
+  :global(.ant-collapse-item .ant-form-item) {
+    padding-bottom: 0 !important;
+  }
+}
+
+.model-field-editor-form-inline {
+  margin-top: -10px !important;
+  .model-field-editor-notNull-checkbox {
+    font-size: 14px !important;
+    font-weight: 600 !important;
+  }
+}
+
+.field-editor-more {
+  margin-left: -10px !important;
+  margin-top: 30px !important;
+  :global(.ant-collapse-item) {
+    border-top: 1px solid #d9d9d9;
+    :global(.ant-collapse-header) {
+      color: rgba(0, 0, 0, 0.85) !important;
+    }
+  }
+  :global(.ant-collapse-content > .ant-collapse-content-box) {
+    padding: 0 !important;
+    padding-left: 10px !important;
+  }
+}
+
+.relation-modal {
+  :global(.ant-card-head) {
+    min-height: 28px !important;
+    padding: 0 !important;
+    margin-top: -1px;
+    background-color: #f3eef5 !important;
+  }
+  :global(.ant-card-body) {
+    padding: 12px !important;
+  }
+  :global(.ant-card-head-title) {
+    padding: 0 !important;
+    font-weight: 600 !important;
+    margin: 7px 12px !important;
+  }
+}
+
+.relation-modal-center {
+  height: 1px;
+  padding: 100px 4px;
+  :global(.ant-row) {
+    & > div:nth-child(2) {
+      i {
+        font-size: 20px;
+        margin-left: 8px;
+      }
+    }
+  }
+  .relation-modal-font-size-16 {
+    font-size: 16px;
+  }
+}
+
+.model-bottom-button {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  border-top: 1px solid #e8e8e8;
+  padding: 10px 24px;
+  text-align: right;
+  left: 0;
+  background: #fff;
+  border-radius: 0 0 4px 4px;
+  z-index: 1;
+}
+
+.relation-modal-field-select {
+  :global(.ant-select-selection-selected-value) {
+    & > div:first-child {
+      font-size: 12px !important;
+    }
+    & > div:nth-child(2) {
+      display: none;
+    }
+  }
+}
+
+.model-operator {
+  float: right;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  a {
+    color: #333;
+  }
+}

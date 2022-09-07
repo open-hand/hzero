@@ -1,0 +1,112 @@
+@import '~hzero-ui/es/style/themes/default.less';
+
+.list {
+  max-height: 400px;
+  overflow: auto;
+  .item {
+    transition: all 0.3s;
+    overflow: hidden;
+    cursor: pointer;
+    padding: 0 24px;
+    border-bottom: 0 none transparent;
+
+    .meta {
+      width: 100%;
+      border-bottom: 1px solid #e2e5ec;
+      padding: 12px 0;
+    }
+    // 最后一个 item 里的元素没有 border
+    &:last-child {
+      .meta {
+        border-bottom: 0 none transparent;
+      }
+    }
+    .avatar {
+      background: #fff;
+      margin-top: 4px;
+    }
+
+    &.read {
+      opacity: 0.4;
+    }
+    &:last-child {
+      border-bottom: 0;
+    }
+    &:hover {
+      background: @primary-1;
+    }
+    .title {
+      font-weight: normal;
+      margin-bottom: 4px;
+    }
+    .description {
+      font-size: 12px;
+      line-height: @line-height-base;
+      color: #333;
+    }
+    .datetime {
+      font-size: 12px;
+      margin-top: 4px;
+      line-height: @line-height-base;
+      color: #999;
+    }
+    .extra {
+      float: right;
+      color: @text-color-secondary;
+      font-weight: normal;
+      margin-right: 0;
+      margin-top: -1.5px;
+    }
+  }
+}
+
+.notFound {
+  text-align: center;
+  // padding: 73px 0 88px 0;
+  height: 295px;
+  color: @text-color-secondary;
+  img {
+    display: inline-block;
+    // margin-bottom: 16px;
+    // height: 76px;
+    margin-top: 64px;
+    margin-left: 64px;
+  }
+  // 没有未读的站内信息的提示信息
+  div {
+    margin-top: 22px;
+  }
+}
+
+.clear {
+  height: 46px;
+  line-height: 46px;
+  text-align: center;
+  color: @text-color;
+  border-radius: 0 0 @border-radius-base @border-radius-base;
+  border-top: 1px solid @border-color-split;
+  transition: all 0.3s;
+  cursor: pointer;
+
+  &:hover {
+    color: @heading-color;
+  }
+}
+
+// 上方的标题
+.content {
+  background-color: #fafafa;
+  border-bottom: 1px solid #e2e5ec;
+  height: 54px;
+  line-height: 1;
+  &-title {
+    font-size: 14px;
+    float: left;
+    margin: 20px 0 20px 24px;
+  }
+  &-action {
+    font-size: 12px;
+    float: right;
+    margin: 21px 20px 21px 0;
+  }
+}

@@ -1,0 +1,657 @@
+@import './variables.less';
+@import './mixins.less';
+
+:global {
+  // 层级比正常的 antd 样式 高一层
+
+  // 联合覆盖 Form.Item > Input
+  .ant-form-item-required
+    .ant-form-item-children
+    .ant-input:not(.ant-input-disabled):not(:disabled),
+  .ant-form-item-required .ant-form-item-children .ant-input-number:not(.ant-input-number-disabled),
+  .ant-form-item-required
+    .ant-form-item-children
+    .ant-cascader-picker:not(.ant-cascader-picker-disabled):not(:disabled),
+  .ant-form-item-required .ant-form-item-children .ant-time-picker-input:not(:disabled),
+  .ant-form-item-required
+    .ant-form-item-children
+    :not(.ant-select-disabled)
+    > .ant-select-selection:not(:disabled) {
+    border-color: @hzero-primary-color-3-yellow;
+  }
+
+  .ant-form-item-required.has-error
+    .ant-form-item-children
+    .ant-input:not(.ant-input-disabled):not(:disabled),
+  .ant-form-item-required.has-error .ant-form-item-children .ant-input-number-input:not(:disabled),
+  .ant-form-item-required.has-error .ant-form-item-children .ant-input-number:not(:disabled),
+  .ant-form-item-required.has-error
+    .ant-form-item-children
+    .ant-cascader-picker:not(.ant-cascader-picker-disabled):not(:disabled),
+  .ant-form-item-required.has-error .ant-form-item-children .ant-time-picker-input:not(:disabled),
+  .ant-form-item-required.has-error
+    .ant-form-item-children
+    :not(.ant-select-disabled)
+    > .ant-select-selection:not(:disabled) {
+    border-color: @form-item-has-error-color;
+    background-color: #fff;
+  }
+
+  .ant-form-item-required
+    .ant-form-item-children
+    .ant-input-number:not(.ant-input-disabled):not(:disabled):focus,
+  .ant-form-item-required
+    .ant-form-item-children
+    .ant-input:not(.ant-input-disabled):not(:disabled):focus {
+    // 去掉 box-shadow
+    box-shadow: none;
+  }
+
+  // 单独的组件
+
+  .ant-input {
+    // input
+
+    padding: 4px 8px;
+    border-radius: 4px;
+    .hzero-font-size(12px);
+
+    &:focus {
+      box-shadow: 0 0 2px 1px @hzero-primary-color-2;
+    }
+
+    // FIXME: 待确定是否按照 UI 给的 设计
+    &-spec {
+      width: 238px;
+      min-width: 138px;
+      max-width: 438px;
+
+      &-special {
+        width: 180px;
+      }
+    }
+  }
+
+  .ant-btn {
+    // button
+
+    &-main {
+      border-color: #666;
+      color: #666;
+
+      &:active,
+      &:focus,
+      &:hover {
+        border-color: @hzero-primary-color;
+        color: @hzero-primary-color;
+      }
+
+      &.ant-btn-primary {
+        background-color: @hzero-primary-color;
+        border-color: @hzero-primary-color;
+        color: #fff;
+
+        &:active,
+        &:focus {
+          background-color: @hzero-primary-color;
+          border-color: @hzero-primary-color;
+        }
+
+        &:hover {
+          background-color: @hzero-primary-btn-hover-color;
+        }
+      }
+    }
+  }
+
+  // __tests__
+  // _util
+  .ant-affix {
+    // affix
+  }
+
+  .ant-alert {
+    // alert
+  }
+
+  .ant-anchor {
+    // anchor
+  }
+
+  .ant-avatar {
+    // avatar
+  }
+
+  .ant-back-top {
+    // back-top
+  }
+
+  .ant-badge {
+    // badge
+  }
+
+  .ant-breadcrumb {
+    // breadcrumb
+  }
+
+  .ant-fullcalendar {
+    // calendar
+  }
+
+  .ant-card {
+    // card
+  }
+
+  .ant-carousel {
+    // carousel
+  }
+
+  .ant-cascader {
+    // cascader
+  }
+
+  .ant-checkbox {
+    // checkbox
+    // Checkbox 中间状态
+    &.ant-checkbox-indeterminate {
+      .ant-checkbox-inner {
+        background-color: #fff;
+
+        &:after {
+          left: 3px;
+          top: 3px;
+          width: 8px;
+          height: 8px;
+          border-width: 8px;
+          border-color: @hzero-primary-color-2;
+        }
+      }
+    }
+  }
+
+  .ant-col {
+    // col
+  }
+
+  .ant-collapse {
+    // collapse
+  }
+
+  .ant-calendar {
+    // date-picker
+  }
+
+  .ant-divider {
+    // divider
+  }
+
+  .ant-drawer {
+    // drawer
+  }
+
+  .ant-dropdown {
+    // dropdown
+  }
+
+  .ant-form {
+    // form
+  }
+
+  .ant-row {
+    // grid
+  }
+
+  .ant-icon {
+    // icon
+  }
+
+  .ant-index.jsx {
+    // index.jsx
+  }
+
+  .ant-index.tsx {
+    // index.tsx
+  }
+
+  .ant-input-number {
+    // input-number
+  }
+
+  .ant-layout {
+    // layout
+  }
+
+  .ant-list {
+    // list
+  }
+
+  .ant-locale-provider {
+    // locale-provider
+  }
+
+  .ant-mention {
+    // mention
+  }
+
+  .ant-menu {
+    // menu
+  }
+
+  .ant-message {
+    // message
+  }
+
+  .ant-modal {
+    // modal
+  }
+
+  // 覆盖，设置弹窗居中显示
+  //.ant-modal-wrap {
+  //  text-align: center;
+  //
+  //  &::before {
+  //    content: '';
+  //    display: inline-block;
+  //    height: 100%;
+  //    vertical-align: middle;
+  //    width: 0;
+  //  }
+  //
+  //  .ant-modal {
+  //    display: inline-block;
+  //    vertical-align: middle;
+  //    top: 0;
+  //    text-align: left;
+  //  }
+  //}
+
+  .ant-notification {
+    // notification
+    &-notice {
+      &.success {
+        border-left: 3px solid @hzero-notification-success-color;
+        .ant-notification-notice-message {
+          word-break: break-all;
+        }
+      }
+
+      &.info {
+        border-left: 3px solid @hzero-notification-info-color;
+        .ant-notification-notice-message {
+          word-break: break-all;
+        }
+      }
+
+      &.warn {
+        border-left: 3px solid @hzero-notification-warn-color;
+        .ant-notification-notice-message {
+          word-break: break-all;
+        }
+      }
+
+      &.error {
+        border-left: 3px solid @hzero-notification-error-color;
+        .ant-notification-notice-message {
+          word-break: break-all;
+        }
+      }
+
+      &.request .ant-notification-notice-with-icon .ant-notification-notice-message {
+        margin-left: 0;
+        word-break: break-all;
+
+        img.ant-notification-notice-message-img {
+          width: 99px;
+          position: relative;
+          top: -10px;
+          left: -20px;
+        }
+
+        .ant-notification-notice-message-content {
+          width: 200px;
+          float: right;
+          padding-top: 10px;
+        }
+      }
+
+      &.request .ant-notification-notice-close {
+        z-index: 10;
+      }
+
+      &.request .ant-notification-notice-icon {
+        position: relative;
+      }
+    }
+  }
+
+  .ant-popconfirm {
+    // popconfirm
+  }
+
+  .ant-popover {
+    // popover
+  }
+
+  .ant-progress {
+    // progress
+  }
+
+  .ant-radio {
+    // radio
+  }
+
+  .ant-rate {
+    // rate
+  }
+
+  .ant-rc-components {
+    // rc-components
+  }
+
+  .ant-row {
+    // row
+  }
+
+  .ant-select {
+    // select
+  }
+
+  .ant-slider {
+    // slider
+  }
+
+  .ant-spin {
+    // spin
+  }
+
+  .ant-steps {
+    // steps
+  }
+
+  .ant-style {
+    // style
+  }
+
+  .ant-switch {
+    // switch
+  }
+
+  .ant-table-wrapper {
+    .ant-table {
+      .ant-table-scroll > .ant-table-body {
+        border-width: 0 0 0 1px;
+        border-style: solid;
+        border-color: #e8e8e8;
+        border-collapse: collapse;
+
+        > table,
+        .ant-table-fixed {
+          // 去除table多出的 left border
+          border-left: 0;
+        }
+      }
+
+      .ant-table-thead > tr > th.ant-table-selection-column,
+      .ant-table-tbody > tr > td.ant-table-selection-column {
+        width: 62px - @hzero-gutter;
+        min-width: 62px - @hzero-gutter;
+        text-align: initial;
+      }
+
+      table .ant-table-tbody > tr > td {
+        padding-left: @hzero-gutter;
+        padding-right: @hzero-gutter;
+      }
+
+      // table
+      .ant-table-thead > tr > th {
+        .hzero-font-size();
+        padding: 0 @hzero-gutter;
+        line-height: 25px;
+        min-height: 36px;
+        height: 36px;
+
+        &.ant-table-column-has-filters {
+          position: relative;
+          //
+          //> span {
+          //  > .anticon {
+          //    line-height: 40px;
+          //  }
+          //
+          //  > .anticon,
+          //  > .ant-table-column-sorter {
+          //    float: right;
+          //    height: 40px;
+          //    width: 40px;
+          //  }
+          //
+          //  > .ant-table-column-sorter {
+          //    padding-top: 15px;
+          //  }
+          //}
+        }
+      }
+    }
+  }
+
+  .ant-tabs {
+    // tabs
+    // editable-card
+    &.ant-tabs-card.ant-tabs-editable-card > .ant-tabs-bar .ant-tabs-tab {
+      padding: @hzero-tabs-card-tab-padding;
+      color: @hzero-tabs-tab-color;
+      .hzero-font-size(14px);
+
+      &.ant-tabs-tab-active {
+        color: @hzero-primary-color-2;
+      }
+
+      &.ant-tabs-tab-disabled {
+        color: @hzero-color-disabled;
+      }
+    }
+
+    &.ant-tabs-line > .ant-tabs-bar .ant-tabs-tab {
+      padding: @hzero-tabs-line-vertical-tab-padding;
+      margin: @hzero-tabs-line-vertical-tab-margin;
+      color: @hzero-tabs-tab-color;
+      .hzero-font-size(14px);
+
+      &.ant-tabs-tab-active {
+        color: @hzero-primary-color-2;
+      }
+
+      &.ant-tabs-tab-disabled {
+        color: @hzero-color-disabled;
+      }
+    }
+
+    &.ant-tabs-vertical.ant-tabs.ant-tabs-line > .ant-tabs-bar .ant-tabs-tab {
+      // tabs的tab在水平排列不需要margin
+      margin-right: 0;
+    }
+
+    &.ant-tabs-line.ant-tabs-minor > .ant-tabs-bar {
+      // TODO: 等确定再做
+      //border: 0 none;
+      //background-color: #f4f6f8;
+      //box-shadow: #f4f6f8 inset 1px 0;
+      //min-width: 128px;
+      //
+      //.ant-tabs-tab {
+      //  padding: @hzero-tabs-line-horizontal-tab-padding;
+      //  color: @hzero-tabs-tab-color;
+      //  margin: 0;
+      //
+      //  &.ant-tabs-tab-active {
+      //    font-weight: bold;
+      //    color: @hzero-primary-color-2;
+      //  }
+      //
+      //  &.ant-tabs-tab-disabled {
+      //    color: @hzero-color-disabled;
+      //  }
+      //}
+      //
+      //.ant-tabs-ink-bar {
+      //  // FIXME: 由于 是 style 的样式 所以这里使用 !important
+      //  display: none !important;
+      //}
+    }
+  }
+
+  .ant-tag {
+    // tag
+  }
+
+  .ant-time-picker {
+    // time-picker
+  }
+
+  .ant-timeline {
+    // timeline
+  }
+
+  .ant-tooltip {
+    // tooltip
+  }
+
+  .ant-transfer {
+    // transfer
+  }
+
+  .ant-tree {
+    // tree
+  }
+
+  .ant-select {
+    // tree-select
+  }
+
+  .ant-upload {
+    // upload
+  }
+
+  .ant-collapse {
+    .ant-collapse-content-box .ant-form-item > .ant-form-item-label {
+      text-align: left;
+    }
+  }
+
+  // version
+}
+
+:global {
+  .ant-calendar {
+    // header
+    .ant-calendar-header {
+      .ant-calendar {
+        &-prev-month-btn,
+        &-next-month-btn,
+        &-prev-year-btn,
+        &-next-year-btn {
+          padding: 0;
+        }
+
+        &-prev-month-btn {
+          left: @hzero-gutter + @hzero-gutter-md + 8;
+        }
+
+        &-next-month-btn {
+          right: @hzero-gutter + @hzero-gutter-md + 8;
+        }
+
+        &-prev-year-btn {
+          left: @hzero-gutter;
+        }
+
+        &-next-year-btn {
+          right: @hzero-gutter;
+        }
+      }
+    }
+
+    .ant-calendar-year-panel-header {
+      .ant-calendar-year-panel {
+        &-prev-decade-btn,
+        &-next-decade-btn {
+          padding: 0;
+        }
+
+        &-prev-decade-btn {
+          left: @hzero-gutter;
+        }
+
+        &-next-decade-btn {
+          right: @hzero-gutter;
+        }
+      }
+    }
+
+    .ant-calendar-decade-panel-header {
+      .ant-calendar-decade-panel {
+        &-prev-century-btn,
+        &-next-century-btn {
+          padding: 0;
+        }
+
+        &-prev-century-btn {
+          left: @hzero-gutter;
+        }
+
+        &-next-century-btn {
+          right: @hzero-gutter;
+        }
+      }
+    }
+
+    // body
+    //.ant-calendar-cell {
+    //  padding: 2px 0;
+    //  > .ant-calendar-date {
+    //    margin: 0 4px;
+    //  }
+    //}
+  }
+}
+
+:global {
+  .ant-tabs {
+    &.ant-tabs-vertical {
+      > .ant-tabs-bar {
+        background-color: @hzero-simple-bgc-color;
+        // width: 12.5%;
+
+        > .ant-tabs-nav-container {
+          > .ant-tabs-nav-wrap {
+            > .ant-tabs-nav-scroll {
+              > .ant-tabs-nav {
+                .ant-tabs-tab {
+                  .hzero-font-size(14px);
+                  color: @hzero-tabs-tab-color;
+                  text-align: left;
+                  padding: 9px 9px 9px @hzero-gutter;
+
+                  &-active {
+                    background-color: #fff;
+                    color: @hzero-primary-color-2;
+                  }
+
+                  &-disabled {
+                    color: @hzero-color-disabled;
+                  }
+                }
+
+                > .ant-tabs-ink-bar {
+                  // 要操作
+                  display: none !important;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,283 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.iam.infra.mapper.SecGrpAclMapper">
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap id="BaseResultMap" type="org.hzero.iam.domain.entity.SecGrpAcl">
+        <result column="sec_grp_acl_id" property="secGrpAclId" jdbcType="DECIMAL"/>
+        <result column="sec_grp_id" property="secGrpId" jdbcType="DECIMAL"/>
+        <result column="tenant_id" property="tenantId" jdbcType="DECIMAL"/>
+        <result column="permission_id" property="permissionId" jdbcType="DECIMAL"/>
+        <result column="object_version_number" property="objectVersionNumber" jdbcType="DECIMAL"/>
+        <result column="creation_date" property="creationDate" jdbcType="DATE"/>
+        <result column="created_by" property="createdBy" jdbcType="DECIMAL"/>
+        <result column="last_updated_by" property="lastUpdatedBy" jdbcType="DECIMAL"/>
+        <result column="last_update_date" property="lastUpdateDate" jdbcType="DATE"/>
+    </resultMap>
+
+    <insert id="batchInsertBySql">
+        <choose>
+            <when test="_databaseId == 'oracle'">
+                INSERT INTO hiam_sec_grp_acl (sec_grp_acl_id, sec_grp_id, tenant_id, permission_id, created_by, last_updated_by)
+                SELECT hiam_sec_grp_acl_S.nextval, t.*
+                FROM (
+                <foreach collection="list" item="item" separator=" union all ">
+                    select #{item.secGrpId}, #{item.tenantId}, #{item.permissionId}, #{item.createdBy}, #{item.lastUpdatedBy} FROM dual
+                </foreach>
+                ) t
+            </when>
+            <otherwise>
+                INSERT INTO hiam_sec_grp_acl (sec_grp_id, tenant_id, permission_id, created_by, last_updated_by)
+                VALUES
+                <foreach collection="list" item="item" separator=",">
+                    (#{item.secGrpId}, #{item.tenantId}, #{item.permissionId}, #{item.createdBy}, #{item.lastUpdatedBy})
+                </foreach>
+            </otherwise>
+        </choose>
+    </insert>
+
+    <delete id="batchDeleteBySql">
+        DELETE FROM HIAM_SEC_GRP_ACL
+        WHERE SEC_GRP_ID = #{secGrpId}
+        AND PERMISSION_ID IN
+        <foreach collection="permissionIds" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+
+    <select id="selectAclInGrp" resultType="org.hzero.iam.domain.entity.SecGrpAcl">
+       SELECT
+        hsgc.sec_grp_acl_id,
+        hsgc.sec_grp_id,
+        hsgc.tenant_id,
+        hsgc.permission_id,
+        hsgc.object_version_number
+        FROM
+        hiam_sec_grp_acl hsgc
+        WHERE hsgc.sec_grp_id = #{secGrpId}
+        AND NOT EXISTS
+            (
+                SELECT
+                    1
+                FROM
+                hiam_sec_grp_revoke hsgr
+                WHERE
+                hsgr.revoke_type = 'REVOKE'
+                AND hsgr.authority_id = hsgc.sec_grp_acl_id
+                AND hsgr.authority_type = 'ACL'
+            )
+
+    </select>
+    <select id="selectAclInRole" resultType="org.hzero.iam.domain.entity.SecGrpAcl">
+        SELECT
+        hsga.sec_grp_acl_id,
+        hsga.sec_grp_id,
+        hsga.tenant_id,
+        hsga.permission_id,
+        hsga.object_version_number
+        FROM
+        hiam_sec_grp_acl hsga
+        JOIN hiam_sec_grp hsg ON  hsg.sec_grp_id = hsga.sec_grp_id AND hsg.enabled_flag = 1
+        WHERE EXISTS(
+                SELECT 1
+                FROM iam_role_permission irp
+                WHERE
+				irp.role_id = #{roleId}
+                AND  irp.type = 'SG'
+                AND ( irp.h_create_flag = 'Y' or irp.h_inherit_flag = 'Y')
+                AND irp.permission_id = hsg.sec_grp_id
+        )
+        AND NOT EXISTS
+                (
+                        SELECT
+                                1
+                        FROM
+                        hiam_sec_grp_revoke hsgr
+                        WHERE
+                         -- 没有对当前角色屏蔽
+                        (
+                        hsgr.revoke_type = 'SHIELD'
+                        AND hsgr.authority_id = hsga.sec_grp_acl_id
+                        AND hsgr.authority_type = 'ACL'
+                        AND hsgr.shield_role_id =#{roleId}
+                        )
+                        OR
+                        -- 没有在回收表
+                        (
+                        hsgr.revoke_type = 'REVOKE'
+                        AND hsgr.authority_id = hsga.sec_grp_acl_id
+                        AND hsgr.authority_type = 'ACL'
+                        )
+                )
+
+    </select>
+
+    <select id="selectRoleSecGrpAcls" resultType="org.hzero.iam.domain.entity.SecGrpAcl">
+         SELECT
+            hsga.sec_grp_acl_id,
+            hsga.sec_grp_id,
+            hsga.tenant_id,
+            hsga.permission_id
+        FROM hiam_sec_grp_acl hsga
+        JOIN hiam_sec_grp hsg ON  hsg.sec_grp_id = hsga.sec_grp_id
+        WHERE hsga.sec_grp_id IN
+        <foreach item="item" collection="secGrpIds" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        AND NOT EXISTS (
+            SELECT 1
+            FROM hiam_sec_grp_revoke hsgr
+            WHERE
+             -- 没有对当前角色屏蔽
+            (
+                hsgr.revoke_type = 'SHIELD'
+                AND hsgr.authority_id = hsga.sec_grp_acl_id
+                AND hsgr.authority_type = 'ACL'
+                AND hsgr.shield_role_id = #{roleId}
+            )
+            OR
+            -- 没有在回收表
+            (
+                hsgr.revoke_type = 'REVOKE'
+                AND hsgr.authority_id = hsga.sec_grp_acl_id
+                AND hsgr.authority_type = 'ACL'
+            )
+        )
+    </select>
+
+    <select id="selectSecGrpAclBindPermissionIdInRoleAndSubRole" resultType="org.hzero.iam.domain.entity.SecGrpAcl">
+        SELECT
+        hsga.sec_grp_acl_id,
+        hsga.sec_grp_id,
+        hsga.tenant_id,
+        hsga.permission_id,
+        hsga.object_version_number
+        FROM
+          hiam_sec_grp_acl hsga
+        JOIN hiam_sec_grp hsg ON hsga.sec_grp_id = hsg.sec_grp_id
+        JOIN iam_role ir_out ON hsg.role_id = ir_out.id
+        WHERE hsga.permission_id in
+        <foreach  item="item" collection="permissionIds" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        -- 用子角色限定
+        AND EXISTS(
+        SELECT
+        1
+        FROM
+          iam_role ir
+        WHERE ir.id = #{roleId}
+        AND (ir_out.h_level_path LIKE CONCAT(ir.h_level_path,"|%")OR ir_out.h_level_path = ir.h_level_path)
+        )
+        <if test="includeRevokeFlag != null and includeRevokeFlag == 0">
+            -- 没有在回收表
+            AND NOT EXISTS (
+            SELECT
+            1
+            FROM
+            hiam_sec_grp_revoke hsgr
+            WHERE
+            hsgr.revoke_type = 'REVOKE'
+            AND hsgr.authority_id = hsga.sec_grp_acl_id
+            AND hsgr.sec_grp_id = hsga.sec_grp_id
+            AND hsgr.authority_type = 'ACL'
+            )
+        </if>
+    </select>
+
+    <select id="selectSecGrpAclBindPermissionIdInRole" resultType="org.hzero.iam.domain.entity.SecGrpAcl">
+        SELECT
+        hsga.sec_grp_acl_id,
+        hsga.sec_grp_id,
+        hsga.tenant_id,
+        hsga.permission_id,
+        hsga.object_version_number
+        FROM
+        hiam_sec_grp_acl hsga
+        JOIN hiam_sec_grp hsg ON hsga.sec_grp_id = hsg.sec_grp_id AND hsg.role_id = #{roleId}
+        WHERE hsga.permission_id in
+        <foreach  item="item" collection="permissionIds" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        <if test="includeRevokeFlag != null and includeRevokeFlag == 0">
+            -- 没有在回收表
+            AND NOT EXISTS (
+            SELECT
+            1
+            FROM
+              hiam_sec_grp_revoke hsgr
+            WHERE
+            hsgr.revoke_type = 'REVOKE'
+            AND hsgr.authority_id = hsga.sec_grp_acl_id
+            AND hsgr.sec_grp_id = hsga.sec_grp_id
+            AND hsgr.authority_type = 'ACL'
+            )
+        </if>
+    </select>
+
+    <select id="selectRoleOtherSecGrpAcls" resultType="org.hzero.iam.domain.entity.SecGrpAcl">
+        SELECT
+            hsga.sec_grp_acl_id,
+            hsga.sec_grp_id,
+        hsga.tenant_id,
+        hsga.permission_id
+        FROM hiam_sec_grp_acl hsga
+        JOIN hiam_sec_grp hsg ON hsg.sec_grp_id = hsga.sec_grp_id
+        JOIN iam_role_permission irp ON (
+        irp.permission_id = hsg.sec_grp_id
+        AND irp.role_id = #{roleId}
+        AND irp.type = 'SG'
+        AND (irp.h_create_flag = 'Y' or irp.h_inherit_flag = 'Y')
+        )
+        WHERE hsga.sec_grp_id &lt;&gt; #{excludeSecGrpId}
+        AND NOT EXISTS (
+        SELECT 1
+        FROM hiam_sec_grp_revoke hsgr
+        WHERE
+        -- 没有对当前角色屏蔽
+        (
+        hsgr.revoke_type = 'SHIELD'
+        AND hsgr.authority_id = hsga.sec_grp_acl_id
+        AND hsgr.authority_type = 'ACL'
+        AND hsgr.shield_role_id = #{roleId}
+            )
+            OR
+            -- 没有在回收表
+            (
+                hsgr.revoke_type = 'REVOKE'
+                AND hsgr.authority_id = hsga.sec_grp_acl_id
+                AND hsgr.authority_type = 'ACL'
+            )
+        )
+        AND hsga.permission_id IN
+        <foreach collection="permissionIds" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
+    <select id="selectRoleCreatedSecGrpAcl" resultType="org.hzero.iam.domain.entity.SecGrpAcl">
+        SELECT
+            hsga.sec_grp_acl_id,
+            hsga.sec_grp_id,
+            hsga.tenant_id,
+            hsga.permission_id
+        FROM hiam_sec_grp_acl hsga
+        JOIN hiam_sec_grp hsg ON  hsg.sec_grp_id = hsga.sec_grp_id
+        WHERE hsg.role_id = #{roleId}
+        AND NOT EXISTS (
+            SELECT 1
+            FROM hiam_sec_grp_revoke hsgr
+            WHERE
+            -- 没有对当前角色屏蔽
+            (
+                hsgr.revoke_type = 'SHIELD'
+                AND hsgr.authority_id = hsga.sec_grp_acl_id
+                AND hsgr.authority_type = 'ACL'
+                AND hsgr.shield_role_id = #{roleId}
+            )
+        )
+        AND hsga.permission_id IN
+        <foreach collection="permissionIds" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+</mapper>

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.file.infra.mapper.CapacityConfigMapper">
+    <!-- 可根据自己的需求，是否要使用 -->
+    <resultMap id="BaseResultMap" type="org.hzero.file.domain.entity.CapacityConfig">
+        <result column="capacity_config_id" property="capacityConfigId" jdbcType="DECIMAL"/>
+        <result column="tenant_id" property="tenantId" jdbcType="DECIMAL"/>
+        <result column="total_capacity" property="totalCapacity" jdbcType="DECIMAL"/>
+        <result column="total_capacity_unit" property="totalCapacityUnit" jdbcType="VARCHAR"/>
+        <result column="used_capacity" property="usedCapacity" jdbcType="DECIMAL"/>
+        <result column="storage_unit" property="storageUnit" jdbcType="VARCHAR"/>
+        <result column="storage_size" property="storageSize" jdbcType="DECIMAL"/>
+        <result column="object_version_number" property="objectVersionNumber" jdbcType="DECIMAL"/>
+        <result column="creation_date" property="creationDate" jdbcType="DATE"/>
+        <result column="created_by" property="createdBy" jdbcType="DECIMAL"/>
+        <result column="last_updated_by" property="lastUpdatedBy" jdbcType="DECIMAL"/>
+        <result column="last_update_date" property="lastUpdateDate" jdbcType="DATE"/>
+    </resultMap>
+
+    <select id="selectByTenantId" resultType="org.hzero.file.domain.entity.CapacityConfig">
+        SELECT
+            capacity_config_id,
+            tenant_id,
+            total_capacity,
+            total_capacity_unit,
+            used_capacity,
+            storage_unit,
+            storage_size,
+            object_version_number
+        FROM hfle_capacity_config
+        WHERE
+            tenant_id = #{tenantId}
+    </select>
+</mapper>

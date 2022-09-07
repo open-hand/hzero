@@ -1,0 +1,280 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.hzero</groupId>
+        <artifactId>hzero-parent</artifactId>
+        <version>1.5.6.RELEASE</version>
+    </parent>
+    <artifactId>hzero-oauth</artifactId>
+    <version>1.5.7.RELEASE</version>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-undertow</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+        <!-- hzero -->
+        <dependency>
+            <groupId>org.hzero.starter</groupId>
+            <artifactId>hzero-starter-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.hzero.starter</groupId>
+            <artifactId>hzero-starter-mybatis-mapper</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.hzero.boot</groupId>
+            <artifactId>hzero-boot-message</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.hzero.starter</groupId>
+            <artifactId>hzero-starter-metric</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.hzero.starter</groupId>
+            <artifactId>hzero-starter-feign-replay</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.hzero.starter</groupId>
+            <artifactId>hzero-starter-config-client</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.hzero.boot</groupId>
+            <artifactId>hzero-boot-platform</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.hzero.boot</groupId>
+                    <artifactId>hzero-boot-admin</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.hzero.boot</groupId>
+            <artifactId>hzero-boot-oauth</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.squareup.retrofit2</groupId>
+            <artifactId>retrofit</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.squareup.retrofit2</groupId>
+            <artifactId>converter-jackson</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-configuration-processor</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.session</groupId>
+            <artifactId>spring-session-data-redis</artifactId>
+        </dependency>
+
+        <!-- commons-lang3 -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+        </dependency>
+        <!-- commons-collections4 -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-collections4</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.dataformat</groupId>
+            <artifactId>jackson-dataformat-yaml</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>eu.bitwalker</groupId>
+            <artifactId>UserAgentUtils</artifactId>
+            <version>1.21</version>
+        </dependency>
+
+        <dependency>
+            <groupId>cz.mallat.uasparser</groupId>
+            <artifactId>uasparser</artifactId>
+            <version>0.6.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>net.sourceforge.jregex</groupId>
+            <artifactId>jregex</artifactId>
+            <version>1.2_01</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-ldap</artifactId>
+        </dependency>
+
+        <dependency>
+            <artifactId>mysql-connector-java</artifactId>
+            <groupId>mysql</groupId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>com.oracle</groupId>
+            <artifactId>ojdbc7</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>com.microsoft.sqlserver</groupId>
+            <artifactId>sqljdbc4</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+        <!-- 三方登录依赖 -->
+        <dependency>
+            <artifactId>hzero-starter-social-core</artifactId>
+            <groupId>org.hzero.starter</groupId>
+        </dependency>
+        <dependency>
+            <artifactId>hzero-starter-social-qq</artifactId>
+            <groupId>org.hzero.starter</groupId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <artifactId>hzero-starter-social-wechat</artifactId>
+            <groupId>org.hzero.starter</groupId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <artifactId>hzero-starter-social-sina</artifactId>
+            <groupId>org.hzero.starter</groupId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <artifactId>hzero-starter-social-wechat-enterprise</artifactId>
+            <groupId>org.hzero.starter</groupId>
+            <optional>true</optional>
+        </dependency>
+
+        <!-- 单点登录依赖 -->
+        <dependency>
+            <artifactId>hzero-starter-sso-core</artifactId>
+            <groupId>org.hzero.starter</groupId>
+        </dependency>
+        <dependency>
+            <artifactId>hzero-starter-sso-oauth</artifactId>
+            <groupId>org.hzero.starter</groupId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <artifactId>hzero-starter-sso-cas</artifactId>
+            <groupId>org.hzero.starter</groupId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <artifactId>hzero-starter-sso-saml</artifactId>
+            <groupId>org.hzero.starter</groupId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <artifactId>hzero-starter-sso-idm</artifactId>
+            <groupId>org.hzero.starter</groupId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <artifactId>hzero-starter-sso-azure</artifactId>
+            <groupId>org.hzero.starter</groupId>
+            <optional>true</optional>
+        </dependency>
+
+        <!-- thymeleaf springboot2.0以前的版本需要引入 nekohtml，否则页面对于 <input /> 此类的标签报错必须要结束标签 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-thymeleaf</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>net.sourceforge.nekohtml</groupId>
+            <artifactId>nekohtml</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
+        </dependency>
+
+        <!-- 登录页面模板依赖 -->
+        <dependency>
+            <groupId>org.hzero.template</groupId>
+            <artifactId>hzero-template-oauth-main</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.hzero.template</groupId>
+            <artifactId>hzero-template-oauth-slide</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+        <!-- register and config -->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-config-client</artifactId>
+            <optional>true</optional>
+        </dependency>
+    </dependencies>
+
+    <repositories>
+        <repository>
+            <id>HzeroRelease</id>
+            <name>Hzero-Release Repository</name>
+            <url>http://nexus.saas.hand-china.com/content/repositories/Hzero-Release/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>HzeroSnapshot</id>
+            <name>Hzero-Snapshot Repository</name>
+            <url>http://nexus.saas.hand-china.com/content/repositories/Hzero-Snapshot/</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>always</updatePolicy>
+            </snapshots>
+        </repository>
+    </repositories>
+
+    <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+                <excludes>
+                    <exclude>**/*.eot</exclude>
+                    <exclude>**/*.woff</exclude>
+                    <exclude>**/*.woff2</exclude>
+                </excludes>
+            </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>false</filtering>
+                <includes>
+                    <include>**/*.eot</include>
+                    <include>**/*.woff</include>
+                    <include>**/*.woff2</include>
+                </includes>
+            </resource>
+        </resources>
+    </build>
+
+</project>
+

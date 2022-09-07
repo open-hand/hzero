@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.plugin.platform.hr.infra.mapper.HrSyncMapper">
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap id="BaseResultMap" type="org.hzero.plugin.platform.hr.domain.entity.HrSync">
+        <result column="sync_id" property="syncId" jdbcType="DECIMAL"/>
+        <result column="sync_type_code" property="syncTypeCode" jdbcType="VARCHAR"/>
+        <result column="app_id" property="appId" jdbcType="VARCHAR"/>
+        <result column="app_secret" property="appSecret" jdbcType="VARCHAR"/>
+        <result column="auth_type" property="authType" jdbcType="VARCHAR"/>
+        <result column="auth_address" property="authAddress" jdbcType="VARCHAR"/>
+        <result column="enabled_flag" property="enabledFlag" jdbcType="DECIMAL"/>
+        <result column="tenant_id" property="tenantId" jdbcType="DECIMAL"/>
+        <result column="OBJECT_VERSION_NUMBER" property="objectVersionNumber" jdbcType="DECIMAL"/>
+        <result column="CREATED_BY" property="createdBy" jdbcType="DECIMAL"/>
+        <result column="CREATION_DATE" property="creationDate" jdbcType="DATE"/>
+        <result column="LAST_UPDATED_BY" property="lastUpdatedBy" jdbcType="DECIMAL"/>
+        <result column="LAST_UPDATE_DATE" property="lastUpdateDate" jdbcType="DATE"/>
+    </resultMap>
+    <select id="listHrSync" resultType="org.hzero.plugin.platform.hr.domain.entity.HrSync">
+        SELECT
+            hrs.sync_id,
+            hrs.sync_type_code,
+            hrs.app_id,
+            hrs.auth_type,
+            hrs.auth_address,
+            hrs.tenant_id,
+            hrs.enabled_flag,
+            hrs.object_version_number
+        FROM
+            hpfm_hr_sync hrs
+        WHERE 1 = 1
+        <if test="tenantId != null">
+            AND hrs.tenant_id = #{tenantId}
+        </if>
+        <if test="enabledFlag != null">
+            AND hrs.enabled_flag = #{enabledFlag}
+        </if>
+        <if test="authType != null and authType != ''">
+            AND hrs.auth_type = #{authType}
+        </if>
+        <if test="syncTypeCode != null and syncTypeCode != ''">
+            AND hrs.sync_type_code = #{syncTypeCode}
+        </if>
+    </select>
+
+    <select id="getHrSyncById" resultType="org.hzero.plugin.platform.hr.domain.entity.HrSync">
+        SELECT
+            hrs.sync_id,
+            hrs.sync_type_code,
+            hrs.app_id,
+            hrs.auth_type,
+            hrs.auth_address,
+            hrs.tenant_id,
+            hrs.enabled_flag,
+            hrs.object_version_number
+        FROM
+            hpfm_hr_sync hrs
+        WHERE hrs.sync_id = #{syncId}
+    </select>
+    
+    
+</mapper>

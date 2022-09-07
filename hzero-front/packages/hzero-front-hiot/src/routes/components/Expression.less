@@ -1,0 +1,198 @@
+@select-row-background-color: #33ccff;
+@border-color: #e8e8e8;
+@text-color: whitesmoke;
+@btn-primary-color: rgb(51, 153, 255);
+@emphasize-bg-color: #fff;
+
+// 操作符样式
+.expression-operation-item {
+  color: #000;
+  border: 1px solid lightgray;
+  border-radius: 5px;
+  font-weight: bold;
+  display: inline-block;
+  width: 32px;
+  text-align: center;
+  height: 32px;
+  line-height: 32px;
+  margin: 3px;
+  cursor: pointer;
+}
+
+// 聚合函数样式
+.expression-aggression-item {
+  background-color: #390;
+  color: @text-color;
+  display: inline-block;
+  text-align: center;
+  min-width: 50px;
+  padding: 0 10px;
+  margin: 3px;
+  height: 32px;
+  line-height: 32px;
+}
+
+// 相关因子样式
+.correlation-factor-item {
+  background-color: #c1c1c1;
+  color: @text-color;
+  display: inline-block;
+  height: 32px;
+  line-height: 32px;
+  padding: 0 15px;
+  text-align: center;
+  border-radius: 25px;
+  margin: 3px 5px;
+  max-width: 80%;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+
+  &-select {
+    background-color: @btn-primary-color;
+  }
+
+  &-focus {
+    box-shadow: 5px 5px 5px #888;
+  }
+}
+
+// 数据点和监测指标样式
+.expression-object-item {
+  color: @text-color;
+  height: 32px;
+  line-height: 32px;
+  margin: 3px;
+  max-width: 100%;
+  display: flex;
+
+  &-focus {
+    box-shadow: 5px 5px 5px #888;
+    border-radius: 25px;
+    background: #888;
+  }
+
+  .expression-thing {
+    padding: 0 15px;
+    border-radius: 25px 0 0 25px;
+    margin-right: 4px;
+    display: inline-block;
+    background-color: @btn-primary-color;
+    flex: 1;
+    max-width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  .expression-object {
+    background-color: @btn-primary-color;
+    padding: 0 15px;
+    border-radius: 0 25px 25px 0;
+    display: inline-block;
+    flex: 0 auto;
+    max-width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  .expression-object-entry {
+    border-radius: 25px;
+  }
+}
+
+// 表达式因子样式
+.expression-factor-item {
+  width: auto;
+  display: inline-block;
+  vertical-align: middle;
+  max-width: 100%;
+  position: relative;
+
+  .delete {
+    position: absolute;
+    top: 3px;
+    right: 3px;
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+    user-select: none;
+    -moz-user-select: none;
+    -webkit-user-drag: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+  }
+}
+
+// 表达式卡片样式
+.expression-card {
+  box-shadow: 0 0 5px @border-color;
+  border-radius: 5px;
+}
+
+// 表达式因子选择框样式
+.factor-selection {
+  box-shadow: 0 0 5px @border-color;
+  border-radius: 5px;
+  display: flex;
+  flex-direction: column;
+
+  .factor-card {
+    height: 331px;
+    overflow: auto;
+    padding: 10px;
+  }
+
+  // 聚合函数样式
+  .factor-aggression {
+    height: 50px;
+    padding: 5px 10px;
+    width: 100%;
+    background-color: @emphasize-bg-color;
+    border-top: 1px solid #e8e8e8;
+
+    .aggression-list {
+      display: inline-block;
+
+      .tips-icon {
+        font-size: 20px;
+        line-height: 32px;
+        height: 32px;
+        vertical-align: middle;
+        padding: 3px;
+      }
+    }
+
+    .aggression-parameter {
+      float: right;
+      width: 40%;
+    }
+  }
+}
+
+// 表达式编辑框的样式
+.expression-with-operation {
+  box-shadow: 0 0 5px @border-color;
+  border-radius: 5px;
+  display: flex;
+
+  .expression-content-card {
+    overflow: auto;
+    display: inline-block;
+    flex: 1;
+    padding: 10px;
+
+    .DraggableTags-tag {
+      max-width: 100%;
+    }
+  }
+
+  .expression-operation-selection {
+    width: 118px;
+    padding: 2px;
+    flex: 0 0 118px;
+    background-color: #fff7fa;
+    display: inline-block;
+  }
+}

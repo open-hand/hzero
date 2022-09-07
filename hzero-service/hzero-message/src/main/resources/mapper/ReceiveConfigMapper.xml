@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.message.infra.mapper.ReceiveConfigMapper">
+    <!-- 可根据自己的需求，是否要使用 -->
+    <resultMap id="BaseResultMap" type="org.hzero.message.domain.entity.ReceiveConfig">
+        <result column="receive_id" property="receiveId" jdbcType="DECIMAL"/>
+        <result column="receive_code" property="receiveCode" jdbcType="VARCHAR"/>
+        <result column="receive_name" property="receiveName" jdbcType="VARCHAR"/>
+        <result column="default_receive_type" property="defaultReceiveType" jdbcType="VARCHAR"/>
+        <result column="parent_receive_code" property="parentReceiveCode" jdbcType="VARCHAR"/>
+        <result column="level_number" property="levelNumber" jdbcType="DECIMAL"/>
+        <result column="object_version_number" property="objectVersionNumber" jdbcType="DECIMAL"/>
+        <result column="creation_date" property="creationDate" jdbcType="DATE"/>
+        <result column="created_by" property="createdBy" jdbcType="DECIMAL"/>
+        <result column="last_updated_by" property="lastUpdatedBy" jdbcType="DECIMAL"/>
+        <result column="last_update_date" property="lastUpdateDate" jdbcType="DATE"/>
+    </resultMap>
+
+    <select id="listConfig" resultType="org.hzero.message.api.dto.ReceiveConfigDTO">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        (
+        SELECT
+            hrc.receive_id,
+            hrc.receive_code,
+            hrct.receive_name,
+            hrc.default_receive_type,
+            hrc.level_number,
+            hrc.tenant_id,
+            hrc.object_version_number,
+            hrc.parent_receive_code,
+            hrc.editable_flag
+        FROM
+            hmsg_receive_config hrc
+        JOIN hmsg_receive_config_tl hrct ON hrc.receive_id = hrct.receive_id
+        AND hrct.lang = #{lang}
+        WHERE
+        ( hrc.receive_code NOT IN ( SELECT hs.receive_code FROM hmsg_receive_config hs WHERE hs.tenant_id = #{tenantId}) )
+        AND hrc.tenant_id = 0
+        )
+        UNION ALL
+        (
+        SELECT
+            hrc.receive_id,
+            hrc.receive_code,
+            hrct.receive_name,
+            hrc.default_receive_type,
+            hrc.level_number,
+            hrc.tenant_id,
+            hrc.object_version_number,
+            hrc.parent_receive_code,
+            hrc.editable_flag
+        FROM
+            hmsg_receive_config hrc
+        JOIN hmsg_receive_config_tl hrct ON hrc.receive_id = hrct.receive_id
+        AND hrct.lang = #{lang}
+        WHERE
+            hrc.tenant_id = #{tenantId}
+        )
+    </select>
+
+    <select id="listParentReceive" resultType="org.hzero.message.api.dto.ReceiveConfigDTO">
+        select
+        hrc.receive_code,
+        hrc.default_receive_type,
+        hrc.tenant_id,
+        hrc.level_number
+        from hmsg_receive_config hrc
+        where
+        hrc.receive_code = #{parentReceiveCode} and hrc.tenant_id in (#{tenantId},0)
+    </select>
+
+</mapper>

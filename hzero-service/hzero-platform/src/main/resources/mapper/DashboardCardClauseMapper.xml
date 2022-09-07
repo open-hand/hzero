@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.platform.infra.mapper.DashboardCardClauseMapper">
+    <select id="selectDashboardCardClauseList" resultType="org.hzero.platform.domain.entity.DashboardCardClause">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        SELECT
+            hdcc.id,
+            hdcc.card_id,
+            hdct.name,
+            hdc.code,
+            hdcc.order_seq,
+            hdcc.object_version_number
+        FROM hpfm_dashboard_card_clause hdcc
+        JOIN hpfm_dashboard_card hdc ON hdcc.card_id = hdc.id
+        JOIN hpfm_dashboard_card_tl hdct ON hdct.id = hdc.id AND hdct.lang = #{lang}
+        WHERE hdcc.clause_id = #{clauseId}
+    </select>
+    <select id="selectMaxRankValue" resultType="java.lang.Integer">
+        SELECT MAX(order_seq)
+        FROM hpfm_dashboard_card_clause
+        WHERE card_id = #{cardId}
+    </select>
+    <select id="checkRepeat" resultType="java.lang.Integer">
+        select count(*)
+        from hpfm_dashboard_card_clause
+        where clause_id = #{clauseId}
+        and card_id = #{cardId}
+    </select>
+</mapper>

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.iam.infra.mapper.MenuPermissionMapper">
+
+    <insert id="batchInsertBySql">
+        <choose>
+            <when test="_databaseId == 'oracle'">
+                INSERT INTO iam_menu_permission (id, menu_id, tenant_id, permission_code, created_by, last_updated_by)
+                SELECT iam_menu_permission_S.nextval, t.*
+                FROM (
+                <foreach collection="list" item="item" separator=" union all ">
+                    select #{item.menuId}, #{item.tenantId}, #{item.permissionCode}, #{item.createdBy}, #{item.lastUpdatedBy} FROM dual
+                </foreach>
+                ) t
+            </when>
+            <otherwise>
+                INSERT INTO iam_menu_permission (menu_id, tenant_id, permission_code, created_by, last_updated_by)
+                VALUES
+                <foreach collection="list" item="item" separator=",">
+                    (#{item.menuId}, #{item.tenantId}, #{item.permissionCode}, #{item.createdBy}, #{item.lastUpdatedBy})
+                </foreach>
+            </otherwise>
+        </choose>
+    </insert>
+
+    <delete id="deleteByIdAndCodes">
+      delete from iam_menu_permission
+      where menu_id = #{permissionSetId}
+      and permission_code in
+      <foreach collection="codes" item="code" open="(" separator="," close=")">
+          #{code}
+      </foreach>
+    </delete>
+
+    <delete id="deleteByServiceNameAndCodes">
+      <bind name="serviceNameLike" value=" serviceName + '.%'" />
+      delete from iam_menu_permission
+      where permission_code like #{serviceNameLike}
+      and permission_code in
+      <foreach collection="permissionCodes" item="permissionCode" open="(" separator="," close=")">
+          #{permissionCode}
+      </foreach>
+    </delete>
+
+    <select id="selectAllMenuPermissions" resultType="org.hzero.iam.domain.entity.MenuPermission">
+        select menu_id, permission_code from iam_menu_permission where menu_id not in (select id from iam_menu where type = 'ps')
+    </select>
+
+    <delete id="deleteAllMenuPermissions">
+        delete from iam_menu_permission where menu_id not in (select id from iam_menu where type = 'ps')
+    </delete>
+
+</mapper>

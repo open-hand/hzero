@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.platform.infra.mapper.DataGroupMapper">
+    <select id="listDataGroup" resultType="org.hzero.platform.domain.entity.DataGroup">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()" />
+        SELECT
+        hdg.group_id,
+        hdg.group_code,
+        hdg.group_name,
+        hdg.tenant_id,
+        hdg.enabled_flag,
+        hdg.remark,
+        httl.tenant_name,
+        hdg.object_version_number
+        from
+        hpfm_data_group hdg
+        join hpfm_tenant ht on ht.tenant_id = hdg.tenant_id
+        LEFT JOIN hpfm_tenant_tl httl ON ht.tenant_id = httl.tenant_id AND httl.lang = #{lang}
+        where
+        1=1
+        <if test="groupCode!=null and groupCode!=''">
+            <bind name="groupCodeLike" value="'%'+groupCode+'%'"></bind>
+            and hdg.group_code like #{groupCodeLike}
+        </if>
+        <if test="groupName!=null and groupName!=''">
+            <bind name="groupNameLike" value="'%'+groupName+'%'"></bind>
+            and hdg.group_name like #{groupNameLike}
+        </if>
+        <if test="tenantId!=null">
+            and hdg.tenant_id = #{tenantId}
+        </if>
+        <if test="groupId!=null">
+            and hdg.group_id = #{groupId}
+        </if>
+        <if test="excludeIds!=null and excludeIds.length>0">
+            and hdg.group_id not in
+            <foreach collection="excludeIds" item="groupId" open="(" close=")" separator=",">
+                #{groupId}
+            </foreach>
+        </if>
+
+    </select>
+</mapper>

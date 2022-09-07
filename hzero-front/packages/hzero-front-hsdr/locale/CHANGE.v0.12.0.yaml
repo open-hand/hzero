@@ -1,0 +1,5 @@
+hsdr.jobInfo:
+  #  update
+  model.jobInfo.tenantName: 所属租户
+  #  create
+  #  delete

@@ -1,0 +1,166 @@
+# hzero-国际化
+hfnt.common:
+  view.message.title.edit.mapping.class: 查看编辑映射类
+  button.test: 测试
+  view.message.title.testLog: 测试日志
+  model.testResult: 测试结果
+  model.log: 日志信息
+  model.success: 成功
+  model.failed: 失败
+  button.cancel: 取消
+  button.confirm: 确定
+
+  view.tip.dw: 请参考DataWeave Language语法编写映射脚本，官方文档参见
+
+  view.cron.second: 秒
+  view.cron.minute: 分钟
+  view.cron.hour: 小时
+  view.cron.day: 日
+  view.cron.month: 月
+  view.cron.week: 周
+  view.cron.year: 年
+  view.cron.everyDay: 每日
+  view.cron.notSpecify: 不指定
+  view.cron.specify: 指定
+  view.cron.period: 周期
+  view.cron.from: 从
+  view.cron.to: 到
+  view.cron.fromCertain: 从第
+  view.cron.perDayStart: 日开始，每
+  view.cron.oneTimeForDay: 天执行一次
+  view.cron.everyMonth: 每月
+  view.cron.lastestWorkDay: 日最近的那个工作日
+  view.cron.lastTheMonth: 本月最后
+  view.cron.everyDay: 每小时,
+  view.cron.singleHour: 时
+  view.cron.perFromHour: 时开始，每
+  view.cron.oneTimeForHour: 时执行一次
+  view.cron.minNum: 至少选择一项
+  view.cron.everyMinute: 每日
+  view.cron.singleMinute: 分
+  view.cron.perFromMinute: 分开始，每
+  view.cron.oneTimeForMinute: 分执行一次
+  view.cron.singleMonth: 月
+  view.cron.singleMonth: 天
+  view.cron.oneTimeForMonth: 月执行一次
+  view.cron.everySecond: 每秒
+  view.cron.singleSecond: 秒
+  view.cron.perFromSecond: 秒开始，每
+  view.cron.oneTimeForSecond: 秒执行一次
+  view.cron.everyWeek: 每周
+  view.cron.singleWeek: 周
+  view.cron.certain: 第
+  view.cron.theWeek: 周的
+  view.cron.weekDay: 星期
+  view.cron.lastTheMonth: 本月最后一个
+  view.cron.monday: 星期一
+  view.cron.tuesday: 星期二
+  view.cron.wednesday: 星期三
+  view.cron.thursday: 星期四
+  view.cron.friday: 星期五
+  view.cron.saturday: 星期六
+  view.cron.sunday: 星期日
+  view.cron.everyWeek: 每年
+  view.cron.singleYear: 年
+
+hfnt.preposedMachine:
+  view.title.header: 前置机配置
+  view.title.createLine: 创建前置机
+  view.title.editLine: 修改前置机
+
+  model.preposedMachine.seqNumber: 序号
+  model.preposedMachine.groupCode: 前置机代码
+  model.preposedMachine.groupName: 前置机名称
+  model.preposedMachine.topicCode: 前置机地址
+  model.preposedMachine.status: 状态
+  model.preposedMachine.client: 客户端
+  model.preposedMachine.tenant: 租户
+  model.preposedMachine.remark: 备注
+
+  model.preposedMachine.saveValidate: 请先完善必输内容
+  model.preposedMachine.saveEmpty: 无修改内容,无需保存
+  model.status.new: 新建
+  model.status.online: 已上线
+  model.status.offline: 已断开
+  model.status.stop: 已停用
+
+  view.button.programList: 程序列表
+
+hfnt.scheduledTask:
+  view.title.header: 定时任务配置
+  view.title.createLine: 创建定时任务
+  view.title.editLine: 修改定时任务
+
+  model.scheduledTask.enable: 启用
+  model.scheduledTask.disable: 失效
+  model.scheduledTask.publish: 发布
+  model.scheduledTask.seqNumber: 序号
+  model.scheduledTask.machineCode: 前置机代码
+  model.scheduledTask.machineName: 前置机名称
+  model.scheduledTask.scheduledTaskCode: 定时任务编号
+  model.scheduledTask.scheduledTaskName: 定时任务名称
+  model.scheduledTask.type: 类型
+  model.scheduledTask.cron: cron表达式
+  model.scheduledTask.cronMeaning: cron表达式含义
+  model.scheduledTask.programName: 程序名称
+  model.scheduledTask.className: 类名
+  model.scheduledTask.methodName: 方法名
+  model.scheduledTask.param: 参数
+  model.scheduledTask.status: 状态
+
+  view.title.paramTitle: 参数维护
+  view.title.paramMaintain: 维护参数
+  view.title.paramView: 查看参数
+  model.scheduledTask.paramType: 参数类型
+  model.scheduledTask.paramName: 参数名称
+  model.scheduledTask.paramValue: 参数值
+
+  model.status.new: 新建
+  model.status.modefied: 修改中
+  model.status.published: 已发布
+  model.status.disabed: 已失效
+
+  model.scheduledTask.saveValidate: 请先完善必输内容
+  model.preposedMachine.saveEmpty: 无修改内容,无需保存
+    
+hfnt.frontalLogs:
+  model.frontalLogs.frontalCode: 前置机代码
+  model.frontalLogs.frontalName: 前置机名称
+  model.frontalLogs.className: 类名
+  model.frontalLogs.methodName: 方法名
+  model.frontalLogs.methodValue: 方法参数值
+  model.frontalLogs.creationDate: 创建日期
+  model.frontalLogs.cacheDate: 缓存日期
+  model.frontalLogs.sourceType: 数据类型
+  model.frontalLogs.cacheFolder: 缓存目录
+  model.frontalLogs.statusCode: 运行状态
+  model.frontalLogs.statusDesc: 运行状态描述
+  model.frontalLogs.tenantName: 租户名称
+  model.frontalLogs.errorStack: 错误堆栈
+  model.frontalLogs.translateError: 字段解析失败
+  view.title.header: 前置机程序执行日志
+
+hfnt.frontalManagement:
+  view.title.header: 前置机程序管理
+  view.table.column.issue: 下发
+  view.table.column.issueDetail: 下发详情
+  view.table.column.issueProgram: 程序下发
+  model.frontalManagement.tenant: 租户
+  model.frontalManagement.tenantName: 租户名称
+  model.frontalManagement.programCode: 程序编码
+  model.frontalManagement.programType: 程序类型
+  model.frontalManagement.programName: 程序名称
+  model.frontalManagement.programDesc: 程序说明
+  model.frontalManagement.creationDate: 上传日期
+  model.frontalManagement.issueDate: 下发日期
+  model.frontalManagement.status: 状态
+  model.frontalManagement.frontalStatus: 前置机状态
+  model.frontalManagement.upload: 上传
+  model.frontalManagement.frontalCode: 前置机代码
+  model.frontalManagement.frontalAddress: 前置机地址
+  model.frontalManagement.programCode.jar: jar包编码
+  model.frontalManagement.programCode.class: 短类名称
+  model.frontalManagement.errorStack: 异常堆栈
+
+  view.table.column.operator.loaded: 加载
+  view.table.column.operator.unload: 卸载

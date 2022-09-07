@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="Expires" content="0" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Cache-control" content="no-cache" />
+  <meta http-equiv="Cache" content="no-cache" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+
+  <!-- favicon -->
+  <link rel="shortcut icon" th:href="@{/static/main/img/favicon.png}" type="image/x-icon" />
+
+  <!-- title -->
+  <title th:if="${systemTitle}" th:text="'第三方账号绑定 | '+${systemTitle}"></title>
+  <title th:unless="${systemTitle}" th:text="'第三方账号绑定 | HZERO'"></title>
+
+
+  <link th:href="@{/static/main/css/bootstrap-3.3.7/css/bootstrap.min.css}" rel="stylesheet" />
+  <link th:href="@{/static/main/css/open-app-bind.css}" rel="stylesheet" />
+
+  <script th:src="@{/static/main/js/jquery.min.js}"></script>
+  <script th:src="@{/static/main/js/jquery.validate.min.js}"></script>
+  <script th:src="@{/static/main/js/jsencrypt.min.js}"></script>
+  <script th:src="@{/static/main/js/open-app-bind.js}"></script>
+
+  <!--/* use for template data */-->
+  <template id="templateData" data-linkToFindPwd="/oauth/public/main/password_find.html"
+    data-captchaGetUrl="/oauth/public/captcha"
+    th:attr="data-copyright=${copyright},data-logoSrc=${logoUrl},data-captchaMessage=${captchaMessage},data-captchaMessage=${captchaMessage},data-passwordMessage=${passwordMessage},data-userNameMessage=${userNameMessage},data-isNeedCaptcha=${isNeedCaptcha},data-loginErrorMsg=${loginErrorMsg},data-publicKey=${publicKey},data-accountEncrypt=${accountEncrypt},data-passwordEncrypt=${passwordEncrypt}">
+  </template>
+</head>
+
+<body class="open-app-bind">
+  <div id="app">
+    <div class="bind-container bind-layout">
+      <div class="bind-layout-content">
+        <div class="bind-tab">
+          <div class="bind-tabs">
+            <div class="bind-tabs-tab-content">
+              <div class="bind-tabs-tab-pane  bind-tab-pane bind-account">
+                <div class="logo">
+                  <a href="">
+                    <img height="32px" th:src="${logoUrl}?${logoUrl}:'/oauth/static/main/img/logo.png'" alt="HZERO" />
+                  </a>
+                </div>
+                <form id="bindFormAccount">
+                  <div class="bind-form">
+                    <div class="bind-form-item bind-form-item-with-help">
+                      <span class="bind-form-item-children">
+                        <div class="bind-form-explain" th:utext="${loginErrorMsg}"></div>
+                      </span>
+                    </div>
+                    <div class="bind-form-item">
+                      <span class="bind-form-item-children">
+                        <span class="bind-form-item-children-prefix">
+                          <div class="bind-input-content">
+                            <span class="bind-form-input-prefix">
+                              <i class="glyphicon glyphicon-user"></i>
+                            </span>
+                            <div class="form-group bind-form-item-children-input">
+                              <input name="username" id="username" type="text" class="form-control bind-form-input"
+                                th:value="${param.username != null ? param.username[0] : ''}"
+                                th:placeholder="${userNamePlaceholder}">
+                            </div>
+                          </div>
+                        </span>
+                      </span>
+                    </div>
+                    <div class="bind-form-item">
+                      <span class="bind-form-item-children">
+                        <span class="bind-form-item-children-prefix">
+                          <div class="bind-input-content">
+                            <span class="bind-form-input-prefix">
+                              <i class="glyphicon glyphicon-lock"></i>
+                            </span>
+                            <div class="form-group bind-form-item-children-input">
+                              <input name="password" id="password" type="password" class="form-control bind-form-input"
+                                th:placeholder="${passwordPlaceholder}">
+                              <span class="glyphicon glyphicon-eye-close look"></span>
+                            </div>
+                          </div>
+                        </span>
+                      </span>
+                    </div>
+                    <div class="bind-form-item" th:if="${isNeedCaptcha}">
+                      <span class="bind-form-item-children">
+                        <div class="bind-row">
+                          <div class="bind-col-12">
+                            <span class="bind-form-item-children-prefix">
+                              <div class="bind-input-content">
+                                <span class="bind-form-input-prefix">
+                                  <i class="glyphicon glyphicon-pencil"></i>
+                                </span>
+                                <div class="form-group bind-form-item-children-input">
+                                  <input name="captcha" id="captcha" type="text" class="form-control bind-form-input"
+                                    th:placeholder="${captchaPlaceholder}">
+                                </div>
+                              </div>
+                            </span>
+                          </div>
+                          <div class="bind-col-12">
+                            <a class="bind-account-captcha">
+                              <img class="bind-account-captcha-image" src="/oauth/public/captcha" alt="Captcha" />
+                            </a>
+                          </div>
+                        </div>
+                      </span>
+                    </div>
+                    <div class="bind-account-find-password bind-form-item">
+                      <span class="bind-form-item-children">
+                        <a th:text="${findPassword}" href="/oauth/public/main/password_find.html" target="_self">
+                        </a>
+                      </span>
+                    </div>
+                  </div>
+                  <div class="bind-form-item">
+                    <span class="bind-form-item-children">
+                      <button type="submit" class="btn btn-primary btn-raised bind-account-bind-btn" th:text="${bindButton}"></button>
+                    </span>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="footer" th:utext="${copyright}?${copyright}:'Copyright © The HZERO Author®.All rights reserved.'">
+      </div>
+    </div>
+  </div>
+  <div style="display: none">
+    <!--/* because thymeleaf don't let use access request */-->
+    <input id="login-hidden-defaultUserName" type="password"
+      th:value="${param.username != null ? param.username[0] : ''}">
+  </div>
+  <div class="bind-notification"></div>
+</body>
+
+</html>

@@ -1,0 +1,60 @@
+# hzero-国际化
+
+hivc.inspectionHistory:
+  model.inspectionHistory.billingDate: 开票时间
+  model.inspectionHistory.checkCode: 校验码
+  model.inspectionHistory.creationDate: 查验时间
+  model.inspectionHistory.errorMessage: 查验结果
+  model.inspectionHistory.failure: 失败
+  model.inspectionHistory.invoiceAmount: 不含税金额
+  model.inspectionHistory.invoiceCode: 发票代码
+  model.inspectionHistory.invoiceNo: 发票号码
+  model.inspectionHistory.success: 成功
+  model.inspectionHistory.tenantName: 租户
+  view.message.title: 发票查验历史
+hivc.invoiceDetail:
+  view.title.line: 发票详情
+hivc.manualInspection:
+  model.manualInspection.OCR: OCR发票查验
+  model.manualInspection.manual: 手工发票查验
+  model.manualInspection.BankAccount: 开户/账号
+  model.manualInspection.TaxpayerNumber: 纳税人识别号
+  model.manualInspection.amount: 金额
+  model.manualInspection.billingDate: 开票日期
+  model.manualInspection.billingDatePH: 请选择
+  model.manualInspection.checkCode: 校验码
+  model.manualInspection.checkCodePH: 请输入校验码后6位
+  model.manualInspection.count: 数量
+  model.manualInspection.deviceNumber: 机器编号
+  model.manualInspection.draweeAddPhone: 购方地址/电话
+  model.manualInspection.fee: 价税合计
+  model.manualInspection.goodsName: 商品/服务名称
+  model.manualInspection.identify: 识别并查验
+  model.manualInspection.invoiceAmount: 不含税金额
+  model.manualInspection.invoiceAmountPH: 请输入不含税金额
+  model.manualInspection.invoiceCode: 发票代码
+  model.manualInspection.invoiceCodePH: 请输入10或12或14位数字或字母
+  model.manualInspection.invoiceNo: 发票号码
+  model.manualInspection.invoiceNoPH: 请输入
+  model.manualInspection.invoiceTypeNo: 发票类型
+  model.manualInspection.model: 规格型号
+  model.manualInspection.payee: 销售方
+  model.manualInspection.payeeAddPhone: 销方地址/电话
+  model.manualInspection.remark: 备注
+  model.manualInspection.taxPrice: 税额
+  model.manualInspection.taxRate: 税率(%)
+  model.manualInspection.title: 购买方
+  model.manualInspection.unit: 单位
+  model.manualInspection.unitPrice: 单价
+  model.manualInspection.check: 识别并查验
+  validation.checkCode: 仅能包含数字且长度为6
+  validation.invoiceAmount: 仅且仅能包含数字和.
+  validation.invoiceCode: 10或12或14位数字或大小写字母
+  validation.invoiceNo: 仅能包含数字
+  view.message.title: 手工发票查验
+  view.message.title.edit: 手工发票查验
+  view.title.line: 发票详情
+hivc.ocrInspection:
+  model.ocrInspection.OCR: OCR识别并查验
+  view.message.title: OCR发票查验
+  view.message.title.edit: OCR发票查验

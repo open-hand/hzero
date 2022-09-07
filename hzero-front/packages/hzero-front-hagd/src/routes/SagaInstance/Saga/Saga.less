@@ -1,0 +1,236 @@
+.saga-instance-detail {
+  margin-top: 20px;
+  &-row {
+    line-height: 20px;
+    margin-bottom: 6px;
+  }
+  &-value {
+    color: rgba(0, 0, 0, 0.65);
+  }
+}
+
+.c7n-saga-instance {
+  .c7n-saga-expand-circle {
+    position: relative;
+    svg {
+      cursor: pointer;
+    }
+  }
+  .c7n-saga-expand-row {
+    div:nth-child(2) {
+      color: rgba(0, 0, 0, 0.65);
+    }
+    div:nth-child(4) {
+      color: rgba(0, 0, 0, 0.65);
+    }
+    &-divider {
+      border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+      margin-top: 24px;
+      color: rgba(0, 0, 0, 0.65);
+      margin-bottom: 10px;
+    }
+  }
+  &-status {
+    color: white;
+    padding: 2px 5px;
+    border-radius: 2px;
+    &.failed {
+      background: #f44336;
+    }
+    &.running {
+      background: #4d90fe;
+    }
+    &.completed {
+      background: #00bfa5;
+    }
+    &.queue {
+      background: #ffb100;
+    }
+  }
+  &-btns {
+    margin-bottom: 24px;
+    .text {
+      display: inline-block;
+      margin-right: 15px;
+    }
+    button:nth-child(2) {
+      border-radius: 2px 0 0 2px;
+    }
+    button:nth-child(3) {
+      border-radius: 0 2px 2px 0;
+    }
+    button.active {
+      background: rgba(140, 158, 255, 0.2);
+    }
+  }
+  &-sidebar {
+    &.ant-modal-sidebar .ant-modal-body {
+      height: calc(100% - 121px);
+    }
+  }
+  &-refid {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 150px;
+    overflow: hidden;
+  }
+  // 修改事务实例中列表的展开箭头
+  &-table {
+    tr.ant-table-expanded-row,
+    tr.ant-table-expanded-row:hover {
+      background: #fff;
+    }
+    .ant-table-row-expand-icon-cell {
+      position: relative;
+      padding: 5px 9px;
+      text-align: left;
+      &:after {
+        content: ' ';
+        position: absolute;
+        top: 20%;
+        right: 13px;
+        width: 0;
+        height: 60%;
+        border-right: 1px solid rgba(0, 0, 0, 0.12);
+      }
+      .ant-table-row-expand-icon {
+        width: 18px;
+        font-size: 18px;
+        &:before {
+          content: '\E5CF';
+        }
+      }
+    }
+  }
+}
+
+.c7n-saga-status-wrap {
+  display: flex;
+  > div {
+    > p {
+      margin-bottom: 24px;
+    }
+  }
+  .c7n-saga-status-content {
+    margin-left: auto;
+    display: flex;
+
+    .c7n-saga-status-wrap {
+      display: flex;
+    }
+
+    .c7n-saga-status-text {
+      padding-bottom: 10px;
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .c7n-saga-status-num {
+      cursor: pointer;
+      border-left: 4px solid;
+      padding: 0 32px 0 6px;
+    }
+
+    .c7n-saga-sync-wrap {
+      padding-right: 30px;
+    }
+
+    .c7n-saga-error-icon {
+      font-size: 32px;
+      color: #f44336;
+    }
+
+    .c7n-saga-sync-icon i {
+      font-size: 32px;
+      color: #3f51b5;
+      animation: ant-progress-rotate 1.4s linear infinite;
+    }
+  }
+}
+
+.c7n-saga-status {
+  &-completed {
+    border-left-color: #00bfa5 !important;
+  }
+  &-running {
+    border-left-color: #4d90fe !important;
+  }
+  &-stopped {
+    border-left-color: #cecece !important;
+  }
+  &-failed {
+    border-left-color: #f44336 !important;
+  }
+}
+
+.c7n-space-first {
+  margin-top: 0 !important;
+}
+
+.c7n-external-link-content {
+  color: #3f51b5 !important;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.c7n-external-link-content + span {
+  font-size: 13px;
+}
+
+.c7n-saga-circle {
+  fill: none;
+  stroke: #00bfa5;
+  stroke-width: 5px;
+  transform: rotate(-90deg);
+  transform-origin: center;
+}
+.c7n-saga-circle-running {
+  fill: none;
+  stroke: #4d90fe;
+  stroke-width: 5px;
+  transform: rotate(-90deg);
+  transform-origin: center;
+}
+.c7n-saga-circle-queue {
+  fill: none;
+  stroke: #ffb100;
+  stroke-width: 5px;
+  transform: rotate(-90deg);
+  transform-origin: center;
+}
+.c7n-saga-circle-error {
+  fill: none;
+}
+.c7n-saga-circle-num {
+  text-anchor: middle;
+  font-size: 18px;
+}
+.c7n-saga-circle-text {
+  text-anchor: middle;
+  font-size: 12px;
+  fill: rgba(0, 0, 0, 0.65);
+  line-height: 12px;
+}
+
+.c7n-saga-spot {
+  display: inline-block;
+  margin-right: 9px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  &-error {
+    background: #f44336;
+  }
+  &-completed {
+    background: #00bfa5;
+  }
+  &-running {
+    background: #4d90fe;
+  }
+  &-queue {
+    background: #ffb100;
+  }
+}
+.c7n-iam-link-icon {
+  font-size: 13px;
+}

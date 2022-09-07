@@ -1,0 +1,43 @@
+.buttonContainer {
+  text-align: right;
+  button {
+    margin-left: 8px;
+    margin-bottom: 8px;
+  }
+}
+
+.log-view-wrap {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 1.7rem);
+  .log-view-search {
+    height: 75px;
+    .log-view-btn-search {
+      margin-top: 11px;
+      margin-left: 8px;
+    }
+  }
+  .log-view-content {
+    flex: 1;
+    overflow: auto;
+    padding: 0.24rem;
+    border: 0.01rem solid #e8e8e8;
+    .log-view-item {
+      margin-bottom: 5px;
+      white-space: nowrap;
+    }
+    .log-view-no-data {
+      color: gray;
+      text-align: center;
+      margin-top: 30px;
+    }
+  }
+}
+
+.log-view-content-btns {
+  float: right;
+  margin-bottom: 8px;
+  .log-vie-btn-item {
+    margin-left: 8px;
+  }
+}

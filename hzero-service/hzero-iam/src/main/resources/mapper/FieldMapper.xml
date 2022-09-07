@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.iam.infra.mapper.FieldMapper">
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap id="BaseResultMap" type="org.hzero.iam.domain.entity.Field">
+        <result column="field_id" property="fieldId" jdbcType="DECIMAL"/>
+        <result column="permission_id" property="permissionId" jdbcType="DECIMAL"/>
+        <result column="field_name" property="fieldName" jdbcType="VARCHAR"/>
+        <result column="field_type" property="fieldType" jdbcType="VARCHAR"/>
+        <result column="field_description" property="fieldDescription" jdbcType="VARCHAR"/>
+        <result column="order_seq" property="orderSeq" jdbcType="DECIMAL"/>
+        <result column="object_version_number" property="objectVersionNumber" jdbcType="DECIMAL"/>
+        <result column="creation_date" property="creationDate" jdbcType="DATE"/>
+        <result column="created_by" property="createdBy" jdbcType="DECIMAL"/>
+        <result column="last_updated_by" property="lastUpdatedBy" jdbcType="DECIMAL"/>
+        <result column="last_update_date" property="lastUpdateDate" jdbcType="DATE"/>
+    </resultMap>
+    <select id="listField" resultType="org.hzero.iam.domain.entity.Field">
+        SELECT
+            field_id,
+            permission_id,
+            field_name,
+            field_type,
+            field_description,
+            order_seq,
+            object_version_number
+        FROM hiam_field
+        WHERE
+            permission_id = #{permissionId}
+            <if test="fieldName != null and fieldName != ''">
+                <bind name = "fieldNameLike" value = "'%' + fieldName + '%'" />
+                AND field_name LIKE #{fieldNameLike}
+            </if>
+            <if test="fieldType != null and fieldType != ''">
+                AND field_type = #{fieldType}
+            </if>
+            <if test="fieldDescription != null and fieldDescription != ''">
+                <bind name = "fieldDescriptionLike" value = "'%' + fieldDescription + '%'" />
+                AND field_description LIKE #{fieldDescriptionLike}
+            </if>
+    </select>
+    <select id="queryField" resultType="org.hzero.iam.domain.entity.Field">
+        SELECT
+            ip.id,
+            ip.code as code,
+            ip.path as path,
+            ip.method as method,
+            ip.service_name,
+            hf.field_name,
+            hf.field_id
+        FROM hiam_field hf
+        JOIN iam_permission ip ON hf.permission_id = ip.id
+        WHERE hf.field_id = #{fieldId}
+    </select>
+    <select id="listFieldByPrimaryKeys" resultType="org.hzero.iam.domain.entity.Field">
+        SELECT
+            ip.id,
+            ip.code as code,
+            ip.path as path,
+            ip.method as method,
+            ip.service_name,
+            hf.field_name,
+            hf.field_id
+        FROM hiam_field hf
+        JOIN iam_permission ip ON hf.permission_id = ip.id
+        WHERE hf.field_id IN
+        <foreach collection="fieldIds" item="fieldId" index="fieldId" open="(" close=")" separator=",">
+            #{fieldId}
+        </foreach>
+    </select>
+
+    <select id="listSecGrpAssignableField" resultType="org.hzero.iam.domain.entity.Field">
+        SELECT
+        hf.field_id,
+        hf.permission_id,
+        hf.field_name,
+        hf.field_type,
+        hf.field_description,
+        hf.order_seq,
+        hf.object_version_number
+        FROM
+        hiam_field hf
+        WHERE
+        permission_id = #{permissionId}
+        <if test="fieldName != null and fieldName != ''">
+            <bind name = "fieldNameLike" value = "'%' + fieldName + '%'" />
+            AND field_name LIKE #{fieldNameLike}
+        </if>
+        <if test="fieldType != null and fieldType != ''">
+            AND field_type = #{fieldType}
+        </if>
+        <if test="fieldDescription != null and fieldDescription != ''">
+            <bind name = "fieldDescriptionLike" value = "'%' + fieldDescription + '%'" />
+            AND field_description LIKE #{fieldDescriptionLike}
+        </if>
+        AND NOT EXISTS (
+        SELECT
+        1
+        FROM
+        hiam_sec_grp_acl_field hsgaf
+        WHERE hsgaf.field_id = hf.field_id
+        AND hsgaf.sec_grp_id = #{secGrpId}
+        )
+
+    </select>
+</mapper>

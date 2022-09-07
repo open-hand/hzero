@@ -1,0 +1,7 @@
+{
+  "package": {
+    "initLoad": false,
+    "indexRouter": "/hdtt/producer-config",
+    "registerRegex": "(\\/(private|public|pub))?\\/hdtt\\/"
+  }
+}

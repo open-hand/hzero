@@ -1,0 +1,198 @@
+.home {
+  height: 100%;
+
+  :global {
+    .ant-spin-nested-loading {
+      height: 100%;
+
+      .ant-spin-container {
+        height: 100%;
+
+        .page-content-wrap {
+          height: 100%;
+        }
+      }
+    }
+  }
+}
+
+.market-home-page {
+  position: relative;
+  padding-top: 100px;
+  text-align: center;
+  z-index: 3;
+
+  .logo-wrap {
+    margin: 0 0 24px -45px;
+
+    img {
+      height: 44px;
+      width: 177px;
+    }
+  }
+
+  h1 {
+    font-size: 24px;
+    margin-bottom: 24px;
+  }
+
+  h2 {
+    margin-bottom: 22px;
+  }
+
+  .btn-wrap {
+    margin-top: 42px;
+
+    & > button:first-child {
+      margin-right: 12px;
+    }
+  }
+
+  p {
+    line-height: 3;
+  }
+}
+
+.home-background {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 208px;
+  overflow: hidden;
+
+  img {
+    height: 100%;
+    width: 100%;
+  }
+}
+
+.wrapper {
+  padding: 16px;
+  height: 100%;
+
+  .empty {
+    width: 12px;
+  }
+
+  .card-left {
+    background-color: #fff;
+    box-shadow: 0 2px 4px 0 rgba(30, 50, 85, 0.1);
+    border-radius: 4px;
+  }
+
+  .card-right {
+    margin-left: 12px;
+    background-color: #fff;
+    box-shadow: 0 2px 4px 0 rgba(30, 50, 85, 0.1);
+    border-radius: 4px;
+  }
+
+  .logo {
+    padding: 27px 20px;
+    display: flex;
+    align-items: center;
+
+    .line {
+      display: inline-block;
+      background: #d2d2d2;
+      width: 1px;
+      height: 35px;
+      margin-left: 10px;
+      margin-right: 10px;
+    }
+
+    .description {
+      font-size: 12px;
+      color: #9b9b9b;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+  }
+
+  .login {
+    height: 94px;
+    padding: 18px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    .sign {
+      display: flex;
+
+      .avatar {
+        width: 58px;
+        height: 58px;
+        border-radius: 50%;
+      }
+
+      .content {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        padding: 5px 20px;
+
+        .operation {
+          font-size: 16px;
+          color: #1e223a;
+        }
+
+        .description {
+          font-size: 14px;
+          color: #6e6e73;
+        }
+      }
+    }
+
+    .out {
+      width: 16px;
+      height: 16px;
+      cursor: pointer;
+      background-image: url('../../../assets/market/signout.svg');
+
+      &:hover {
+        background-image: url('../../../assets/market/signout-hover.svg');
+      }
+    }
+  }
+
+  .notification {
+    margin-top: 12px;
+    flex: 1;
+  }
+
+  .main-card {
+    background-color: #f4f5f7;
+
+    > div:not(:last-child) {
+      margin-bottom: 12px;
+    }
+
+    .service-info {
+      margin: 5px 0 10px 10px;
+      font-size: 13px;
+      color: #666;
+      line-height: 14px;
+      border-bottom: none !important;
+    }
+  }
+
+  :global {
+    .ant-row {
+      height: 100%;
+
+      .ant-col-16 {
+        > div {
+          margin-bottom: 12px;
+        }
+      }
+
+      .ant-col-8 {
+        height: 726px;
+        display: flex;
+        flex-direction: column;
+      }
+    }
+  }
+}

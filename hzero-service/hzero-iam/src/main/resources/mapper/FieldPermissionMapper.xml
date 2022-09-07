@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.iam.infra.mapper.FieldPermissionMapper">
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap id="BaseResultMap" type="org.hzero.iam.domain.entity.FieldPermission">
+        <result column="field_permission_id" property="fieldPermissionId" jdbcType="DECIMAL"/>
+        <result column="permission_dimension" property="permissionDimension" jdbcType="VARCHAR"/>
+        <result column="dimension_value" property="dimensionValue" jdbcType="DECIMAL"/>
+        <result column="field_id" property="fieldId" jdbcType="DECIMAL"/>
+        <result column="permission_type" property="permissionType" jdbcType="VARCHAR"/>
+        <result column="permission_rule" property="permissionRule" jdbcType="VARCHAR"/>
+        <result column="object_version_number" property="objectVersionNumber" jdbcType="DECIMAL"/>
+        <result column="creation_date" property="creationDate" jdbcType="DATE"/>
+        <result column="created_by" property="createdBy" jdbcType="DECIMAL"/>
+        <result column="last_updated_by" property="lastUpdatedBy" jdbcType="DECIMAL"/>
+        <result column="last_update_date" property="lastUpdateDate" jdbcType="DATE"/>
+    </resultMap>
+    <update id="updateSecGrpPermission">
+        <bind name="now" value="@java.time.LocalDateTime@now()" />
+        <bind name="lastUpdatedBy" value="@org.hzero.iam.infra.common.utils.UserUtils@getCurrentUserId()"/>
+        update hiam_field_permission set
+            data_source = #{dataSourceValue},
+            last_updated_by = #{lastUpdatedBy},
+            last_update_date = #{now}
+        where permission_dimension = #{dimension}
+        and dimension_value = #{userId}
+        and tenant_id = #{tenantId}
+        and data_source = #{dataSource}
+        <foreach collection="fieldIds" index="index" item="item" open="and field_id in (" separator="," close=")">
+            #{item}
+        </foreach>
+    </update>
+    <delete id="deleteSecGrpPermission">
+        delete from hiam_field_permission
+        where permission_dimension = #{dimension}
+        and dimension_value = #{userId}
+        and tenant_id = #{tenantId}
+        and data_source = #{dataSource}
+        <foreach collection="fieldIds" index="index" item="item" open="and field_id in (" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+    <select id="listPermission" resultType="org.hzero.iam.domain.entity.FieldPermission">
+        SELECT
+               hfp.field_permission_id,
+               hfp.permission_dimension,
+               hfp.dimension_value,
+               hfp.field_id,
+               hfp.permission_type,
+               hfp.permission_rule,
+               hfp.tenant_id,
+               hfp.object_version_number,
+               hf.field_name,
+               hf.field_type,
+               hf.field_description
+          FROM hiam_field_permission hfp
+          JOIN hiam_field hf ON hf.field_id = hfp.field_id
+               AND hf.permission_id = #{permissionId}
+               <if test="fieldDescription != null and fieldDescription != ''">
+                   <bind name="fieldDescriptionLike" value="'%' + fieldDescription + '%'"/>
+                   AND hf.field_description LIKE #{fieldDescriptionLike}
+               </if>
+         WHERE hfp.tenant_id = #{tenantId}
+           AND hfp.permission_dimension = #{permissionDimension}
+           AND hfp.dimension_value = #{dimensionValue}
+           AND hfp.data_source LIKE '%DEFAULT%'
+           <if test="permissionType != null and permissionType != ''">
+               AND hfp.permission_type = #{permissionType}
+           </if>
+    </select>
+    <select id="listAll" resultType="org.hzero.iam.domain.entity.FieldPermission">
+        SELECT
+               hfp.field_permission_id,
+               hfp.permission_dimension,
+               hfp.dimension_value,
+               hfp.field_id,
+               hfp.permission_type,
+               hfp.permission_rule,
+               hfp.tenant_id,
+               hfp.object_version_number,
+               hf.field_name,
+               hf.field_type,
+               ip.service_name,
+               ip.method as method,
+               ip.path as path
+          FROM hiam_field_permission hfp
+          JOIN hiam_field hf ON hf.field_id = hfp.field_id
+          JOIN iam_permission ip ON ip.id = hf.permission_id
+    </select>
+    <select id="listSecGrpPermission" resultType="org.hzero.iam.domain.entity.FieldPermission">
+        select
+            *
+        from hiam_field_permission
+        where tenant_id = #{tenantId}
+        and dimension_value = #{userId}
+        and permission_dimension = #{dimension}
+        <foreach collection="fieldIds" index="index" item="item" open="and field_id in (" separator="," close=")">
+            #{item}
+        </foreach>
+        <foreach collection="dataSources" index="index" item="item" open="and data_source in (" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+</mapper>

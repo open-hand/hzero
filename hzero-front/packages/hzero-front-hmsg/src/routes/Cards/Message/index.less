@@ -1,0 +1,85 @@
+.notice {
+  height: 100%;
+  .notice-overflow {
+    padding-top: 10px;
+    .box-hidden;
+  }
+  .notice-overflow:hover {
+    padding-top: 10px;
+    .box-auto;
+  }
+}
+.message {
+  .message-overflow {
+    padding: 15px 12px 10px 24px;
+    .box-hidden;
+  }
+  .message-overflow:hover {
+    padding: 15px 12px 10px 24px;
+    .box-auto;
+  }
+}
+.notification {
+  .notification-overflow {
+    padding: 15px 12px 10px 24px;
+    .box-hidden;
+  }
+  .notification-overflow:hover {
+    padding: 15px 12px 10px 24px;
+    .box-auto;
+  }
+}
+.tab-right {
+  padding: 13px 24px 0 0;
+}
+.tab-right-content {
+  font-size: 12px;
+  line-height: 22px;
+}
+.tab-icon-padding {
+  padding-left: 3px;
+}
+.tab-a {
+  margin-left: 16px;
+}
+.box-hidden {
+  height: 100%;
+  overflow-y: hidden;
+}
+.box-auto {
+  height: 100%;
+  overflow-y: auto;
+}
+.height {
+  height: 100%;
+  :global {
+    .ant-tabs-tab {
+      padding: 13px 24px !important;
+    }
+    .ant-tabs-bar {
+      margin: 0;
+    }
+    .ant-tabs-content {
+      height: ~'calc(100% - 48px)';
+    }
+    .ant-tabs-tabpane {
+      height: 100%;
+    }
+    .ant-timeline-item {
+      padding: 0;
+    }
+    .ant-timeline-item-tail {
+      z-index: -1;
+      height: 90% !important;
+      top: 50% !important;
+    }
+    .ant-timeline.ant-timeline.ant-timeline
+      .ant-timeline-item.ant-timeline-item-last
+      .ant-timeline-item-tail {
+      display: none;
+    }
+    .ant-timeline-item-head {
+      margin-top: 6px;
+    }
+  }
+}

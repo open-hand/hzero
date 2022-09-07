@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.message.infra.mapper.NoticeMapper">
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap id="BaseResultMap" type="org.hzero.message.domain.entity.Notice">
+        <result column="notice_id" property="noticeId" jdbcType="DECIMAL"/>
+        <result column="lang" property="lang" jdbcType="VARCHAR"/>
+        <result column="title" property="title" jdbcType="VARCHAR"/>
+        <result column="receiver_type_code" property="receiverTypeCode" jdbcType="VARCHAR"/>
+        <result column="notice_category_code" property="noticeCategoryCode" jdbcType="VARCHAR"/>
+        <result column="notice_type_code" property="noticeTypeCode" jdbcType="VARCHAR"/>
+        <result column="start_date" property="startDate" jdbcType="TIMESTAMP"/>
+        <result column="end_date" property="endDate" jdbcType="TIMESTAMP"/>
+        <result column="tenant_id" property="tenantId" jdbcType="DECIMAL"/>
+        <result column="status_code" property="statusCode" jdbcType="VARCHAR"/>
+        <result column="published_date" property="publishedDate" jdbcType="TIMESTAMP"/>
+        <result column="published_by" property="publishedBy" jdbcType="DECIMAL"/>
+        <result column="attachment_uuid" property="attachmentUuid" jdbcType="VARCHAR"/>
+        <result column="object_version_number" property="objectVersionNumber" jdbcType="DECIMAL"/>
+        <result column="creation_date" property="creationDate" jdbcType="TIMESTAMP"/>
+        <result column="created_by" property="createdBy" jdbcType="DECIMAL"/>
+        <result column="last_updated_by" property="lastUpdatedBy" jdbcType="DECIMAL"/>
+        <result column="last_update_date" property="lastUpdateDate" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <!-- 查询公告 -->
+    <select id="selectNotice" resultType="org.hzero.message.api.dto.NoticeDTO">
+        SELECT
+            hn.notice_id,
+            hn.lang,
+            hn.title,
+            <if test="noticeBody != null and noticeBody != ''">
+                hnc.notice_body,
+            </if>
+            hn.receiver_type_code,
+            hn.notice_category_code,
+            hn.notice_type_code,
+            hn.start_date,
+            hn.end_date,
+            hn.tenant_id,
+            hn.status_code,
+            hn.object_version_number,
+            hn.creation_date,
+            hn.attachment_uuid,
+            hn.published_date,
+            hn.published_by,
+            hn.published_by "temp_published_by"
+        FROM hmsg_notice hn
+        <if test="noticeBody != null and noticeBody != ''">
+            JOIN hmsg_notice_content hnc ON hn.notice_id = hnc.notice_id
+        </if>
+        WHERE 1 = 1
+        <if test="tenantId != null and userNotice == 'true'">
+            AND hn.tenant_id in (0,#{tenantId})
+        </if>
+        <if test="tenantId != null and userNotice != 'true'">
+            AND hn.tenant_id = #{tenantId}
+        </if>
+        <if test="statusCode != null and statusCode != ''">
+            AND hn.status_code = #{statusCode}
+        </if>
+        <if test="receiverTypeCode != null and receiverTypeCode != ''">
+            AND hn.receiver_type_code = #{receiverTypeCode}
+        </if>
+        <if test="noticeCategoryCode != null and noticeCategoryCode != ''">
+            AND hn.notice_category_code = #{noticeCategoryCode}
+        </if>
+        <if test="noticeTypeCode != null and noticeTypeCode != ''">
+            AND hn.notice_type_code = #{noticeTypeCode}
+        </if>
+        <if test="containsDeletedDataFlag == null or (containsDeletedDataFlag != null and containsDeletedDataFlag != 1)">
+            AND hn.status_code != 'DELETED'
+        </if>
+        <if test="publishedDateFrom != null">
+            AND hn.published_date &gt;= #{publishedDateFrom}
+        </if>
+        <if test="publishedDateTo != null">
+            AND hn.published_date &lt; #{publishedDateTo}
+        </if>
+        <if test="fromDate != null">
+            AND hn.creation_date &gt;= #{fromDate}
+        </if>
+        <if test="toDate != null">
+            AND hn.creation_date &lt; #{toDate}
+        </if>
+        <if test="title != null and title != ''">
+            <bind name="titleLike" value="'%' + title + '%'" />
+            AND hn.title LIKE #{titleLike}
+        </if>
+        <if test="subject != null and subject != ''">
+            <bind name="subjectLike" value="'%' + subject + '%'" />
+            AND hn.title like #{subjectLike}
+        </if>
+        <if test="noticeBody != null and noticeBody != ''">
+            <bind name="noticeBodyLike" value="'%' + noticeBody + '%'" />
+            AND hnc.notice_body LIKE #{noticeBodyLike}
+        </if>
+    </select>
+
+    <select id="listUserAnnouncement" resultType="org.hzero.message.api.dto.NoticeDTO">
+        SELECT
+            hn.notice_id,
+            hn.title,
+            hn.receiver_type_code,
+            hn.notice_category_code,
+            hn.notice_type_code,
+            hn.start_date,
+            hn.end_date,
+            hn.sticky_flag,
+            hn.tenant_id,
+            hn.status_code,
+            hn.object_version_number,
+            hn.creation_date,
+            hn.attachment_uuid,
+            hn.published_date,
+            hn.published_by,
+            hn.published_by "temp_published_by"
+        FROM
+            hmsg_notice hn
+        WHERE
+            hn.receiver_type_code = 'ANNOUNCE'
+        AND hn.status_code = 'PUBLISHED'
+        AND EXISTS (
+        SELECT
+            1
+        FROM
+            hmsg_notice_receiver hnr
+            JOIN hmsg_notice_published np ON hnr.published_id = np.published_id
+        WHERE
+            np.notice_id = hn.notice_id
+        AND (
+            hnr.receiver_type_code = 'ALL'
+            OR ( hnr.receiver_type_code = 'TENANT' AND hnr.receiver_source_id = #{tenantId} )
+            OR (
+            hnr.receiver_type_code = 'UNIT'
+            AND hnr.receiver_source_id IN (
+        SELECT
+            hea.unit_id
+        FROM
+            hpfm_employee_assign hea
+            JOIN hpfm_employee_user heu ON hea.employee_id = heu.employee_id
+        WHERE
+            heu.user_id = #{userId}
+            AND heu.tenant_id = #{tenantId}
+            )
+            )
+            OR (
+            hnr.receiver_type_code = 'ROLE'
+            AND hnr.receiver_source_id IN (
+        SELECT
+            ir.id
+        FROM
+            iam_role ir
+            JOIN iam_member_role imr ON imr.role_id = ir.id
+            JOIN iam_user iu ON iu.id = imr.member_id
+            AND imr.member_type = 'user'
+        WHERE
+            iu.id = #{userId}
+            AND ir.h_tenant_id = #{tenantId}
+        )
+        )
+        )
+        )
+        <if test="stickyFlag != null">
+            AND hn.sticky_flag = #{stickyFlag}
+        </if>
+        <if test="tenantId != null">
+            AND hn.tenant_id IN (0,#{tenantId})
+        </if>
+        <if test="fromDate != null">
+            AND hn.published_date &gt;= #{fromDate}
+        </if>
+        <if test="toDate != null">
+            AND hn.published_date &lt; #{toDate}
+        </if>
+        <if test="subject != null and subject != ''">
+            <bind name="subjectLike" value="'%' + subject + '%'" />
+            AND hn.title like #{subjectLike}
+        </if>
+        <if test="title != null and title != ''">
+            <bind name="titleLike" value="'%' + title + '%'" />
+            AND hn.title like #{titleLike}
+        </if>
+    </select>
+
+    <!-- 根据公告类别查询标题简要 -->
+    <select id="selectNoticeTitle" parameterType="map" resultType="org.hzero.message.api.dto.NoticeDTO">
+        SELECT
+            hn.notice_id,
+            hn.lang,
+            hn.title,
+            hn.notice_type_code,
+            case
+              when hn.published_date > hn.start_date then hn.published_date
+              else hn.start_date
+            end published_date,
+            hn.published_by,
+            hn.published_by "temp_published_by"
+        FROM hmsg_notice hn
+        WHERE hn.tenant_id = #{tenantId}
+        AND hn.status_code = 'PUBLISHED'
+        AND hn.lang = #{lang}
+        AND hn.notice_category_code = #{noticeCategoryCode}
+        AND hn.start_date &lt;= #{now}
+        AND hn.published_date &lt;= #{now}
+        AND (hn.end_date IS NULL OR hn.end_date >= #{now})
+        <if test="title != null and title != ''">
+            <bind name="titleLike" value="'%' + title + '%'" />
+            AND hn.title like #{titleLike}
+        </if>
+        ORDER BY hn.published_date DESC
+    </select>
+
+    <!-- 根据公告类别查询标题简要 -->
+    <select id="selectNoticeBody" resultType="org.hzero.message.api.dto.NoticeDTO">
+        SELECT
+            hn.notice_id,
+            hn.lang,
+            hn.title,
+            case
+              when hn.published_date > hn.start_date then hn.published_date
+              else hn.start_date
+            end published_date,
+            hn.published_by,
+            hn.attachment_uuid,
+            hnc.notice_body
+        FROM hmsg_notice hn
+        JOIN hmsg_notice_content hnc ON hn.notice_id = hnc.notice_id
+        WHERE hn.notice_id = #{noticeId}
+        <if test="tenantId != null">
+             AND hn.tenant_id in (0,#{tenantId})
+        </if>
+    </select>
+
+    <select id="selectNoticeById" resultType="org.hzero.message.api.dto.NoticeDTO">
+        SELECT
+            hn.notice_id,
+            hn.title,
+            hnc.notice_body,
+            hn.receiver_type_code,
+            hn.notice_category_code,
+            hn.notice_type_code,
+            hn.start_date,
+            hn.end_date,
+            hn.tenant_id,
+            hn.status_code,
+            hn.object_version_number,
+            hn.creation_date,
+            hn.attachment_uuid,
+            hn.published_date,
+            hn.published_by,
+            hn.published_by "temp_published_by"
+        FROM
+            hmsg_notice hn
+            LEFT JOIN hmsg_notice_content hnc on hn.notice_id = hnc.notice_id
+        WHERE
+            hn.notice_id = #{noticeId}
+        <if test="tenantId != null">
+            AND hn.tenant_id in (0,#{tenantId})
+        </if>
+     </select>
+</mapper>

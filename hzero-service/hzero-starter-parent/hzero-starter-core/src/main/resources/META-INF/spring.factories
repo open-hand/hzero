@@ -1,0 +1,23 @@
+# AutoConfigurations
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+io.choerodon.core.ChoerodonCoreAutoConfiguration,\
+io.choerodon.resource.ResourceServerConfig,\
+io.choerodon.swagger.SwaggerConfig,\
+io.choerodon.swagger.ExtraDataConfig,\
+org.hzero.core.HZeroAutoConfiguration,\
+org.hzero.core.convert.config.ConvertWebMvcConfigurer,\
+org.hzero.core.jackson.config.ObjectMapperConfiguration,\
+org.hzero.core.hystrix.HystrixRequestAttributeAutoConfiguration,\
+org.hzero.core.CustomUndertowCustomizerAutoConfiguration,\
+org.hzero.core.modular.ModularAutoConfiguration,\
+org.hzero.actuator.ActuatorAutoConfiguration,\
+org.hzero.common.CommonAutoConfiguration,\
+org.hzero.core.endpoint.DefaultHttpTransporterAutoConfiguration
+
+# FailureAnalyzers
+org.springframework.boot.diagnostics.FailureAnalyzer=\
+org.hzero.core.analysis.StartedFailureAnalyzer
+
+# FailureAnalysisReporters
+org.springframework.boot.diagnostics.FailureAnalysisReporter=\
+org.hzero.core.analysis.Slf4jFailureAnalysisReporter

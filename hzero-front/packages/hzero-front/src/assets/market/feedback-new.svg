@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="30px" height="99px" viewBox="0 0 30 99" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 59 (86127) - https://sketch.com -->
+    <title>floating/feedback</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <filter x="-54.5%" y="-44.4%" width="209.1%" height="188.9%" filterUnits="objectBoundingBox" id="filter-1">
+            <feOffset dx="0" dy="2" in="SourceAlpha" result="shadowOffsetOuter1"></feOffset>
+            <feGaussianBlur stdDeviation="2" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur>
+            <feColorMatrix values="0 0 0 0 0.309803922   0 0 0 0 0.490196078   0 0 0 0 0.905882353  0 0 0 1 0" type="matrix" in="shadowBlurOuter1" result="shadowMatrixOuter1"></feColorMatrix>
+            <feMerge>
+                <feMergeNode in="shadowMatrixOuter1"></feMergeNode>
+                <feMergeNode in="SourceGraphic"></feMergeNode>
+            </feMerge>
+        </filter>
+        <linearGradient x1="50%" y1="34.3438556%" x2="50%" y2="122.644907%" id="linearGradient-2">
+            <stop stop-color="#FFFFFF" offset="0%"></stop>
+            <stop stop-color="#4C80DF" offset="100%"></stop>
+        </linearGradient>
+        <linearGradient x1="34.6720374%" y1="-31.7126703%" x2="68.9641849%" y2="123.690494%" id="linearGradient-3">
+            <stop stop-color="#FFFFFF" offset="0%"></stop>
+            <stop stop-color="#4C80DF" offset="100%"></stop>
+        </linearGradient>
+        <linearGradient x1="60.1892132%" y1="34.5311387%" x2="64.2664007%" y2="123.789962%" id="linearGradient-4">
+            <stop stop-color="#FFFFFF" offset="0%"></stop>
+            <stop stop-color="#4C80DF" offset="100%"></stop>
+        </linearGradient>
+        <linearGradient x1="50%" y1="4.74343622%" x2="50%" y2="122.644907%" id="linearGradient-5">
+            <stop stop-color="#FFFFFF" offset="0%"></stop>
+            <stop stop-color="#5284E0" offset="89.0054287%"></stop>
+            <stop stop-color="#5183E0" offset="89.4715164%"></stop>
+            <stop stop-color="#4C80DF" offset="100%"></stop>
+        </linearGradient>
+        <linearGradient x1="50%" y1="43.5648575%" x2="50%" y2="156.13327%" id="linearGradient-6">
+            <stop stop-color="#FFFFFF" offset="0%"></stop>
+            <stop stop-color="#4C80DF" offset="100%"></stop>
+        </linearGradient>
+        <linearGradient x1="19.0492492%" y1="19.8150207%" x2="155.038674%" y2="150.958961%" id="linearGradient-7">
+            <stop stop-color="#FFFFFF" offset="0%"></stop>
+            <stop stop-color="#4C80DF" offset="100%"></stop>
+        </linearGradient>
+        <linearGradient x1="34.130695%" y1="5.54875245%" x2="99.5402585%" y2="60.4578093%" id="linearGradient-8">
+            <stop stop-color="#FFFFFF" offset="0%"></stop>
+            <stop stop-color="#4C80DF" offset="100%"></stop>
+        </linearGradient>
+        <linearGradient x1="19.0492492%" y1="35.2074284%" x2="146.621005%" y2="53.4801699%" id="linearGradient-9">
+            <stop stop-color="#FFFFFF" offset="0%"></stop>
+            <stop stop-color="#4C80DF" offset="100%"></stop>
+        </linearGradient>
+    </defs>
+    <g id="试用流程引导" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="floating/feedback" transform="translate(4.000000, 2.000000)">
+            <g id="编组-8">
+                <path d="M2,14 L22,14 L22,94 C22,95.1045695 21.1045695,96 20,96 L4,96 C2.8954305,96 2,95.1045695 2,94 L2,14 L2,14 Z" id="矩形" stroke="#B8D7FF" fill="#EFF6FF"></path>
+                <g id="mailbox" filter="url(#filter-1)" fill-rule="nonzero">
+                    <polygon id="Shape" fill="url(#linearGradient-2)" points="9.38661574 15.1702222 7.22058333 13.9196343 7.22058333 24.8234861 9.38661574 26.0740741 11.5526991 24.8234861 11.5526991 13.9196343"></polygon>
+                    <polygon id="Shape" fill="#0D4FC8" points="9.38661574 26.0740741 11.5526991 24.8234861 11.5526991 13.9196343 9.38661574 15.1702222"></polygon>
+                    <path d="M15.8099537,0 L15.0125046,0.46037037 L15.0125046,1.62718519 C15.0125046,2.4610463 15.4147685,3.243625 16.0928472,3.72894907 L18.0716759,5.14530093 L18.0716759,10.1099167 L18.9731157,10.5357593 L19.7620093,10.5357593 L19.7685787,2.28550463 L15.8099537,0 Z" id="Shape" fill="url(#linearGradient-3)"></path>
+                    <polygon id="Shape" fill="url(#linearGradient-4)" points="15.0124537 0.460421296 15.8099537 0 19.7685787 2.28550463 19.7619583 10.5358102 18.9731157 10.5358102 18.9731157 2.74480556"></polygon>
+                    <polygon id="Shape" fill="#CEDDF7" points="19.7685787 2.28550463 18.9731157 2.74480556 15.0124537 0.460421296 15.8099537 0"></polygon>
+                    <path d="M20.7093333,8.68134259 L20.7093333,8.68134259 L6.44284259,0.421361111 C5.81889815,0.0324398148 4.99308333,0.0530648148 4.08731481,0.575972222 L3.56216667,0.879185185 C1.61735648,2.00205093 0.0408425926,5.01431944 0.0408425926,7.60736574 L0.0408425926,13.9272731 L14.3913611,22.2363472 L21.9591574,17.8670556 L21.9591574,11.5471481 C21.9591574,10.1083889 21.4736296,9.1013287 20.7093333,8.68134259 Z" id="Shape" fill="url(#linearGradient-5)"></path>
+                    <path d="M21.9592083,17.8670556 L14.3913611,22.2363472 L14.3913611,15.9164398 C14.3913611,13.3233935 15.9679259,10.311125 17.9126852,9.18831019 L18.4378843,8.88509722 C20.3826435,7.76228241 21.9592083,8.95410185 21.9592083,11.5471481 L21.9592083,17.8670556 L21.9592083,17.8670556 Z" id="Shape" fill="url(#linearGradient-6)"></path>
+                    <polygon id="Shape" fill="url(#linearGradient-7)" points="17.2561481 14.8059491 21.9591574 12.0973009 21.9591574 13.258412 17.2561481 15.9728148"></polygon>
+                    <polygon id="Shape" fill="url(#linearGradient-8)" points="17.2561481 14.8059491 15.8359259 13.9894028 15.8359259 15.1528565 17.2561481 15.9728148"></polygon>
+                    <polygon id="Shape" fill="url(#linearGradient-9)" points="15.8359259 13.9894028 16.2028472 13.7769398 17.2561481 14.3850463 21.2266389 12.0973009 20.1724213 11.4857315 20.5410231 11.273625 21.9591574 12.0973009 17.2561481 14.8059491"></polygon>
+                    <polygon id="Shape" fill="#0D4FC8" points="20.1724213 11.4857315 20.1724213 12.6488287 20.2212083 12.6770417 21.2266389 12.0973009"></polygon>
+                </g>
+            </g>
+            <text id="平台问题反馈" font-family="PingFangSC-Semibold, PingFang SC" font-size="7" font-weight="500" line-spacing="8" fill="#4F7DE7">
+                <tspan x="8" y="37">平</tspan>
+                <tspan x="8" y="45">台</tspan>
+                <tspan x="8" y="53">问</tspan>
+                <tspan x="8" y="61">题</tspan>
+                <tspan x="8" y="69">反</tspan>
+                <tspan x="8" y="77">馈</tspan>
+            </text>
+            <g id="收-起" transform="translate(12.000000, 88.000000) scale(-1, 1) translate(-12.000000, -88.000000) translate(6.000000, 82.000000)">
+                <g id="编组-16">
+                    <rect id="矩形" x="0" y="0" width="12" height="12"></rect>
+                    <path d="M1.7245631,6.77892495 L0.620060429,5.99030568 L0.620060429,5.99030568 L1.7245631,5.20168642 C2.16010549,4.89070743 2.76528064,4.99168603 3.07625963,5.42722842 C3.19358199,5.59154454 3.25664829,5.78840391 3.25664829,5.99030568 C3.25664829,6.52547398 2.82280866,6.9593136 2.28764037,6.9593136 C2.0857386,6.9593136 1.88887922,6.89624731 1.7245631,6.77892495 Z M1.03609007,2.53205928 L10.5839704,2.53205928 C10.8127867,2.53205928 11,2.34484595 11,2.11602964 C11,1.88721334 10.8127867,1.7 10.5839704,1.7 L1.03609007,1.7 C0.807273768,1.7 0.620060429,1.88721334 0.620060429,2.11602964 C0.620060429,2.34484595 0.807273768,2.53205928 1.03609007,2.53205928 Z M10.5891707,9.45375245 L1.03609007,9.45375245 C0.807273768,9.45375245 0.620060429,9.64096579 0.620060429,9.8697821 C0.620060429,10.0985984 0.807273768,10.2858117 1.03609007,10.2858117 L10.5839704,10.2858117 C10.8127867,10.2858117 11,10.0985984 11,9.8697821 C11,9.64096579 10.817987,9.45375245 10.5891707,9.45375245 Z M10.5891707,6.8691683 L4.37992832,6.8691683 C4.15111202,6.8691683 3.96389868,7.05638164 3.96389868,7.28519795 C3.96389868,7.51401425 4.15111202,7.70122759 4.37992832,7.70122759 L10.5839704,7.70122759 C10.8127867,7.70122759 11,7.51401425 11,7.28519795 C11,7.05638164 10.817987,6.8691683 10.5891707,6.8691683 Z M10.5891707,4.28458415 L4.37992832,4.28458415 C4.15111202,4.28458415 3.96389868,4.47179749 3.96389868,4.70061379 C3.96389868,4.9294301 4.15111202,5.11664344 4.37992832,5.11664344 L10.5839704,5.11664344 C10.8127867,5.11664344 11,4.9294301 11,4.70061379 C11,4.47179749 10.817987,4.28458415 10.5891707,4.28458415 L10.5891707,4.28458415 Z" id="形状" fill="#4F7DE7" fill-rule="nonzero"></path>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

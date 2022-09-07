@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.platform.infra.mapper.FormLineMapper">
+    <select id="selectFormLines" resultType="org.hzero.platform.domain.entity.FormLine">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        SELECT
+            hfl.form_line_id,
+            hfl.form_header_id,
+            hfl.item_code,
+            hflt.item_name,
+            hflt.item_description,
+            hfl.order_seq,
+            hfl.item_type_code,
+            hfl.required_flag,
+            hfl.default_value,
+            hfl.enabled_flag,
+            hfl.tenant_id,
+            hfl.updatable_flag,
+            hfl.value_constraint,
+            hfl.value_set
+        FROM hpfm_form_line hfl
+        LEFT JOIN hpfm_form_line_tl hflt ON hfl.form_line_id = hflt.form_line_id AND hflt.lang = #{lang}
+        WHERE hfl.form_header_id = #{formHeaderId}
+        AND hfl.tenant_id = #{tenantId}
+        <if test="itemCode != null and itemCode != ''">
+          <bind name="itemCodeLike" value="'%'+itemCode+'%'" />
+            AND hfl.item_code LIKE #{itemCodeLike}
+        </if>
+        <if test="itemName != null and itemName != ''">
+          <bind name="itemNameLike" value="'%'+itemName+'%'" />
+            AND hflt.item_name LIKE #{itemNameLike}
+        </if>
+    </select>
+</mapper>

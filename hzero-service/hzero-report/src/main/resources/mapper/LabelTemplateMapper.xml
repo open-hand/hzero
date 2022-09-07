@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.report.infra.mapper.LabelTemplateMapper">
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap id="BaseResultMap" type="org.hzero.report.domain.entity.LabelTemplate">
+        <result column="label_template_id" property="labelTemplateId" jdbcType="DECIMAL"/>
+        <result column="template_code" property="templateCode" jdbcType="VARCHAR"/>
+        <result column="template_name" property="templateName" jdbcType="VARCHAR"/>
+        <result column="template_width" property="templateWidth" jdbcType="DECIMAL"/>
+        <result column="template_high" property="templateHigh" jdbcType="DECIMAL"/>
+        <result column="dataset_id" property="datasetId" jdbcType="DECIMAL"/>
+        <result column="template_content" property="templateContent" jdbcType="VARCHAR"/>
+        <result column="enabled_flag" property="enabledFlag" jdbcType="DECIMAL"/>
+        <result column="tenant_id" property="tenantId" jdbcType="DECIMAL"/>
+        <result column="object_version_number" property="objectVersionNumber" jdbcType="DECIMAL"/>
+        <result column="creation_date" property="creationDate" jdbcType="DATE"/>
+        <result column="created_by" property="createdBy" jdbcType="DECIMAL"/>
+        <result column="last_updated_by" property="lastUpdatedBy" jdbcType="DECIMAL"/>
+        <result column="last_update_date" property="lastUpdateDate" jdbcType="DATE"/>
+    </resultMap>
+
+    <select id="listLabelTemplate" resultType="org.hzero.report.domain.entity.LabelTemplate">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        select hlt.label_template_id,
+            hlt.template_code,
+            hltt.template_name,
+            hd.dataset_name,
+            hlt.template_width,
+            hlt.template_high,
+            hlt.enabled_flag,
+            hlt.tenant_id,
+            htt.tenant_name,
+            hlt.object_version_number
+        from hrpt_label_template hlt
+        left join hrpt_dataset hd on hlt.dataset_id = hd.dataset_id
+        LEFT JOIN hpfm_tenant_tl htt on htt.tenant_id = hlt.tenant_id and htt.lang = #{lang}
+        LEFT JOIN hrpt_label_template_tl hltt ON hltt.label_template_id = hlt.label_template_id AND hltt.lang = #{lang}
+        where 1=1
+        <if test="tenantId != null">
+            and hlt.tenant_id = #{tenantId}
+        </if>
+        <if test="templateCode != null">
+            <bind name="templateCodeLike" value="'%' + templateCode + '%'"/>
+            and hlt.template_code like #{templateCodeLike}
+        </if>
+        <if test="templateName != null">
+            <bind name="templateNameLike" value="'%' + templateName + '%'"/>
+            and hltt.template_name like #{templateNameLike}
+        </if>
+        <if test="datasetName != null">
+            <bind name="datasetNameLike" value="'%' + datasetName + '%'"/>
+            and hd.dataset_name like #{datasetNameLike}
+        </if>
+        <if test="enabledFlag != null">
+            and hlt.enabled_flag = #{enabledFlag}
+        </if>
+    </select>
+
+    <select id="listTenantLabelTemplate" resultType="org.hzero.report.domain.entity.LabelTemplate">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        ( select hlt.label_template_id,
+        hlt.template_code,
+        hltt.template_name,
+        hd.dataset_name,
+        hlt.template_width,
+        hlt.template_high,
+        hlt.enabled_flag,
+        hlt.tenant_id,
+        htt.tenant_name,
+        hlt.object_version_number
+        from hrpt_label_template hlt
+        left join hrpt_dataset hd on hlt.dataset_id = hd.dataset_id
+        LEFT JOIN hpfm_tenant_tl htt on htt.tenant_id = hlt.tenant_id and htt.lang = #{lang}
+        LEFT JOIN hrpt_label_template_tl hltt ON hltt.label_template_id = hlt.label_template_id AND hltt.lang = #{lang}
+        where hlt.tenant_id = #{tenantId}
+        <if test="templateCode != null">
+            <bind name="templateCodeLike" value="'%' + templateCode + '%'"/>
+            and hlt.template_code like #{templateCodeLike}
+        </if>
+        <if test="templateName != null">
+            <bind name="templateNameLike" value="'%' + templateName + '%'"/>
+            and hltt.template_name like #{templateNameLike}
+        </if>
+        <if test="datasetName != null">
+            <bind name="datasetNameLike" value="'%' + datasetName + '%'"/>
+            and hd.dataset_name like #{datasetNameLike}
+        </if>
+        <if test="enabledFlag != null">
+            and hlt.enabled_flag = #{enabledFlag}
+        </if>
+        ) UNION ALL
+        (
+        select hlt.label_template_id,
+        hlt.template_code,
+        hltt.template_name,
+        hd.dataset_name,
+        hlt.template_width,
+        hlt.template_high,
+        hlt.enabled_flag,
+        hlt.tenant_id,
+        htt.tenant_name,
+        hlt.object_version_number
+        from hrpt_label_template hlt
+        left join hrpt_dataset hd on hlt.dataset_id = hd.dataset_id
+        LEFT JOIN hpfm_tenant_tl htt on htt.tenant_id = hlt.tenant_id and htt.lang = #{lang}
+        LEFT JOIN hrpt_label_template_tl hltt ON hltt.label_template_id = hlt.label_template_id AND hltt.lang = #{lang}
+        where EXISTS (
+        select
+        1
+        from
+        hrpt_label_permission hlp
+        where
+        hlt.label_template_id = hlp.label_template_id
+        and hlp.tenant_id = #{tenantId}
+        and hlt.template_code NOT IN (select t.template_code from hrpt_label_template t where t.tenant_id = #{tenantId})
+        and  (
+        ( hlp.start_date &lt;= #{now} AND hlp.end_date &gt;= #{now} )
+        OR ( hlp.start_date &lt;= #{now} AND hlp.end_date IS NULL )
+        OR ( hlp.start_date IS NULL AND hlp.end_date &gt;= #{now} )
+        OR ( hlp.start_date IS NULL AND hlp.end_date IS NULL )
+        )
+        <if test="templateCode != null">
+            <bind name="templateCodeLike" value="'%' + templateCode + '%'"/>
+            and hlt.template_code like #{templateCodeLike}
+        </if>
+        <if test="templateName != null">
+            <bind name="templateNameLike" value="'%' + templateName + '%'"/>
+            and hltt.template_name like #{templateNameLike}
+        </if>
+        <if test="datasetName != null">
+            <bind name="datasetNameLike" value="'%' + datasetName + '%'"/>
+            and hd.dataset_name like #{datasetNameLike}
+        </if>
+        <if test="enabledFlag != null">
+            and hlt.enabled_flag = #{enabledFlag}
+        </if>
+        )
+        )
+    </select>
+
+    <select id="getLabelTemplateById" resultType="org.hzero.report.domain.entity.LabelTemplate">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        select
+            hlt.label_template_id,
+            hlt.template_code,
+            hltt.template_name,
+            hlt.dataset_id,
+            hd.dataset_name,
+            hlt.template_width,
+            hlt.template_high,
+            hlt.template_content,
+            hlt.enabled_flag,
+            htt.tenant_name,
+            hlt.tenant_id,
+            hlt.object_version_number
+        from
+            hrpt_label_template hlt
+            left join hrpt_dataset hd on hlt.dataset_id = hd.dataset_id
+            LEFT JOIN hpfm_tenant_tl htt on htt.tenant_id = hlt.tenant_id and htt.lang = #{lang}
+            LEFT JOIN hrpt_label_template_tl hltt ON hltt.label_template_id = hlt.label_template_id AND hltt.lang = #{lang}
+        where
+            hlt.label_template_id = #{labelTemplateId}
+    </select>
+
+    <select id="selectLabelTemplate" resultType="org.hzero.report.domain.entity.LabelTemplate">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        select
+            hlt.label_template_id,
+            hlt.template_code,
+            hltt.template_name,
+            hlt.dataset_id,
+            hlt.template_width,
+            hlt.template_high,
+            hlt.template_content,
+            hlt.enabled_flag,
+            hlt.tenant_id
+        from
+            hrpt_label_template hlt
+            LEFT JOIN hrpt_label_template_tl hltt ON hltt.label_template_id = hlt.label_template_id AND hltt.lang = #{lang}
+        where exists (
+        select
+            1
+        from
+            hrpt_label_permission hlp
+        where hlp.label_template_id = hlt.label_template_id
+        and hlp.tenant_id = #{tenantId}
+        and hlt.template_code = #{labelTemplateCode}
+        and ( hlp.role_id = #{roleId}
+        or hlp.role_id = -1)
+        and (
+        ( hlp.start_date &lt;= #{now} AND hlp.end_date &gt;= #{now} )
+        OR ( hlp.start_date &lt;= #{now} AND hlp.end_date IS NULL )
+        OR ( hlp.start_date IS NULL AND hlp.end_date &gt;= #{now} )
+        OR ( hlp.start_date IS NULL AND hlp.end_date IS NULL )
+        )
+        )
+    </select>
+
+</mapper>

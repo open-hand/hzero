@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="Expires" content="0" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Cache-control" content="no-cache" />
+  <meta http-equiv="Cache" content="no-cache" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+
+  <!-- favicon -->
+  <link rel="shortcut icon" th:href="@{/static/main/img/favicon.png}" type="image/x-icon" />
+
+  <!-- title -->
+  <title th:text="${systemTitle} ? ${systemTitle} : 'HZERO'"></title>
+
+  <!-- css -->
+  <link th:href="@{/static/main/css/pass-secondary-check.css}" rel="stylesheet" />
+  <link th:href="@{/static/main/css/bootstrap-3.3.7/css/bootstrap.min.css}" rel="stylesheet" />
+
+  <!-- js -->
+  <script th:src="@{/static/main/js/jquery.min.js}"></script>
+  <script th:src="@{/static/main/js/jsencrypt.min.js}"></script>
+  <script th:src="@{/static/main/js/jquery.validate.min.js}"></script>
+  <script th:src="@{/static/main/js/pass-secondary-check.js}"></script>
+
+  <!--/* use for template data */-->
+  <template id="templateData" data-captchaGetUrl="/oauth/public/captcha"
+    th:attr="data-email=${email},data-phone=${phone},data-mobileType=${mobileType},data-type=${type},data-username=${username},data-publicKey=${publicKey},data-passwordMessage=${passwordMessage},data-captchaMessage=${captchaMessage},data-captchaKeyMsg=${captchaKeyMsg},data-captchaLoadErrgMsg=${captchaLoadErrgMsg},data-captchaLoadingMsg=${captchaLoadingMsg},data-secCheckType=${secCheckType},data-secCheckInputCaptcha=${secCheckInputCaptcha}">
+  </template>
+</head>
+
+<body>
+  <div id="login">
+    <div class="login-container login-layout">
+      <!-- <div class="logo-header-left">
+      <a href="">
+        <img height="32px" th:src="${logoUrl}?${logoUrl}:'/oauth/static/main/img/logo.png'" alt="HZERO" />
+      </a>
+    </div> -->
+      <div class="login-layout-content">
+        <div class="login-tabs">
+          <div class="login-tabs-tab-content">
+            <div class="login-support-type-select" th:if="${#lists.size(supportTypes)} gt 1">
+                <span class="login-form-item-children">
+                  <span class="">
+                    <div class="login-input-content">
+                      <div class="login-form-item-children-select">
+                        <select id="support-type-select"  class="form-control login-form-select"
+                        >
+                           <option th:each="supportType:${supportTypes}"
+                                   th:selected="(${supportType} == ${secCheckType})"
+                                   th:value="${supportType}" th:utext="${supportType} == 'email'? ${secCheckEmail} : ${secCheckPhone}" />
+                          </select>
+                      </div>
+                    </div>
+                  </span>
+                </span>
+          </div>
+          <div class="login-tabs-tab-pane  login-tab-pane login-account"
+               th:classappend="${secCheckType} == 'email' ? 'login-tabs-tab-pane-active' : ''">
+            <div class="logo">
+              <a href="">
+                <img height="32px" th:src="${logoUrl}?${logoUrl}:'/oauth/static/main/img/logo.png'" alt="HZERO" />
+              </a>
+            </div>
+
+
+            <form id="loginFormAccount">
+              <div class="login-form">
+
+                <div class="login-form-item login-form-item-with-help">
+              
+                      <span class="login-form-item-children" th:if="${email}">
+                        <div class="login-form-explain" th:utext="${secCheckEmailDescription}"></div>
+                        <div class="login-form-explain" th:utext="${secCheckEmailUsername}+':'+${email}"></div>
+                      </span>
+                  <span class="login-form-item-children" th:unless="${email}">
+                        <div class="login-form-explain login-form-explain-error" th:utext="${secCheckEmailNonEmail}"></div>
+                      </span>
+                      <span class="login-form-item-children" th:if="${loginErrorMsg}">
+                        <div class="login-form-explain login-form-explain-error" th:utext="${loginErrorMsg}"></div>
+                      </span>
+                </div>
+
+                <div class="login-form-item">
+                  <div class="login-form-item-control">
+                        <span class="login-form-item-children">
+                          <div class="login-row">
+                            <div class="login-col-18">
+                              <span class="login-form-item-children-prefix">
+                                <div class="login-input-content">
+                                  <span class="login-form-input-prefix">
+                                    <i class="glyphicon glyphicon-pencil"></i>
+                                  </span>
+                                  <div class="form-group login-form-item-children-input">
+                                    <input name="emailCaptcha" id="emailCaptcha" type="text" th:disabled="${email} == null"
+                                           class="form-control login-form-input" th:placeholder="${secCheckInputCaptcha}">
+                                  </div>
+                                </div>
+                              </span>
+                            </div>
+                            <div class="login-col-6">
+                              <button class="btn btn-flat btn-raised login-form-button-captcha"
+                                      th:disabled="${email} == null"
+                                      th:text="${captchaLoadingMsg}"></button>
+                            </div>
+                          </div>
+                        </span>
+                  </div>
+                </div>
+
+              </div>
+              <div class="login-form-item">
+                      <span class="login-form-item-children login-form-button-container">
+                        <button type="button" class="btn btn-raised btn-primary login-account-login-btn back-to-login"
+                                th:text="${secCheckCancel}"></button>
+                          <button type="submit" class="btn btn-primary btn-raised login-account-login-btn"
+                                  th:disabled="${email} == null"  th:text="${secCheckOk}"></button>
+                      </span>
+              </div>
+              <div class="login-tooltip" th:utext="${secCheckEmailTip}"></div>
+            </form>
+
+          </div>
+          <div class="login-tabs-tab-pane  login-tab-pane login-phone"
+               th:classappend="${secCheckType} != 'email' ? 'login-tabs-tab-pane-active' : ''">
+            <div class="logo">
+              <a href="">
+                <img height="32px" th:src="${logoUrl}?${logoUrl}:'/oauth/static/main/img/logo.png'" alt="HZERO" />
+              </a>
+            </div>
+            <form id="loginFormPhone">
+              <div class="login-form">
+                <div class="login-form-item login-form-item-with-help">
+                      <span class="login-form-item-children" th:if="${phone}">
+                        <div class="login-form-explain" th:utext="${secCheckPhoneDescription}"></div>
+                        <div class="login-form-explain" th:utext="${secCheckPhonePhone}+':'+${phone}"></div>
+                      </span>
+                  <span class="login-form-item-children" th:unless="${phone}">
+                        <div class="login-form-explain login-form-explain-error" th:utext="${secCheckPhoneNonPhone}"></div>
+                      </span>
+                      <span class="login-form-item-children" th:if="${loginErrorMsg}">
+                        <div class="login-form-explain login-form-explain-error" th:utext="${loginErrorMsg}"></div>
+                      </span>
+                </div>
+
+                <div class="login-form-item">
+                  <div class="login-form-item-control">
+                        <span class="login-form-item-children">
+                          <div class="login-row">
+                            <div class="login-col-18">
+                              <span class="login-form-item-children-prefix">
+                                <div class="login-input-content">
+                                  <span class="login-form-input-prefix">
+                                    <i class="glyphicon glyphicon-pencil"></i>
+                                  </span>
+                                  <div class="form-group login-form-item-children-input">
+                                    <input name="phoneCaptcha" id="phoneCaptcha" type="text" th:disabled="${phone} == null"
+                                           class="form-control login-form-input" th:placeholder="${secCheckInputCaptcha}">
+                                  </div>
+                                </div>
+                              </span>
+                            </div>
+                            <div class="login-col-6">
+                              <button class="btn btn-flat btn-raised login-form-button-captcha"
+                                      th:disabled="${phone} == null" th:text="${captchaLoadingMsg}"></button>
+                            </div>
+                          </div>
+                        </span>
+                  </div>
+                </div>
+              </div>
+              <div class="login-form-item">
+                    <span class="login-form-item-children login-form-button-container">
+                      <button type="button" class="btn btn-raised btn-primary login-phone-login-btn back-to-login"
+                              th:text="${secCheckCancel}"></button>
+                        <button type="submit" class="btn btn-primary btn-raised login-phone-login-btn"
+                                th:disabled="${phone} == null"  th:text="${secCheckOk}"></button>
+                    </span>
+              </div>
+              <div class="login-tooltip" th:utext="${secCheckPhoneTip}"></div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="footer" th:utext="${copyright}?${copyright}:'Copyright © The HZERO Author®.All rights reserved.'">
+    </div>
+  </div>
+</div>
+
+<div class="login-notification"></div>
+
+</body>
+
+</html>

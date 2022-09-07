@@ -1,0 +1,102 @@
+# hadm-国际化
+
+hevt.common:
+  model.categoryCode: 事件编码
+  model.eventName: 事件名称
+  model.levelCode: 层级
+  model.configCode: 参数名称
+  model.configValue: 参数值
+  view.message.form.noChange: 表单未做修改
+  view.message.required: 存在必输字段未填写
+  validator.code: 请输入字母及数字，只能以字母或数字开头，可包含“-”、“_”、“.”、“/”'
+  view.message.connect.success: 连接成功
+  view.message.connect.failure: 连接失败
+  view.message.success: 成功
+  view.message.failed: 失败
+  view.message.pending: 待消费
+
+hevt.event:
+  view.message.title: 事件定义
+  view.message.handleEvent: 事件处理
+  view.message.cunsumeExample: 消费实例
+  view.message.cunsumeConfig: 消费配置
+  view.button.event.create: 新建事件
+  view.button.event.edit: 编辑事件
+  view.title.enabledEvent: 启用事件
+  view.title.disabledEvent: 停用事件
+  model.event.topic: Topic
+  model.event.eventSourceName: 事件源
+  model.event.categoryName: 事件类型
+  model.event.className: 数据类型
+  model.event.consumerCode: 消费代码
+  model.event.consumeType: 消费类型
+  model.event.targetFileName: 文件名称
+  model.event.targetFilePath: 文件路径
+  model.event.reloadCommand: 重载指令
+  model.event.remark: 备注
+  model.event.consumerInstHost: 主机ip
+  view.title.handleParams: 处理参数配置
+  validation.topic: 只能由字母、“-”、“_”、“.”组成
+
+hevt.eventHandle:
+  view.eventHandle.title: 事件处理
+  view.title.eventHandle.create: 新建处理服务
+  view.title.eventHandle.edit: 编辑处理服务
+  view.message.deleted: 勾选数据包含平台级数据，不可删除
+  view.title.handleWay: 处理方法
+  view.title.handleParams: 处理参数配置
+  model.eventHandle.serviceName: 服务名称
+  model.eventHandle.serviceCode: 服务编码
+  model.eventHandle.groupId: 分组
+  model.eventHandle.handleFunction: 处理方法
+  model.eventHandle.orderSeq: 排序号
+
+hevt.eventCategory:
+  model.eventCategory.categoryCode: 事件类型编码
+  model.eventCategory.categoryName: 事件类型描述
+  view.message.title: 事件类型定义
+  view.message.title.modal.edit: 编辑事件类型
+  view.message.title.modal.create: 新建事件类型
+
+hevt.eventDataType:
+view.message.title: 事件数据类型定义
+view.message.title.modal.create: 新建事件数据类型
+model.eventDataType.className: 类名
+model.eventDataType.description: 描述
+
+hevt.eventMessage:
+  view.button.resend: 重试
+  view.button.consume: 消费详情
+  view.eventMessage.title: 事件查询
+  view.action.create: 创建
+  view.action.update: 更新
+  view.action.delete: 删除
+  model.eventMessage.categoryName: 事件类别
+  model.eventMessage.processStatus: 状态
+  model.eventMessage.eventName: 事件名称
+  model.eventMessage.action: 功能
+  model.eventMessage.data: 事件数据
+  model.eventMessage.sendTime: 发送时间
+  model.eventMessage.consumeSuccess: 消费状态
+  model.eventMessage.processType: 处理类型
+  model.eventMessage.processHost: 实例
+  model.eventMessage.processTime: 处理时间
+  model.eventMessage.remark: 详情
+
+
+hevt.eventSource:
+  view.button.testConnect: 连接测试
+  view.title.handleParams: 数据源参数配置
+  view.title.eventSource: 事件源定义
+  view.title.eventSource.create: 新建事件源
+  view.title.eventSource.edit: 编辑事件源
+  model.eventSource.eventSourceCode: 事件源编码
+  model.eventSource.eventSourceName: 事件源名称
+  model.eventSource.serviceAddress: 服务地址
+  model.eventSource.eventSourceType: 事件源类型
+  model.eventSource.username: 用户名
+  model.eventSource.password: 密码
+  model.eventSource.enabledFlag: 启用
+  model.eventSource.configCode: 变量编码
+  model.eventSource.configCodeMeaning: 变量名
+  model.eventSource.configValue: 参数值

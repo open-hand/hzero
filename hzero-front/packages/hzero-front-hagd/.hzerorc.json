@@ -1,0 +1,7 @@
+{
+  "package": {
+    "initLoad": false,
+    "indexRouter": "/hagd/saga",
+    "registerRegex": "(\\/(private|public|pub))?\\/hagd\\/"
+  }
+}

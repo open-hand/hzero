@@ -1,0 +1,150 @@
+# hzero-国际化
+
+hrpt.concPermission:
+  model.concPermission.endDate: 有效期至
+  model.concPermission.roleId: 角色
+  model.concPermission.startDate: 有效期从
+hrpt.reportDataSet:
+  button.table: 查看报表
+  message.reportDataSet.sqlText.help: 修改或删除SQL中的取数字段，需要同步修改引用数据集的报表
+  modal.reportDataSet.sqlType: sql类型
+  model.reportDataSet.content: 来源值
+  model.reportDataSet.dataSource: 来源类型
+  model.reportDataSet.dataType: 数据类型
+  model.reportDataSet.datasetCode: 数据集代码
+  model.reportDataSet.datasetName: 数据集名称
+  model.reportDataSet.datasourceCode: 数据源
+  model.reportDataSet.decimals: 精度
+  model.reportDataSet.defaultText: 默认值显示
+  model.reportDataSet.defaultValue: 默认值
+  model.reportDataSet.formElement: 表单控件
+  model.reportDataSet.height: 数据高度
+  model.reportDataSet.isRequired: 是否必输
+  model.reportDataSet.name: 列名
+  model.reportDataSet.ordinal: 序号
+  model.reportDataSet.paramsName: 参数名
+  model.reportDataSet.sqlText: SQL语句
+  model.reportDataSet.sqlType: sql类型
+  model.reportDataSet.text: 标题
+  model.reportDataSet.width: 数据长度
+  model.reportDataSet.xmlSample: XML示例
+  view.button.exportFile: 导出文件
+  view.button.getXmlSample: 获取XML
+  view.button.metaColumns: 初始化元数据
+  view.button.metaColumns.confirm: 是否确认初始化元数据？
+  view.button.queryParams: 初始化参数
+  view.button.queryParams.confirm: 是否确认初始化元参数？
+  view.button.sqlValidate: SQL校验
+  view.button.xmlSample: XML示例
+  view.message.metadataDrawer.add: 添加元数据
+  view.message.metadataDrawer.edit: 编辑元数据
+  view.message.paramsDrawer.add: 添加参数
+  view.message.paramsDrawer.edit: 编辑参数
+  view.message.title: 数据集
+  view.message.title.add: 数据集 - 添加
+  view.message.title.edit: 数据集 - 编辑
+  view.message.title.table: 关联的报表
+  view.reportDataSet.validateOrdinal: 序号已存在，请输入其他序号
+  view.tab.metaColumns: 元数据信息
+  view.tab.queryParams: 参数信息
+  view.title.dataSetHeader: 数据集头
+  view.title.dataSetLine: 数据集行
+hrpt.reportDataSource:
+  model.reportDataSource.baseParams: 基本参数
+  model.reportDataSource.dbPoolParams: 连接池参数
+  model.reportDataSource.dbPoolType: 连接池类型
+  model.reportDataSource.driverClass: 驱动类
+  model.reportDataSource.dsPurposeCode: 数据源用途
+  model.reportDataSource.formParams: 表单配置
+  model.reportDataSource.params: 参数
+hrpt.reportDefinition:
+  modal.reportDefinition.assign: 分配权限
+  modal.reportDefinition.desc: 权限说明
+  model.reportDefinition.colLayout: 统计列位置
+  model.reportDefinition.configure: 配置
+  model.reportDefinition.dataType: 数据类型
+  model.reportDefinition.datasetId: 数据集
+  model.reportDefinition.decimals: 精度
+  model.reportDefinition.defaultFlag: 默认
+  model.reportDefinition.endDate: 有效期至
+  model.reportDefinition.expression: 表达式
+  model.reportDefinition.format: 格式掩码
+  model.reportDefinition.hidden: 隐藏
+  model.reportDefinition.layout: 布局列位置
+  model.reportDefinition.limitRows: 异步阈值
+  model.reportDefinition.name: 列名
+  model.reportDefinition.orderSeq: 排序号
+  model.reportDefinition.ordinal: 序号
+  model.reportDefinition.pageFlag: 分页标识
+  model.reportDefinition.percent: 百分比
+  model.reportDefinition.reportCode: 报表代码
+  model.reportDefinition.reportId: 报表名称
+  model.reportDefinition.reportName: 报表名称
+  model.reportDefinition.reportType: 报表类型
+  model.reportDefinition.roleId: 角色
+  model.reportDefinition.sortType: 排序类型
+  model.reportDefinition.startDate: 有效期从
+  model.reportDefinition.tempCode: 模板代码
+  model.reportDefinition.tempName: 模板名称
+  model.reportDefinition.tempType: 模板类型
+  model.reportDefinition.text: 标题
+  model.reportDefinition.type: 列类型
+  model.reportDefinition.width: 宽度
+  view.button.initColumn: 初始化列
+  view.message.drawer.add: 添加列
+  view.message.drawer.edit: 编辑列
+  view.message.permission.add: 新增权限
+  view.message.permission.edit: 编辑权限
+  view.message.reportColumn: 报表列
+  view.message.reportTable: 报表
+  view.message.templateTitle: 添加模板
+  view.message.title: 报表定义
+  view.message.title.add: 报表定义 - 添加
+  view.message.title.edit: 报表定义 - 编辑
+  view.reportDefinition.validateOrd: 序号已存在，请输入其他序号
+  view.tab.initColumn: 列信息
+  view.tab.template: 模板分配
+hrpt.reportQuery:
+  #  模板国际化
+  view.message.title.detail: "{name} - 详情"
+  #  普通国际化
+  model.reportQuery.isRowSpan: 合并左边相同维度行
+  model.reportQuery.orderSeq: 序号
+  model.reportQuery.remark: 备注
+  model.reportQuery.reportCode: 报表代码
+  model.reportQuery.reportName: 报表名称
+  model.reportQuery.reportTypeCode: 报表类型
+  model.reportQuery.template: 模板
+  option.buildReport: 生成报表
+  option.createRequest: 定时报表
+  option.exportExcel: 导出Excel
+  option.exportHTML: 导出HTML
+  option.exportPPT: 导出PPT
+  option.exportPdf: 导出Pdf
+  option.exportWord: 导出Word
+  view.message.buildResult: 生成结果
+  view.message.reportParams: 报表参数
+  view.message.title: 报表查询
+hrpt.reportRequest:
+  model.reportRequest.detail: 详情
+  model.reportRequest.endDate: 结束时间
+  model.reportRequest.export: 导出结果
+  model.reportRequest.reportCode: 报表代码
+  model.reportRequest.reportName: 报表名称
+  model.reportRequest.requestMessage: 请求消息
+  model.reportRequest.requestParam: 请求参数
+  model.reportRequest.requestStatus: 运行状态
+  model.reportRequest.requester: 请求人名称
+  model.reportRequest.startDate: 开始时间
+  view.message.title: 报表请求
+hrpt.templateManage:
+  model.templateManage.fileName: 模板文件名
+  model.templateManage.fileUpload: 文件上传
+  model.templateManage.templateContent: html内容
+  model.templateManage.templeEdit: 模板编辑
+  view.message.templateHeader: 模板头信息
+  view.message.templateLineDrawer.add: 添加模板明细
+  view.message.templateLineDrawer.edit: 编辑模板明细
+  view.message.title: 模板管理
+  view.message.title.add: 模板管理 - 添加
+  view.message.title.edit: 模板管理 - 编辑

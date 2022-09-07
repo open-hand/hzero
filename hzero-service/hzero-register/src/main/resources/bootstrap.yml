@@ -1,0 +1,8 @@
+spring:
+  application:
+    name: hzero-register
+server:
+  port: 8000
+management:
+  server:
+    port: 8001

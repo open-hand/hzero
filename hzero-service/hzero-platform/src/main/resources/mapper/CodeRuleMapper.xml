@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.platform.infra.mapper.CodeRuleMapper">
+    <select id="selectCodeRuleList" parameterType="org.hzero.platform.domain.entity.CodeRule" resultType="org.hzero.platform.api.dto.CodeRuleDTO">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        SELECT
+            hcr.rule_id,
+            hcr.rule_code,
+            hcrt.rule_name,
+            hcr.description,
+            hcr.rule_level,
+            hcr.object_version_number,
+            httl.tenant_name,
+            hcr.tenant_id,
+            hflv.meaning
+        FROM
+            hpfm_lov_value hflv
+        JOIN
+            hpfm_code_rule hcr ON hcr.rule_level = hflv.value
+        JOIN
+            hpfm_tenant ht ON ht.tenant_id = hcr.tenant_id
+        JOIN
+            hpfm_tenant_tl httl ON ht.tenant_id = httl.tenant_id AND httl.lang = #{lang}
+        JOIN
+            hpfm_code_rule_tl hcrt ON hcr.rule_id = hcrt.rule_id AND hcrt.lang = #{lang}
+        WHERE
+        hflv.lov_code = 'HPFM.LEVEL'
+        <if test="ruleCode != null">
+        <bind name="ruleCodeLike" value="'%' + ruleCode + '%'"/>
+            AND hcr.rule_code LIKE #{ruleCodeLike}
+        </if>
+        <if test="ruleName != null">
+        <bind name="ruleNameLike" value="'%' + ruleName + '%'"/>
+            AND hcrt.rule_name LIKE #{ruleNameLike}
+        </if>
+        <if test="description != null">
+        <bind name="descriptionLike" value="'%' + description + '%'"/>
+            AND hcr.description LIKE #{descriptionLike}
+        </if>
+        <if test="ruleId != null">
+            AND hcr.rule_id = #{ruleId}
+        </if>
+        <if test="tenantId != null">
+            AND hcr.tenant_id IN (0, #{tenantId})
+        </if>
+        <if test="ignoreEmptyLine == 1">
+            AND (SELECT COUNT(*) FROM hpfm_code_rule_dist hcrd WHERE hcrd.rule_id = hcr.rule_id AND hcrd.enabled_flag = 1) > 0
+        </if>
+    </select>
+
+    <select id="selectCodeRuleByDetailId" resultType="org.hzero.platform.domain.entity.CodeRule">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        SELECT
+            hcr.rule_id,
+            hcr.rule_code,
+            hcrt.rule_name,
+            hcr.rule_level,
+            hcr.tenant_id,
+            hcr.description
+        FROM
+            hpfm_code_rule_detail hcrde
+                JOIN hpfm_code_rule_dist hcrdi ON hcrde.rule_dist_id = hcrdi.rule_dist_id
+                JOIN hpfm_code_rule hcr ON hcrdi.rule_id = hcr.rule_id
+                JOIN hpfm_code_rule_tl hcrt ON hcr.rule_id = hcrt.rule_id AND hcrt.lang = #{lang}
+        WHERE
+            hcrde.rule_detail_id = #{ruleDetailId}
+    </select>
+    <select id="selectCodeRuleListByCodes" resultType="org.hzero.platform.api.dto.CodeRuleDTO">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        SELECT
+            hcr.rule_id,
+            hcr.rule_code,
+            hcrt.rule_name,
+            hcr.description,
+            hcr.rule_level,
+            hcr.object_version_number,
+            httl.tenant_name,
+            hcr.tenant_id,
+            hflv.meaning
+        FROM hpfm_lov_value hflv
+        JOIN hpfm_code_rule hcr ON hcr.rule_level = hflv.value
+        JOIN hpfm_tenant ht ON ht.tenant_id = hcr.tenant_id
+        JOIN hpfm_tenant_tl httl ON ht.tenant_id = httl.tenant_id AND httl.lang = #{lang}
+        JOIN hpfm_code_rule_tl hcrt ON hcr.rule_id = hcrt.rule_id AND hcrt.lang = #{lang}
+        WHERE hflv.lov_code = 'HPFM.LEVEL'
+        AND hcr.tenant_id = #{tenantId}
+        AND hcr.rule_code IN
+        <foreach collection="ruleCodeList" item="item" index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+</mapper>

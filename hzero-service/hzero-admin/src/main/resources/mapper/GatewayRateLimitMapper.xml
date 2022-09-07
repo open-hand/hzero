@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.admin.infra.mapper.GatewayRateLimitMapper">
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap id="BaseResultMap" type="org.hzero.admin.domain.entity.GatewayRateLimit">
+        <result column="rate_limit_id" property="rateLimitId" jdbcType="DECIMAL"/>
+        <result column="rate_limit_key" property="rateLimitKey" jdbcType="VARCHAR"/>
+        <result column="rate_limit_type" property="rateLimitType" jdbcType="VARCHAR"/>
+        <result column="service_name" property="serviceName" jdbcType="VARCHAR"/>
+        <result column="service_conf_label" property="serviceConfLabel" jdbcType="VARCHAR"/>
+        <result column="service_conf_profile" property="serviceConfProfile" jdbcType="VARCHAR"/>
+        <result column="enabled_flag" property="enabledFlag" jdbcType="DECIMAL"/>
+        <result column="refresh_status" property="refreshStatus" jdbcType="DECIMAL"/>
+        <result column="refresh_message" property="refreshMessage" jdbcType="VARCHAR"/>
+        <result column="refresh_time" property="refreshTime" jdbcType="DATE"/>
+        <result column="remark" property="remark" jdbcType="VARCHAR"/>
+        <result column="object_version_number" property="objectVersionNumber" jdbcType="DECIMAL"/>
+        <result column="creation_date" property="creationDate" jdbcType="DATE"/>
+        <result column="created_by" property="createdBy" jdbcType="DECIMAL"/>
+        <result column="last_updated_by" property="lastUpdatedBy" jdbcType="DECIMAL"/>
+        <result column="last_update_date" property="lastUpdateDate" jdbcType="DATE"/>
+    </resultMap>
+    <select id="pageByCondition" resultType="org.hzero.admin.domain.entity.GatewayRateLimit">
+        SELECT
+            rate_limit_id,
+            rate_limit_key,
+            rate_limit_type,
+            service_name,
+            service_conf_label,
+            service_conf_profile,
+            enabled_flag,
+            refresh_status,
+            refresh_message,
+            refresh_time,
+            remark,
+            object_version_number
+        FROM hadm_gw_rate_limit
+        <trim prefix="WHERE" prefixOverrides="AND">
+            <if test="gatewayRateLimit.rateLimitKey!=null">
+                <bind name="likeRateLimitKey" value="'%' + gatewayRateLimit.rateLimitKey + '%'" />
+                AND rate_limit_key LIKE #{likeRateLimitKey,jdbcType=VARCHAR}
+            </if>
+            <if test="gatewayRateLimit.rateLimitType!=null">
+                AND rate_limit_type = #{gatewayRateLimit.rateLimitType,jdbcType=VARCHAR}
+            </if>
+            <if test="gatewayRateLimit.serviceName!=null">
+                <bind name="likeServiceName" value="'%' + gatewayRateLimit.serviceName + '%'" />
+                AND service_name LIKE #{likeServiceName,jdbcType=VARCHAR}
+            </if>
+            <if test="gatewayRateLimit.serviceConfLabel!=null">
+                <bind name="likeServiceConfLabel" value="'%' + gatewayRateLimit.serviceConfLabel+ '%'" />
+                AND service_conf_label LIKE  #{likeServiceConfLabel,jdbcType=VARCHAR}
+            </if>
+            <if test="gatewayRateLimit.serviceConfProfile!=null">
+                <bind name="likeServiceConfProfile" value="'%' + gatewayRateLimit.serviceConfProfile+ '%'" />
+                AND service_conf_profile LIKE #{likeServiceConfProfile,jdbcType=VARCHAR}
+            </if>
+            <if test="gatewayRateLimit.enabledFlag!=null">
+                AND enabled_flag = #{gatewayRateLimit.enableFlag}
+            </if>
+            <if test="gatewayRateLimit.remark!=null">
+                <bind name="likeRemark" value="'%' + gatewayRateLimit.remark + '%'" />
+                AND remark LIKE #{likeRemark,jdbcType=VARCHAR}
+            </if>
+            <if test="gatewayRateLimit.refreshStatus!=null">
+                AND refresh_status=#{gatewayRateLimit.refreshStatus}
+            </if>
+            <if test="gatewayRateLimit.refreshMessage!=null">
+                <bind name="likeRefreshMessage" value="'%' + gatewayRateLimit.refreshMessage + '%'" />
+                AND refresh_message LIKE #{likeRefreshMessage,jdbcType=VARCHAR}
+            </if>
+            <if test="gatewayRateLimit.refreshTime!=null">
+                AND refresh_time=#{gatewayRateLimit.refreshTime}
+            </if>
+            <if test="gatewayRateLimit.rateLimitId!=null">
+                AND rate_limit_id=#{gatewayRateLimit.rateLimitId}
+            </if>
+        </trim>
+    </select>
+</mapper>

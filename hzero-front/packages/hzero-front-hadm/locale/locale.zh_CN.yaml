@@ -1,0 +1,106 @@
+# hadm-国际化
+
+hadm.common:
+  model.common.configVersion: 配置版本
+  model.common.releaseDate: 发布时间
+  model.common.serviceCode: 服务编码
+  model.common.serviceName: 服务名称
+  model.common.updateDate: 更新时间
+  model.common.versionNumber: 服务版本
+  model.serviceCollect.serviceLogo: 服务图片
+  model.upload.support: 上传格式：*.png;*.jpeg
+  view.message.confirm.refresh: 确定要刷新
+  view.message.refresh.description: 将动态刷新服务配置!
+
+hadm.hystrix:
+  model.hystrix.confKey: 类型
+  model.hystrix.confTypeCode: 代码
+  model.hystrix.enableFlag: 启用
+  model.hystrix.noRefreshSuccess: 未刷新
+  model.hystrix.propertyName: 参数代码
+  model.hystrix.propertyRemark: 参数描述
+  model.hystrix.propertyValue: 参数值
+  model.hystrix.refreshFailed: 刷新失败
+  model.hystrix.refreshMessage: 刷新消息
+  model.hystrix.refreshStatus: 刷新状态
+  model.hystrix.refreshSuccess: 刷新成功
+  model.hystrix.refreshTime: 刷新时间
+  model.hystrix.remark: 描述
+  model.hystrix.serviceConfLabel: 服务配置标签
+  model.hystrix.serviceConfProfile: 服务配置Profile
+  model.hystrix.serviceName: 服务
+  view.message.title.hystrix: 熔断设置
+  view.message.title.modal.create: 新建熔断类型
+  view.message.title.noChange: 未修改数据
+  view.title.createForm: 创建值
+  view.title.editForm: 编辑值
+  view.title.hystrix: 熔断规则定义
+  view.title.hystrix.detail: 熔断规则定义
+  view.title.hystrixRow: 参数行
+hadm.nodeRule:
+  view.message.confirm.remove: 是否删除此条记录？
+hadm.serviceConfig:
+  model.serviceConfig.default: 是否默认
+  model.serviceConfig.retryable: 默认
+  model.serviceConfig.serviceCode: 服务编码
+  view.button.refresh: 刷新配置
+  view.editor.configInfo: 配置信息
+  view.message.editor.create: 新建服务配置
+  view.message.editor.edit: 编辑服务配置
+  view.message.title: 服务配置
+hadm.serviceManage:
+  model.serviceManage.serviceCode: 服务编码
+  model.serviceManage.serviceName: 服务名称
+  view.message.title: 服务管理
+  view.message.title.editor.create: 新建服务
+  view.message.title.editor.edit: 编辑服务
+hadm.serviceRoute:
+  model.serviceRoute.customSensitiveHeaders: 自定义敏感头
+  model.serviceRoute.gatewayHelper: 自定义GatewayHelper
+  model.serviceRoute.helperService: 敏感头部列表
+  model.serviceRoute.name: 路由标识
+  model.serviceRoute.path: 服务路径
+  model.serviceRoute.retryable: 支持路由重试
+  model.serviceRoute.serviceCode: 服务编码
+  model.serviceRoute.serviceName: 服务名称
+  model.serviceRoute.stripPrefix: 去掉前缀
+  model.serviceRoute.url: 物理路径
+  view.button.refresh: 刷新路由
+  view.message.editor.create: 新建服务路由
+  view.message.editor.edit: 编辑服务路由
+  view.message.refresh.description: 将动态刷新服务路由
+  view.message.title: 服务路由
+hadm.zuulRateLimit:
+  model.zuulRateLimit.consumeRate: 令牌消耗速率
+  model.zuulRateLimit.enableFlag: 启用
+  model.zuulRateLimit.maxLimit: 请求数限制
+  model.zuulRateLimit.noRefresh: 未刷新
+  model.zuulRateLimit.origin: 源请求地址维度
+  model.zuulRateLimit.quota: 请求时间限制
+  model.zuulRateLimit.rate: 令牌产生速率
+  model.zuulRateLimit.rateLimitKey: 代码
+  model.zuulRateLimit.rateLimitType: 限流方式
+  model.zuulRateLimit.refreshFailed: 刷新失败
+  model.zuulRateLimit.refreshInterval: 刷新窗口(秒)
+  model.zuulRateLimit.refreshMessage: 刷新消息
+  model.zuulRateLimit.refreshStatus: 刷新状态
+  model.zuulRateLimit.refreshSuccess: 刷新成功
+  model.zuulRateLimit.refreshTime: 刷新时间
+  model.zuulRateLimit.remark: 说明
+  model.zuulRateLimit.routeKey: 路由
+  model.zuulRateLimit.serviceConfLabel: 服务配置标签
+  model.zuulRateLimit.serviceConfProfile: 服务配置Profile
+  model.zuulRateLimit.serviceName: 网关服务
+  model.zuulRateLimit.tenant: 租户维度
+  model.zuulRateLimit.uomTypeCode: 代码
+  model.zuulRateLimit.url: URL维度
+  model.zuulRateLimit.user: 用户维度
+  view.button.refresh: 刷新配置
+  view.message.detail: 限流方式定义
+  view.message.detailAdd: 创建限流方式
+  view.message.detailEdit: 编辑限流方式
+  view.message.title: 限流配置
+  view.message.title.content: 确定删除吗？
+  view.message.title.listForm: 新增限流配置
+  view.title.detailHeader: 限流方式
+  view.title.detailLine: 限流路由

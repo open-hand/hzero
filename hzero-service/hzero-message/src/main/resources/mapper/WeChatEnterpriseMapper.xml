@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.message.infra.mapper.WeChatEnterpriseMapper">
+    <!-- 可根据自己的需求，是否要使用 -->
+    <resultMap id="BaseResultMap" type="org.hzero.message.domain.entity.WeChatEnterprise">
+        <result column="server_id" property="serverId" jdbcType="DECIMAL"/>
+        <result column="server_code" property="serverCode" jdbcType="VARCHAR"/>
+        <result column="server_name" property="serverName" jdbcType="VARCHAR"/>
+        <result column="auth_type" property="authType" jdbcType="VARCHAR"/>
+        <result column="corpid" property="corpid" jdbcType="VARCHAR"/>
+        <result column="corpsecret" property="corpsecret" jdbcType="VARCHAR"/>
+        <result column="auth_address" property="authAddress" jdbcType="VARCHAR"/>
+        <result column="callback_url" property="callbackUrl" jdbcType="VARCHAR"/>
+        <result column="tenant_id" property="tenantId" jdbcType="DECIMAL"/>
+        <result column="enabled_flag" property="enabledFlag" jdbcType="DECIMAL"/>
+        <result column="object_version_number" property="objectVersionNumber" jdbcType="DECIMAL"/>
+        <result column="creation_date" property="creationDate" jdbcType="DATE"/>
+        <result column="created_by" property="createdBy" jdbcType="DECIMAL"/>
+        <result column="last_updated_by" property="lastUpdatedBy" jdbcType="DECIMAL"/>
+        <result column="last_update_date" property="lastUpdateDate" jdbcType="DATE"/>
+    </resultMap>
+
+    <select id="listWeChatEnterprise" resultType="org.hzero.message.domain.entity.WeChatEnterprise">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        select
+            hwe.server_id,
+            hwe.server_code,
+            hwet.server_name,
+            hwe.auth_type,
+            hwe.corpid,
+            hwe.agent_id,
+            hwe.tenant_id,
+            hwe.enabled_flag,
+            hwe.object_version_number,
+            ht.tenant_name
+        from hmsg_wechat_enterprise hwe
+        join hmsg_wechat_enterprise_tl hwet on hwet.server_id = hwe.server_id and hwet.lang = #{lang}
+        join hpfm_tenant_tl ht ON ht.tenant_id = hwe.tenant_id AND ht.lang = #{lang}
+        where 1 = 1
+        <if test="serverCode != null and serverCode != ''">
+            <bind name="serverCode" value="'%' + serverCode + '%'"/>
+            and hwe.server_code like #{serverCode}
+        </if>
+        <if test="serverName != null and serverName != ''">
+            <bind name="serverName" value="'%' + serverName + '%'"/>
+            and hwet.server_name like #{serverName}
+        </if>
+        <if test="authType != null and authType != ''">
+            and hwe.auth_type = #{authType}
+        </if>
+        <if test="tenantId != null">
+            and hwe.tenant_id in (#{tenantId}<if test="includeSiteIfQueryByTenantId">, 0</if>)
+        </if>
+        <if test="enabledFlag != null">
+            and hwe.enabled_flag = #{enabledFlag}
+        </if>
+    </select>
+
+    <select id="getWeChatEnterpriseById" parameterType="java.lang.Long" resultType="org.hzero.message.domain.entity.WeChatEnterprise">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        select
+            hwe.server_id,
+            hwe.server_code,
+            hwet.server_name,
+            hwe.auth_type,
+            hwe.corpid,
+            hwe.agent_id,
+            hwe.auth_address,
+            hwe.callback_url,
+            hwe.tenant_id,
+            hwe.enabled_flag,
+            hwe.object_version_number,
+            ht.tenant_name
+        from hmsg_wechat_enterprise hwe
+        join hmsg_wechat_enterprise_tl hwet on hwet.server_id = hwe.server_id and hwet.lang = #{lang}
+        join hpfm_tenant_tl ht ON ht.tenant_id = hwe.tenant_id AND ht.lang = #{lang}
+        where hwe.server_id = #{serverId}
+        <if test="tenantId != null">
+            and hwe.tenant_id = #{tenantId}
+        </if>
+    </select>
+
+    <select id="selectByCode" resultType="org.hzero.message.domain.entity.WeChatEnterprise">
+        SELECT
+            hwe.server_id,
+            hwe.server_code,
+            hwe.server_name,
+            hwe.agent_id,
+            hwe.enabled_flag,
+            hwe.tenant_id,
+            hwe.object_version_number
+        FROM
+            hmsg_wechat_enterprise hwe
+        WHERE
+            hwe.tenant_id = #{tenantId}
+        AND hwe.server_code = #{serverCode}
+    </select>
+</mapper>

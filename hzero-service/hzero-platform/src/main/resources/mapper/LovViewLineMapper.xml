@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.platform.infra.mapper.LovViewLineMapper">
+    <!-- 可根据自己的需求，是否要使用 -->
+    <resultMap id="BaseResultMap" type="org.hzero.platform.domain.entity.LovViewLine">
+        <result column="view_line_id" property="viewLineId" jdbcType="DECIMAL"/>
+        <result column="view_header_id" property="viewHeaderId" jdbcType="DECIMAL"/>
+        <result column="tenant_id" property="tenantId" jdbcType="DECIMAL"/>
+        <result column="lov_id" property="lovId" jdbcType="DECIMAL"/>
+        <result column="display" property="display" jdbcType="VARCHAR"/>
+        <result column="order_seq" property="orderSeq" jdbcType="DECIMAL"/>
+        <result column="field_name" property="fieldName" jdbcType="VARCHAR"/>
+        <result column="query_field_flag" property="queryFieldFlag" jdbcType="DECIMAL"/>
+        <result column="table_field_flag" property="tableFieldFlag" jdbcType="DECIMAL"/>
+        <result column="table_field_width" property="tableFieldWidth" jdbcType="DECIMAL"/>
+        <result column="enabled_flag" property="enabledFlag" jdbcType="DECIMAL"/>
+        <result column="object_version_number" property="objectVersionNumber" jdbcType="DECIMAL"/>
+        <result column="creation_date" property="creationDate" jdbcType="DATE"/>
+        <result column="created_by" property="createdBy" jdbcType="DECIMAL"/>
+        <result column="last_update_date" property="lastUpdateDate" jdbcType="DATE"/>
+        <result column="last_updated_by" property="lastUpdatedBy" jdbcType="DECIMAL"/>
+        
+        <result column="tenant_name" property="tenantName" jdbcType="VARCHAR"/>
+    </resultMap>
+    
+    <select id="selectLovViewLinesByHeaderId" parameterType="org.hzero.platform.domain.entity.LovViewLine" resultType="org.hzero.platform.domain.entity.LovViewLine">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()" />
+        select
+            lvl.view_line_id,
+            lvl.view_header_id,
+            lvl.tenant_id,
+            httl.tenant_name,
+            lvl.lov_id,
+            lvlt.display,
+            lvl.order_seq,
+            lvl.field_name,
+            lvl.query_field_flag,
+            lvl.table_field_flag,
+            lvl.table_field_width,
+            lvl.enabled_flag,
+            lvl.data_type,
+            lvl.source_code,
+            lvl.object_version_number
+        from
+            hpfm_lov_view_line lvl
+        LEFT JOIN hpfm_lov_view_line_tl lvlt on lvlt.view_line_id = lvl.view_line_id and lvlt.lang = #{lang}
+        join hpfm_tenant ht on ht.tenant_id = lvl.tenant_id
+        LEFT JOIN hpfm_tenant_tl httl ON ht.tenant_id = httl.tenant_id AND httl.lang = #{lang}
+        where
+        1 = 1
+        and lvl.view_header_id = #{viewHeaderId,jdbcType=DECIMAL}
+        <if test="tenantId != null">
+            and (lvl.tenant_id = #{tenantId,jdbcType=DECIMAL} or lvl.tenant_id = 0)
+        </if>
+    </select>
+    <select id="selectByHeaderId" resultType="org.hzero.platform.domain.entity.LovViewLine">
+        SELECT lvl.view_line_id,
+               lvl.view_header_id,
+               lvl.tenant_id,
+               lvl.lov_id,
+               lvlt.display,
+               lvl.order_seq,
+               lvl.field_name,
+               lvl.query_field_flag,
+               lvl.table_field_flag,
+               lvl.table_field_width,
+               lvl.enabled_flag,
+               lvl.data_type,
+               lvl.source_code,
+               lvl.object_version_number
+        FROM hpfm_lov_view_line lvl
+                 JOIN hpfm_lov_view_line_tl lvlt ON lvlt.view_line_id = lvl.view_line_id AND lvlt.lang = #{lang}
+        WHERE lvl.view_header_id = #{viewHeaderId}
+          AND lvl.enabled_flag = 1
+    </select>
+</mapper>

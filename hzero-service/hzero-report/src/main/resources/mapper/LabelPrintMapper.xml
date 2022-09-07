@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.report.infra.mapper.LabelPrintMapper">
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap id="BaseResultMap" type="org.hzero.report.domain.entity.LabelPrint">
+        <result column="label_print_id" property="labelPrintId" jdbcType="DECIMAL"/>
+        <result column="label_template_code" property="labelTemplateCode" jdbcType="DECIMAL"/>
+        <result column="paper_size" property="paperSize" jdbcType="VARCHAR"/>
+        <result column="paper_width" property="paperWidth" jdbcType="DECIMAL"/>
+        <result column="paper_high" property="paperHigh" jdbcType="DECIMAL"/>
+        <result column="print_direction" property="printDirection" jdbcType="DECIMAL"/>
+        <result column="margin_top" property="marginTop" jdbcType="DECIMAL"/>
+        <result column="margin_bottom" property="marginBottom" jdbcType="DECIMAL"/>
+        <result column="margin_left" property="marginLeft" jdbcType="DECIMAL"/>
+        <result column="margin_right" property="marginRight" jdbcType="DECIMAL"/>
+        <result column="wide_qty" property="wideQty" jdbcType="DECIMAL"/>
+        <result column="high_qty" property="highQty" jdbcType="DECIMAL"/>
+        <result column="high_space" property="highSpace" jdbcType="DECIMAL"/>
+        <result column="tenant_id" property="tenantId" jdbcType="DECIMAL"/>
+        <result column="object_version_number" property="objectVersionNumber" jdbcType="DECIMAL"/>
+        <result column="creation_date" property="creationDate" jdbcType="DATE"/>
+        <result column="created_by" property="createdBy" jdbcType="DECIMAL"/>
+        <result column="last_updated_by" property="lastUpdatedBy" jdbcType="DECIMAL"/>
+        <result column="last_update_date" property="lastUpdateDate" jdbcType="DATE"/>
+    </resultMap>
+
+    <select id="selectLabelPrintAttribute" resultType="org.hzero.report.domain.entity.LabelPrint">
+        select
+            paper_size,
+            paper_width,
+            paper_high,
+            print_direction,
+            margin_top,
+            margin_bottom,
+            margin_left,
+            margin_right,
+            wide_qty,
+            high_qty,
+            high_space
+        from hrpt_label_print
+        where
+            label_template_code = #{labelTemplateCode}
+            and tenant_id = #{tenantId}
+    </select>
+</mapper>

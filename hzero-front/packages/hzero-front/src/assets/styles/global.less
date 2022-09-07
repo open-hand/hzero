@@ -1,0 +1,903 @@
+@import './variables.less';
+@import './mixins.less';
+// 公用的样式, 每个样式都必须加上注释
+
+:global {
+  // Select 不要边框
+  .select-no-border.ant-select {
+    // 没有边框的select
+    > div {
+      box-shadow: none;
+      background-color: transparent;
+      border: 0 none;
+    }
+  }
+
+  /* 详情页的表单和折叠面板样式 */
+
+  .ued-detail-wrapper {
+    // 折叠面板统一样式
+    .form-collapse,
+    .ant-collapse {
+      border: none;
+      background-color: #fff;
+
+      .ant-collapse-item.ant-collapse-no-arrow .ant-collapse-header {
+        padding: 0;
+      }
+
+      .ant-collapse-item {
+        border-bottom: none;
+        margin-bottom: 24px;
+        background-color: #fafafa;
+
+        .ant-collapse-header {
+          height: 48px;
+          line-height: 48px;
+
+          & > i {
+            font-weight: bold;
+            margin-left: 8px;
+            color: rgb(41, 190, 206);
+          }
+
+          & > h3 {
+            text-indent: 16px;
+            display: inline-block;
+            line-height: 1.17em;
+          }
+
+          & > a {
+            margin-left: 16px;
+          }
+        }
+
+        .ant-collapse-content {
+          border-top: none;
+
+          .ant-collapse-content-box {
+            padding-bottom: 0;
+
+            .last-form-item {
+              margin-bottom: 0;
+
+              .ant-row {
+                margin-bottom: 0;
+              }
+
+              .ant-form-item-control-wrapper .ant-form-item-control .ant-form-item-children pre {
+                margin-bottom: 0;
+              }
+            }
+          }
+        }
+      }
+
+      /* UED行样式 */
+      // 纯展示行
+      .read-row {
+        line-height: 20px;
+        margin-bottom: 16px;
+
+        .ant-col-8 > .ant-row.ant-form-item {
+          & > .ant-col-9.ant-form-item-label {
+            line-height: 20px;
+
+            label {
+              color: #666;
+            }
+          }
+
+          & > .ant-col-15.ant-form-item-control-wrapper {
+            & > .ant-form-item-control {
+              line-height: 20px;
+            }
+          }
+
+          margin-bottom: 0;
+        }
+      }
+
+      // 纯编辑行
+      .writable-row {
+        margin-bottom: 16px;
+
+        & > .ant-col-8 {
+          .ant-calendar-picker,
+          .ant-input-number {
+            width: 100%;
+          }
+          & > .ant-row.ant-form-item {
+            margin-bottom: 0;
+
+            & > .ant-col-9.ant-form-item-label {
+              line-height: 28px;
+              color: #666;
+
+              label {
+                color: #666;
+              }
+            }
+
+            & > .ant-col-15.ant-form-item-control-wrapper > .ant-form-item-control {
+              line-height: 28px;
+            }
+          }
+        }
+      }
+
+      // 混合行
+      .inclusion-row > .ant-col-8 {
+        .ant-calendar-picker,
+        .ant-input-number {
+          width: 100%;
+        }
+        & > .ant-row {
+          margin-bottom: 16px;
+
+          & > div {
+            line-height: 28px;
+          }
+        }
+
+        & > .ant-row.ant-form-item {
+          & > .ant-col-9.ant-form-item-label {
+            line-height: 28px;
+            color: #666;
+
+            label {
+              color: #666;
+            }
+          }
+
+          & > .ant-col-15.ant-form-item-control-wrapper > .ant-form-item-control {
+            line-height: 28px;
+          }
+        }
+      }
+
+      // 编辑状态半行
+      .half-row {
+        display: flex;
+        margin-bottom: 16px;
+
+        .ant-row.ant-form-item {
+          margin-bottom: 0;
+
+          & > .ant-form-item-label {
+            width: 25%;
+            margin-right: -6px;
+            float: left;
+            line-height: 28px;
+
+            label {
+              color: #666;
+            }
+          }
+
+          & > .ant-form-item-control-wrapper {
+            width: 75%;
+            float: left;
+            color: #333;
+            line-height: 28px;
+
+            .ant-form-item-control {
+              line-height: 28px;
+            }
+          }
+        }
+      }
+
+      // 纯展示半行
+      .read-half-row {
+        display: flex;
+        margin-bottom: 16px;
+
+        .ant-row.ant-form-item {
+          margin-bottom: 0;
+
+          & > .ant-form-item-label {
+            width: 25%;
+            margin-right: -6px;
+            float: left;
+            line-height: 20px;
+
+            label {
+              color: #666;
+            }
+          }
+
+          & > .ant-form-item-control-wrapper {
+            width: 75%;
+            float: left;
+            color: #333;
+            line-height: 20px;
+
+            .ant-form-item-control {
+              line-height: 20px;
+            }
+          }
+        }
+      }
+
+      // 表单校验文字样式
+      .ant-form-item-control-wrapper {
+        .ant-form-item-control.has-error.ant-form-item-required .ant-form-explain {
+          margin-top: 2px;
+        }
+      }
+    }
+  }
+
+  // 表单字段 通用样式
+  .ued-form-field {
+    width: 100%;
+  }
+
+  // ------------ List Page -----------
+
+  .search-btn-more {
+    padding-left: 24px !important;
+
+    .ant-form-item-children {
+      & > button:not(:last-child),
+      & > a:not(:last-child) {
+        margin-right: 8px;
+      }
+    }
+  }
+
+  .more-fields-form {
+    :global {
+      .ant-input-number,
+      .ant-calendar-picker,
+      .ant-form-item {
+        width: 100%;
+      }
+    }
+
+    & > div.ant-form-item {
+      margin-bottom: 3px;
+
+      &:last-child {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        padding: 4px 0;
+        margin-bottom: 0;
+        z-index: 1;
+        border-top: 1px solid #e8e8e8;
+        background: rgba(255, 255, 255, 1);
+
+        & .ant-form-item-children {
+          float: right;
+          margin-right: 12px;
+        }
+      }
+    }
+  }
+
+  // 查询表单
+  .table-list-search {
+    margin-bottom: 16px;
+
+    :global(.ant-form-item) {
+      margin-bottom: 2px;
+
+      &:global(.ant-form-item-with-help) {
+        margin-bottom: 14px;
+      }
+    }
+  }
+
+  // 查询表单样式(集合table-list-search、more-fields-form)
+  .more-fields-search-form {
+    &.ant-form {
+      margin-bottom: 16px;
+    }
+
+    :global {
+      .ant-input-number,
+      .ant-calendar-picker,
+      .ant-form-item {
+        width: 100%;
+        margin-bottom: 0;
+      }
+    }
+  }
+
+  .table-list-operator {
+    margin-bottom: 16px;
+
+    button {
+      margin-right: 8px;
+    }
+  }
+
+  .table-list-form {
+    .ant-form-inline .ant-form-item {
+      margin-bottom: 24px;
+      margin-right: 0;
+      display: flex;
+
+      > .ant-form-item-label {
+        width: auto;
+        line-height: 32px;
+        padding-right: 8px;
+      }
+
+      .ant-form-item-control {
+        line-height: 32px;
+      }
+    }
+
+    .ant-form-item-control-wrapper {
+      flex: 1;
+    }
+
+    .submit-buttons {
+      white-space: nowrap;
+      margin-bottom: 24px;
+    }
+  }
+
+  @media screen and (max-width: @screen-lg) {
+    .tableListForm :global(.ant-form-item) {
+      margin-right: 24px;
+    }
+  }
+
+  @media screen and (max-width: @screen-md) {
+    .tableListForm :global(.ant-form-item) {
+      margin-right: 8px;
+    }
+  }
+
+  // ------------ List Page -----------
+
+  /* 详情页面 Card, 二级标题 */
+
+  .ant-card {
+    // 表单, 表格
+    &.ued-detail-card,
+    &.ued-detail-card-table {
+      > .ant-card-head {
+        border-bottom-color: @hzero-bgc-color-dark;
+        padding: @hzero-gutter-md @hzero-gutter;
+        position: relative;
+
+        &::before {
+          content: '';
+          position: absolute;
+          left: 0;
+          top: 16px;
+          width: 3px;
+          height: 14px;
+          background-color: @hzero-primary-color;
+          pointer-events: none;
+        }
+
+        > .ant-card-head-wrapper {
+          > .ant-card-head-title {
+            padding: 0;
+
+            > h3 {
+              margin: 0;
+              color: @hzero-form-disabled-wrapper-color;
+              font-weight: normal;
+              .hzero-font-size(14px);
+            }
+          }
+        }
+      }
+
+      > .ant-card-body {
+        // normal form
+        .ant-form-item {
+          &-label {
+            text-align: left;
+            color: @hzero-form-disabled-label-color;
+          }
+
+          &-control {
+            color: @hzero-form-disabled-wrapper-color;
+
+            .ant-calendar-picker,
+            .ant-input-number {
+              width: 100%;
+            }
+
+            .ant-form-explain {
+              margin-top: 2px;
+            }
+          }
+
+          margin-bottom: 0;
+
+          &.ant-form-item-with-help {
+            margin-bottom: @hzero-gutter-inline;
+          }
+        }
+
+        /* UED行样式 */
+        // 纯展示行
+        .read-row {
+          line-height: 20px;
+          margin-bottom: 16px;
+
+          .ant-col-8 > .ant-row.ant-form-item {
+            & > .ant-col-9.ant-form-item-label {
+              line-height: 20px;
+
+              label {
+                color: #666;
+              }
+            }
+
+            & > .ant-col-15.ant-form-item-control-wrapper {
+              & > .ant-form-item-control {
+                line-height: 20px;
+              }
+            }
+
+            margin-bottom: 0;
+          }
+        }
+
+        // 纯编辑行
+        .writable-row {
+          margin-bottom: 16px;
+
+          & > .ant-col-8 {
+            & > .ant-row.ant-form-item {
+              margin-bottom: 0;
+
+              & > .ant-col-9.ant-form-item-label {
+                line-height: 28px;
+                color: #666;
+
+                label {
+                  color: #666;
+                }
+              }
+
+              & > .ant-col-15.ant-form-item-control-wrapper > .ant-form-item-control {
+                line-height: 28px;
+              }
+            }
+          }
+        }
+
+        // 混合行
+        .inclusion-row > .ant-col-8 {
+          & > .ant-row {
+            margin-bottom: 16px;
+
+            & > div {
+              line-height: 28px;
+            }
+          }
+
+          & > .ant-row.ant-form-item {
+            & > .ant-col-9.ant-form-item-label {
+              line-height: 28px;
+              color: #666;
+
+              label {
+                color: #666;
+              }
+            }
+
+            & > .ant-col-15.ant-form-item-control-wrapper > .ant-form-item-control {
+              line-height: 28px;
+            }
+          }
+        }
+
+        // 编辑状态半行
+        .half-row {
+          display: flex;
+          margin-bottom: 16px;
+
+          .ant-row.ant-form-item {
+            margin-bottom: 0;
+
+            & > .ant-form-item-label {
+              width: 25%;
+              margin-right: -6px;
+              float: left;
+              line-height: 28px;
+
+              label {
+                color: #666;
+              }
+            }
+
+            & > .ant-form-item-control-wrapper {
+              width: 75%;
+              float: left;
+              color: #333;
+              line-height: 28px;
+
+              .ant-form-item-control {
+                line-height: 28px;
+              }
+            }
+          }
+        }
+
+        // 纯展示半行
+        .read-half-row {
+          display: flex;
+          margin-bottom: 16px;
+
+          .ant-row.ant-form-item {
+            margin-bottom: 0;
+
+            & > .ant-form-item-label {
+              width: 25%;
+              margin-right: -6px;
+              float: left;
+              line-height: 20px;
+
+              label {
+                color: #666;
+              }
+            }
+
+            & > .ant-form-item-control-wrapper {
+              width: 75%;
+              float: left;
+              color: #333;
+              line-height: 20px;
+
+              .ant-form-item-control {
+                line-height: 20px;
+              }
+            }
+          }
+        }
+
+        // 最后一行表单
+        .last-form-item {
+          margin-bottom: 0;
+
+          .ant-row {
+            margin-bottom: 0;
+          }
+
+          .ant-form-item-control-wrapper .ant-form-item-control .ant-form-item-children pre {
+            margin-bottom: 0;
+          }
+        }
+      }
+    }
+
+    &.ued-detail-card {
+      > .ant-card-body {
+        padding: @hzero-gutter;
+        padding-bottom: 24px;
+      }
+    }
+
+    &.ued-detail-card-table {
+      > .ant-card-body {
+        padding: @hzero-gutter 0;
+
+        .table-list-operator {
+          display: flex;
+
+          flex-direction: row-reverse;
+          justify-content: flex-start;
+          align-items: center;
+
+          // TODO: 还需修改样式 间距
+          // 所有按钮给一个左间距
+          // 由于方向反转了 所以 是 last-child 没有 margin-left
+          > .ant-btn,
+          > .table-list-operation {
+            margin: 0;
+          }
+
+          > .ant-btn:not(:last-child),
+          > .table-list-operation:not(:last-child) {
+            margin-left: @hzero-gutter-sm;
+          }
+        }
+      }
+    }
+  }
+
+  /* Card 三级标题 */
+
+  .ant-card {
+    // 表单, 表格
+    &.ued-detail-card-third,
+    &.ued-detail-card-table-third {
+      > .ant-card-head {
+        //border-bottom-color: @hzero-bgc-color-dark;
+        border: 0;
+        padding: @hzero-gutter-md @hzero-gutter;
+        position: relative;
+
+        > .ant-card-head-wrapper {
+          > .ant-card-head-title {
+            padding: 0;
+
+            > h3 {
+              margin: 0;
+              color: #333;
+              font-weight: normal;
+              .hzero-font-size(14px);
+            }
+          }
+        }
+      }
+    }
+
+    &.ued-detail-card-third {
+      > .ant-card-body {
+        padding: @hzero-gutter;
+      }
+    }
+
+    &.ued-detail-card-table-third {
+      > .ant-card-body {
+        padding: @hzero-gutter 0;
+
+        .table-list-operator {
+          display: flex;
+
+          flex-direction: row-reverse;
+          justify-content: flex-start;
+          align-items: center;
+
+          // TODO: 还需修改样式 间距
+          // 所有按钮给一个左间距
+          // 由于方向反转了 所以 是 last-child 没有 margin-left
+          > .ant-btn,
+          > .table-list-operation {
+            margin: 0;
+          }
+
+          > .ant-btn:not(:last-child),
+          > .table-list-operation:not(:last-child) {
+            margin-left: @hzero-gutter-sm;
+          }
+        }
+      }
+    }
+  }
+
+  // 表格的操作按钮 的 父元素的class
+  .table-operator {
+    margin-bottom: 16px;
+    display: flex;
+
+    flex-direction: row-reverse;
+    justify-content: flex-start;
+    align-items: center;
+
+    // TODO: 还需修改样式 间距
+    // 所有按钮给一个左间距
+    // 由于方向反转了 所以 是 lat-child 没有 margin-left
+    > .ant-btn:not(:last-child),
+    > .table-list-operation:not(:last-child) {
+      margin: 0 0 0 @hzero-gutter-sm;
+    }
+  }
+
+  /* 编辑表格样式 */
+
+  .ued-edit-form {
+    /* UED行样式 */
+    // normal form
+    .ant-form-item {
+      &-label {
+        text-align: left;
+        color: @hzero-form-disabled-label-color;
+      }
+
+      &-control {
+        color: @hzero-form-disabled-wrapper-color;
+      }
+
+      margin-bottom: 0;
+
+      &.ant-form-item-with-help {
+        margin-bottom: @hzero-gutter-inline;
+      }
+    }
+
+    /* UED行样式 */
+    // 纯展示行
+    .read-row {
+      line-height: 20px;
+      margin-bottom: 16px;
+
+      .ant-col-8 > .ant-row.ant-form-item {
+        & > .ant-col-9.ant-form-item-label {
+          line-height: 20px;
+
+          label {
+            color: #666;
+          }
+        }
+
+        & > .ant-col-15.ant-form-item-control-wrapper {
+          & > .ant-form-item-control {
+            line-height: 20px;
+          }
+        }
+
+        margin-bottom: 0;
+      }
+    }
+
+    // 纯编辑行
+    .writable-row {
+      margin-bottom: 16px;
+
+      & > .ant-col-8 {
+        & > .ant-row.ant-form-item {
+          margin-bottom: 0;
+
+          & > .ant-col-9.ant-form-item-label {
+            line-height: 28px;
+            color: #666;
+
+            label {
+              color: #666;
+            }
+          }
+
+          & > .ant-col-15.ant-form-item-control-wrapper > .ant-form-item-control {
+            line-height: 28px;
+          }
+        }
+      }
+    }
+
+    // 混合行
+    .inclusion-row > .ant-col-8 {
+      & > .ant-row {
+        margin-bottom: 16px;
+
+        & > div {
+          line-height: 28px;
+        }
+      }
+
+      & > .ant-row.ant-form-item {
+        & > .ant-col-9.ant-form-item-label {
+          line-height: 28px;
+          color: #666;
+
+          label {
+            color: #666;
+          }
+        }
+
+        & > .ant-col-15.ant-form-item-control-wrapper > .ant-form-item-control {
+          line-height: 28px;
+        }
+      }
+    }
+
+    // 编辑状态半行
+    .half-row {
+      display: flex;
+      margin-bottom: 16px;
+
+      .ant-row.ant-form-item {
+        margin-bottom: 0;
+
+        & > .ant-form-item-label {
+          width: 25%;
+          margin-right: -6px;
+          float: left;
+          line-height: 28px;
+
+          label {
+            color: #666;
+          }
+        }
+
+        & > .ant-form-item-control-wrapper {
+          width: 75%;
+          float: left;
+          color: #333;
+          line-height: 28px;
+
+          .ant-form-item-control {
+            line-height: 28px;
+          }
+        }
+      }
+    }
+
+    // 纯展示半行
+    .read-half-row {
+      display: flex;
+      margin-bottom: 16px;
+
+      .ant-row.ant-form-item {
+        margin-bottom: 0;
+
+        & > .ant-form-item-label {
+          width: 25%;
+          margin-right: -6px;
+          float: left;
+          line-height: 20px;
+
+          label {
+            color: #666;
+          }
+        }
+
+        & > .ant-form-item-control-wrapper {
+          width: 75%;
+          float: left;
+          color: #333;
+          line-height: 20px;
+
+          .ant-form-item-control {
+            line-height: 20px;
+          }
+        }
+      }
+    }
+
+    // 最后一行表单
+    .last-row {
+      margin-bottom: 0;
+
+      .ant-row {
+        margin-bottom: 0;
+      }
+
+      .ant-form-item-control-wrapper .ant-form-item-control .ant-form-item-children pre {
+        margin-bottom: 0;
+      }
+    }
+  }
+
+  // 表格操作列 样式
+
+  .action-link {
+    // 由于 td 本身有 16px 的padding 所以这里只给了 0px
+    color: @hzero-primary-color-2;
+    padding-left: 0;
+    padding-right: 0;
+
+    a:not(:first-child),
+    span:not(:first-child) {
+      margin: 0 0 0 20px;
+    }
+
+    .action-link-operation {
+      vertical-align: middle;
+    }
+
+    // TODO: 如何配置 该变量
+    @maxItemLen: 10;
+    .action-link-loop(@i:0) when (@i =< @maxItemLen) {
+      .action-link-item-@{i} {
+        display: inline-block;
+        width: @i * 12px+0.5;
+        .text-over-flow();
+        vertical-align: middle;
+      }
+      .action-link-loop(@i + 1);
+    }
+    .action-link-loop(0);
+  }
+  // 放在type为text类型的权限按钮上，解决在表格内超出打点部分，禁用无效的问题
+  .hzero-permission-text-btn {
+    display: inline-block;
+    text-overflow: ellipsis;
+    vertical-align: middle;
+    overflow: hidden;
+    width: 100%;
+  }
+}

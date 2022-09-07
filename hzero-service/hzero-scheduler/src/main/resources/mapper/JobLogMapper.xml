@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.scheduler.infra.mapper.JobLogMapper">
+    <!-- 可根据自己的需求，是否要使用 -->
+    <resultMap id="BaseResultMap" type="org.hzero.scheduler.domain.entity.JobLog">
+        <result column="log_id" property="logId" jdbcType="DECIMAL"/>
+        <result column="job_id" property="jobId" jdbcType="DECIMAL"/>
+        <result column="tenant_id" property="tenantId" jdbcType="DECIMAL"/>
+        <result column="job_result" property="jobResult" jdbcType="VARCHAR"/>
+        <result column="client_result" property="clientResult" jdbcType="VARCHAR"/>
+        <result column="executor_id" property="executorId" jdbcType="DECIMAL"/>
+        <result column="address" property="address" jdbcType="VARCHAR"/>
+        <result column="message" property="message" jdbcType="VARCHAR"/>
+        <result column="start_time" property="startTime" jdbcType="DATE"/>
+        <result column="end_time" property="endTime" jdbcType="DATE"/>
+        <result column="log_url" property="logUrl" jdbcType="VARCHAR"/>
+        <result column="object_version_number" property="objectVersionNumber" jdbcType="DECIMAL"/>
+        <result column="created_by" property="createdBy" jdbcType="DECIMAL"/>
+        <result column="creation_date" property="creationDate" jdbcType="DATE"/>
+        <result column="last_updated_by" property="lastUpdatedBy" jdbcType="DECIMAL"/>
+        <result column="last_update_date" property="lastUpdateDate" jdbcType="DATE"/>
+    </resultMap>
+
+    <select id="listLog" parameterType="org.hzero.scheduler.api.dto.JobLogQueryDTO" resultType="org.hzero.scheduler.domain.entity.JobLog">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()" />
+        SELECT
+            hjl.log_id,
+            hjl.job_id,
+            hjl.job_id task_id,
+            hji.job_code,
+            hji.description,
+            hjl.tenant_id,
+            ht.tenant_name,
+            hjl.job_result,
+            hjl.client_result,
+            het.executor_name,
+            hjl.address,
+            hjl.message_header,
+            hjl.start_time,
+            hjl.end_time,
+            hjl.log_url,
+            hjl.output_file,
+            hjl.object_version_number,
+            ( CASE WHEN hjl.log_message IS NULL THEN 0 ELSE 1 END ) logFlag
+        FROM
+            hsdr_job_log hjl
+        JOIN hsdr_job_info hji ON hji.job_id = hjl.job_id
+        LEFT JOIN hpfm_tenant_tl ht ON ht.tenant_id = hjl.tenant_id AND ht.lang = #{lang}
+        JOIN hsdr_executor he ON he.executor_id = hjl.executor_id
+        LEFT JOIN hsdr_executor_tl het ON het.executor_id = he.executor_id AND het.lang = #{lang}
+        WHERE 1 = 1
+        <if test="jobId != null">
+            AND hjl.job_id = #{jobId}
+        </if>
+        <if test="taskId != null">
+            AND hjl.job_id = #{taskId}
+        </if>
+        <if test="jobCode != null and jobCode != ''">
+            <bind name="jobCodeLike" value="'%' + jobCode + '%'"/>
+            AND hji.job_code LIKE #{jobCodeLike}
+        </if>
+        <if test="description != null and description != ''">
+            <bind name="descriptionLike" value="'%' + description + '%'"/>
+            AND hji.description LIKE #{descriptionLike}
+        </if>
+        <if test="tenantId != null">
+            AND hjl.tenant_id = #{tenantId}
+        </if>
+        <if test="jobResult != null and jobResult != ''">
+            AND hjl.job_result = #{jobResult}
+        </if>
+        <if test="clientResult != null and clientResult != ''">
+            AND hjl.client_result = #{clientResult}
+        </if>
+        <if test="executorName != null and executorName != ''">
+            <bind name="executorNameLike" value="'%' + executorName + '%'"/>
+            AND het.executor_name LIKE #{executorNameLike}
+        </if>
+        <if test="timeStart != null">
+            AND hjl.start_time &gt;= #{timeStart}
+        </if>
+        <if test="timeEnd != null">
+            AND hjl.start_time &lt;= #{timeEnd}
+        </if>
+    </select>
+
+    <select id="listLogByTime" resultType="org.hzero.scheduler.domain.entity.JobLog">
+        SELECT
+            hjl.log_id,
+            hjl.log_url,
+            hjl.output_file
+        FROM
+            hsdr_job_log hjl
+        WHERE 1 = 1
+        <if test="time != null">
+            AND hjl.start_time &lt;= #{time}
+        </if>
+        <if test="jobId != null">
+            AND hjl.job_id = #{jobId}
+        </if>
+        <if test="tenantId != null">
+            AND hjl.tenant_id = #{tenantId}
+        </if>
+        ORDER BY
+            hjl.log_id DESC
+    </select>
+
+    <update id="updateLog" parameterType="org.hzero.boot.scheduler.api.dto.JobLogDTO">
+        UPDATE hsdr_job_log
+        SET client_result = #{clientResult},
+            job_result = 'SUCCESS',
+            message_header = #{messageHeader},
+            message = #{message},
+            end_time = #{endTime},
+            log_url = #{logUrl},
+            log_message = #{logMessage},
+            output_file = #{outputFile},
+            object_version_number = object_version_number + 1
+        WHERE
+            log_id = #{logId}
+    </update>
+
+    <update id="updateLogByJobId">
+        UPDATE hsdr_job_log
+        SET client_result = 'FAILURE',
+            job_result = 'SUCCESS',
+            end_time = #{endTime},
+            object_version_number = object_version_number + 1
+        WHERE
+            job_id = #{jobId}
+        AND client_result = 'DOING'
+    </update>
+
+    <update id="updateLogOffline">
+        UPDATE hsdr_job_log
+        SET client_result = 'FAILURE',
+            job_result = 'SUCCESS',
+            end_time = #{endTime},
+            message_header = 'Executor offline.',
+            message = 'Executor offline.',
+            object_version_number = object_version_number + 1
+        WHERE
+            job_id = #{jobId}
+        AND client_result = 'DOING'
+    </update>
+
+    <update id="updateLogByAddress">
+        UPDATE hsdr_job_log
+        SET client_result = 'FAILURE',
+            job_result = 'SUCCESS',
+            end_time = #{endTime},
+            message_header = #{messageHeader},
+            object_version_number = object_version_number + 1
+        WHERE
+            address = #{address}
+        AND client_result = 'DOING'
+    </update>
+
+    <delete id="batchDeleteById">
+        DELETE FROM hsdr_job_log WHERE log_id IN
+        <foreach collection="logIdList" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+
+    <update id="updateErrorLog">
+        UPDATE hsdr_job_log
+        SET client_result = 'FAILURE',
+            job_result = 'SUCCESS',
+            end_time = #{now},
+            message_header = 'Job execution timeout.',
+            message = 'Job execution timeout.',
+            object_version_number = object_version_number + 1
+        WHERE
+            client_result = 'DOING'
+        AND start_time &lt;= #{time}
+    </update>
+
+</mapper>

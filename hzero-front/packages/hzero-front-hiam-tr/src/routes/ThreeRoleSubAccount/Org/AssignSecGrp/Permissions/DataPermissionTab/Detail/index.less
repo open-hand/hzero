@@ -1,0 +1,16 @@
+/**
+  @date: 2019-4-19
+  @author: zqq <qingqing.zhang@hand-china.com>
+  @version: 0.0.1
+  @copyright Copyright (c) 2018, Hand
+ */
+.right-btn-group {
+  float: right;
+  :global {
+    .ant-form-item-control-wrapper > .ant-form-item-control > .ant-form-item-children > {
+      & > button:not(:first-child) {
+        margin-left: 8px;
+      }
+    }
+  }
+}

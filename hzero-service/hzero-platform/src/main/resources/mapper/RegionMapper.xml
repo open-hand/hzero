@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.platform.infra.mapper.RegionMapper">
+
+    <select id="listRegion" resultType="org.hzero.platform.api.dto.RegionDTO">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()" />
+        select
+            hr.region_id,
+            hr.country_id,
+            hr.region_code,
+            hrt.region_name,
+            hr.parent_region_id,
+            hr.enabled_flag,
+            hr.object_version_number,
+            hr.quick_index
+        from hpfm_region hr
+            join hpfm_region_tl hrt on hrt.region_id = hr.region_id and hrt.lang = #{lang}
+        where hr.country_id = #{countryId}
+        <if test="enabledFlag != null">
+            and hr.enabled_flag = #{enabledFlag}
+        </if>
+    </select>
+    <select id="listRegionWithPossibleParent" resultType="org.hzero.platform.domain.entity.Region">
+        SELECT
+            hr.region_id,
+            hr.country_id,
+            hr.region_code,
+            hr.region_name,
+            hr.quick_index,
+            hr.parent_region_id,
+            hr.level_path,
+            hr.level_number,
+            hr.enabled_flag
+        FROM hpfm_region hr
+        WHERE
+            hr.country_id = #{countryId}
+        AND EXISTS (
+            SELECT 1 FROM hpfm_region child
+            WHERE child.country_id = hr.country_id
+            AND child.region_id = #{regionId}
+            AND (child.level_path = hr.level_path OR child.level_path LIKE CONCAT(hr.level_path, '|%'))
+        )
+    </select>
+    <select id="listRegionWithParent" resultType="org.hzero.platform.api.dto.RegionDTO">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()" />
+        SELECT
+            hr.region_id,
+            hr.country_id,
+            hr.region_code,
+            hrt.region_name,
+            hr.parent_region_id,
+            hr.enabled_flag,
+            hr.level_path,
+            hr.level_number,
+            hr.object_version_number,
+            hr.quick_index
+        FROM hpfm_region hr
+            JOIN hpfm_region_tl hrt ON hrt.region_id = hr.region_id AND hrt.lang = #{lang}
+        WHERE
+            hr.country_id = #{countryId}
+            <if test="condition != null and condition != ''">
+                <bind name="condition" value="'%' + condition + '%'"/>
+                AND EXISTS (
+                    SELECT
+                        hr1.region_id
+                    FROM hpfm_region hr1
+                    WHERE hr1.country_id = #{countryId}
+                        AND (hr1.region_code LIKE #{condition} OR hr1.region_name LIKE #{condition})
+                        AND (hr1.region_id = hr.region_id OR hr1.level_path LIKE concat( hr.level_path, '|%')))
+            </if>
+            <if test="enabledFlag != null">
+                AND hr.enabled_flag = #{enabledFlag}
+            </if>
+    </select>
+    <select id="listRegionByLevelPath" resultType="org.hzero.platform.domain.entity.Region">
+        select
+            region_id,
+            enabled_flag
+        from hpfm_region
+        where level_path in
+        <foreach collection="levelPathList" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </select>
+    <select id="listRegionChildrenByLevelPath" resultType="org.hzero.platform.domain.entity.Region">
+        select
+            region_id,
+            object_version_number
+        from hpfm_region
+        <bind name="levelPathLike" value="levelPath + '|%'"/>
+        where (level_path like #{levelPathLike} OR level_path = #{levelPath})
+    </select>
+
+    <select id="queryRegionByPrimaryKeys" resultType="org.hzero.platform.api.dto.RegionDTO">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        SELECT
+            hr.region_id,
+            hr.region_code,
+            hrt.region_name,
+            hr.country_id,
+            hr.parent_region_id
+        FROM hpfm_region hr
+        LEFT JOIN hpfm_region_tl hrt ON hrt.region_id = hr.region_id AND hrt.lang = #{lang}
+        WHERE   1 = 0
+        <foreach collection="regionIds" item="regionId">
+            OR EXISTS(
+            SELECT 'x'
+            FROM hpfm_region hr1
+            WHERE
+            hr1.region_id = #{regionId}
+            AND  hr1.level_path LIKE CONCAT(hr.level_path, '|%')
+            OR hr.region_id = #{regionId}
+            )
+        </foreach>
+    </select>
+    <select id="selectRegion" resultType="org.hzero.platform.api.dto.RegionDTO">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()" />
+        SELECT
+            hr.region_id,
+            hr.country_id,
+            hr.region_code,
+            hrt.region_name,
+            hr.parent_region_id,
+            hr.enabled_flag,
+            hr.level_path,
+            hr.level_number,
+            hr.object_version_number,
+            hr.quick_index
+        FROM hpfm_region hr
+        JOIN hpfm_region_tl hrt ON hrt.region_id = hr.region_id AND hrt.lang = #{lang}
+        WHERE
+        hr.country_id = #{countryId}
+        <if test="condition != null and condition != ''">
+            <bind name="condition" value="'%' + condition + '%'"/>
+            AND (hr.region_code LIKE #{condition} OR hrt.region_name LIKE #{condition})
+        </if>
+        <if test="enabledFlag != null">
+            AND hr.enabled_flag = #{enabledFlag}
+        </if>
+    </select>
+    <select id="selectRegionParent" resultType="org.hzero.platform.api.dto.RegionDTO">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        SELECT
+            hr.region_id,
+            hr.country_id,
+            hr.region_code,
+            hrt.region_name,
+            hr.parent_region_id,
+            hr.enabled_flag,
+            hr.level_path,
+            hr.level_number,
+            hr.object_version_number,
+            hr.quick_index
+        FROM hpfm_region hr
+            JOIN hpfm_region_tl hrt ON hrt.region_id = hr.region_id AND hrt.lang = #{lang}
+        WHERE
+            hr.region_id IN
+            <foreach collection="parentRegionIdList" item="parentRegionId" separator="," open="(" close=")">
+                #{parentRegionId}
+            </foreach>
+            <if test="enabledFlag != null">
+                AND hr.enabled_flag = #{enabledFlag}
+            </if>
+    </select>
+    <select id="selectSubNodeRegion" resultType="org.hzero.platform.api.dto.RegionDTO">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()" />
+        SELECT
+            hr.region_id,
+            hr.country_id,
+            hr.region_code,
+            hrt.region_name,
+            hr.parent_region_id,
+            hr.enabled_flag,
+            hr.level_path,
+            hr.level_number,
+            hr.object_version_number,
+            hr.quick_index,
+            CASE
+            WHEN sr.parent_region_id IS NULL THEN
+            0
+            ELSE
+            1
+            END AS has_next_flag
+        FROM
+            hpfm_region hr
+        JOIN hpfm_region_tl hrt ON hrt.region_id = hr.region_id
+        LEFT JOIN (
+            SELECT
+            hr1.country_id,
+            hr1.parent_region_id
+            FROM
+            hpfm_region hr1
+            WHERE hr1.tenant_id = #{tenantId}
+            GROUP BY
+            hr1.country_id, hr1.parent_region_id
+        ) sr ON sr.parent_region_id = hr.region_id
+        WHERE
+        hr.country_id = #{countryId}
+        AND hr.tenant_id = #{tenantId}
+        AND hrt.lang = #{lang}
+        <choose>
+            <when test="regionId != null">
+                AND hr.parent_region_id = #{regionId}
+            </when>
+            <otherwise>
+                AND hr.parent_region_id IS NULL
+            </otherwise>
+        </choose>
+        <if test="enabledFlag != null">
+            AND hr.enabled_flag = #{enabledFlag}
+        </if>
+    </select>
+    <select id="selectPageRegion" resultType="org.hzero.platform.api.dto.RegionDTO">
+    <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()" />
+        SELECT
+            hr.region_id,
+            hr.country_id,
+            hr.region_code,
+            hrt.region_name,
+            hr.parent_region_id,
+            hr.enabled_flag,
+            hr.level_path,
+            hr.level_number,
+            hr.object_version_number,
+            hr.quick_index
+        FROM
+            hpfm_region hr
+        JOIN hpfm_region_tl hrt ON hrt.region_id = hr.region_id
+        WHERE
+        hrt.lang = #{lang}
+        AND hr.country_id = #{countryId}
+        AND hr.tenant_id = #{tenantId}
+        <if test="condition != null and condition != ''">
+            <bind name="condition" value="'%' + condition + '%'"/>
+            AND (hr.region_code LIKE #{condition} OR hr.region_name LIKE #{condition})
+        </if>
+        <if test="enabledFlag != null">
+            AND hr.enabled_flag = #{enabledFlag}
+        </if>
+    </select>
+    <select id="selectNameByParentIds" resultType="org.hzero.platform.api.dto.RegionDTO">
+    <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()" />
+        SELECT
+            hr.region_id,
+            hr.region_name,
+            hr.parent_region_id
+        FROM
+            hpfm_region hr
+        JOIN hpfm_region_tl hrt ON hrt.region_id = hr.region_id
+        WHERE
+        hrt.lang = #{lang}
+        AND hr.tenant_id = #{tenantId}
+        AND hr.region_id IN
+        <foreach collection="parentIds" item="parentId" open="(" close=")" separator=",">
+            #{parentId}
+        </foreach>
+    </select>
+</mapper>

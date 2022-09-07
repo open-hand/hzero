@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.file.infra.mapper.WatermarkConfigMapper">
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap id="BaseResultMap" type="org.hzero.file.domain.entity.WatermarkConfig">
+        <result column="watermark_id" property="watermarkId" jdbcType="DECIMAL"/>
+        <result column="watermark_code" property="watermarkCode" jdbcType="VARCHAR"/>
+        <result column="description" property="description" jdbcType="VARCHAR"/>
+        <result column="watermark_type" property="watermarkType" jdbcType="VARCHAR"/>
+        <result column="fill_opacity" property="fillOpacity" jdbcType="DECIMAL"/>
+        <result column="color" property="color" jdbcType="VARCHAR"/>
+        <result column="font_size" property="fontSize" jdbcType="DECIMAL"/>
+        <result column="x_axis" property="xAxis" jdbcType="DECIMAL"/>
+        <result column="y_axis" property="yAxis" jdbcType="DECIMAL"/>
+        <result column="align" property="align" jdbcType="DECIMAL"/>
+        <result column="weight" property="weight" jdbcType="DECIMAL"/>
+        <result column="height" property="height" jdbcType="DECIMAL"/>
+        <result column="rotation" property="rotation" jdbcType="DECIMAL"/>
+        <result column="detail" property="detail" jdbcType="VARCHAR"/>
+        <result column="enabled_flag" property="enabledFlag" jdbcType="DECIMAL"/>
+        <result column="tenant_id" property="tenantId" jdbcType="DECIMAL"/>
+        <result column="object_version_number" property="objectVersionNumber" jdbcType="DECIMAL"/>
+        <result column="creation_date" property="creationDate" jdbcType="DATE"/>
+        <result column="created_by" property="createdBy" jdbcType="DECIMAL"/>
+        <result column="last_updated_by" property="lastUpdatedBy" jdbcType="DECIMAL"/>
+        <result column="last_update_date" property="lastUpdateDate" jdbcType="DATE"/>
+    </resultMap>
+
+    <select id="listWatermark" resultType="org.hzero.file.domain.entity.WatermarkConfig">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()" />
+        SELECT
+        	hwc.watermark_id,
+        	hwc.watermark_code,
+        	hwc.description,
+        	hwc.watermark_type,
+        	hwc.enabled_flag,
+        	hwc.tenant_id,
+            ht.tenant_name,
+        	hwc.object_version_number
+        FROM
+        	hfle_watermark_config hwc
+        JOIN hpfm_tenant_tl ht ON ht.tenant_id = hwc.tenant_id AND ht.lang = #{lang}
+        WHERE 1 = 1
+        <if test="tenantId != null">
+            AND hwc.tenant_id = #{tenantId}
+        </if>
+        <if test="watermarkCode != null and watermarkCode != ''">
+            <bind name="watermarkCodeLike" value="'%' + watermarkCode + '%'"/>
+            AND hwc.watermark_code LIKE #{watermarkCodeLike}
+        </if>
+        <if test="description != null and description != ''">
+            <bind name="descriptionLike" value="'%' + description + '%'"/>
+            AND hwc.description LIKE #{descriptionLike}
+        </if>
+        <if test="watermarkType != null and watermarkType != ''">
+            AND hwc.watermark_type = #{watermarkType}
+        </if>
+    </select>
+
+    <select id="detailWatermark" resultType="org.hzero.file.domain.entity.WatermarkConfig">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()" />
+        SELECT
+            hwc.watermark_id,
+            hwc.watermark_code,
+            hwc.description,
+            hwc.watermark_type,
+            hwc.fill_opacity,
+            hwc.color,
+            hwc.font_size,
+            hwc.x_axis,
+            hwc.y_axis,
+            hwc.align,
+            hwc.weight,
+            hwc.height,
+            hwc.rotation,
+            hwc.detail,
+            hwc.font_url,
+            hwc.enabled_flag,
+            hwc.tenant_id,
+            ht.tenant_name,
+            hwc.object_version_number
+        FROM
+            hfle_watermark_config hwc
+        JOIN hpfm_tenant_tl ht ON ht.tenant_id = hwc.tenant_id AND ht.lang = #{lang}
+        WHERE hwc.watermark_id = #{watermarkId}
+        <if test="tenantId != null">
+            AND hwc.tenant_id = #{tenantId}
+        </if>
+    </select>
+</mapper>

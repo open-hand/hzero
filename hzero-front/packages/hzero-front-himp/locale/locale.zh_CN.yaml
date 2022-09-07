@@ -1,0 +1,81 @@
+# hzero-国际化
+
+himp.comment:
+  model.comment.dataStatus: 数据状态
+  model.comment.errorMsg: 错误信息
+  view.button.templateCSV: CSV
+  view.button.templateExcel: EXCEL
+  view.button.downloadTemplate: 下载模板
+  view.button.importData: 数据导入
+  view.button.validateData: 数据验证
+  view.button.dataUpload: 数据上传
+  view.button.export: 数据导出
+  view.message.error.ImportFile: 请上传导入文件
+  view.message.error.notConfigured: 模板客户端路径前缀未配置
+  view.message.title.refreshSuccess: 刷新成功
+  view.message.title.sureToCancel: 确定取消编辑？
+himp.template:
+  model.template.changeDataFlag: 值集转换
+  model.template.columnCode: 列编码
+  model.template.columnIndex: 列号
+  model.template.columnName: 列名
+  model.template.columnType: 列类型
+  model.template.description: 描述
+  model.template.formatMask: 格式掩码
+  model.template.length: 长度
+  model.template.maxValue: 最大值
+  model.template.minValue: 最小值
+  model.template.nullable: 是否为空
+  model.template.prefixPatch: 客户端路径前缀
+  model.template.regularExpression: 正则式
+  model.template.sampleData: 示例数据
+  model.template.templateCode: 模板代码
+  model.template.templateName: 模板名称
+  model.template.templateType: 模板类型
+  model.template.tenantName: 租户
+  model.template.validate: 数据验证
+  model.template.validateSet: 验证值集
+  view.message.title.CSV: CSV
+  view.message.title.EXCEL: EXCEL
+  view.message.title: 导入模板管理
+  view.message.title.commonTemplate: 通用导入
+  view.message.title.confirmDelete: 确定删除？
+  view.message.title.sheetTitle: Sheet页
+  view.message.title.templateDetail: 导入模板管理明细
+  view.title.pageNumber: 页序号
+  view.title.pageName: 页名称
+  view.title.dataSource: 数据源
+  view.title.officialDataTableName: 正式数据表名
+  view.title.validationRule: 校验规则
+himp.commentImport:
+  model.commentImport.status: 导入状态
+  view.button.restore: 恢复
+  view.button.templateImport: 模板导入
+  view.message.processHelp: 需要刷新，才能更新进度
+  view.title.process: 进度
+  view.title.history: 导入历史
+  view.button.history: 历史记录
+  model.commentImport.creationDateFrom: 创建日期从
+  model.commentImport.creationDateTo: 创建日期至
+  model.commentImport.batch: 批次号
+  model.commentImport.dataCount: 数据数量
+  model.commentImport.creationDate: 创建日期
+  model.commentImport.sheetIndex: Sheet导入模板
+himp.importHistory:
+  view.title.dataStatus: 模板
+  view.title.importPlatform: 导入模板
+  view.title.createIncidentFrom: 创建时间从
+  view.title.createIncidentTo: 创建时间至
+  view.title.importBatch: 导入批次号
+  view.title.totalData: 数据总量
+  view.title.status: 状态
+  view.title.createUser: 创建人
+  view.title.createTime: 创建时间
+  view.message.historyDetail: 历史详情
+  view.message.importHistory: 导入历史
+  view.message.detailData: 数据详情
+
+
+
+
+

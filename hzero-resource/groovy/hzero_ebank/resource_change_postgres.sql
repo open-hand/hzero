@@ -1,0 +1,6 @@
+ALTER TABLE HEBK_EVENT_REFERD_RESOURCE ADD EVENT_RESOURCE VARCHAR(360);
+COMMENT ON COLUMN HEBK_EVENT_REFERD_RESOURCE.EVENT_RESOURCE is '资源';
+
+UPDATE hebk_event_referd_resource SET event_resource = resource;
+
+ALTER TABLE hebk_event_referd_resource DROP COLUMN resource;

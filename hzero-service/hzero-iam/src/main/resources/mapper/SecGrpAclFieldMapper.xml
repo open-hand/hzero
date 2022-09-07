@@ -1,0 +1,420 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.iam.infra.mapper.SecGrpAclFieldMapper">
+    <!-- 可根据自己的需求，是否要使用 -->
+    <resultMap id="BaseResultMap" type="org.hzero.iam.domain.entity.SecGrpAclField">
+        <result column="sec_grp_acl_field_id" property="secGrpAclFieldId" jdbcType="DECIMAL"/>
+        <result column="sec_grp_id" property="secGrpId" jdbcType="DECIMAL"/>
+        <result column="tenant_id" property="tenantId" jdbcType="DECIMAL"/>
+        <result column="field_id" property="fieldId" jdbcType="DECIMAL"/>
+        <result column="permission_id" property="permissionId" jdbcType="DECIMAL"/>
+        <result column="permission_type" property="permissionType" jdbcType="VARCHAR"/>
+        <result column="permission_rule" property="permissionRule" jdbcType="VARCHAR"/>
+        <result column="assign_type_code" property="assignTypeCode" jdbcType="VARCHAR"/>
+        <result column="remark" property="remark" jdbcType="VARCHAR"/>
+        <result column="object_version_number" property="objectVersionNumber" jdbcType="DECIMAL"/>
+        <result column="creation_date" property="creationDate" jdbcType="DATE"/>
+        <result column="created_by" property="createdBy" jdbcType="DECIMAL"/>
+        <result column="last_updated_by" property="lastUpdatedBy" jdbcType="DECIMAL"/>
+        <result column="last_update_date" property="lastUpdateDate" jdbcType="DATE"/>
+    </resultMap>
+
+    <sql id="BaseColumn">
+        hsgaf.sec_grp_acl_field_id,
+        hsgaf.sec_grp_id,
+        hsgaf.tenant_id,
+        hsgaf.field_id,
+        hsgaf.permission_id,
+        hsgaf.permission_type,
+        hsgaf.permission_rule,
+        hsgaf.remark,
+        hsgaf.assign_type_code,
+        hsgaf.object_version_number
+    </sql>
+
+    <select id="selectSecGrpApiField" resultType="org.hzero.iam.domain.entity.SecGrpAclField">
+        SELECT
+        hf.field_name,
+        hf.field_type,
+        hf.field_description,
+        hsg.role_id,
+        (CASE WHEN hsgaf.assign_type_code = 'SELF' THEN 1 ELSE 0 END) delete_enable_flag,
+        <include refid="BaseColumn"/>
+        FROM hiam_sec_grp_acl_field hsgaf
+        JOIN hiam_field hf ON hf.field_id = hsgaf.field_id AND hf.permission_id = #{permissionId}
+        JOIN hiam_sec_grp hsg ON hsgaf.sec_grp_id = hsg.sec_grp_id
+        WHERE hsgaf.sec_grp_id = #{secGrpId}
+        <if test="permissionType != null and permissionType != ''">
+            AND hsgaf.permission_type = #{permissionType}
+        </if>
+        <if test="fieldDescription != null and fieldDescription != ''">
+            <bind name="fieldDescriptionLike" value="'%' + fieldDescription + '%'"/>
+            AND hf.field_description LIKE #{fieldDescriptionLike}
+        </if>
+        <if test="fieldName != null and fieldName != ''">
+            <bind name="fieldNameLike" value="'%' + fieldName + '%'"/>
+            AND hf.field_name LIKE #{fieldNameLike}
+        </if>
+    </select>
+
+    <select id="selectRoleSecGrpAssignedApiField" resultType="org.hzero.iam.domain.entity.SecGrpAclField">
+        SELECT
+        hf.field_name,
+        hf.field_type,
+        hf.field_description,
+        hsg.role_id,
+        (CASE WHEN hsgr.authority_id IS NOT NULL THEN 1 ELSE 0 END) shield_flag,
+        <include refid="BaseColumn"/>
+        FROM hiam_sec_grp_acl_field hsgaf
+        JOIN hiam_field hf ON hf.field_id = hsgaf.field_id AND hf.permission_id = #{query.permissionId}
+        JOIN hiam_sec_grp hsg ON hsgaf.sec_grp_id = hsg.sec_grp_id
+        LEFT JOIN hiam_sec_grp_revoke hsgr ON (
+        hsgr.authority_id = hsgaf.sec_grp_acl_field_id
+        AND hsgr.revoke_type = 'SHIELD'
+        AND hsgr.authority_type = 'FIELD'
+        AND hsgr.sec_grp_id = #{query.secGrpId}
+        AND hsgr.shield_role_id = #{roleId}
+        )
+        WHERE
+        hsg.enabled_flag = 1
+        AND hsgaf.sec_grp_id = #{query.secGrpId}
+        <if test="query.permissionType != null and query.permissionType != ''">
+            AND hsgaf.permission_type = #{permissionType}
+        </if>
+        <if test="query.fieldDescription != null and query.fieldDescription != ''">
+            <bind name="fieldDescriptionLike" value="'%' + fieldDescription + '%'"/>
+            AND hf.field_description LIKE #{fieldDescriptionLike}
+        </if>
+        <if test="query.fieldName != null and query.fieldName != ''">
+            <bind name="fieldNameLike" value="'%' + fieldName + '%'"/>
+            AND hf.field_name LIKE #{fieldNameLike}
+        </if>
+    </select>
+
+    <select id="selectRoleSecGrpField" resultType="org.hzero.iam.domain.entity.SecGrpAclField">
+        <!-- 查询的是角色所有被分配的安全组包含的字段权限-->
+        SELECT
+        hsgaf.sec_grp_acl_field_id,
+        hsgaf.sec_grp_id,
+        hsgaf.tenant_id,
+        hsgaf.field_id,
+        hsgaf.permission_id,
+        hsgaf.permission_type,
+        hsgaf.permission_rule,
+        hsgaf.remark,
+        hsgaf.assign_type_code,
+        hsgaf.object_version_number,
+        hsgaf.creation_date
+        FROM hiam_sec_grp_acl_field hsgaf
+        JOIN hiam_sec_grp hsg ON hsg.sec_grp_id = hsgaf.sec_grp_id AND hsg.enabled_flag = 1
+        WHERE EXISTS(
+        SELECT 1
+        FROM iam_role_permission irp
+        WHERE irp.role_id = #{roleId}
+        AND irp.type = 'SG'
+        AND ( irp.h_create_flag = 'Y' or irp.h_inherit_flag = 'Y')
+        AND irp.permission_id = hsg.sec_grp_id
+        )
+    </select>
+
+    <select id="selectSelfManagementFieldInGrp" resultType="org.hzero.iam.domain.entity.SecGrpAclField">
+        SELECT
+        hsgaf.sec_grp_acl_field_id,
+        hsgaf.sec_grp_id,
+        hsgaf.tenant_id,
+        hsgaf.field_id,
+        hsgaf.permission_id,
+        hsgaf.permission_type,
+        hsgaf.permission_rule,
+        hsgaf.remark,
+        hsgaf.auto_assign_flag,
+        hsgaf.object_version_number
+        FROM hiam_sec_grp_acl_field hsgaf
+        JOIN hiam_sec_grp hsg ON hsg.sec_grp_id = hsgaf.sec_grp_id
+        WHERE
+        hsgaf.auto_assign_flag = 0
+        AND hsgaf.sec_grp_id = #{secGrpId}
+        <!-- 在所有被分配的安全组中没有被约束 -->
+        AND NOT EXISTS
+        (
+        SELECT
+        1
+        FROM
+        hiam_sec_grp_acl_field hsgaf_in
+        JOIN hiam_sec_grp hsg_in ON hsg_in.sec_grp_id = hsgaf_in.sec_grp_id AND hsg_in.enabled_flag = 1
+        WHERE
+        hsgaf_in.field_id = hsgaf.field_id
+        AND EXISTS
+        (
+        SELECT
+        1
+        FROM
+        iam_role_permission irp
+        WHERE
+        irp.role_id = hsg.role_id
+        AND irp.type = 'SG'
+        AND (
+        irp.h_create_flag = 'Y'
+        OR irp.h_inherit_flag = 'Y'
+        )
+        AND irp.permission_id = hsg_in.sec_grp_id
+        )
+        )
+    </select>
+
+
+    <select id="selectBuildAclFieldBindFieldIdInRoleAndSubRole" resultType="org.hzero.iam.domain.entity.SecGrpAclField">
+        SELECT
+        hsgaf.sec_grp_acl_field_id,
+        hsgaf.sec_grp_id,
+        hsgaf.tenant_id,
+        hsgaf.field_id,
+        hsgaf.permission_id,
+        hsgaf.permission_type,
+        hsgaf.permission_rule,
+        hsgaf.remark,
+        hsgaf.auto_assign_flag,
+        hsgaf.object_version_number,
+        ir_out.id AS role_id,
+        ir_out.h_parent_role_id AS parent_role_id
+        FROM hiam_sec_grp_acl_field hsgaf
+        JOIN hiam_sec_grp hsg ON hsgaf.sec_grp_id = hsg.sec_grp_id
+        JOIN iam_role ir_out ON hsg.role_id = ir_out.id
+        WHERE
+        hsgaf.field_id IN
+        <foreach item="item" collection="fieldIds" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        AND EXISTS(
+        SELECT
+        1
+        FROM iam_role ir
+        WHERE ir.id = #{roleId}
+        AND (ir_out.h_level_path LIKE CONCAT(ir.h_level_path,"|%")OR ir_out.h_level_path = ir.h_level_path)
+        )
+
+    </select>
+
+    <select id="selectAssignedAclFieldBindFieldIdInRoleAndSubRole"
+            resultType="org.hzero.iam.domain.entity.SecGrpAclField">
+        <!-- 查询的是角色所有被分配的安全组包含的字段权限-->
+        SELECT
+        hsgaf.sec_grp_acl_field_id,
+        hsgaf.sec_grp_id,
+        hsgaf.tenant_id,
+        hsgaf.field_id,
+        hsgaf.permission_id,
+        hsgaf.permission_type,
+        hsgaf.permission_rule,
+        hsgaf.remark,
+        hsgaf.auto_assign_flag,
+        hsgaf.object_version_number,
+        ir.id AS role_id,
+        ir.h_parent_role_id AS parent_role_id
+        FROM
+        hiam_sec_grp_acl_field hsgaf
+        JOIN hiam_sec_grp hsg ON hsg.sec_grp_id = hsgaf.sec_grp_id
+        AND hsg.enabled_flag = 1
+        JOIN iam_role_permission irp ON irp.type = 'SG'
+        AND irp.permission_id = hsg.sec_grp_id
+        AND (
+        irp.h_create_flag = 'Y'
+        OR irp.h_inherit_flag = 'Y'
+        )
+        JOIN iam_role ir ON irp.role_id = ir.id
+        WHERE
+        hsgaf.field_id IN
+        <foreach item="item" collection="fieldIds" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        -- 限定为指定角色的子角色
+        AND EXISTS (
+        SELECT
+        1
+        FROM
+        iam_role ir_in
+        WHERE
+        ir_in.id = #{roleId}
+        AND (
+        ir.h_level_path LIKE CONCAT(ir_in.h_level_path, "|%")
+        OR ir_in.h_level_path = ir.h_level_path
+        )
+        )
+    </select>
+
+    <select id="selectSecGrpFields" resultType="org.hzero.iam.domain.entity.SecGrpAclField">
+        SELECT
+        hsgaf.sec_grp_acl_field_id,
+        hsgaf.sec_grp_id,
+        hsgaf.tenant_id,
+        hsgaf.field_id,
+        hsgaf.permission_id,
+        hsgaf.permission_type,
+        hsgaf.permission_rule,
+        hsgaf.assign_type_code,
+        hsgaf.creation_date,
+        hsgaf.object_version_number
+        FROM hiam_sec_grp_acl_field hsgaf
+        JOIN hiam_sec_grp hsg ON hsg.sec_grp_id = hsgaf.sec_grp_id
+        WHERE
+        hsgaf.sec_grp_id IN
+        <foreach item="item" collection="secGrpIds" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        <if test="secGrpFieldIds != null and secGrpFieldIds.size() > 0">
+            AND hsgaf.sec_grp_acl_field_id IN
+            <foreach item="item" collection="secGrpFieldIds" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <!-- 通过是否被分配排序，外部去重的时候优先取自动分配的  -->
+        ORDER BY hsgaf.auto_assign_flag DESC
+    </select>
+
+    <select id="selectAssignedSecGrpAclFieldForUserInGrp" resultType="org.hzero.iam.domain.entity.SecGrpAclField">
+        SELECT
+        hsgaf.sec_grp_acl_field_id,
+        hsgaf.sec_grp_id,
+        hsgaf.tenant_id,
+        hsgaf.field_id,
+        hsgaf.permission_id,
+        hsgaf.permission_type,
+        hsgaf.permission_rule,
+        hsgaf.remark,
+        hsgaf.object_version_number,
+        hf.field_name,
+        hf.field_type,
+        hf.field_description
+        FROM hiam_sec_grp_acl_field hsgaf
+        JOIN hiam_field hf ON hf.field_id = hsgaf.field_id AND hf.permission_id = #{secGrpAclFieldDTO.permissionId}
+        JOIN hiam_sec_grp hsg ON hsgaf.sec_grp_id = hsg.sec_grp_id
+        WHERE
+        hsgaf.sec_grp_id = #{secGrpAclFieldDTO.secGrpId}
+        <if test="secGrpAclFieldDTO.permissionType != null and secGrpAclFieldDTO.permissionType != ''">
+            AND hsgaf.permission_type = #{permissionType}
+        </if>
+        <if test="secGrpAclFieldDTO.fieldDescription != null and secGrpAclFieldDTO.fieldDescription != ''">
+            <bind name="fieldDescriptionLike" value="'%' + fieldDescription + '%'"/>
+            AND hf.field_description LIKE #{fieldDescriptionLike}
+        </if>
+        <if test="secGrpAclFieldDTO.fieldName != null and secGrpAclFieldDTO.fieldName != ''">
+            <bind name="fieldNameLike" value="'%' + fieldName + '%'"/>
+            AND hf.field_name LIKE #{fieldNameLike}
+        </if>
+    </select>
+
+    <select id="selectRoleSecGrpIncludedField" resultType="org.hzero.iam.domain.entity.SecGrpAclField">
+        SELECT
+        hsgaf.sec_grp_acl_field_id,
+        hsgaf.sec_grp_id,
+        hsgaf.tenant_id,
+        hsgaf.field_id,
+        hsgaf.permission_id,
+        hsgaf.permission_type,
+        hsgaf.permission_rule,
+        hsgaf.remark,
+        hsgaf.auto_assign_flag,
+        hf.field_name,
+        hf.field_type,
+        hf.field_description
+        FROM hiam_sec_grp hsg
+        JOIN iam_role_permission irp ON (
+        hsg.sec_grp_id &lt;> #{excludeSecGrpId}
+        AND irp.permission_id = hsg.sec_grp_id
+        AND irp.role_id = #{roleId}
+        AND irp.type = 'SG'
+        AND (irp.h_create_flag = 'Y' OR irp.h_inherit_flag = 'Y')
+        )
+        JOIN hiam_sec_grp_acl_field hsgaf
+        ON hsgaf.field_id IN
+        <foreach collection="fieldIds" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        AND hsgaf.sec_grp_id = hsg.sec_grp_id
+        JOIN hiam_field hf ON hf.field_id = hsgaf.field_id and hf.permission_id = hsgaf.permission_id
+    </select>
+
+    <select id="selectUserSecGrpIncludedField" resultType="org.hzero.iam.domain.entity.SecGrpAclField">
+        SELECT
+        hsgaf.sec_grp_acl_field_id,
+        hsgaf.sec_grp_id,
+        hsgaf.tenant_id,
+        hsgaf.field_id,
+        hsgaf.permission_id,
+        hsgaf.permission_type,
+        hsgaf.permission_rule,
+        hsgaf.remark,
+        hsgaf.auto_assign_flag,
+        hf.field_name,
+        hf.field_type,
+        hf.field_description
+        FROM hiam_sec_grp hsg
+        JOIN hiam_sec_grp_assign hsga
+        ON (
+        hsg.sec_grp_id &lt;> #{excludeSecGrpId}
+        AND hsga.assign_dimension = 'USER'
+        AND hsga.dimension_value = #{userId}
+        AND hsg.sec_grp_id = hsga.sec_grp_id
+        )
+        JOIN hiam_sec_grp_acl_field hsgaf
+        ON hsgaf.field_id IN
+        <foreach collection="fieldIds" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        AND hsgaf.sec_grp_id = hsg.sec_grp_id
+        JOIN hiam_field hf ON hf.field_id = hsgaf.field_id and hf.permission_id = hsgaf.permission_id
+    </select>
+
+    <delete id="batchDeleteBySql">
+        DELETE FROM HIAM_SEC_GRP_ACL_FIELD
+        WHERE SEC_GRP_ID IN
+        <foreach collection="secGrpIds" item="secGrpId" open="(" separator="," close=")">
+            #{secGrpId}
+        </foreach>
+
+        AND FIELD_ID IN
+        <foreach collection="fieldIds" item="fieldId" open="(" separator="," close=")">
+            #{fieldId}
+        </foreach>
+        <if test="autoAssignFlag != null">
+            AND AUTO_ASSIGN_FLAG = #{autoAssignFlag}
+        </if>
+    </delete>
+
+    <insert id="batchInsertBySql">
+        <choose>
+            <when test="_databaseId == 'oracle'">
+                INSERT INTO hiam_sec_grp_acl_field (sec_grp_acl_field_id, sec_grp_id, tenant_id, field_id, permission_id, permission_type, permission_rule, remark, assign_type_code, created_by, last_updated_by)
+                SELECT hiam_sec_grp_acl_field_S.nextval, t.*
+                FROM (
+                <foreach collection="list" item="item" separator=" union all ">
+                    select #{item.secGrpId}, #{item.tenantId}, #{item.fieldId}, #{item.permissionId}, #{item.permissionType}, #{item.permissionRule}, #{item.remark}, #{item.assignTypeCode}, #{item.createdBy}, #{item.lastUpdatedBy} FROM dual
+                </foreach>
+                ) t
+            </when>
+            <otherwise>
+                INSERT INTO hiam_sec_grp_acl_field (sec_grp_id, tenant_id, field_id, permission_id, permission_type, permission_rule, remark, assign_type_code, created_by, last_updated_by)
+                VALUES
+                <foreach collection="list" item="item" separator=",">
+                    (#{item.secGrpId}, #{item.tenantId}, #{item.fieldId}, #{item.permissionId}, #{item.permissionType}, #{item.permissionRule}, #{item.remark}, #{item.assignTypeCode}, #{item.createdBy}, #{item.lastUpdatedBy})
+                </foreach>
+            </otherwise>
+        </choose>
+    </insert>
+
+    <select id="listSecGrpAclField" resultType="org.hzero.iam.domain.entity.SecGrpAclField">
+        select
+        fp.field_id,
+        sg.sec_grp_id,
+        sg.sec_grp_name,
+        hf.field_name
+        from hiam_sec_grp_acl_field fp
+        join hiam_sec_grp sg on (fp.sec_grp_id = sg.sec_grp_id)
+        join hiam_field hf on (fp.field_id = hf.field_id)
+        where 1=1
+        <foreach collection="secGrpIds" item="item" index="index" open="and fp.sec_grp_id in (" separator=","
+                 close=")">
+            #{item}
+        </foreach>
+    </select>
+</mapper>

@@ -1,0 +1,64 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+node_modules
+/.pnp
+.pnp.js
+
+html/
+run.sh
+
+# testing
+/coverage
+
+# development
+/dll
+
+# production
+dist
+# # sacn-dist
+scripts/code-scan/intl-dist/
+scripts/code-scan/scan-dist/
+scripts/intl
+build
+packages/*/lib
+packages/*/dll
+
+# misc
+.DS_Store
+.env.local
+.env.development.local
+.env.test.localy
+.env.production.local
+*.bak
+*.rej
+
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# ide
+.vscode/
+.idea/
+
+# hzero-front-util
+codeScan
+locale/code-scan
+locale/bak-*
+packages/*/codeScan
+packages/*/locale/code-scan
+packages/*/locale/bak-*
+.history
+lib/
+dist-ext/
+
+
+# mock工具目录
+.smock/
+
+# hzero-boot
+.umi
+.umi-production
+.env.local.yml
+.env.*.local.yml

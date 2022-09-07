@@ -1,0 +1,91 @@
+@import '~hzero-ui/es/style/themes/default.less';
+
+.list {
+  max-height: 400px;
+  overflow: auto;
+  .item {
+    transition: all 0.3s;
+    overflow: hidden;
+    cursor: pointer;
+    padding: 0 24px;
+    border: 0 none transparent;
+
+    .meta {
+      width: 100%;
+      border-bottom: 1px solid #e2e5ec;
+      padding: 12px 0;
+    }
+    .avatar {
+      background: #fff;
+      margin-top: 4px;
+    }
+
+    &.read {
+      opacity: 0.4;
+    }
+    &:last-child {
+      border-bottom: 0;
+    }
+    &:hover {
+      background: @primary-1;
+    }
+    .title {
+      font-weight: normal;
+      margin-bottom: 4px;
+      font-size: 14px;
+      color: #333;
+    }
+    .description {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: #aaadba;
+    }
+  }
+}
+
+.notFound {
+  text-align: center;
+  height: 249px;
+  color: @text-color-secondary;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  img {
+    display: inline-block;
+    width: 80%;
+    height: 100%;
+  }
+  // 没有未读的站内信息的提示信息
+  div {
+    margin-top: 22px;
+  }
+}
+
+.clear {
+  height: 46px;
+  line-height: 46px;
+  text-align: center;
+  color: @text-color;
+  border-radius: 0 0 @border-radius-base @border-radius-base;
+  border-top: 1px solid @border-color-split;
+  transition: all 0.3s;
+  cursor: pointer;
+
+  &:hover {
+    color: @heading-color;
+  }
+}
+
+// 上方的标题
+.content {
+  height: 40px;
+  width: 313px;
+  line-height: 40px;
+  text-align: center;
+  margin: 0 auto;
+  &-action {
+    font-size: 12px;
+  }
+}

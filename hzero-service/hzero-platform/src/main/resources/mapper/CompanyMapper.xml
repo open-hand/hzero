@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.platform.infra.mapper.CompanyMapper">
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap id="BaseResultMap" type="org.hzero.platform.domain.entity.Company">
+        <result column="company_id" property="companyId" jdbcType="DECIMAL"/>
+        <result column="company_num" property="companyNum" jdbcType="VARCHAR"/>
+        <result column="group_id" property="groupId" jdbcType="DECIMAL"/>
+        <result column="tenant_id" property="tenantId" jdbcType="DECIMAL"/>
+        <result column="unit_id" property="unitId" jdbcType="DECIMAL"/>
+        <result column="domestic_foreign_relation" property="domesticForeignRelation" jdbcType="DECIMAL"/>
+        <result column="unified_social_code" property="unifiedSocialCode" jdbcType="VARCHAR"/>
+        <result column="organizing_institution_code" property="organizingInstitutionCode" jdbcType="VARCHAR"/>
+        <result column="company_name" property="companyName" jdbcType="VARCHAR"/>
+        <result column="short_name" property="shortName" jdbcType="VARCHAR"/>
+        <result column="company_type" property="companyType" jdbcType="VARCHAR"/>
+        <result column="registered_country_id" property="registeredCountryId" jdbcType="DECIMAL"/>
+        <result column="registered_region_id" property="registeredRegionId" jdbcType="DECIMAL"/>
+        <result column="address_detail" property="addressDetail" jdbcType="VARCHAR"/>
+        <result column="duns_code" property="dunsCode" jdbcType="VARCHAR"/>
+        <result column="taxpayer_type" property="taxpayerType" jdbcType="VARCHAR"/>
+        <result column="legal_rep_name" property="legalRepName" jdbcType="VARCHAR"/>
+        <result column="build_date" property="buildDate" jdbcType="DATE"/>
+        <result column="registered_capital" property="registeredCapital" jdbcType="DECIMAL"/>
+        <result column="licence_end_date" property="licenceEndDate" jdbcType="DATE"/>
+        <result column="business_scope" property="businessScope" jdbcType="VARCHAR"/>
+        <result column="long_term_flag" property="longTermFlag" jdbcType="DECIMAL"/>
+        <result column="licence_url" property="licenceUrl" jdbcType="VARCHAR"/>
+        <result column="source_key" property="sourceKey" jdbcType="VARCHAR"/>
+        <result column="source_code" property="sourceCode" jdbcType="VARCHAR"/>
+        <result column="enabled_flag" property="enabledFlag" jdbcType="VARCHAR"/>
+        <result column="object_version_number" property="objectVersionNumber" jdbcType="DECIMAL"/>
+        <result column="creation_date" property="creationDate" jdbcType="DATE"/>
+        <result column="created_by" property="createdBy" jdbcType="DECIMAL"/>
+        <result column="last_updated_by" property="lastUpdatedBy" jdbcType="DECIMAL"/>
+        <result column="last_update_date" property="lastUpdateDate" jdbcType="DATE"/>
+    </resultMap>
+    
+    <select id="selectCompaniesByUser" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        SELECT
+            c.company_id,
+            c.company_num,
+            c.tenant_id,
+            c.company_name,
+            c.short_name,
+            c.enabled_flag
+        FROM
+            hpfm_company c
+        join iam_user u on c.tenant_id = u.organization_id
+        WHERE
+            1 = 1
+        AND u.id = #{userId,jdbcType=DECIMAL} AND c.tenant_id = #{tenantId}
+            <if test='companyNum != null and companyNum != ""'>
+                <bind name="companyNumLike" value="'%' + companyNum + '%'"/>
+                AND c.company_num LIKE #{companyNumLike}
+            </if>
+            <if test='companyName != null and companyName != ""'>
+                <bind name="companyNameLike" value="'%' + companyName + '%'"/>
+                AND c.company_name LIKE #{companyNameLike}
+            </if>
+            <if test="enabledFlag != null">
+                AND c.enabled_flag = #{enabledFlag}
+            </if>
+    </select>
+    
+    <select id="selectRepeatCount" parameterType="org.hzero.platform.domain.entity.Company" resultType="java.lang.Integer">
+        SELECT
+            COUNT(*)
+        FROM
+            hpfm_company c
+        WHERE
+            1 = 1
+        AND c.company_num = #{companyNum,jdbcType=VARCHAR}
+        AND c.tenant_id = #{tenantId,jdbcType=DECIMAL}
+        <if test="companyId != null">
+            AND c.company_id = #{companyId}
+        </if>
+    </select>
+    
+</mapper>

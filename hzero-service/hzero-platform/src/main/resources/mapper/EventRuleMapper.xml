@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.platform.infra.mapper.EventRuleMapper">
+
+    <resultMap id="BaseResultMap" type="org.hzero.platform.api.dto.EventRuleDTO">
+        <result property="eventRuleId" column="event_rule_id"/>
+        <result property="eventId" column="event_id"/>
+        <result property="syncFlag" column="sync_flag"/>
+        <result property="callType" column="call_type"/>
+        <result property="beanName" column="bean_name"/>
+        <result property="methodName" column="method_name"/>
+        <result property="apiUrl" column="api_url"/>
+        <result property="apiMethod" column="api_method"/>
+        <result property="messageCode" column="message_code"/>
+        <result property="serverCode" column="server_code"/>
+        <result property="orderSeq" column="order_seq"/>
+        <result property="matchingRule" column="matching_rule"/>
+        <result property="resultFlag" column="result_flag"/>
+        <result property="enabledFlag" column="enabled_flag"/>
+        <result property="ruleDescription" column="rule_description"/>
+        <result property="objectVersionNumber" column="object_version_number"/>
+
+        <result property="syncFlagMeaning" column="sync_flag_meaning"/>
+        <result property="callTypeMeaning" column="call_type_meaning"/>
+        <result property="resultMeaning" column="result_meaning"/>
+        <result property="enabledMeaning" column="enabled_meaning"/>
+    </resultMap>
+
+    <select id="selectEventRule" parameterType="org.hzero.platform.api.dto.EventRuleDTO" resultMap="BaseResultMap">
+        select
+        hfer.event_rule_id,
+        hfer.event_id,
+        hfer.sync_flag,
+        hfer.call_type,
+        hfer.bean_name,
+        hfer.method_name,
+        hfer.api_url,
+        hfer.api_method,
+        hfer.message_code,
+        hfer.server_code,
+        hfer.order_seq,
+        hfer.matching_rule,
+        hfer.result_flag,
+        hfer.enabled_flag,
+        hfer.rule_description,
+        hfer.object_version_number,
+        hflv1.meaning as call_type_meaning,
+        hflv2.meaning as sync_flag_meaning,
+        hflv3.meaning as result_meaning,
+        hflv4.meaning as enabled_meaning
+        from hpfm_event_rule hfer
+        join hpfm_lov_value hflv1 on hflv1.lov_code = 'HPFM.EVENT.CALL_TYPE' and hflv1.value = hfer.call_type
+        join hpfm_lov_value hflv2 on hflv2.lov_code = 'HPFM.FLAG' and hflv2.value = hfer.sync_flag
+        join hpfm_lov_value hflv3 on hflv3.lov_code = 'HPFM.FLAG' and hflv3.value = hfer.result_flag
+        join hpfm_lov_value hflv4 on hflv4.lov_code = 'HPFM.FLAG' and hflv4.value = hfer.enabled_flag
+        <where>
+            <if test="eventRuleId != null">
+                and hfer.event_rule_id = #{eventRuleId}
+            </if>
+            <if test="eventId != null">
+                and hfer.event_id = #{eventId}
+            </if>
+        </where>
+        ORDER BY hfer.order_seq ASC
+    </select>
+
+    <!-- 根据事件ID删除事件 -->
+    <delete id="removeByEventId">
+      delete from hpfm_event_rule where event_id = #{eventId}
+    </delete>
+
+</mapper>

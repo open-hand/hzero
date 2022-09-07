@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.platform.infra.mapper.DashboardClauseMapper">
+    <select id="queryDashboardClause" resultType="org.hzero.platform.domain.entity.DashboardClause">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        SELECT
+            hpdc.clause_id,
+            hpdc.clause_code,
+            hdct.clause_name,
+            hpdc.data_tenant_level,
+            hpdc.menu_code,
+            hpdc.route,
+            hpdc.stats_expression,
+            hpdc.doc_remark_expression,
+            hpdc.enabled_flag,
+            hpdc.remark,
+            hpdc.object_version_number
+        FROM hpfm_dashboard_clause hpdc
+        LEFT JOIN hpfm_dashboard_clause_tl hdct ON hpdc.clause_id = hdct.clause_id and hdct.lang = #{lang}
+        <where>
+            <if test="tenantId != null">
+                AND hpdc.tenant_id = #{tenantId}
+            </if>
+            <if test="clauseCode != null and clauseCode != ''">
+                <bind name="clauseCodeLike" value="'%'+clauseCode+'%'"/>
+                and hpdc.clause_code like #{clauseCodeLike}
+            </if>
+            <if test="clauseName != null and clauseName != '' ">
+                <bind name="clauseNameLike" value="'%'+clauseName+'%'"/>
+                and hdct.clause_name like #{clauseNameLike}
+            </if>
+            <if test="dataTenantLevel != null and dataTenantLevel != '' ">
+                and hpdc.data_tenant_level = #{dataTenantLevel}
+            </if>
+            <if test="clauseId != null">
+                and hpdc.clause_id = #{clauseId}
+            </if>
+        </where>
+    </select>
+</mapper>

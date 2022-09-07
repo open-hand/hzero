@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.config.infra.mapper.ServiceConfigMapper">
+
+    <select id="selectDefaultConfig" resultType="org.hzero.config.domain.entity.ServiceConfig">
+        SELECT
+          hsc.service_code,
+          hsc.config_value
+        FROM hadm_service_config hsc
+        WHERE hsc.service_code = #{serviceCode}
+        <if test="serviceVersion != null">
+            AND hsc.config_version = #{serviceVersion}
+        </if>
+    </select>
+
+</mapper>

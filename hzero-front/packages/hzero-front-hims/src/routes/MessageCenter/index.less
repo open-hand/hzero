@@ -1,0 +1,136 @@
+@import '~hzero-front/lib/assets/styles/variables.less';
+.message-amount {
+  padding: 0 0.06rem;
+  color: #fff;
+  white-space: nowrap;
+  text-align: center;
+  background: #d50000;
+  border-radius: 0.1rem;
+  -webkit-box-shadow: 0 0 0 0.01rem #fff;
+  box-shadow: 0 0 0 0.01rem #fff;
+  margin-left: 3px;
+}
+
+.message-tip-item {
+  display: flex;
+  width: 200px;
+}
+
+.message-tip-item-text {
+  display: flex;
+  flex-direction: column;
+  padding-top: 16px;
+}
+
+.message-popover-item {
+  display: flex;
+  justify-content: space-between;
+}
+
+.message-popover-item-icons {
+  padding-right: 5px;
+}
+
+.message-num {
+  font-size: 30px;
+  font-weight: bold;
+  color: #08c;
+  padding-bottom: 15px;
+}
+
+.message-tip {
+  color: #524a4a;
+}
+
+.message-tips {
+  text-align: center;
+  display: flex;
+  justify-content: space-around;
+  padding-bottom: 10px;
+}
+
+.message-center {
+  width: 650px;
+  height: 500px;
+  border-radius: 2px;
+  overflow: hidden;
+  // background: #f5f5f5;
+  position: relative;
+}
+
+.message-center-selected {
+  width: 650px;
+  height: 500px;
+  border-radius: 2px;
+  overflow: hidden;
+  // background: #f5f5f5;
+  position: relative;
+}
+
+.im-customer-assessment {
+  text-align: center;
+  padding: 10px 0;
+}
+
+.im-assessment-title {
+  font-size: 20px;
+}
+
+.im-customer-assessment .im-assessment-star {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.im-customer-assessment .im-assessment-star ul {
+  padding: 0;
+  list-style: none;
+  margin: auto;
+  width: 225px;
+  overflow: hidden;
+  display: inline-block;
+}
+
+.im-customer-assessment .im-assessment-star ul li {
+  width: 45px;
+  height: 35px;
+  float: left;
+}
+
+.im-assessment-icon {
+  font-size: 38px;
+  cursor: pointer;
+  color: #6d7a80;
+}
+
+.im-assessment-icon.im-assessment-icon-on {
+  color: rgb(251, 187, 73);
+}
+
+.im-assessment-submit {
+  padding: 10px;
+  margin-bottom: 10px;
+  height: auto;
+  width: 100px;
+  background: #4f7de7;
+  color: white;
+}
+
+.im-assessment-submit:focus {
+  background: #6d93eb;
+  color: white;
+}
+
+:global {
+  .im-message-center {
+    .c7n-tabs-tab-active {
+      // background: linear-gradient(90deg, rgba(197, 234, 238, 0) 10%, rgba(147, 209, 216, 0.5) 300%);
+      background: @hzero-primary-color;
+      color: white;
+    }
+
+    .c7n-tabs-vertical.c7n-tabs-left > .c7n-tabs-bar .c7n-tabs-tab {
+      text-align: left;
+      width: 140px;
+    }
+  }
+}

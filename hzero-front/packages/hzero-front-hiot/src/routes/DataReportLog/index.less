@@ -1,0 +1,99 @@
+.data-report-log-drawer {
+  display: flex;
+  .data-report-log-card-warp {
+    width: 450px;
+    overflow-y: auto;
+    .data-report-log-card-content {
+      max-height: 240px;
+      overflow: auto;
+      padding: 15px;
+    }
+    .data-report-log-card-content-last {
+      max-height: 150px;
+      overflow: auto;
+      padding: 15px;
+    }
+    :global {
+      .c7n-popover-inner-content .c7n-card-type-inner .c7n-card-head {
+        height: 32px;
+      }
+      .c7n-card-head {
+        min-height: 0;
+      }
+      .c7n-card-type-inner .c7n-card-head-title {
+        padding: 7px 0;
+      }
+    }
+  }
+  :global {
+    .c7n-pro-modal-body {
+      padding: 0.24rem 0.24rem 0 0.24rem;
+    }
+    .c7n-card-type-inner .c7n-card-body {
+      padding: 0;
+    }
+    .c7n-steps-vertical {
+      flex: 1;
+      margin-top: 10px;
+      margin-bottom: 15px;
+    }
+    .c7n-steps-item {
+      height: 200px;
+    }
+    .c7n-steps-item:last-child {
+      height: 30px;
+    }
+    .c7n-steps-item-error {
+      .c7n-steps-item-icon {
+        cursor: pointer;
+      }
+      .c7n-steps-item-title {
+        cursor: pointer;
+      }
+      .c7n-steps-item-content .c7n-steps-item-title {
+        color: #333;
+      }
+      .c7n-steps-item-error .c7n-steps-item-icon {
+        background-color: #c82929;
+      }
+    }
+    .c7n-steps-item-finish {
+      .c7n-steps-item-icon {
+        cursor: pointer;
+      }
+      .c7n-steps-item-title {
+        cursor: pointer;
+      }
+    }
+    .c7n-steps-item-finish .c7n-steps-item-icon {
+      background-color: rgb(82, 196, 26);
+    }
+    .c7n-steps-vertical > .c7n-steps-item > .c7n-steps-item-tail {
+      left: 14px;
+    }
+  }
+
+  .data-report-log-step-checked {
+    :global {
+      .c7n-steps-item-icon {
+        background-color: #85eb53;
+      }
+      .c7n-steps-item-title {
+        color: #52c41a;
+        font-weight: 900;
+      }
+    }
+  }
+
+  .data-report-log-step-checked-error {
+    :global {
+      .c7n-steps-item-icon {
+        background-color: #f00;
+      }
+      .c7n-steps-item-content .c7n-steps-item-title {
+        color: #f00;
+        font-weight: 900;
+      }
+    }
+  }
+}

@@ -1,0 +1,96 @@
+/*!
+   DocumentDrawer - 新建/编辑接口文档
+   @date: 2019/5/16
+   @author: hulingfangzi <lingfangzi.hu@hand-china.com>
+   @version: 0.0.1
+   @copyright Copyright (c) 2018, Hand
+*/
+.top-tabs {
+  :global {
+    .ant-tabs-bar {
+      margin-bottom: 0;
+    }
+  }
+
+  .sub-params-tabs {
+    :global {
+      .ant-tabs-bar {
+        width: 12.5%;
+      }
+
+      .ant-tabs-bar
+        > .ant-tabs-nav-container
+        > .ant-tabs-nav-wrap
+        > .ant-tabs-nav-scroll
+        > .ant-tabs-nav
+        > div
+        .ant-tabs-tab:first-child {
+        padding-top: 16px;
+      }
+
+      .ant-tabs-content {
+        padding-top: 16px;
+      }
+    }
+  }
+}
+
+.hiam-interface-model-btns {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  z-index: 999;
+  border-top: 1px solid #e8e8e8;
+  padding: 10px 16px 10px 0;
+  text-align: right;
+  left: 0;
+  background: #fff;
+  border-radius: 0 0 4px 4px;
+}
+
+.hzero-codemirror {
+  border: 1px solid #ccc;
+  line-height: 1.5;
+}
+
+.hitf-view-modal {
+  .wrapper {
+    max-height: 500px;
+    overflow: scroll;
+  }
+
+  h2 {
+    margin-top: 15px;
+  }
+
+  .demo {
+    width: 80%;
+    border: 1px solid #d9d9d9;
+    background-color: #f5f5f5;
+    padding: 20px;
+  }
+
+  ul:not(.alternative) {
+    padding-left: 20px;
+
+    li {
+      span:first-child {
+        margin-right: 10px;
+      }
+    }
+  }
+
+  .alternative {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+
+    li {
+      margin-bottom: 2px;
+    }
+  }
+}
+
+.hitf-remark-wrapper {
+  margin-bottom: 50px;
+}

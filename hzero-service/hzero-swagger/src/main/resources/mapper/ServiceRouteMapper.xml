@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="org.hzero.swagger.infra.mapper.ServiceRouteMapper">
+
+    <select id="selectRoutes" resultType="org.hzero.swagger.domain.entity.ServiceRoute">
+      SELECT
+        hsr.service_id,
+        hsr.name,
+        hsr.path,
+        hsr.service_code,
+        hsr.url,
+        hsr.strip_prefix,
+        hsr.sensitive_headers
+      FROM hadm_service_route hsr
+      WHERE 1 = 1
+      <if test="name != null and name != ''">
+          <bind name="nameLike" value="'%' + name +'%'"/>
+          AND hsr.name LIKE #{nameLike}
+      </if>
+      <if test="path != null and path != ''">
+          <bind name="pathLike" value="'%' + path +'%'"/>
+          AND hsr.path LIKE #{pathLike}
+      </if>
+    </select>
+
+</mapper>

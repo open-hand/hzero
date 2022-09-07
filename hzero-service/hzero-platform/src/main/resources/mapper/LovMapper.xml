@@ -1,0 +1,410 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.platform.infra.mapper.LovMapper">
+
+    <resultMap id="BaseResultMap" type="org.hzero.platform.domain.entity.Lov">
+        <id property="lovId" column="lov_id" jdbcType="DECIMAL"/>
+        <result property="lovCode" column="lov_code" jdbcType="VARCHAR"/>
+        <result property="lovName" column="lov_name" jdbcType="VARCHAR"/>
+        <result property="lovTypeCode" column="lov_type_code" jdbcType="VARCHAR"/>
+        <result property="routeName" column="route_name" jdbcType="VARCHAR"/>
+        <result property="description" column="description" jdbcType="VARCHAR"/>
+        <result property="tenantId" column="tenant_id" jdbcType="DECIMAL"/>
+        <result property="parentLovCode" column="parent_lov_code" jdbcType="VARCHAR"/>
+        <result property="customSql" column="custom_sql" jdbcType="VARCHAR"/>
+        <result property="customUrl" column="custom_url" jdbcType="VARCHAR"/>
+        <result property="valueField" column="value_field" jdbcType="VARCHAR"/>
+        <result property="displayField" column="display_field" jdbcType="VARCHAR"/>
+        <result property="mustPageFlag" column="must_page_flag" jdbcType="DECIMAL"/>
+        <result property="enabledFlag" column="enabled_flag" jdbcType="DECIMAL"/>
+        <result property="translationSql" column="translation_sql" jdbcType="VARCHAR"/>
+        <result property="objectVersionNumber" column="object_version_number" jdbcType="DECIMAL"/>
+
+        <result property="parentLovName" column="parent_lov_name" jdbcType="VARCHAR"/>
+        <result property="tenantName" column="tenant_name" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <resultMap id="lovAggregateValuesMap" type="org.hzero.platform.api.dto.LovAggregateDTO">
+        <result property="lovCode" column="lov_code" jdbcType="VARCHAR"/>
+        <result property="lovTypeCode" column="lov_type_code" jdbcType="VARCHAR"/>
+        <result property="routeName" column="route_name" jdbcType="VARCHAR"/>
+        <result property="lovName" column="lov_name" jdbcType="VARCHAR"/>
+        <result property="description" column="description" jdbcType="VARCHAR"/>
+        <result property="tenantId" column="tenant_id" jdbcType="DECIMAL"/>
+        <result property="parentLovCode" column="parent_lov_code" jdbcType="VARCHAR"/>
+        <result property="parentTenantId" column="parent_tenant_id" jdbcType="DECIMAL"/>
+        <result property="customUrl" column="custom_url" jdbcType="VARCHAR"/>
+        <result property="valueField" column="value_field" jdbcType="VARCHAR"/>
+        <result property="displayField" column="display_field" jdbcType="VARCHAR"/>
+        <result property="encryptField" column="encrypt_field" jdbcType="VARCHAR"/>
+        <result property="mustPageFlag" column="must_page_flag" jdbcType="DECIMAL"/>
+        <result property="enabledFlag" column="enabled_flag" jdbcType="DECIMAL"/>
+        <result property="translationSql" column="translation_sql" jdbcType="VARCHAR"/>
+        <result property="publicFlag" column="public_flag" jdbcType="DECIMAL"/>
+        <collection property="lovValues" ofType="org.hzero.platform.domain.entity.LovValue">
+            <result property="value" column="value" jdbcType="VARCHAR"/>
+            <result property="meaning" column="meaning" jdbcType="VARCHAR"/>
+            <result property="tag" column="tag" jdbcType="VARCHAR"/>
+            <result property="orderSeq" column="order_seq" jdbcType="DECIMAL"/>
+            <result property="parentValue" column="parent_value" jdbcType="VARCHAR"/>
+        </collection>
+    </resultMap>
+
+    <select id="selectLovHeaders" parameterType="org.hzero.platform.domain.entity.Lov" resultMap="BaseResultMap">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()" />
+        SELECT
+            l.lov_id,
+            l.lov_code,
+            lt.lov_name,
+            l.lov_type_code,
+            l.route_name,
+            lt.description,
+            l.tenant_id,
+            httl.tenant_name,
+            l.parent_lov_code,
+            l.parent_tenant_id,
+            <choose>
+                <when test="sqlTypeControl and tenantId != null and tenantId != 0">
+                    '' custom_sql,
+                </when>
+                <otherwise>
+                    l.custom_sql,
+                </otherwise>
+            </choose>
+            l.custom_url,
+            l.enabled_flag,
+            l.object_version_number,
+            l.public_flag,
+            l.encrypt_field
+        FROM
+            hpfm_lov l
+        JOIN hpfm_lov_tl lt ON lt.lov_id = l.lov_id AND lt.lang = #{lang}
+        JOIN hpfm_tenant ht on ht.tenant_id = l.tenant_id
+        LEFT JOIN hpfm_tenant_tl httl ON ht.tenant_id = httl.tenant_id AND httl.lang = #{lang}
+        WHERE
+            1 = 1
+        <choose>
+            <when test="lovQueryFlag != null and lovQueryFlag == 1">
+                <choose>
+                    <when test="tenantId != null">
+                        AND (l.tenant_id = #{tenantId,jdbcType=DECIMAL} OR l.tenant_id = 0)
+                    </when>
+                    <otherwise>
+                        AND l.tenant_id = 0
+                    </otherwise>
+                </choose>
+            </when>
+            <otherwise>
+                <if test="tenantId != null">
+                    <choose>
+                        <when test="siteQueryFlag != null and siteQueryFlag != 0">
+                            AND l.tenant_id = #{tenantId,jdbcType=DECIMAL}
+                        </when>
+                        <otherwise>
+                            AND (l.tenant_id = #{tenantId,jdbcType=DECIMAL} OR l.tenant_id = 0)
+                        </otherwise>
+                    </choose>
+                </if>
+            </otherwise>
+        </choose>
+        <if test="tenantId != null and tenantId != 0">
+                AND l.lov_id NOT IN (
+                    SELECT hl.lov_id
+                    FROM hpfm_lov hl
+                    WHERE hl.tenant_id = 0
+                    AND EXISTS(
+                        SELECT 1
+                        FROM hpfm_lov hl1
+                        WHERE hl.lov_code = hl1.lov_code
+                        AND hl1.tenant_id = #{tenantId}
+                    )
+                )
+        </if>
+        <if test="lovCode != null and lovCode != ''">
+            <bind name="lovCodeLike" value="'%' + lovCode + '%'" />
+            AND l.lov_code LIKE #{lovCodeLike,jdbcType=VARCHAR}
+        </if>
+        <if test="lovName != null and lovName != ''">
+            <bind name="lovNameLike" value="'%' + lovName + '%'" />
+            AND lt.lov_name LIKE #{lovNameLike,jdbcType=VARCHAR}
+        </if>
+        <if test="description != null and description != ''">
+            <bind name="descriptionLike" value="'%' + description + '%'" />
+            AND lt.description LIKE #{descriptionLike,jdbcType=VARCHAR}
+        </if>
+        <if test="lovTypeCode != null and lovTypeCode != ''">
+            AND l.lov_type_code = #{lovTypeCode,jdbcType=VARCHAR}
+        </if>
+        <if test="enabledFlag != null">
+            AND l.enabled_flag = #{enabledFlag,jdbcType=DECIMAL}
+        </if>
+    </select>
+
+    <select id="listLovForDataGroupDimension" parameterType="org.hzero.platform.domain.entity.Lov" resultMap="BaseResultMap">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()" />
+        SELECT
+        l.lov_id,
+        l.lov_code,
+        lt.lov_name,
+        l.lov_type_code,
+        l.route_name,
+        lt.description,
+        l.tenant_id,
+        httl.tenant_name,
+        l.parent_lov_code,
+        l.parent_tenant_id,
+        l.custom_sql,
+        l.custom_url,
+        l.enabled_flag,
+        l.object_version_number,
+        l.public_flag,
+        l.encrypt_field
+        FROM
+        hpfm_lov l
+        JOIN hpfm_lov_tl lt ON lt.lov_id = l.lov_id AND lt.lang = #{lang}
+        JOIN hpfm_tenant ht on ht.tenant_id = l.tenant_id
+        LEFT JOIN hpfm_tenant_tl httl ON ht.tenant_id = httl.tenant_id AND httl.lang = #{lang}
+        WHERE
+        1 = 1
+        <choose>
+            <when test="lovQueryFlag != null and lovQueryFlag == 1">
+                <choose>
+                    <when test="tenantId != null">
+                        AND l.tenant_id = #{tenantId,jdbcType=DECIMAL}
+                    </when>
+                    <otherwise>
+                        AND l.tenant_id = 0
+                    </otherwise>
+                </choose>
+            </when>
+            <otherwise>
+                <if test="tenantId != null">
+                    <choose>
+                        <when test="siteQueryFlag != null and siteQueryFlag != 0">
+                            AND l.tenant_id = #{tenantId,jdbcType=DECIMAL}
+                        </when>
+                        <otherwise>
+                            AND (l.tenant_id = #{tenantId,jdbcType=DECIMAL} OR l.tenant_id = 0)
+                        </otherwise>
+                    </choose>
+                </if>
+            </otherwise>
+        </choose>
+        <if test="tenantId != null and tenantId != 0">
+            AND l.lov_id NOT IN (
+            SELECT hl.lov_id
+            FROM hpfm_lov hl
+            WHERE hl.tenant_id = 0
+            AND EXISTS(
+            SELECT 1
+            FROM hpfm_lov hl1
+            WHERE hl.lov_code = hl1.lov_code
+            AND hl1.tenant_id = #{tenantId}
+            )
+            )
+        </if>
+        <if test="lovCode != null and lovCode != ''">
+            <bind name="lovCodeLike" value="'%' + lovCode + '%'" />
+            AND l.lov_code LIKE #{lovCodeLike,jdbcType=VARCHAR}
+        </if>
+        <if test="lovName != null and lovName != ''">
+            <bind name="lovNameLike" value="'%' + lovName + '%'" />
+            AND lt.lov_name LIKE #{lovNameLike,jdbcType=VARCHAR}
+        </if>
+        <if test="description != null and description != ''">
+            <bind name="descriptionLike" value="'%' + description + '%'" />
+            AND lt.description LIKE #{descriptionLike,jdbcType=VARCHAR}
+        </if>
+        <if test="lovTypeCode != null and lovTypeCode != ''">
+            AND l.lov_type_code = #{lovTypeCode,jdbcType=VARCHAR}
+        </if>
+        <if test="enabledFlag != null">
+            AND l.enabled_flag = #{enabledFlag,jdbcType=DECIMAL}
+        </if>
+    </select>
+
+    <select id="selectLovHeaderByLovId" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()" />
+        SELECT
+            l.lov_id,
+            l.lov_code,
+            lt.lov_name,
+            l.lov_type_code,
+            l.route_name,
+            lt.description,
+            l.tenant_id,
+            httl.tenant_name,
+            l.parent_lov_code,
+            l.parent_tenant_id,
+            plt.lov_name as parent_lov_name,
+        <choose>
+            <when test="sqlTypeControl and tenantId != null and tenantId != 0">
+                '' custom_sql,
+            </when>
+            <otherwise>
+                l.custom_sql,
+            </otherwise>
+        </choose>
+            l.custom_url,
+            l.value_field,
+            l.display_field,
+            l.must_page_flag,
+            l.enabled_flag,
+        <choose>
+            <when test="sqlTypeControl and tenantId != null and tenantId != 0">
+                '' translation_sql,
+            </when>
+            <otherwise>
+                l.translation_sql,
+            </otherwise>
+        </choose>
+            l.object_version_number,
+            l.public_flag,
+            l.encrypt_field
+        FROM
+            hpfm_lov l
+        JOIN hpfm_lov_tl lt ON lt.lov_id = l.lov_id AND lt.lang = #{lang}
+        JOIN hpfm_tenant ht on ht.tenant_id = l.tenant_id
+        LEFT JOIN hpfm_tenant_tl httl ON ht.tenant_id = httl.tenant_id AND httl.lang = #{lang}
+        LEFT JOIN hpfm_lov pl ON pl.lov_code = l.parent_lov_code and pl.tenant_id = l.parent_tenant_id
+        LEFT JOIN hpfm_lov_tl plt on plt.lov_id = pl.lov_id and plt.lang = lt.lang
+        WHERE
+            1 = 1
+        AND l.lov_id = #{lovId,jdbcType=DECIMAL}
+        <if test="tenantId != null">
+            and (l.tenant_id = #{tenantId,jdbcType=DECIMAL} or l.tenant_id = 0)
+        </if>
+    </select>
+    
+    <select id="selectRepeatCodeCount" parameterType="org.hzero.platform.domain.entity.Lov" resultType="java.lang.Integer">
+        select
+            count(*)
+        from
+            hpfm_lov l
+        where
+            1 = 1
+        and l.lov_code = #{lovCode,jdbcType=VARCHAR}
+        and l.tenant_id = #{tenantId,jdbcType=DECIMAL}
+        <if test="lovId != null">
+            and l.lov_id != #{lovId,jdbcType=DECIMAL}
+        </if>
+    </select>
+    <select id="selectLovHeaderByCodeAndTenant" resultType="org.hzero.platform.domain.entity.Lov">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()" />
+        SELECT
+          l.lov_id,
+          l.lov_code,
+          lt.lov_name,
+          l.lov_type_code,
+          l.route_name,
+          l.tenant_id,
+          l.public_flag,
+          l.encrypt_field
+        FROM
+            hpfm_lov l
+        JOIN hpfm_lov_tl lt ON lt.lov_id = l.lov_id AND lt.lang = #{lang}
+        WHERE l.lov_code = #{lovCode}
+        AND l.tenant_id = #{tenantId}
+    </select>
+    <select id="selectLovByViewCodeAndTenant" resultType="org.hzero.platform.domain.entity.Lov">
+        SELECT
+            hl.lov_code,
+            hl.tenant_id
+        FROM
+            hpfm_lov hl
+        WHERE EXISTS (
+              SELECT 1
+              FROM hpfm_lov_view_header hlvh
+              WHERE hlvh.lov_id = hl.lov_id
+              AND hlvh.view_code = #{viewCode}
+              AND hlvh.tenant_id = #{tenantId}
+          )
+    </select>
+    <select id="selectLovAggregateLovValues" resultMap="lovAggregateValuesMap">
+          SELECT
+                 l.lov_code
+                ,l.lov_type_code
+                ,l.route_name
+                ,lt.lov_name
+                ,lt.description
+                ,l.tenant_id
+                ,l.parent_lov_code
+                ,l.parent_tenant_id
+                ,l.custom_url
+                ,l.value_field
+                ,l.display_field
+                ,l.encrypt_field
+                ,l.must_page_flag
+                ,l.enabled_flag
+                ,l.translation_sql
+                ,l.public_flag
+                ,hlv.lov_value_id
+                ,hlv.value
+                ,hlvt.meaning
+                ,hlv.tag
+                ,hlv.order_seq
+                ,hlv.parent_value
+                ,hlv.enabled_flag
+            FROM
+        hpfm_lov l
+        JOIN hpfm_lov_tl lt ON lt.lov_id = l.lov_id AND lt.lang = #{lang}
+        LEFT JOIN hpfm_lov_value hlv ON hlv.lov_id = l.lov_id
+        LEFT JOIN hpfm_lov_value_tl hlvt ON hlvt.lov_value_id = hlv.lov_value_id AND hlvt.lang = #{lang}
+        WHERE l.lov_code = #{lovCode}
+        AND l.tenant_id = #{tenantId}
+        <if test="tag != null and tag != ''">
+            AND hlv.tag = #{tag}
+        </if>
+    </select>
+    <select id="selectByIdAndLang" resultType="org.hzero.platform.domain.entity.Lov">
+        SELECT l.lov_id,
+               l.lov_code,
+               l.lov_type_code,
+               l.lov_type_code,
+               l.route_name,
+               lt.lov_name,
+               lt.description,
+               l.tenant_id,
+               l.parent_lov_code,
+               l.parent_tenant_id,
+               l.custom_url,
+               l.value_field,
+               l.display_field,
+               l.encrypt_field,
+               l.must_page_flag,
+               l.enabled_flag,
+               l.translation_sql,
+               l.public_flag
+        FROM hpfm_lov l
+                 JOIN hpfm_lov_tl lt ON lt.lov_id = l.lov_id AND lt.lang = #{lang}
+        WHERE l.lov_id = #{lovId}
+    </select>
+    <select id="selectByCodeAndLang" resultType="org.hzero.platform.domain.entity.Lov">
+        SELECT
+               l.lov_id,
+               l.lov_code,
+               l.lov_type_code,
+               l.route_name,
+               lt.lov_name,
+               lt.description,
+               l.tenant_id,
+               l.parent_lov_code,
+               l.parent_tenant_id,
+               l.custom_sql,
+               l.custom_url,
+               l.value_field,
+               l.display_field,
+               l.encrypt_field,
+               l.must_page_flag,
+               l.public_flag,
+               l.enabled_flag,
+               l.object_version_number,
+               l.translation_sql,
+               l.decrypt_field
+        FROM hpfm_lov l
+        JOIN hpfm_lov_tl lt ON lt.lov_id = l.lov_id AND lt.lang = #{lang}
+        WHERE l.lov_code = #{lovCode}
+          AND l.tenant_id = #{tenantId}
+    </select>
+
+</mapper>

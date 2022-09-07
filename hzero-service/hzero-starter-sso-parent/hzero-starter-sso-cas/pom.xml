@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.hzero.starter</groupId>
+        <artifactId>hzero-starter-sso-parent</artifactId>
+        <version>1.5.0.RELEASE</version>
+    </parent>
+    <artifactId>hzero-starter-sso-cas</artifactId>
+    <name>hzero-starter-sso-cas</name>
+    <description>sso cas</description>
+    <version>1.5.1.RELEASE</version>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.hzero.starter</groupId>
+            <artifactId>hzero-starter-sso-core</artifactId>
+            <version>1.5.4.RELEASE</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-cas</artifactId>
+        </dependency>
+    </dependencies>
+
+</project>
+

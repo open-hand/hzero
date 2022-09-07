@@ -1,0 +1,233 @@
+.content {
+  background-color: #f5f5f5;
+  height: 100%;
+  margin: 16px !important;
+  padding: 0 !important;
+}
+
+.display-container {
+  margin-bottom: 12px;
+  padding: 0 16px;
+  background-color: #fff;
+  // box-shadow: rgba(0, 0, 0, 0.133) 0 0.6px 1.6px 0, rgba(0, 0, 0, 0.11) 0 0.3px 0.9px 0;
+  .display-container-title {
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 20px;
+    display: flex;
+    align-items: center;
+    margin: 10px 0;
+    &::before {
+      content: '';
+      width: 3px;
+      height: 16px;
+      margin-right: 5px;
+      background-color: #1e3255;
+    }
+  }
+
+  :global(.ant-form-item) {
+    margin-bottom: 0 !important;
+  }
+
+  :global(.ant-form-item-label) {
+    line-height: 48px !important;
+    text-align: left !important;
+  }
+
+  label,
+  :global(.ant-form-item-control) {
+    line-height: 48px;
+  }
+}
+
+.wrap-container {
+  height: 100%;
+  display: flex;
+  min-height: 300px;
+}
+
+.wrap-container-detail {
+  height: 100%;
+  min-height: 300px;
+  padding: 16px 8px;
+
+  div:first-child {
+    text-align: right;
+    margin-bottom: 10px;
+  }
+}
+
+.left-container {
+  display: flex;
+  flex-direction: column;
+  background-color: #fff;
+  width: 200px;
+  overflow: hidden;
+
+  ul {
+    height: 100%;
+  }
+
+  .node-title {
+    text-align: left;
+    font-weight: 600;
+    padding-left: 12px;
+    background: #fff;
+    line-height: 42px;
+    border-bottom: 1px solid #f5f5f5;
+  }
+
+  & > div:last-child {
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+}
+
+.right-container-index {
+  flex: 1 1;
+  margin-left: 10px;
+  background-color: #fff;
+  overflow: auto;
+  padding: 10px;
+
+  & > div:first-child {
+    text-align: right;
+  }
+  & > div:last-child {
+    margin-top: 10px;
+  }
+}
+
+.right-container-detail {
+  flex: 1 1;
+  margin-left: 10px;
+  background-color: #fff;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 10px 0;
+}
+
+.header {
+  display: flex;
+  background-color: #fff;
+  align-items: center;
+  margin: -10px 0 16px;
+  padding-left: 10px;
+  height: 48px;
+  border-bottom: 1px solid rgb(245, 245, 245);
+  .back-icon {
+    cursor: pointer;
+    color: #1e3255;
+    font-size: 22px;
+    vertical-align: middle;
+    padding: 10px;
+    border-radius: 22px;
+    &:hover {
+      background-color: #f0f2f5;
+    }
+  }
+
+  .header-title {
+    font-size: 14px;
+    font-weight: 500;
+    margin-left: 8px;
+    color: rgba(0, 0, 0, 0.85);
+  }
+
+  .header-operator {
+    margin-right: 10px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: flex-start;
+    align-items: center;
+  }
+}
+
+.model-bottom-button {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  border-top: 1px solid #e8e8e8;
+  padding: 10px 24px;
+  text-align: right;
+  left: 0;
+  background: #fff;
+  border-radius: 0 0 4px 4px;
+  z-index: 1;
+}
+
+.node-line-modal-form {
+  label {
+    font-size: 14px;
+    font-weight: 600;
+    &::before {
+      font-weight: 100;
+    }
+  }
+  :global(.ant-form-item) {
+    padding-bottom: 0 !important;
+  }
+
+  :global(.ant-input-number) {
+    width: 100%;
+  }
+  :global(.ant-form-item-label) {
+    padding: 0 0 4px !important;
+  }
+}
+
+.node-line-modal-inline-form {
+  label {
+    font-size: 14px;
+    font-weight: 600;
+  }
+}
+
+.model-table-list-search {
+  :global(.ant-form-item) {
+    width: 100%;
+  }
+}
+
+.process-node-list-spin {
+  padding: 10px;
+  height: 100%;
+  button {
+    width: 100%;
+    height: 40px;
+    margin-bottom: 10px;
+  }
+  .process-node-list-selected {
+    border-color: #29bece;
+    color: #29bece;
+  }
+}
+
+.right-content-detail-divider {
+  background-color: #f5f5f5 !important;
+  height: 16px !important;
+  margin: 0 !important;
+}
+
+.right-content-detail-table {
+  padding: 16px 10px;
+}
+
+.right-content-detail-table-operator {
+  text-align: right;
+  padding: 16px 10px 0;
+}
+
+.inline-form-item {
+  :global {
+    .t-number {
+      width: 67% !important;
+      margin-right: 3% !important;
+    }
+    .ant-input-number {
+      width: 100% !important;
+    }
+  }
+}

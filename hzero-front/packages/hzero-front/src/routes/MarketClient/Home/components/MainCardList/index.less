@@ -1,0 +1,38 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  background-color: #fff;
+  border-radius: 4px;
+
+  .head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #eee;
+    padding: 10px 16px;
+
+    .title {
+      display: flex;
+      align-items: center;
+
+      .name {
+        margin-left: 10px;
+        font-size: 15px;
+        color: #404040;
+      }
+    }
+
+    .to {
+      font-size: 14px;
+      font-weight: bold;
+    }
+  }
+
+  .list {
+    padding: 0 16px 16px 16px;
+
+    > div:not(:last-child) {
+      border-bottom: 1px solid #eee;
+    }
+  }
+}

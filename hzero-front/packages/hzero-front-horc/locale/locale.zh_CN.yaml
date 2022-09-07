@@ -1,0 +1,465 @@
+# hzero-国际化
+horc.common:
+  view.message.title.edit.mapping.class: 查看编辑映射类
+  button.test: 测试
+  view.message.title.testLog: 测试日志
+  model.testResult: 测试结果
+  model.log: 日志信息
+  model.success: 成功
+  model.failed: 失败
+  button.cancel: 取消
+  button.confirm: 确定
+
+  view.tip.dw: 请参考DataWeave Language语法编写映射脚本，官方文档参见
+
+  view.logicOperation.and: 与
+  view.logicOperation.or: 或
+  view.logicOperation.equal: 等于
+  view.logicOperation.notEqual: 不等于
+  view.logicOperation.less: 小于
+  view.logicOperation.lessOrEqual: 小于等于
+  view.logicOperation.greater: 大于
+  view.logicOperation.greaterOrEqual: 大于等于
+  view.logicOperation.isEmpty: 为空
+  view.logicOperation.isNotEmpty: 非空
+  view.logicOperation.value: 值
+  view.logicOperation.conditionField: 条件字段
+  view.logicOperation.condition: 条件
+  view.logicOperation.addConditionGroup: 添加条件分组
+  view.logicOperation.addCondition: 添加条件
+  view.logicOperation.not: 非
+  view.logicOperation.sure: 确定
+  view.logicOperation.deleteConditionConfirm: 确定删除该条件
+  view.logicOperation.deleteGroupConfirm: 确定删除该条件分组
+
+horc.orchestration:
+  view.title.orchestration: 编排定义
+  view.title.createLine: 创建节点
+  view.title.editLine: 修改节点
+  view.title.fieldMapping: 字段映射
+  view.title.fieldMapping: 数据转化
+  view.title.ensureAdd: 确定添加
+  view.title.onlineConfirm: 确定上线吗
+  view.title.offlineConfirm: 确定下线吗
+  view.title.httpMethodChangeConfirm: 切换请求方法将清空请求
+  model.orchestration.tool: 工具栏
+  model.orchestration.tool.tip: 请选中下方条目拖拽至右方画布中进行编排操作，仅支持在(已下线)状态下操作。
+  model.orchestration.seqNumber: 序号
+  model.orchestration.basic: 编排信息
+  model.orchestration.basic.tip: 编排信息
+  model.orchestration.http.task_name: 任务名称
+  model.orchestration.http.task_name.tip: 名称，请确保同一编排内任务名称唯一。
+  model.orchestration.requestSetting: 请求设置
+  model.orchestration.requestSetting.tip: 请求基本信息设置，设置请求客户端(Http Client)的相关参数。仅当请求方法为PUT、POST、PATCH时，可设置请求体
+  model.orchestration.requestQuery: 查询参数
+  model.orchestration.requestQuery.tip: 查询参数，设置请求客户端的查询参数，支持SpEL表达式，结合SpEL表达式从上个编排中获取(固定相应参数为result(map结构)，通过#result进行关联值获取，示例：#result["url"])上个请求的响应作为参数值。
+  model.orchestration.transformType: 字段映射类型
+  view.button.addRequestHeader: 添加请求头
+  view.button.clearRequestHeader: 清空请求头
+
+  view.button.addParam: 添加参数
+  view.button.clearParam: 清空参数
+
+  view.button.online: 上线
+  view.button.offline: 下线
+  view.button.execute: 运行
+  view.button.duplicate: 克隆
+  view.button.rerun: 重跑
+  view.button.pause: 暂停
+  view.button.stop: 停止
+  view.button.resume: 恢复
+
+  view.button.addAssertion: 添加断言
+  view.button.clearAssertion: 清空断言
+
+  view.modal.fieldData: 字段数据
+
+  model.orchestration.structureName: 最外层结构名称
+  model.orchestration.orc_name.tip: 编排定义名称。确保唯一。当触发克隆动作时，默认使用"被克隆"定义名称+"_copy"(可后台自定义)作为新定义名称，字符超长则截断，若名称与已有名称重复则使用默认规则生成，编辑保存时可更改。
+
+  view.title.execute: 启动前请先设置参数
+  model.orchestration.failedStrategy: 失败策略
+  model.orchestration.warningType: 告警类型
+  model.orchestration.workerGroup: 工作组
+  model.orchestration.times: 次
+  model.orchestration.minutes: 分钟
+  model.orchestration.milli: 毫秒
+  model.orchestration.workerGroup.tip: 工作组，亦即任务分组，同一工作组的任务将会被对应的工作组的管理节点及工作负载节点处理。
+  model.orchestration.noticeGroup: 通知组
+  model.orchestration.recipients: 收件人
+  model.orchestration.Cc: 抄送人
+  model.orchestration.preference: 偏好
+  model.orchestration.preference_placeholder: 偏好(用于编排任务获取筛选)
+  model.orchestration.complement: 补数
+  model.orchestration.execMethod: 执行方式
+  model.orchestration.serialExec: 串行执行
+  model.orchestration.parallelExec: 并行执行
+  model.orchestration.dispatchDate: 调度日期
+
+  model.orchestration.definitionName: 编排定义名称
+  model.orchestration.nodeName: 节点名称
+  model.orchestration.status: 状态
+  model.orchestration.description: 描述
+  model.orchestration.workGroup: 工作组
+  model.orchestration.priority: 优先级
+  model.orchestration.retryTimes: 失败重试次数
+  model.orchestration.retryTimes.tip: 失败重试次数，失败后重试的次数，数值范围0-99，默认0即不重试。
+  model.orchestration.retryInterval: 失败重试间隔
+  model.orchestration.retryInterval.tip: 失败重试间隔，数值范围0-99999，默认1，单位：分钟
+  model.orchestration.alertFlag: 启用告警
+  model.orchestration.timeoutWarning.tip: 告警标志，是否启用超时告警。启用时，可设置告警策略，设置告警时将执行告警任务，设置失败时即直接失败。
+  model.orchestration.timeoutStrategy: 超时策略
+  model.orchestration.timeoutStrategyWarning: 警告
+  model.orchestration.timeoutStrategyFailure: 失败
+  model.orchestration.statusOffline: 已下线
+
+  model.orchestration.timeoutTime: 超时时长
+  model.orchestration.requestMethod: 请求方法
+  model.orchestration.requestMethod.tip: 请求方法，支持GET、POST、PUT、DELETE、PATCH、HEAD、OPTIONS。仅当POST、PUT、PATCH时可设置请求体。
+  model.orchestration.requestAddress: 请求地址
+  model.orchestration.requestCharset: 请求字符集
+  model.orchestration.responseCharset: 响应字符集
+  model.orchestration.readTimeout: 读超时
+  model.orchestration.readTimeout.tip: 读超时时间，即readTimeout，服务器返回数据(response)的时间，单位（ms），超过该时间抛出read timeout，默认30s超时
+  model.orchestration.connectionTimeout: 连接超时
+  model.orchestration.connectionTimeout.tip: 连接超时时间，即connectionTimeout，连接上服务器(握手成功)的时间，单位（ms），超出该时间抛出connect timeout，默认30s超时
+  model.orchestration.enableResultPropagation: 允许结果传递
+  model.orchestration.enableResultPropagation.tip: 允许结果传递。若开启则启动任务之间的结果传递，即上一个任务的结果作为下一个任务的参数，否之则否。一般将上一个任务结果构造为map结果或直接将原文本内容进行传递，根据内容类型而定。默认开启
+  model.orchestration.charset_tip: 字符集。若需扩展异步移步至相应值集拓展即可，值集的值请确保为正确且真实的字符集编码。默认UTF-8
+  model.orchestration.requestHeader: 请求头
+  model.orchestration.requestHeader.tip: 请求头设置。当"可"设置请求体时，可通过点击内容类型设定请求头:Content-Type
+  model.orchestration.requestBody: 请求体
+  model.orchestration.requestBody.tip: 请求体设置，仅当请求方法为PUT、POST、PATCH时，可设置请求体。选择右侧下拉选切换请求体类型：Form即传统表单，内设单行可选择文件或者文件；File即上传单文件；Text可用来设置请求文本
+  model.orchestration.exprEnable: 启用表达式
+  model.orchestration.assertion: 断言
+  model.orchestration.assertion.tip: 断言，即通过下列选项设定判定条件，设定多个条件时共为"与"的逻辑关系。不满足条件则终止当前任务，最终编排任务的结果需通过失败策略决定。
+  model.orchestration.assertion.jsonBody: JSON Path
+  model.orchestration.assertion.jsonBody.tip: JSON响应体需要通过JSON Path语法匹配对应值,可参考：
+  model.orchestration.assertion.xmlBody: XPath 1.0
+  model.orchestration.assertion.xmlBody.tip: XML响应体需要通过XPath 1.0语法匹配对应值,可参考：
+  model.orchestration.subject: 对象
+  model.orchestration.condition: 条件
+  model.orchestration.field`: 字段
+  model.orchestration.key: 键
+  model.orchestration.value: 值
+  model.orchestration.type: 类型
+  model.orchestration.expectation: 期望值
+
+  modal.orchestration.condition.gateway.title: 网关信息
+  modal.orchestration.condition.gateway: 条件
+  modal.orchestration.condition.dependency: 条件维护
+  modal.orchestration.condition.result: 网关
+  modal.orchestration.condition.success: 成功
+  modal.orchestration.condition.failed: 失败
+  modal.orchestration.condition.gateway.tip: 条件判定结果作为网关条件节点的执行结果。判定结果失败时会优先触发失败策略
+  modal.orchestration.condition.dependency.tip: 前置节点运行结果作为条件，未维护条件则判定失败。前置节点为多个时，未运行的节点，其运行结果默认失败。前置节点包含异步节点时，将忽略异步节点
+  modal.orchestration.condition.result.tip: 通过执行结果决定运行哪些节点,不指定则成功继续，失败终止
+  modal.orchestration.condition.success.tip: 执行结果为成功时运行的节点
+  modal.orchestration.condition.failed.tip: 执行结果为失败时运行的节点
+
+  model.orchestration.status_submitted: 已提交
+  model.orchestration.status_running: 正在运行
+  model.orchestration.status_preparing_pause: 准备暂停
+  model.orchestration.status_paused: 已暂停
+  model.orchestration.status_preparing_stop: 准备停止
+  model.orchestration.status_stopped: 已停止
+  model.orchestration.status_failed: 已失败
+  model.orchestration.status_successful: 已成功
+  model.orchestration.status_need_fault_tolerance: 需容错
+  model.orchestration.status_killed: 强制结束
+  model.orchestration.status_thread_thread_waiting: 等待线程资源
+  model.orchestration.status_dependency_waiting: 等待依赖任务
+
+  model.orchestration.statement_start: 全新编排
+  model.orchestration.statement_start_current_task: 从当前任务节点开始
+  model.orchestration.recover_tolerance_fault: 恢复容错
+  model.orchestration.recover_suspended: 恢复暂停
+  model.orchestration.start_failure_task: 从失败节点开始
+  model.orchestration.complement_data: 补数
+  model.orchestration.scheduler: 调度任务
+  model.orchestration.repeat_running: 重新运行
+  model.orchestration.recover_waiting_thread: 从等待线程恢复
+
+  model.orchestration.lowest: 最低
+  model.orchestration.low: 低
+  model.orchestration.medium: 中等
+  model.orchestration.high: 高
+  model.orchestration.highest: 最高
+
+  model.orchestration.sourceTitle: 来源结构
+  model.orchestration.targetTitle: 目标结构
+
+  model.orchestration.param: 参数
+
+  view.editor.flowSmooth: 平滑线
+  view.editor.flowPolyline: 折线
+  view.editor.flowPolylineRound: 平滑折线
+  view.editor.label: 说明
+  view.editor.shape: 类型
+  view.editor.node: 节点
+  view.editor.edge: 边线
+  view.editor.undo: 撤销
+  view.editor.copy: 复制
+  view.editor.redo: 重做
+  view.editor.location: 定位
+  view.editor.paste: 粘贴
+  view.editor.zoomIn: 放大窗口
+  view.editor.zoomOut: 缩小窗口
+  view.editor.autoZoom: 自适应窗口
+  view.editor.resetZoom: 实际窗口
+  view.editor.miniMap: 缩略图
+  validation.graph.notEmpty: 编排定义画布未包含任何节点
+  validation.node.repeat: 存在相同名称label
+  validation.node.changed: 当前编排定义未保存，是否离开？
+  view.button.cron: cron计划
+  view.button.exe: 执行
+
+  model.orchestration.saveValidate: 请先完善必输内容
+  model.preposedMachine.saveEmpty: 无修改内容,无需保存
+
+  view.button.exec: 执行
+  view.button.mappingMaintain: 值映射维护
+  view.button.addCondition: 添加条件
+
+  view.title.header: 数据映射
+  view.title.detail: 数据映射明细
+  view.title.createLine: 创建转换维护信息
+  view.title.editLine: 更新转换维护信息
+  view.title.basicInfo: 基本信息,
+  view.title.detailInfo: 转换维护,
+  view.title.formulaMaintain: 公式维护,
+  view.title.castValMaintain: 值转换维护,
+  view.title.conditionMaintain: 条件维护
+
+  model.dataTransform.seqNumber: 序号
+  model.dataTransform.castCode: 数据映射代码
+  model.dataTransform.castName: 数据映射名称
+  model.dataTransform.dataType: 数据映射类型
+
+  model.dataTransform.castType: 数据映射类型
+  model.dataTransform.castRoot: 字段路径
+  model.dataTransform.castField: 字段名称
+  model.dataTransform.castFormula: 公式转换
+  model.dataTransform.castVal: 值转换
+  model.dataTransform.castSql: SQL转换
+  model.dataTransform.Sql: SQL
+  model.dataTransform.formula: 公式
+
+  model.dataTransform.castLovCode: 值集编码
+  model.dataTransform.castLovField: 值集转化字段
+  model.dataTransform.castLovLang: 值集转化语言
+
+  model.dataTransform.exprSourceType: 来源类型
+  model.dataTransform.exprSourceValue: 来源值
+
+  model.dataTransform.targetValue: 目标值
+  model.dataTransform.condition: 条件
+
+  model.dataTransform.fieldType: 目标字段类型
+
+  model.dataTransform.conditionField: 条件字段
+  model.dataTransform.sourceValue: 值
+
+  model.dataTransform.saveValidate: 请先完善必输内容
+  model.dataTransform.saveEmpty: 无修改内容,无需保存
+
+  view.node.key: 键转换器
+  view.node.value: 值转换器
+
+  view.level.lowest: 最低
+  view.level.low: 低
+  view.level.medium: 中等
+  view.level.high: 高
+  view.level.highest: 最高
+
+  view.failure.finish: 终止
+  view.failure.continue: 继续
+
+  model.status.online: 已上线
+  model.status.offline: 已下线
+
+horc.instance:
+  view.title.header: 编排实例
+  view.title.createLine: 创建节点
+  view.title.editLine: 修改节点
+  view.title.fieldMapping: 字段映射
+  view.title.ensureAdd: 确定添加
+  view.title.onlineConfirm: 确定上线吗
+  view.title.offlineConfirm: 确定下线吗
+  view.title.httpMethodChangeConfirm: 切换请求方法将清空请求
+
+  view.button.online: 上线
+  view.button.offline: 下线
+  view.button.execute: 运行
+  view.button.rerun: 重跑
+  view.button.pause: 暂停
+  view.button.stop: 停止
+  view.button.resume: 恢复
+  view.button.gantt: 甘特图
+
+  model.instance.status: 序号
+  model.instance.instanceName: 编排实例名称
+  model.instance.instanceStatus: 实例状态
+  model.instance.statementType: 执行类型
+  model.instance.statementStartTime: 执行触发时间
+  model.instance.startTime: 运行开始时间
+  model.instance.endTime: 运行结束时间
+  model.instance.timeConsumption: 耗时(ms)
+  model.instance.timeConsumptionDesc: 耗时
+  model.instance.failoverFlag: 容错标志
+  model.instance.failureStrategy: 失败策略
+  model.instance.host: 主机地址
+  model.instance.workGroup: 工作组
+
+  model.instance.saveValidate: 请先完善必输内容
+  model.preposedMachine.saveEmpty: 无修改内容,无需保存
+
+  model.instance.statement_start_time_low: 执行触发时间从
+  model.instance.statement_start_time_high: 执行触发时间至
+  model.instance.start_time_low: 运行开始时间从
+  model.instance.start_time_high: 运行开始时间至
+  model.instance.end_time_low: 运行结束时间从
+  model.instance.end_time_high: 运行结束时间至
+  model.instance.time_consumption_low: 耗时从
+  model.instance.time_consumption_high: 耗时至
+
+horc.taskInstance:
+  view.title.header: 任务实例
+  view.title.createLine: 创建节点
+  view.title.editLine: 修改节点
+  view.title.fieldMapping: 字段映射
+  view.title.ensureAdd: 确定添加
+  view.title.onlineConfirm: 确定上线吗
+  view.title.offlineConfirm: 确定下线吗
+  view.title.httpMethodChangeConfirm: 切换请求方法将清空请求
+  view.title.logDetail: 日志详情
+
+  view.button.log: 日志
+  view.button.newWindowShow: 新窗口展示
+  view.title.taskResult: 任务结果
+
+  model.taskInstance.seqNumber: 序号
+  model.taskInstance.taskName: 任务实例名称
+  model.taskInstance.instanceName: 编排实例名称
+  model.taskInstance.taskType: 任务类型
+  model.taskInstance.status: 任务实例状态
+  model.taskInstance.submittedTime: 提交时间
+  model.taskInstance.startTime: 任务开始时间
+  model.taskInstance.endTime: 任务结束时间
+  model.taskInstance.timeConsumption: 耗时(ms)
+  model.taskInstance.timeConsumptionDesc: 耗时
+  model.taskInstance.host: 任务执行主机
+
+  model.taskInstance.alertFlag: 告警标志
+  model.taskInstance.retryTimes: 重试次数
+  model.taskInstance.instancePriority: 优先级
+  model.taskInstance.workGroup: 工作组
+  model.taskInstance.remark: 备注说明
+
+  model.taskInstance.saveValidate: 请先完善必输内容
+  model.preposedMachine.saveEmpty: 无修改内容,无需保存
+
+  model.taskInstance.submitted_time_low: 提交时间从
+  model.taskInstance.submitted_time_high: 提交时间至
+  model.taskInstance.retry_times_low: 重试次数从
+  model.taskInstance.retry_times_high: 重试次数至
+
+  model.taskInstance.taskInstanceVOList: 前序任务
+  model.taskInstance.textType: 响应文本类型
+  model.taskInstance.contentType: 响应内容类型
+  model.taskInstance.processTime: 处理时间
+  model.taskInstance.result: 响应结果
+  
+horc.fieldMapping:
+  view.button.exec: 执行
+  view.button.viewHistory: 查看历史版本
+  view.button.revert: 版本回退至
+  view.button.release: 发布
+  view.button.offline: 下线
+  view.button.sameNameRel: 同名关联
+  view.button.sameLineRel: 同行关联
+  view.button.cancelRel: 取消关联
+
+  view.title.header: 字段映射
+  view.title.detail: 字段映射明细
+  view.title.basicInfo: 基本信息
+  view.title.detailInfo: 字段映射维护
+  view.title.versionHistory: 历史版本
+  view.title.status: 状态
+
+  model.fieldMapping.seqNumber: 序号
+  model.fieldMapping.transformCode: 字段映射代码
+  model.fieldMapping.transformName: 字段映射名称
+  model.fieldMapping.transformType: 字段映射类型
+  model.fieldMapping.version: 版本
+  model.fieldMapping.fromVersion: 来源版本
+  model.fieldMapping.transformScript: 映射转化脚本
+  model.fieldMapping.sourceStructure: 映射来源结构
+  model.fieldMapping.targetStructure: 映射目标结构
+
+  model.fieldMapping.sourceTitle: 来源结构
+  model.fieldMapping.sourceTitle.tip: 来源结构，设定来源数据结构，通过JSON结构体表达数据结构。通过与目标结构连线构造出DW脚本，可实现JSON与JSON、XML与XML、JSON与XML之间的互相转换。
+  model.fieldMapping.targetTitle: 目标结构
+  model.fieldMapping.targetTitle.tip: 来源结构，设定目标数据结构，通过JSON结构体表达数据结构。通过与来源结构连线构造出DW脚本，可实现JSON与JSON、XML与XML、JSON与XML之间的互相转换。
+  view.modal.fieldData: 字段数据
+
+  view.modal.execConfirm: 确定执行映射转化吗
+
+  model.fieldMapping.saveValidate: 请先完善必输内容
+  model.fieldMapping.saveEmpty: 无修改内容,无需保存
+
+horc.dataMapping:
+  view.button.exec: 执行
+  view.button.mappingMaintain: 值映射维护
+  view.button.addCondition: 添加条件
+  view.button.viewHistory: 查看历史版本
+  view.button.revert: 版本回退至
+  view.button.release: 发布
+
+  view.title.header: 数据映射
+  view.title.detail: 数据映射明细
+  view.title.createLine: 创建转换维护信息
+  view.title.editLine: 更新转换维护信息
+  view.title.basicInfo: 基本信息
+  view.title.detailInfo: 转换维护
+  view.title.formulaMaintain: 公式维护
+  view.title.castValMaintain: 值转换维护
+  view.title.conditionMaintain: 条件维护
+
+  model.dataMapping.seqNumber: 序号
+  model.dataMapping.castCode: 数据映射代码
+  model.dataMapping.castName: 数据映射名称
+  model.dataMapping.dataType: 数据映射类型
+
+  model.dataMapping.castType: 数据映射类型
+  model.dataMapping.castRoot: 字段路径
+  model.dataMapping.castField: 字段名称
+  model.dataMapping.castFormula: 公式转换
+  model.dataMapping.castVal: 值转换
+  model.dataMapping.castSql: SQL转换
+  model.dataMapping.Sql: SQL
+  model.dataMapping.formula: 公式
+
+  model.dataMapping.castLovCode: 值集编码
+  model.dataMapping.castLovField: 值集转化字段
+  model.dataMapping.castLovLang: 值集转化语言
+
+  model.dataMapping.exprSourceType: 来源类型
+  model.dataMapping.exprSourceValue: 来源值
+
+  model.dataMapping.targetValue: 目标值
+  model.dataMapping.condition: 条件
+  model.dataMapping.conjunction: 多条件连接符
+
+  model.dataMapping.fieldType: 目标字段类型
+
+  model.dataMapping.conditionField: 条件字段
+  model.dataMapping.sourceValue: 值
+
+  view.title.versionHistory: 历史版本
+  view.title.status: 状态
+  model.dataMapping.version: 版本
+  model.dataMapping.fromVersion: 来源版本
+
+  model.dataMapping.saveValidate: 请先完善必输内容
+  model.dataMapping.saveEmpty: 无修改内容,无需保存

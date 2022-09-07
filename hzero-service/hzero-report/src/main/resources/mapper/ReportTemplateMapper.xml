@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.report.infra.mapper.ReportTemplateMapper">
+	<!-- 可根据自己的需求，是否要使用 -->
+	<resultMap id="BaseResultMap" type="org.hzero.report.domain.entity.ReportTemplate">
+		<result column="report_template_id" property="reportTemplateId" jdbcType="DECIMAL" />
+		<result column="report_id" property="reportId" jdbcType="DECIMAL" />
+		<result column="template_id" property="templateId" jdbcType="DECIMAL" />
+		<result column="template_type_code" property="templateTypeCode" jdbcType="VARCHAR" />
+		<result column="template_code" property="templateCode" jdbcType="VARCHAR" />
+		<result column="template_name" property="templateName" jdbcType="VARCHAR" />
+		<result column="tenant_id" property="tenantId" jdbcType="DECIMAL" />
+		<result column="default_flag" property="defaultFlag" jdbcType="DECIMAL" />
+		<result column="object_version_number" property="objectVersionNumber" jdbcType="DECIMAL" />
+		<result column="creation_date" property="creationDate" jdbcType="DATE" />
+		<result column="created_by" property="createdBy" jdbcType="DECIMAL" />
+		<result column="last_updated_by" property="lastUpdatedBy" jdbcType="DECIMAL" />
+		<result column="last_update_date" property="lastUpdateDate" jdbcType="DATE" />
+	</resultMap>
+
+	<!-- 获取报表模板列表 -->
+	<select id="selectReportTemplatesByReportId" resultType="org.hzero.report.domain.entity.ReportTemplate">
+		<bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()" />
+		SELECT
+			hrt.report_template_id,
+			hrt.report_id,
+			ht.template_code,
+			ht.template_type_code,
+			htl.template_name,
+			hrt.default_flag,
+			hrt.tenant_id,
+			htt.tenant_name,
+			hrt.object_version_number
+		FROM
+			hrpt_report_template hrt,
+			hrpt_template ht,
+			hpfm_tenant_tl htt,
+			hrpt_template_tl htl
+		WHERE
+			hrt.template_id = ht.template_id
+			AND hrt.report_id = #{reportId}
+			AND hrt.tenant_id = htt.tenant_id
+			AND htt.lang = #{lang}
+		  	AND htl.template_id = ht.template_id
+		  	AND htl.lang = #{lang}
+	</select>
+
+	<!-- 获取报表模板列表 -->
+	<select id="selectReportTemplate" parameterType="org.hzero.report.domain.entity.ReportTemplate" resultType="org.hzero.report.domain.entity.ReportTemplate">
+		<bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()" />
+		SELECT
+			ht.template_id,
+			ht.template_code,
+			ht.template_type_code,
+			htl.template_name,
+			ht.tenant_id,
+			htt.tenant_name
+		FROM
+			hrpt_template ht,
+			hpfm_tenant_tl htt,
+			hrpt_template_tl htl
+		WHERE
+			ht.enabled_flag = 1
+		AND ht.tenant_id = htt.tenant_id
+		AND htt.lang = #{lang}
+		AND htl.template_id = ht.template_id
+		AND htl.lang = #{lang}
+		AND NOT EXISTS (
+		SELECT
+			'X'
+		FROM
+			hrpt_report_template hrt
+		WHERE
+			hrt.template_id = ht.template_id
+		AND hrt.report_id = #{reportId})
+		AND ht.template_type_code = #{templateTypeCode}
+		<if test="templateCode != null and templateCode != ''">
+			<bind name="templateCodeLike" value="'%' + templateCode + '%'" />
+            AND ht.template_code LIKE #{templateCodeLike}
+		</if>
+		<if test="templateName != null and templateName != ''">
+			<bind name="templateNameLike" value="'%' + templateName + '%'" />
+            AND htl.template_name LIKE #{templateNameLike}
+		</if>
+		<if test="tenantId != null">
+			AND ht.tenant_id = #{tenantId}
+		</if>
+	</select>
+	
+	<!-- 查询报表模板信息 -->
+    <select id="selectTemplateDtls" resultType="org.hzero.report.domain.entity.TemplateDtl">
+		SELECT
+			ht.template_code,
+			ht.template_type_code,
+			htd.template_url,
+			htd.template_content,
+			htd.lang,
+			htd.tenant_id,
+			hrt.default_flag
+		FROM
+			hrpt_report_template hrt,
+			hrpt_template ht,
+			hrpt_template_dtl htd
+		WHERE
+			hrt.template_id = ht.template_id
+		AND ht.template_id = htd.template_id
+		AND hrt.report_id = #{reportId}
+		<if test="templateCode != null and templateCode != ''">
+            AND ht.template_code = #{templateCode}
+		</if>
+		<if test="lang != null and lang != ''">
+            AND htd.lang = #{lang}
+		</if>
+		<if test="tenantId != null">
+			AND hrt.tenant_id = #{tenantId}
+		</if>
+		ORDER BY hrt.default_flag DESC,htd.lang DESC
+    </select>
+
+    <!-- 查询被引用次数 -->
+    <select id="selectReferenceCount" resultType="java.lang.Integer">
+    	SELECT
+			COUNT( * )
+		FROM
+			hrpt_report hr,
+			hrpt_report_template hrt
+		WHERE
+			hr.report_id = hrt.report_id
+			AND hrt.template_id = hrt.template_id
+			AND hrt.report_template_id = #{reportTemplateId}
+    </select>
+    
+    <!-- 重置报表模板默认标识 -->
+    <update id="resetReportTemplateDefaultFlag">
+        UPDATE hrpt_report_template
+		SET default_flag = 0,
+		object_version_number = object_version_number + 1
+		WHERE
+			report_id = #{reportId}
+			AND report_template_id != #{reportTemplateId}
+			AND default_flag = 1
+			AND tenant_id = #{tenantId}
+    </update>
+
+	<select id="getTemplatesByReport" resultType="org.hzero.report.api.dto.TemplateDTO">
+		<bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()" />
+		SELECT
+			ht.template_id,
+			htd.template_dtl_id,
+			ht.tenant_id,
+			CONCAT(CONCAT(ht.template_code,'@'),ht.tenant_id) code_tenant,
+			htt.tenant_name,
+			ht.template_code,
+			htl.template_name,
+			htd.lang,
+			fl.name lang_name
+		FROM
+			hrpt_template ht,
+			hrpt_template_dtl htd,
+			hrpt_report_template hrt,
+			hpfm_tenant_tl htt,
+			fd_language fl,
+			hrpt_template_tl htl
+		WHERE ht.template_id = htd.template_id
+		AND ht.template_id = hrt.template_id
+		AND htt.tenant_id = ht.tenant_id
+		AND fl.code = htd.lang
+		AND htt.lang = #{lang}
+	  	AND htl.template_id = ht.template_id
+	  	AND htl.lang = #{lang}
+		AND hrt.report_id = #{reportId}
+		<if test="templateCode != null and templateCode != ''">
+			<bind name="templateCodeLike" value="'%' + templateCode + '%'" />
+			AND ht.template_code LIKE #{templateCodeLike}
+		</if>
+		<if test="templateName != null and templateName != ''">
+			<bind name="templateNameLike" value="'%' + templateName + '%'" />
+			AND htl.template_name LIKE #{templateNameLike}
+		</if>
+	</select>
+    
+</mapper>

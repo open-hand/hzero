@@ -1,0 +1,47 @@
+:global {
+  .c7n-instance-content {
+    .instanceInfoContainer {
+      padding-left: 16px;
+      width: 512px;
+      .instanceInfo {
+        .c7n-pro-field-label,
+        .c7n-pro-field-wrapper {
+          padding: 0.07rem 0.05rem;
+          font-size: 0.14rem;
+        }
+        .c7n-pro-field-label {
+          color: rgba(0, 0, 0, 0.65);
+        }
+      }
+    }
+
+    .configContainer {
+      > div {
+        display: inline-block;
+        padding: 10px 16px 18px 10px;
+        width: 48%;
+        background: #fff;
+        box-shadow: 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 2px 2px 0 rgba(0, 0, 0, 0.14),
+          0 1px 5px 0 rgba(0, 0, 0, 0.12);
+        p {
+          font-size: 16px;
+        }
+      }
+
+      > div:first-child {
+        margin: 0 22px 1px 1px;
+        width: 49%;
+      }
+      .CodeMirror {
+        height: auto;
+      }
+      .CodeMirror-scroll {
+        /* Set scrolling behaviour here */
+        overflow: auto;
+        // max-height: 800px;
+        max-height: calc(~'100vh - 4rem');
+        min-height: 300px;
+      }
+    }
+  }
+}

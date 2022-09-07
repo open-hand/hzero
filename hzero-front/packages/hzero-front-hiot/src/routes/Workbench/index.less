@@ -1,0 +1,69 @@
+/*!
+    @date 2019-11-26
+    @author na.yi <na.yi@hand-china.com>
+    @version 0.0.1
+    @copyright Copyright (c) 2018, Hand
+*/
+@chartContainerBorderColor: #d5dae0;
+
+.workbench-chart-container-border-row {
+  border-bottom: 1px solid @chartContainerBorderColor;
+}
+
+.workbench-chart-container-border-col {
+  border-left: 1px solid @chartContainerBorderColor;
+}
+
+.workbench-project-chart-info-container {
+  display: flex;
+  align-items: center;
+
+  &-value {
+    font-size: 0.24rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    word-break: break-all;
+    white-space: nowrap;
+  }
+
+  &-unit {
+    margin-left: 5px;
+    font-size: 0.16rem;
+  }
+}
+
+.workbench-trend-chart-container {
+  width: 100%;
+  height: 3rem;
+}
+
+.workbench-device-cards {
+  &-row {
+    margin-left: 0;
+    margin-top: 10px;
+  }
+
+  &-box {
+    padding: 5px 5px 10px;
+    border: 1px solid #ccc;
+    margin: 5px;
+    display: flex;
+    box-shadow: 3px 3px 3px #999;
+  }
+
+  &-title {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  &-warn-value {
+    font-size: 0.14rem;
+    font-weight: 600;
+  }
+}
+
+.workbench-tree-icons {
+  font-size: 16px;
+  margin-top: 3px;
+  margin-right: 3px;
+}

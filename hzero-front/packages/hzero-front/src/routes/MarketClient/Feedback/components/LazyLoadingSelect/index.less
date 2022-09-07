@@ -1,0 +1,29 @@
+.lazy-loading-select {
+  & > div > ul {
+    .scrollBar(@bg-color: #f7f7f7, @thumb-color: #d7d8d9) {
+      // ie5.5+
+      // scrollbar-width: 4px;
+      // scrollbar-face-color: @thumb-color;
+      // scrollbar-track-color: @bg-color;
+
+      &::-webkit-scrollbar {
+        width: 4px;
+        background-color: @bg-color;
+      }
+
+      &::-webkit-scrollbar:horizontal {
+        height: 4px;
+        background-color: @bg-color;
+      }
+
+      &::-webkit-scrollbar-thumb {
+        border-radius: 2px;
+        background: @thumb-color;
+      }
+    }
+  }
+}
+
+.hidden {
+  display: none;
+}

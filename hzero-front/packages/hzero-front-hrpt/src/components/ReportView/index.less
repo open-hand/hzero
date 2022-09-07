@@ -1,0 +1,93 @@
+:global {
+  .report-view {
+    display: flex;
+    width: 100%;
+    min-height: 100%;
+    flex-direction: column;
+    justify-content: center;
+    margin: 0 auto;
+    .select-wrap {
+      margin: auto;
+      display: flex;
+      .x-data-select {
+        flex: 1;
+      }
+      .select-item {
+        margin-bottom: 15px;
+        display: flex;
+        .echarts-select-text {
+          width: 100px;
+          height: 30px;
+          line-height: 30px;
+          text-align: right;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+      }
+    }
+    .report-echarts-content {
+      min-height: 300px;
+    }
+  }
+  .report-table-wrap {
+    .report-view-span {
+      font-weight: bold;
+    }
+    .report-icon-excel {
+      cursor: pointer;
+      &::before {
+        background-image: url('../../assets/icon-export-excel-default.svg');
+        background-repeat: no-repeat;
+        content: '';
+        display: inline-block;
+        height: 22px;
+        width: 22px;
+        top: 1px;
+        margin: 0 8px;
+        position: relative;
+      }
+
+      &:hover {
+        &::before {
+          background-image: url('../../assets/icon-export-excel-hover.svg');
+        }
+      }
+    }
+    .report-table {
+      margin-top: 10px;
+      margin-bottom: 20px;
+      .hreport {
+        overflow-x: auto;
+        margin: 0 auto;
+        border-collapse: collapse;
+        font-size: 12px;
+        text-align: left;
+        tr td,
+        tr th {
+          border: 1px solid #e8e8e8;
+          padding: 9px 8px;
+        }
+        thead tr {
+          background-color: #f5f5f5;
+          height: 45px;
+          font-weight: bold;
+        }
+        tbody tr:hover {
+          background-color: #f0f4ff;
+        }
+      }
+    }
+    .report-table-pagination {
+      float: right;
+      margin-bottom: 25px;
+      .c7n-pro-input-number {
+        border: 1px solid rgba(0, 0, 0, 0.2);
+      }
+      label:hover .c7n-pro-input-number,
+      .c7n-pro-input-number:hover {
+        border: 1px solid #6374c2;
+      }
+    }
+  }
+}

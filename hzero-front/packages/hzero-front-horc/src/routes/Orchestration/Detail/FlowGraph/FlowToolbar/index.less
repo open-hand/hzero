@@ -1,0 +1,51 @@
+.horc-flow-toolbar {
+  display: flex;
+  align-items: center;
+
+  :global {
+    i {
+      display: inline-block;
+      width: 35px;
+      height: 35px;
+      margin: 0 6px;
+      padding-top: 6px;
+      text-align: center;
+      border: 1px solid #fff;
+      cursor: pointer;
+
+      &:hover {
+        color: rgb(79, 125, 231);
+      }
+    }
+
+    .disable i {
+      color: rgba(0, 0, 0, 0.25);
+      cursor: auto;
+
+      &:hover {
+        border: 0;
+      }
+    }
+    .ant-btn {
+      border: 0;
+      padding: 0 !important;
+      background-color: #fff !important;
+      i {
+        margin: 0;
+      }
+    }
+
+    .ant-btn .anticon {
+      font-size: 15px;
+    }
+
+    .ant-alert {
+      padding: 2px 10px !important;
+    }
+  }
+}
+
+.horc-flow-tooltip {
+  font-size: 12px;
+  border-radius: 0;
+}

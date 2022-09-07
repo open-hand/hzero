@@ -1,0 +1,28 @@
+@default-color: #29bece;
+
+:global {
+  // 通用变量
+
+  // 通用样式
+  .emoji-wrapper {
+    display: flex;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    width: 240px;
+  }
+
+  .emojis(20);
+
+  .emojis(@n, @i: 1) when (@i =< @n) {
+    .emoji@{i} {
+      width: 20px;
+      height: 20px;
+      margin: 2px;
+      display: inline-block;
+      vertical-align: bottom;
+      cursor: pointer;
+      background: url('../../assets/emojis/emoji@{i}.svg') 0 / cover;
+    }
+    .emojis(@n, (@i + 1));
+  }
+}

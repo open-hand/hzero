@@ -1,0 +1,37 @@
+server:
+  port: 8110
+management:
+  server:
+    port: 8111
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+
+spring:
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:default}
+  cloud:
+    config:
+      fail-fast: false
+      enabled: ${SPRING_CLOUD_CONFIG_ENABLED:false}
+      uri: ${SPRING_CLOUD_CONFIG_URI:http://dev.hzero.org:8010}
+      retry:
+        maxAttempts: 6
+        multiplier: 1.1
+        maxInterval: 2000
+      label: ${SPRING_CLOUD_CONFIG_LABEL:}
+
+eureka:
+  instance:
+    preferIpAddress: ${EUREKA_INSTANCE_PREFER_IP_ADDRESS:true}
+    leaseRenewalIntervalInSeconds: 10
+    leaseExpirationDurationInSeconds: 30
+    metadata-map:
+      VERSION: 1.4.0
+  client:
+    serviceUrl:
+      defaultZone: ${EUREKA_DEFAULT_ZONE:http://dev.hzero.org:8000/eureka}
+    registryFetchIntervalSeconds: 10
+    disable-delta: true
+

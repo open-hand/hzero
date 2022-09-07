@@ -1,0 +1,73 @@
+# hzero-国际化
+
+hmnt.auditConfig:
+  model.auditConfig.auditArgsFlag: 审计请求参数
+  model.auditConfig.auditContent: 操作内容
+  model.auditConfig.auditResultFlag: 审计响应参数
+  model.auditConfig.code: 租户
+  model.auditConfig.permissionId: 审计接口
+  model.auditConfig.serviceName: 服务
+  model.auditConfig.tenantId: 租户
+  model.auditConfig.tenantName: 租户
+  view.message.create: 新建操作审计配置
+  view.message.edit: 编辑操作审计配置
+  view.message.title: 操作审计配置
+hmnt.auditQuery:
+  model.auditQuery.auditContent: 操作内容
+  model.auditQuery.auditDateEnd: 操作日期至
+  model.auditQuery.auditDateStart: 操作日期从
+  model.auditQuery.auditDatetime: 操作时间
+  model.auditQuery.timeConsuming: 操作耗时
+  model.auditQuery.auditResult: 操作结果
+  model.auditQuery.requestIp: 请求IP
+  model.auditQuery.requestMethod: 请求方式
+  model.auditQuery.requestUserAgent: 用户代理
+  model.auditQuery.requestReferrer: Referrer
+  model.auditQuery.requestUrl: 请求路径
+  model.auditQuery.field: 参数名称
+  model.auditQuery.serviceName: 服务名称
+  model.auditQuery.success: 成功
+  model.auditQuery.failed: 失败
+  model.auditQuery.userId: 用户
+  model.auditQuery.value: 参数值
+  view.message.modal.params: 操作参数
+  view.message.modal.response: 操作响应
+  view.message.title.list: 操作审计查询
+hmnt.dataAudit:
+  view.message.title: 数据审计
+  model.dataAudit.serviceName: 服务名
+  model.dataAudit.entityCode: 审计实体
+  model.dataAudit.tableName: 审计表
+  model.dataAudit.processUserName: 操作用户
+  model.dataAudit.entityId: 主键ID
+  model.dataAudit.startProcessTime: 操作时间从
+  model.dataAudit.endProcessTime: 操作时间至
+  model.dataAudit.entityVersion: 版本
+  model.dataAudit.processTime: 操作时间
+  view.message.detail: 详情
+  view.message.audit.detail: 审计详情
+  model.dataAudit.fieldCode: 审计字段名
+  model.dataAudit.columnName: 审计列名
+  model.dataAudit.fieldValueOld: 原值
+  model.dataAudit.fieldValueNew: 现值
+  model.dataAudit.lang: 语言
+  model.dataAudit.entityId.warning: 请输入正整数
+  model.dataAudit.auditType: 操作类型
+hmnt.dataAuditConfig:
+  view.message.title: 数据审计配置
+  model.dataAuditConfig.serviceName: 服务名
+  model.dataAuditConfig.tableName: 表名
+  model.dataAuditConfig.displayName: 展示名称
+  view.message.title.audit: 审计
+  view.message.title.detail: 数据审计配置详情
+  model.dataAuditConfig.fieldName: 字段名
+  model.dataAuditConfig.columnName: 列名
+  model.dataAuditConfig.pkIdFlag: 是否主键
+  model.dataAuditConfig.uniqueFlag: 是否唯一
+  model.dataAuditConfig.transientFlag: 是否非数据库字段
+  model.dataAuditConfig.dataSecurityFlag: 是否敏感字段
+  model.dataAuditConfig.multiLanguageFlag: 是否多语言字段
+  model.dataAuditConfig.displayType: 展示类型
+  model.dataAuditConfig.displayMask: 格式掩码
+  view.message.title.head: 配置信息
+  view.message.title.line: 配置详情

@@ -1,0 +1,26 @@
+<svg width="88" height="76" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs>
+    <rect id="b" x="0" y="0" width="80" height="48" rx="4"/>
+    <filter x="-8.8%" y="-10.4%" width="117.5%" height="129.2%" filterUnits="objectBoundingBox" id="a">
+      <feOffset dy="2" in="SourceAlpha" result="shadowOffsetOuter1"/>
+      <feGaussianBlur stdDeviation="2" in="shadowOffsetOuter1" result="shadowBlurOuter1"/>
+      <feComposite in="shadowBlurOuter1" in2="SourceAlpha" operator="out" result="shadowBlurOuter1"/>
+      <feColorMatrix values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.04 0" in="shadowBlurOuter1"/>
+    </filter>
+  </defs>
+  <g fill="none" fill-rule="evenodd">
+    <g transform="translate(4 2)">
+      <use fill="#000" filter="url(#a)" xlink:href="#b"/>
+      <use fill-opacity=".92" fill="#E6F7FF" xlink:href="#b"/>
+      <rect stroke="#1890FF" x=".5" y=".5" width="79" height="47" rx="4"/>
+    </g>
+    <text font-family="PingFangSC-Regular, PingFang SC" font-size="12" fill="#000" fill-opacity=".65"
+          transform="translate(4 2)">
+      <tspan x="17" y="65">分组组件</tspan>
+    </text>
+    <g stroke="null" id="svg_13">
+      <path stroke="null" id="svg_11" fill="#515151"
+            d="m37.17701,24.9916l0,-1.87241l11.23445,0l0,1.87241l-8.98756,0l-2.24689,0zm1.87241,9.36204l1.87241,0l0,1.87241l-1.87241,0l-1.12344,0l-0.74896,0l-6.33436,0c-0.72462,0 -1.15528,0.088 -1.15528,-0.63662l0,-13.18175l0,-1.16089l0,-1.87241l0,-1.76006l0,-3.66992c0,-0.76394 0.46436,-2.05965 1.23017,-2.05965l10.33569,0c0.76394,0 1.54099,1.29571 1.54099,2.05965l0,1.68517l13.51317,0c0.72275,0 1.4661,1.262 1.4661,1.98475l0,3.63247l-1.87241,0l-3.74482,0l-20.59648,0l0,1.16089l0,11.94596l5.61722,0l1.87241,0zm-7.48963,-14.97926l24.3413,0l0,-1.87241l-13.26226,0l-1.717,0l0,-1.19834l0,-2.54647l-9.36204,0l0,3.85716l0,1.76006zm22.46889,9.36204l0,-1.87241l-1.87241,0l0,9.36204l1.87241,0l0,-1.87241l5.61722,0l0,5.61722l-5.61722,0l0,-1.87241l-3.74482,0l0,-1.87241l0,-3.74482l-1.87241,0l0,3.74482l-5.61722,0l0,-9.36204l5.61722,0l0,3.74482l1.87241,0l0,-3.74482l0,-1.87241l1.87241,0l1.87241,0l0,-1.87241l5.61722,0l0,5.61722l-5.61722,0zm1.87241,-1.87241l1.87241,0l0,-1.87241l-1.87241,0l0,1.87241zm-9.36204,1.87241l-1.87241,0l0,5.61722l1.87241,0l0,-5.61722zm9.36204,9.36204l1.87241,0l0,-1.87241l-1.87241,0l0,1.87241z"/>
+    </g>
+  </g>
+</svg>

@@ -1,0 +1,44 @@
+@import '../../../assets/styles/variables';
+@import '../../../assets/styles/mixins';
+
+@content-padding: 32px;
+
+.self-modal {
+  :global(.ant-modal-body) {
+    padding: 0;
+  }
+
+  :global(.self-modal-header) {
+    height: 227px;
+    padding-top: 20px;
+    text-align: center;
+    background: #fff;
+    position: relative;
+    overflow: hidden;
+    & > img {
+      width: 100%;
+      position: absolute;
+      top: calc(50% + 20px);
+      transform: translateY(-50%);
+      left: 0;
+    }
+  }
+
+  :global(.self-modal-content) {
+    .hzero-font-size(14px);
+    padding: 20px @content-padding 8px;
+
+    :global(.user-info) {
+      color: @hzero-primary-color-2;
+    }
+  }
+
+  :global(.self-modal-footer) {
+    padding: 0 @content-padding 32px;
+    text-align: right;
+
+    :global(.go-info) {
+      height: 28px;
+    }
+  }
+}

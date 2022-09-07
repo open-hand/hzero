@@ -1,0 +1,57 @@
+// 可选项组件样式
+.hiot-enum-options {
+  ::-webkit-scrollbar {
+    width: 100px;
+    height: 1px;
+  }
+  ::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+    background: #535353;
+  }
+  ::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+    background: #ededed;
+  }
+  .option-col {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    text-align: center;
+  }
+  .options {
+    display: flex;
+    flex-direction: row;
+    .ant-form-item {
+      margin: 0;
+      padding: 0 10px;
+    }
+    .options-color {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      margin-top: 10px;
+      cursor: pointer;
+    }
+    .options-delete {
+      font-size: 20px;
+      margin-top: 12px;
+    }
+  }
+}
+.color-popover-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  .color-picker-sketch {
+    box-shadow: 0 0 0 !important;
+  }
+}
+.content-wrap {
+  padding-top: 10px;
+  .enum-option-label {
+    width: 100px;
+    text-align: right;
+  }
+}

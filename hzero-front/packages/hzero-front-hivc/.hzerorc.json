@@ -1,0 +1,7 @@
+{
+  "package": {
+    "initLoad": false,
+    "indexRouter": "/hivc/manual-inspection/create",
+    "registerRegex": "(\\/(private|public|pub))?\\/hivc\\/"
+  }
+}

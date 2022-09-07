@@ -1,0 +1,154 @@
+.api-diff-result-wrap {
+  min-height: 300px;
+  .compare-group {
+    & > h3 {
+      position: relative;
+      padding-left: 16px;
+      font-size: 14px;
+      color: #386bd7;
+      &::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        height: 18px;
+        width: 3px;
+        background-color: #386bd7;
+      }
+    }
+    .compare-title {
+      position: relative;
+      padding-left: 16px;
+      font-size: 14px;
+      color: #386bd7;
+      &::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        height: 18px;
+        width: 3px;
+        background-color: #386bd7;
+      }
+    }
+    .compare-item {
+      margin: 0 24px 12px 32px;
+      color: white;
+      padding: 2px 20px;
+      line-height: 1.42;
+      p {
+        margin-bottom: 5px;
+        color: rgb(252, 146, 158);
+        span:nth-child(2) {
+          color: white;
+        }
+      }
+      & > p:last-child {
+        margin: 0;
+      }
+
+      .diff-result {
+        color: #333;
+        background: #f6f6f6;
+        box-sizing: border-box;
+        padding: 20px;
+        font-size: 14px;
+        .result-sub-title {
+          margin-bottom: 7px;
+        }
+        .diff-result-item {
+          display: flex;
+          margin-bottom: 9px;
+          margin-left: 24px;
+          & > span:first-child {
+            margin-right: 12px;
+          }
+          & > span:last-child {
+            margin-left: 12px;
+            opacity: 0.5;
+          }
+        }
+        .delete {
+          & > span:nth-child(1) {
+            color: #ef6623;
+          }
+          & > span:nth-child(2) {
+            color: #ef6623;
+            text-decoration: line-through;
+          }
+        }
+        .add {
+          & > span:nth-child(1) {
+            color: #39c878;
+          }
+        }
+        .modify {
+          & > span:nth-child(1) {
+            color: #f8b303;
+          }
+        }
+      }
+    }
+  }
+  // .newEndpoints {}
+  // .changedEndpoints {}
+  .missingEndpoints {
+    .compare-item {
+      .compare-path-header {
+        & > div:nth-child(2) {
+          text-decoration: line-through;
+          color: #ef6623;
+        }
+      }
+    }
+  }
+
+  // 路径头部样式
+  .compare-path-header {
+    display: flex;
+    & > div:last-child {
+      margin-left: 12px;
+      opacity: 0.5;
+    }
+    .method-common {
+      width: 60px;
+      flex: 0 0 60px;
+      height: 20px;
+      text-align: center;
+      margin-right: 12px;
+      color: white;
+      text-decoration: none !important;
+    }
+    .get {
+      .method-common;
+      background: #5691fd;
+    }
+    .post {
+      .method-common;
+      background: #39c878;
+    }
+    .put {
+      .method-common;
+      background: #f8b303;
+    }
+    .delete {
+      .method-common;
+      background: #ef6623;
+      text-decoration: none;
+    }
+    .options {
+      .method-common;
+      background: #e91e63;
+      text-decoration: none;
+    }
+    .head {
+      .method-common;
+      background: #795548;
+      text-decoration: none;
+    }
+  }
+
+  .no-content {
+    margin-top: 100px;
+    text-align: center;
+    color: #999;
+  }
+}

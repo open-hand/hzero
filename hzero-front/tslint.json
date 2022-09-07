@@ -1,0 +1,19 @@
+{
+  "defaultSeverity": "error",
+  "extends": ["tslint:recommended"],
+  "jsRules": {},
+  "rules": {
+    // TODO: password encrypt need bitwise
+    "no-bitwise": false,
+    "prefer-for-of": false,
+    "interface-name": false,
+    "member-ordering": false,
+    "ordered-imports": false,
+    "no-console": false,
+    "object-literal-sort-keys": false,
+    "quotemark": [true, "single", "avoid-escape", "avoid-template"],
+    "arrow-parens": false,
+    "no-unused-expression": false
+  },
+  "rulesDirectory": []
+}

@@ -1,0 +1,67 @@
+.hpfm-hr-title {
+  font-size: 14px;
+  margin: 8px 0;
+  line-height: 32px;
+  border: #dcf3d1;
+  background: #edf9e8;
+  & span {
+    background: ~"url('hzero-front/lib/assets/icon-tips.svg')" no-repeat;
+    margin: 0 8px 0 12px;
+    width: 16px;
+    height: 16px;
+    line-height: 32px;
+    display: inline-flex;
+    vertical-align: text-bottom;
+  }
+}
+
+.hpfm-employee-detail-item {
+  max-width: 1000px;
+  :global {
+    .ant-form-item {
+      margin-bottom: 4px;
+      .ant-form-item-label {
+        text-align: left;
+      }
+    }
+  }
+}
+
+.expand-icon {
+  cursor: pointer;
+}
+
+.hpfm-employee-position {
+  :global {
+    .ant-modal-body {
+      padding: 8px;
+    }
+  }
+  .hr-type-icon {
+    line-height: 22px;
+    vertical-align: inherit;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .hr-type-common {
+    background: ~"url('hzero-front/lib/assets/org-type-icon.png')" no-repeat;
+    display: inline-flex;
+    width: 24px;
+    height: 24px;
+    vertical-align: middle;
+  }
+  .hr-company {
+    background-position-x: 1px;
+  }
+  .hr-department {
+    background-position-x: -18px;
+  }
+  .hr-position {
+    background-position-x: -37px;
+  }
+}
+
+.full-width {
+  width: 100%;
+}

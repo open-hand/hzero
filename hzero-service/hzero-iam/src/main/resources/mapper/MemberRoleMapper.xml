@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.iam.infra.mapper.MemberRoleMapper">
+
+    <select id="selectMemberRole" resultType="org.hzero.iam.domain.entity.MemberRole">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        select
+            imr.id,
+            role_id,
+            member_id,
+            member_type,
+            source_id,
+            source_type,
+            h_assign_level assign_level,
+            h_assign_level_value assign_level_value,
+            object_version_number,
+            (case
+              when imr.h_assign_level = 'org' then
+               (
+                 select
+                    hu.unit_code
+                 from hpfm_unit hu
+                 where hu.unit_id = imr.h_assign_level_value
+               )
+              when imr.h_assign_level = 'organization' then
+               (
+                 select
+                   ht.tenant_num
+                 from hpfm_tenant ht
+                 where ht.tenant_id = imr.h_assign_level_value
+               )
+              else
+                null
+            end) assign_level_code
+        from iam_member_role imr
+        where imr.role_id = #{roleId}
+        and imr.member_id = #{memberId}
+        and imr.member_type = #{memberType}
+    </select>
+
+</mapper>

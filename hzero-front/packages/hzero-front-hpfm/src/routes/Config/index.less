@@ -1,0 +1,133 @@
+@import '~hzero-front/lib/assets/styles/variables.less';
+@import '~hzero-front/lib/assets/styles/mixins.less';
+@import '~hzero-front/lib/assets/styles/utils.less';
+
+.icon-style {
+  font-size: 40px;
+  cursor: pointer;
+}
+
+.config-content {
+  // background-color: #f7f7fd;
+  &-tab-system,
+  &-tab-iam,
+  &-tab-oauth {
+    display: flex;
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    height: 100%;
+    &-icon {
+      width: 36px;
+      height: 35px;
+      background-size: 32px 36px;
+      background-repeat: no-repeat;
+      margin-right: 0 !important;
+      margin-bottom: 10px;
+      display: block;
+    }
+  }
+  &-tab-system {
+    &-icon {
+      background-image: url('../../assets/config/system.png');
+    }
+  }
+  &-tab-iam {
+    &-icon {
+      background-image: url('../../assets/config/iam.png');
+    }
+  }
+  &-tab-oauth {
+    &-icon {
+      background-image: url('../../assets/config/oauth.png');
+    }
+  }
+  :global {
+    // tabs 样式
+    .ant-tabs {
+      width: 100%;
+      border-left: none !important;
+      &-content {
+        background-color: #fff;
+        border-left: none !important;
+      }
+      &-ink-bar {
+        display: none !important;
+      }
+
+      &-bar {
+        float: none;
+        height: 100%;
+        text-align: left;
+        font-size: 14px;
+        margin-right: 10px !important;
+        border-right: none !important;
+        background-color: #fff !important;
+
+        > .ant-tabs-nav-container {
+          > .ant-tabs-nav-wrap {
+            > .ant-tabs-nav-scroll {
+              > .ant-tabs-nav {
+                .ant-tabs-tab {
+                  height: 100px;
+                  font-size: 14px;
+                  padding: 16px 16px 16px 40px !important;
+                  // padding-top: 12px;
+                  // padding-bottom: 12px;
+                  // padding-left: 40px;
+                  transition: none;
+                  // margin-right: 16px;
+
+                  &:hover {
+                    color: @hzero-primary-color-2;
+                  }
+
+                  &-active {
+                    color: @hzero-primary-color-2;
+                    background: linear-gradient(
+                      90deg,
+                      rgba(197, 234, 238, 0) 10%,
+                      rgba(147, 209, 216, 0.5) 300%
+                    );
+                    &::after {
+                      position: absolute;
+                      right: 0;
+                      top: 0;
+                      content: '';
+                      width: 8px;
+                      height: 100%;
+                      border-right: 8px solid @hzero-primary-color-2;
+                    }
+                    :local {
+                      .config-content-tab-system-icon {
+                        background-image: url('../../assets/config/system-selected.png');
+                      }
+                      .config-content-tab-iam-icon {
+                        background-image: url('../../assets/config/iam-selected.png');
+                      }
+                      .config-content-tab-oauth-icon {
+                        background-image: url('../../assets/config/oauth-selected.png');
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+
+      &-content {
+        flex: auto;
+        overflow: auto;
+        padding: 32px;
+        height: 100%;
+      }
+
+      &-tabpane {
+        max-width: 1100px;
+      }
+    }
+  }
+}

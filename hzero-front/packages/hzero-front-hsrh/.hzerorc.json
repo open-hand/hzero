@@ -1,0 +1,7 @@
+{
+  "package": {
+    "initLoad": false,
+    "indexRouter": "/hsrh/search-config",
+    "registerRegex": "(\\/(private|public|pub))?\\/hsrh\\/"
+  }
+}

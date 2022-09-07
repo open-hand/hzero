@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.boot.imported.infra.mapper.ImportDataMapper">
+    <select id="selectByBatch" parameterType="org.hzero.boot.imported.domain.entity.ImportData"
+            resultType="org.hzero.boot.imported.domain.entity.ImportData">
+        SELECT
+            hd.id,
+            hd.batch,
+            hd.template_code,
+            hd.data_status,
+            hd.error_msg,
+            hd.data,
+            hd.back_info
+        FROM
+            himp_data hd
+        WHERE
+            hd.template_code = #{templateCode}
+        AND hd.batch = #{batch}
+        <if test="dataStatus != null">
+            AND hd.data_status = #{dataStatus}
+        </if>
+        <if test="sheetIndex != null">
+            AND hd.sheet_index = #{sheetIndex}
+        </if>
+    </select>
+
+    <update id="updateFailed">
+        UPDATE himp_data SET data_status = #{status}, error_msg = #{desc}
+        WHERE batch = #{batch} AND template_code = #{templateCode} AND sheet_index = #{sheetIndex}
+    </update>
+
+    <delete id="deleteByBatch">
+        DELETE FROM himp_data WHERE batch = #{batch}
+    </delete>
+
+    <update id="fallback">
+        UPDATE himp_data SET data_status = #{status}
+        WHERE id = #{id}
+    </update>
+</mapper>

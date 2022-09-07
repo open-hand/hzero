@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.message.infra.mapper.SmsServerMapper">
+    <select id="selectSmsServer" resultType="org.hzero.message.domain.entity.SmsServer">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()" />
+        SELECT
+            hss.server_id,
+            hss.server_code,
+            hsst.server_name,
+            hss.server_type_code,
+            hss.end_point,
+            hss.access_key,
+            hss.sign_name,
+            hss.enabled_flag,
+            hss.tenant_id,
+            hss.object_version_number,
+            ht.tenant_name
+        FROM
+            hmsg_sms_server hss
+        JOIN hmsg_sms_server_tl hsst ON hsst.server_id = hss.server_id AND hsst.lang = #{lang}
+        JOIN hpfm_tenant_tl ht ON hss.tenant_id = ht.tenant_id AND ht.lang = #{lang}
+        where 1 = 1
+        <if test="tenantId != null">
+            and hss.tenant_id in (#{tenantId}<if test="includeSiteIfQueryByTenantId">, 0</if>)
+        </if>
+        <if test="serverCode != null and serverCode != ''">
+            <bind name="serverCode" value="'%' + serverCode + '%'"/>
+            and hss.server_code like #{serverCode}
+        </if>
+        <if test="serverName != null and serverName != ''">
+            <bind name="serverName" value="'%' + serverName + '%'"/>
+            and hsst.server_name like #{serverName}
+        </if>
+        <if test="enabledFlag != null">
+            and hss.enabled_flag = #{enabledFlag}
+        </if>
+        <if test="serverTypeCode != null and serverTypeCode != ''">
+            and hss.server_type_code = #{serverTypeCode}
+        </if>
+    </select>
+
+    <select id="selectByCode" resultType="org.hzero.message.domain.entity.SmsServer">
+        SELECT
+            hss.server_id,
+            hss.server_code,
+            hss.server_name,
+            hss.enabled_flag,
+            hss.tenant_id,
+            hss.object_version_number
+        FROM
+            hmsg_sms_server hss
+        WHERE
+            hss.tenant_id = #{tenantId}
+        AND hss.server_code = #{serverCode}
+    </select>
+</mapper>

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.iam.infra.mapper.DocTypePermissionMapper">
+
+    <select id="listPermission" resultType="org.hzero.iam.domain.entity.DocTypePermission">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        SELECT
+            hdtp.doc_type_permission_id,
+            hdtp.auth_dim_id,
+            hdtp.rule_id,
+            hdtp.range_id,
+            hdtp.object_version_number,
+            hpr.rule_code,
+            hpr.rule_name,
+            htlp.tenant_name
+        FROM hiam_doc_type_permission hdtp
+        JOIN hiam_doc_type_auth_dim hdtad ON hdtad.auth_dim_id = hdtp.auth_dim_id AND hdtad.doc_type_id = #{docTypeId}
+        JOIN hpfm_permission_rule hpr ON hpr.rule_id = hdtp.rule_id
+        LEFT JOIN hpfm_tenant_tl htlp ON hpr.tenant_id = htlp.tenant_id AND htlp.lang = #{lang}
+    </select>
+    <select id="listPermissionNotAssociated" resultType="org.hzero.iam.domain.entity.DocTypePermission">
+        SELECT hdtp.doc_type_permission_id, 
+               hdtp.auth_dim_id, 
+               hdtp.rule_id, 
+               hdtp.range_id, 
+               hdtp.object_version_number
+          FROM hiam_doc_type_permission hdtp
+         WHERE NOT EXISTS (
+               SELECT 1
+                 FROM hiam_doc_type_auth_dim hdtad
+                 JOIN hiam_doc_type hdt ON hdt.doc_type_id = hdtad.doc_type_id
+                WHERE hdtad.auth_dim_id = hdtp.auth_dim_id
+        )
+    </select>
+</mapper>

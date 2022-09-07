@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.iam.infra.mapper.DocTypeDimensionMapper">
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap id="BaseResultMap" type="org.hzero.iam.domain.entity.DocTypeDimension">
+        <result column="dimension_id" property="dimensionId" jdbcType="DECIMAL"/>
+        <result column="dimension_code" property="dimensionCode" jdbcType="VARCHAR"/>
+        <result column="dimension_name" property="dimensionName" jdbcType="VARCHAR"/>
+        <result column="dimension_type" property="dimensionType" jdbcType="VARCHAR"/>
+        <result column="value_source_type" property="valueSourceType" jdbcType="VARCHAR"/>
+        <result column="value_source" property="valueSource" jdbcType="VARCHAR"/>
+        <result column="enabled_flag" property="enabledFlag" jdbcType="DECIMAL"/>
+        <result column="order_seq" property="orderSeq" jdbcType="DECIMAL"/>
+        <result column="tenant_id" property="tenantId" jdbcType="DECIMAL"/>
+        <result column="object_version_number" property="objectVersionNumber" jdbcType="DECIMAL"/>
+        <result column="creation_date" property="creationDate" jdbcType="DATE"/>
+        <result column="created_by" property="createdBy" jdbcType="DECIMAL"/>
+        <result column="last_updated_by" property="lastUpdatedBy" jdbcType="DECIMAL"/>
+        <result column="last_update_date" property="lastUpdateDate" jdbcType="DATE"/>
+    </resultMap>
+    
+    <select id="selectDocTypeDimensionById" parameterType="long" resultType="org.hzero.iam.domain.entity.DocTypeDimension">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        SELECT
+            hdtd.dimension_id,
+            hdtd.dimension_code,
+            hdtdt.dimension_name,
+            hdtd.dimension_type,
+            hdtd.value_source_type,
+            hdtd.value_source,
+            hdtd.enabled_flag,
+            hdtd.order_seq,
+            hdtd.tenant_id,
+            hdtd.object_version_number,
+            hdtd.creation_date,
+            hdtd.created_by,
+            hdtd.last_update_date,
+            hdtd.last_updated_by,
+            hlvht.view_name
+        FROM
+            hiam_doc_type_dimension hdtd
+        LEFT JOIN  hiam_doc_type_dimension_tl hdtdt ON hdtd.dimension_id = hdtdt.dimension_id AND hdtdt.lang = #{lang}
+        LEFT JOIN hpfm_lov_view_header hlvh ON hlvh.view_code = hdtd.value_source AND hdtd.value_source_type = 'LOV' AND hlvh.tenant_id = 0
+        LEFT JOIN hpfm_lov_view_header_tl hlvht ON hlvh.view_header_id = hlvht.view_header_id AND hlvht.lang = #{lang}
+        WHERE hdtd.dimension_id = #{dimensionId}
+    </select>
+
+    <select id="listDocTypeDimensionBydimensionCodes" parameterType="long" resultType="org.hzero.iam.domain.entity.DocTypeDimension">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        SELECT
+        hdtd.dimension_id,
+        hdtd.dimension_code,
+        hdtdt.dimension_name,
+        hdtd.dimension_type,
+        hdtd.value_source_type,
+        hdtd.value_source,
+        hdtd.enabled_flag,
+        hdtd.order_seq,
+        hdtd.tenant_id,
+        hdtd.object_version_number,
+        hlvh.view_code
+        FROM
+        hiam_doc_type_dimension hdtd
+        LEFT JOIN  hiam_doc_type_dimension_tl hdtdt ON hdtd.dimension_id = hdtdt.dimension_id AND hdtdt.lang = #{lang}
+        LEFT JOIN hpfm_lov_view_header hlvh ON hlvh.view_code = hdtd.value_source AND hdtd.value_source_type = 'LOV' AND hlvh.tenant_id = 0
+        WHERE hdtd.dimension_code IN
+        <foreach collection="dimensionCodes" item="dimensionCode" open="(" separator="," close=")">
+            #{dimensionCode}
+        </foreach>
+    </select>
+    <select id="listDocTypeDimensionByDocType" resultType="org.hzero.iam.domain.entity.DocTypeDimension">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        SELECT
+            hdtd.dimension_id,
+            hdtd.dimension_code,
+            hdtdt.dimension_name,
+            hdtd.dimension_type,
+            hdtd.object_version_number,
+            hdtad.auth_dim_id
+        FROM
+	      hiam_doc_type hdt
+	      JOIN hiam_doc_type_auth_dim hdtad ON (hdt.doc_type_id = hdtad.doc_type_id)
+          JOIN hiam_doc_type_dimension hdtd ON(hdtad.auth_type_code = hdtd.dimension_code)
+          LEFT JOIN  hiam_doc_type_dimension_tl hdtdt ON hdtd.dimension_id = hdtdt.dimension_id AND hdtdt.lang = #{lang}
+        WHERE
+          hdt.doc_type_id = #{docTypeId}
+    </select>
+    <select id="listBizDocTypeDimension" resultType="org.hzero.iam.domain.entity.DocTypeDimension">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        SELECT
+            hdtd.dimension_id,
+            hdtd.dimension_code,
+            hdtdt.dimension_name,
+            hdtd.dimension_type,
+            hdtd.value_source_type,
+            hdtd.value_source,
+            hdtd.enabled_flag,
+            hdtd.order_seq,
+            hdtd.tenant_id,
+            hdtd.object_version_number,
+            hlvh.view_code
+            FROM
+            hiam_doc_type_dimension hdtd
+            LEFT JOIN  hiam_doc_type_dimension_tl hdtdt ON hdtd.dimension_id = hdtdt.dimension_id AND hdtdt.lang = #{lang}
+            LEFT JOIN hpfm_lov_view_header hlvh ON hlvh.view_code = hdtd.value_source AND hdtd.value_source_type = 'LOV' AND hlvh.tenant_id = 0
+        WHERE hdtd.tenant_id = 0
+         AND hdtd.dimension_type = 'BIZ'
+         AND hdtd.enabled_flag = 1
+         ORDER BY order_seq
+    </select>
+    <select id="selectDocTypeIdByDimensionCode" resultType="java.lang.Long">
+        SELECT
+            hdt.doc_type_id
+        FROM
+            hiam_doc_type_dimension hdtd
+            JOIN hiam_doc_type_auth_dim hdtad ON hdtad.auth_type_code = hdtd.dimension_code
+            JOIN hiam_doc_type hdt ON hdt.doc_type_id = hdtad.doc_type_id
+        WHERE
+            hdt.enabled_flag = 1
+            AND hdtd.dimension_code = #{dimensionCode}
+    </select>
+    <select id="selectDisabledPermissionRuleId" resultType="java.lang.Long">
+        SELECT hdtp.rule_id
+        FROM hiam_doc_type_permission hdtp
+        JOIN hiam_doc_type_auth_dim hdtad ON hdtad.auth_dim_id = hdtp.auth_dim_id
+        JOIN hiam_doc_type hdt ON hdtad.doc_type_id = hdt.doc_type_id
+        JOIN hiam_doc_type_dimension hdtd ON hdtd.dimension_code = hdtad.auth_type_code
+        WHERE hdt.enabled_flag = 1
+        and hdtd.enabled_flag = 0
+    </select>
+
+</mapper>

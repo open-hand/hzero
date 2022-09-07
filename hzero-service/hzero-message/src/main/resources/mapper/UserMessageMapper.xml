@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.message.infra.mapper.UserMessageMapper">
+    <select id="selectUnreadMessageCount" resultType="java.lang.Integer">
+        select count(*)
+        from hmsg_user_message
+        where user_id = #{userId}
+        and read_flag = 0
+    </select>
+    <select id="selectMessageList" parameterType="org.hzero.message.api.dto.UserMsgParamDTO" resultType="org.hzero.message.api.dto.UserMessageDTO">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()" />
+        select
+        	hum.user_message_id,
+            hum.message_id,
+            hum.user_message_type_code,
+            hum.read_flag,
+            hum.object_version_number,
+            hum.creation_date,
+            <if test="userMessageTypeCode == 'MSG'">
+                hm.message_type_code,
+                hm.subject subject,
+            </if>
+            <if test="userMessageTypeCode != 'MSG'">
+                hn.title subject,
+            </if>
+            <if test="withContent and userMessageTypeCode == 'MSG'">
+                hm.content content,
+            </if>
+            <if test="withContent and userMessageTypeCode != 'MSG'">
+                hnp.notice_body content,
+            </if>
+            hum.tenant_id,
+            ht.tenant_name
+        from hmsg_user_message hum
+            join hpfm_tenant_tl ht on ht.tenant_id = hum.tenant_id and ht.lang = #{lang}
+            <if test="userMessageTypeCode == 'MSG'">
+            join hmsg_message hm on hm.message_id = hum.message_id and hum.user_message_type_code = 'MSG' and hm.message_type_code = #{messageTypeCode}
+            </if>
+            <if test="userMessageTypeCode != 'MSG'">
+            join hmsg_notice_published hnp on hum.message_id = hnp.published_id and hnp.published_status_code ='PUBLISHED' and hum.user_message_type_code != 'MSG'
+			join hmsg_notice hn on hnp.notice_id = hn.notice_id
+            </if>
+        where
+            hum.user_id = #{userId}
+            and hum.user_message_type_code = #{userMessageTypeCode}
+        <if test="userMessageTypeCode == null or userMessageTypeCode == ''">
+            and hum.user_message_type_code = 'MSG'
+        </if>
+        <if test="readFlag != null">
+            and hum.read_flag = #{readFlag}
+        </if>
+        <if test="fromDate != null">
+            and hum.creation_date &gt;= #{fromDate}
+        </if>
+        <if test="toDate != null">
+            and hum.creation_date &lt;= #{toDate}
+        </if>
+        <if test="subject != null and subject != '' and userMessageTypeCode == 'MSG'">
+            <bind name="subjectLike" value="'%'+subject+'%'"/>
+            and hm.subject LIKE #{subjectLike}
+        </if>
+        <if test="subject != null and subject != '' and userMessageTypeCode != 'MSG'">
+            <bind name="subjectLike" value="'%'+subject+'%'"/>
+            and hn.title LIKE #{subjectLike}
+        </if>
+    </select>
+
+    <select id="selectNotReadMessageList" parameterType="org.hzero.message.api.dto.UserMsgParamDTO" resultType="org.hzero.message.api.dto.UserMessageDTO">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()" />
+        select
+        	hum.user_message_id,
+            hum.message_id,
+            hum.user_message_type_code,
+            hum.read_flag,
+            hum.object_version_number,
+            hum.creation_date,
+            <if test="userMessageTypeCode == 'MSG'">
+                hm.message_type_code,
+                hm.subject subject,
+            </if>
+            <if test="userMessageTypeCode != 'MSG'">
+                hn.title subject,
+                hnp.attachment_uuid,
+            </if>
+            <if test="withContent and userMessageTypeCode == 'MSG'">
+                hm.content content,
+            </if>
+            <if test="withContent and userMessageTypeCode != 'MSG'">
+                hnp.notice_body content,
+            </if>
+            hum.tenant_id,
+            ht.tenant_name
+        from hmsg_user_message hum
+            join hpfm_tenant_tl ht on ht.tenant_id = hum.tenant_id and ht.lang = #{lang}
+            <if test="userMessageTypeCode == 'MSG'">
+            join hmsg_message hm on hm.message_id = hum.message_id and hum.user_message_type_code = 'MSG' and hm.message_type_code = #{messageTypeCode}
+            </if>
+            <if test="userMessageTypeCode != 'MSG'">
+            join hmsg_notice_published hnp on hum.message_id = hnp.published_id and hnp.published_status_code ='PUBLISHED' and hum.user_message_type_code != 'MSG'
+			join hmsg_notice hn on hnp.notice_id = hn.notice_id
+            </if>
+        where
+            hum.user_id = #{userId}
+            and hum.user_message_type_code = #{userMessageTypeCode}
+        <if test="userMessageTypeCode == null or userMessageTypeCode == ''">
+            and hum.user_message_type_code = 'MSG'
+        </if>
+            and hum.read_flag = 0
+        <if test="fromDate != null">
+            and hum.creation_date &gt;= #{fromDate}
+        </if>
+        <if test="toDate != null">
+            and hum.creation_date &lt;= #{toDate}
+        </if>
+        <if test="subject != null and subject != '' and userMessageTypeCode == 'MSG'">
+            <bind name="subjectLike" value="'%'+subject+'%'"/>
+            and hm.subject LIKE #{subjectLike}
+        </if>
+        <if test="subject != null and subject != '' and userMessageTypeCode != 'MSG'">
+            <bind name="subjectLike" value="'%'+subject+'%'"/>
+            and hn.title LIKE #{subjectLike}
+        </if>
+    </select>
+
+
+    <select id="selectSimpleMessageList" resultType="org.hzero.message.api.dto.SimpleMessageDTO">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()" />
+        select
+        	hum.user_message_id,
+            hum.user_message_id as message_id,
+            hum.user_message_type_code
+            hum.read_flag,
+            hum.creation_date,
+            hm.subject,
+            hum.tenant_id,
+            ht.tenant_name
+        from hmsg_user_message hum
+            join hpfm_tenant_tl ht on ht.tenant_id = hum.tenant_id and ht.lang = #{lang}
+            join hmsg_message hm on hm.message_id = hum.message_id
+            <if test="messageTypeCode != null and messageTypeCode != ''">
+                and hm.message_type_code = #{messageTypeCode}
+            </if>
+            join hmsg_message_template hmt on hmt.template_code = hm.template_code
+            <if test="messageCategoryCode != null and messageCategoryCode != ''">
+                and hmt.message_category_code = #{messageCategoryCode}
+            </if>
+            <if test="messageSubcategoryCode != null and messageSubcategoryCode != ''">
+                and hmt.message_subcategory_code = #{messageSubcategoryCode}
+            </if>
+            where
+            hum.user_id = #{userId}
+            <if test="readFlag != null and readFlag != ''">
+                and hum.read_flag = #{readFlag}
+            </if>
+    </select>
+    <select id="selectMessage" resultType="org.hzero.message.api.dto.UserMessageDTO">
+        select
+            hum.user_message_id,
+            hum.message_id,
+            hum.read_flag,
+            hum.object_version_number,
+            hum.creation_date,
+            hm.message_type_code,
+            case  when hum.user_message_type_code = 'MSG' then hm.subject 
+			else hn.title end as subject,
+            case  when hum.user_message_type_code = 'MSG' then hm.content 
+			else hnp.notice_body end as content,
+			case  when hum.user_message_type_code = 'MSG' then null
+            else hnp.attachment_uuid end as attachment_uuid
+        from hmsg_user_message hum
+             left join hmsg_message hm on hm.message_id = hum.message_id and hum.user_message_type_code = 'MSG'
+			 left join hmsg_notice_published hnp on hum.message_id = hnp.published_id and hnp.published_status_code ='PUBLISHED' and hum.user_message_type_code != 'MSG'
+			 left Join hmsg_notice hn on hnp.notice_id = hn.notice_id
+        where hum.user_id = #{userId}
+            and hum.user_message_id = #{userMessageId}
+    </select>
+    <select id="getUserMessage" resultType="org.hzero.message.domain.entity.UserMessage">
+        select
+        	hum.user_message_id,
+            hum.message_id,
+            hum.user_message_type_code,
+            hum.read_flag,
+            hum.object_version_number,
+            hum.creation_date,
+            hum.tenant_id
+        from hmsg_user_message hum
+        where
+            hum.user_message_id = #{userMessageId}
+    </select>
+    <select id="getAllUser" resultType="org.hzero.boot.message.entity.Receiver">
+        select
+        	iu.id user_id,
+			iu.organization_id  target_user_tenant_id
+		from iam_user iu
+    WHERE
+      1=1
+      <if test="tenantId != null and tenantId != ''">
+           and iu.organization_id = #{tenantId,jdbcType=DECIMAL}
+      </if>
+    </select>
+    <select id="selectSimpleMsgByIds" resultType="org.hzero.message.api.dto.SimpleMessageDTO">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()" />
+        select
+            hum.user_message_id,
+            hum.user_message_id as message_id,
+            hum.user_message_type_code,
+            hum.read_flag,
+            hum.creation_date,
+            case  when hum.user_message_type_code = 'MSG' then hm.subject 
+                  else hnp.title end as subject,
+            hum.tenant_id,
+            ht.tenant_name
+        from hmsg_user_message hum
+            join hpfm_tenant_tl ht on ht.tenant_id = hum.tenant_id and ht.lang = #{lang}
+            left join hmsg_message hm on hm.message_id = hum.message_id
+            left join hmsg_notice_published hnp on hum.message_id = hnp.published_id and hnp.published_status_code ='PUBLISHED' and hum.user_message_type_code != 'MSG'
+            where
+            hum.user_message_id in
+            <foreach collection="ids" item="item" index="index" open="(" separator="," close=")">
+            #{item}
+            </foreach>
+            order by hum.creation_date desc
+    </select>
+
+</mapper>

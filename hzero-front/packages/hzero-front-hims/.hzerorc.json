@@ -1,0 +1,7 @@
+{
+  "package": {
+    "initLoad": true,
+    "indexRouter": "/hims/customer-group",
+    "registerRegex": "(\\/(private|public|pub))?\\/hims\\/"
+  }
+}

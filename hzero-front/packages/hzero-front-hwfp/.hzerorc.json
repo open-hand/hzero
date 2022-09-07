@@ -1,0 +1,7 @@
+{
+  "package": {
+    "initLoad": true,
+    "indexRouter": "/hwfp/process-define",
+    "registerRegex": "(\\/(private|public|pub))?\\/hwfp\\/"
+  }
+}

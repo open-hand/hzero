@@ -1,0 +1,95 @@
+hnlp.common:
+  message.noSaveDataSubmit: 有修改的数据未提交，是否继续?
+# 基础数据管理
+hnlp.basicData:
+  model.basicData.actualValue: 实际类型
+  model.basicData.context: 上下文
+  model.basicData.dataKey: 数据编码
+  model.basicData.dataType: 数据类型
+  model.basicData.id: 数据ID
+  model.basicData.mappedValue: 映射值
+  model.basicData.empty: 存在映射值
+  model.basicData.value: 数据值
+  view.title.actualValueEdit: 实际类型编辑
+  view.title.help.fileExport: 上下文多于3列，请修改导入模板，模板编码HNLP.BASIC_DATA
+# 模板配置管理
+hnlp.configTemplate:
+  model.configTemplate.actualType: 识别要素
+  model.configTemplate.baseActualTypeMsg: 基础数据中存在的实际类型
+  model.configTemplate.isCustom: 是否映射
+  model.configTemplate.resultActualTypeMsg: 识别结果中的数据类型映射
+  model.configTemplate.template: 模板
+  model.configTemplate.templateCode: 模板编码
+  model.configTemplate.templateName: 模板名称
+  model.configTemplate.type: 映射数据类型
+  model.configTemplate.typeNum: 识别要素数量
+  model.configTemplate.typeNumMsg: 同一数据类型，能够被识别的词语数量
+  view.title.create: 创建模板配置
+  view.title.edit: 编辑模板配置
+# 模板管理
+hnlp.template:
+  model.template.description: 模板描述
+  model.template.maxGram: 模型准确度
+  model.template.maxGram.type: 识别算法的准确度，准确度越高，误识别率越低，识别性能消耗越高
+  model.template.replaceChar: 替换字符串
+  model.template.replaceChar.type: 识别文本中可能存在的特殊字符，识别时会按照字符替换为空
+  model.template.templateCode: 模板编码
+  model.template.templateCode.type: 在调用识别接口时使用的编码参数
+  model.template.templateName: 模板名称
+  view.title.create: 创建模板
+  view.title.edit: 编辑模板
+# 模板词语映射
+hnlp.templateWord:
+  model.templateWord.actualValue: 实际词语
+  model.templateWord.template: 模板
+  model.templateWord.templateName: 模板名称
+  model.templateWord.tenant: 租户
+  model.templateWord.tenantName: 租户
+  model.templateWord.value: 转化后词语
+  view.title.create: 创建模板词语映射
+  view.title.edit: 编辑模板词语映射
+# 租户词语映射
+hnlp.tenantWord:
+  model.tenantWord.actualValue: 实际词语
+  model.tenantWord.value: 转化后词语
+  view.title.create: 创建词语映射
+  view.title.edit: 编辑词语映射
+# 内容 识别
+hnlp.textExtraction:
+  model.textTraction.contextKey: contextKey
+  model.textTraction.contextType: contextType
+  model.textTraction.template: 模板
+  model.textTraction.text: 识别文本
+  model.textTraction.tagType: 标记类型
+  model.textTraction.tagValue: 标记值
+  model.textTraction.tenant: 租户
+  view.message.Authorization: '其中Y2xpZW50OnNlY3JldA==为clientid值:secret值base64加密后的值'
+  view.message.example: 示例：
+  view.message.password: 密码
+  view.message.passwordSuggest: '建议用http://tool.oschina.net/encrypt?type=3进行加密'
+  view.message.passwordTips: 密码需要BASE64加密
+  view.message.request: 识别测试请求
+  view.message.requestBody: 请求报文
+  view.message.requestHeader: 头信息
+  view.message.requestToken: token获取请求
+  view.message.requestURL: 请求URL
+  view.message.userName: 用户名
+  view.message.v: 请求方式
+  view.title.extractionResult: 识别结果
+  view.title.extractionSource: 识别内容
+  view.title.resultMsg: 识别消息
+  view.title.resultStatus: 识别状态码
+# 识别结果
+hnlp.textExtractionLog:
+  model.textExtractionLog.contexts: 上下文
+  model.textExtractionLog.convert: 转换文本
+  model.textExtractionLog.maintain: 数据维护
+  model.textExtractionLog.tagType: 标记类型
+  model.textExtractionLog.tagValue: 标记值
+  model.textExtractionLog.templateCode: 模板编码
+  model.textExtractionLog.text: 识别文本
+  view.btn.viewOriData: 查看原始数据
+  view.title.extractionResult: 识别结果
+  view.title.finalResult: 转换结果
+  view.title.view: 查看详情
+  view.title.viewOriData: 查看原始数据

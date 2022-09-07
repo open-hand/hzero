@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.scheduler.infra.mapper.ConcPermissionMapper">
+    <!-- 可根据自己的需求，是否要使用 -->
+    <resultMap id="BaseResultMap" type="org.hzero.scheduler.domain.entity.ConcPermission">
+        <result column="permission_id" property="permissionId" jdbcType="DECIMAL"/>
+        <result column="concurrent_id" property="concurrentId" jdbcType="DECIMAL"/>
+        <result column="limit_quantity" property="limitQuantity" jdbcType="DECIMAL"/>
+        <result column="role_id" property="roleId" jdbcType="DECIMAL"/>
+        <result column="tenant_id" property="tenantId" jdbcType="DECIMAL"/>
+        <result column="start_date" property="startDate" jdbcType="DATE"/>
+        <result column="end_date" property="endDate" jdbcType="DATE"/>
+        <result column="enabled_flag" property="enabledFlag" jdbcType="DECIMAL"/>
+        <result column="object_version_number" property="objectVersionNumber" jdbcType="DECIMAL"/>
+        <result column="creation_date" property="creationDate" jdbcType="DATE"/>
+        <result column="created_by" property="createdBy" jdbcType="DECIMAL"/>
+        <result column="last_updated_by" property="lastUpdatedBy" jdbcType="DECIMAL"/>
+        <result column="last_update_date" property="lastUpdateDate" jdbcType="DATE"/>
+    </resultMap>
+
+    <select id="selectByConcurrentId" resultType="org.hzero.scheduler.domain.entity.ConcPermission">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()" />
+        SELECT
+            hcp.permission_id,
+            hcp.concurrent_id,
+            hc.conc_code,
+            hct.conc_name,
+            hcp.limit_quantity,
+            hcp.role_id,
+            ir.name role_name,
+            hcp.tenant_id,
+            ht.tenant_name,
+            hcp.start_date,
+            hcp.end_date,
+            hcp.enabled_flag,
+            hcp.object_version_number
+        FROM
+            hsdr_conc_permission hcp
+        JOIN hsdr_concurrent hc ON hc.concurrent_id = hcp.concurrent_id
+        LEFT JOIN iam_role ir ON hcp.role_id = ir.id
+        LEFT JOIN hpfm_tenant_tl ht ON hcp.tenant_id = ht.tenant_id AND ht.lang = #{lang}
+        LEFT JOIN hsdr_concurrent_tl hct ON hc.concurrent_id = hct.concurrent_id AND hct.lang = #{lang}
+        WHERE
+        hcp.concurrent_id = #{concurrentId}
+        <if test="tenantId != null">
+            AND hcp.tenant_id = #{tenantId}
+        </if>
+        <if test="ignore == true">
+            AND hcp.role_id != -1
+        </if>
+    </select>
+
+    <select id="selectQuantity" resultType="org.hzero.scheduler.domain.entity.ConcPermission">
+        SELECT
+            hcp.role_id,
+            hcp.limit_quantity,
+            hcp.tenant_id,
+            hcp.enabled_flag
+        FROM
+            hsdr_conc_permission hcp
+        WHERE
+            hcp.tenant_id = #{tenantId}
+        AND hcp.concurrent_id = #{concurrentId}
+        AND hcp.role_id = #{roleId}
+        AND (
+        ( hcp.start_date &lt;= #{nowDate} AND hcp.end_date &gt;= #{nowDate} )
+        OR ( hcp.start_date &lt;= #{nowDate} AND hcp.end_date IS NULL )
+        OR ( hcp.start_date IS NULL AND hcp.end_date &gt;= #{nowDate} )
+        OR ( hcp.start_date IS NULL AND hcp.end_date IS NULL )
+        )
+    </select>
+</mapper>

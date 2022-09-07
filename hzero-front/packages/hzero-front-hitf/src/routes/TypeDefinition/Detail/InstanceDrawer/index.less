@@ -1,0 +1,42 @@
+/*!
+   TypeDefinition - 应用类型定义
+   @date: 2019/8/27
+   @author: hulingfangzi <lingfangzi.hu@hand-china.com>
+   @version: 0.0.1
+   @copyright Copyright (c) 2018, Hand
+*/
+.top-tabs {
+  :global {
+    .ant-tabs-bar {
+      margin-bottom: 0;
+    }
+  }
+
+  .sub-params-tabs {
+    :global {
+      .ant-tabs-bar {
+        width: 12.5%;
+      }
+
+      .ant-tabs-bar
+        > .ant-tabs-nav-container
+        > .ant-tabs-nav-wrap
+        > .ant-tabs-nav-scroll
+        > .ant-tabs-nav
+        > div
+        .ant-tabs-tab:first-child {
+        padding-top: 16px;
+      }
+
+      .ant-tabs-content {
+        padding-top: 16px;
+      }
+    }
+  }
+}
+
+.hzero-codemirror {
+  padding: 0 1px;
+  border: 1px solid #ccc;
+  line-height: 1.5;
+}

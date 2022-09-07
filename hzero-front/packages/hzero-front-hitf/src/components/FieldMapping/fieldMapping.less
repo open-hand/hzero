@@ -1,0 +1,185 @@
+:global {
+  .text-ellipsis() {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  body {
+    .field-relation {
+      display: flex;
+      position: relative;
+    }
+    &.user-select-none {
+      -moz-user-select: none;
+      -webkit-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+    }
+    .react-field-mapping-box {
+      display: flex;
+      color: #666;
+      font-size: 12px;
+      width: 100%;
+      position: relative;
+      * {
+        box-sizing: border-box;
+      }
+      .source-data,
+      .target-data {
+        float: left;
+        width: calc(50% - 100px);
+        position: relative;
+        z-index: 3;
+        & > ul {
+          display: block;
+          margin: 0;
+          padding: 0;
+          li {
+            width: 100%;
+            display: flex;
+            padding-right: 8px;
+            list-style: none;
+            height: 36px;
+            line-height: 36px;
+            background-color: #fcfcfc;
+            border-bottom: 1px dashed #ddd;
+            position: relative;
+            &.active {
+              background-color: #eefbff;
+            }
+            &.sortable-ghost {
+              background-color: rgba(240, 224, 199, 0.3);
+            }
+            .column-switcher-open {
+              display: inline;
+            }
+            .column-switcher-close {
+              display: none;
+            }
+            .column-item {
+              padding-left: 20px;
+              width: 100px;
+              height: 100%;
+              float: left;
+              .text-ellipsis();
+            }
+            .column-icon {
+              visibility: hidden;
+              position: absolute;
+              top: calc(50% - 7px);
+              width: 14px;
+              height: 14px;
+              border-radius: 14px;
+              background-color: #fff;
+              padding: 4px;
+              box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+              cursor: crosshair;
+              &:before {
+                content: '';
+                display: inline-block;
+                position: absolute;
+                top: 4px;
+                background-color: #33b5d4;
+                width: 6px;
+                height: 6px;
+                border-radius: 6px;
+                box-shadow: 0 0.5px 1.5px rgba(0, 0, 0, 0.22) inset;
+              }
+            }
+          }
+          &.column-title {
+            li {
+              border-bottom: none;
+              background-color: #f0f0f0;
+            }
+          }
+        }
+      }
+      .source-data {
+        .column-content {
+          li {
+            .column-icon {
+              right: -7px;
+            }
+            &.active {
+              .column-icon {
+                visibility: inherit !important;
+                &.sorting {
+                  visibility: hidden !important;
+                }
+                &.disabled {
+                  visibility: hidden !important;
+                }
+              }
+            }
+          }
+        }
+        .edit-btn {
+          padding-left: 20px;
+          line-height: 36px;
+          height: 36px;
+          background-color: #fcfcfc;
+          border-bottom: 1px dashed #ddd;
+          a {
+            cursor: pointer;
+            color: #33b5d4;
+          }
+        }
+      }
+      .target-data {
+        // left: 15px;
+        .column-icon {
+          left: -7px;
+        }
+      }
+      .lines-area {
+        float: left;
+        position: relative;
+        width: 200px;
+        height: 100%;
+        z-index: 2;
+        .path,
+        .path-end {
+          fill: #33b5d4;
+          .line {
+            stroke: #33b5d4;
+            fill: none;
+            stroke-width: 2px;
+            background-image: url('https://img.alicdn.com/tfs/TB1ici5ibvpK1RjSZPiXXbmwXXa-461-412.png');
+          }
+          .arrow {
+            fill: #00a2ca;
+          }
+          .icon-remove {
+            opacity: 0;
+          }
+          &.path-end:hover,
+          &.path-end.active {
+            fill: #00a2ca;
+            cursor: pointer;
+            .line {
+              stroke: #00a2ca;
+              stroke-width: 3px;
+            }
+            .icon-remove {
+              opacity: 1;
+            }
+          }
+          &.path-end.disabled {
+            cursor: initial;
+            .line {
+              stroke: #33b5d4;
+              stroke-width: 2px;
+            }
+            .icon-remove {
+              opacity: 0;
+            }
+          }
+        }
+      }
+    }
+    .relation-script {
+      margin-left: 20px;
+    }
+  }
+}

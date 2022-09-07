@@ -1,0 +1,415 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.iam.infra.mapper.SecGrpDclDimLineMapper">
+    <!-- 可根据自己的需求，是否要使用 -->
+    <resultMap id="BaseResultMap" type="org.hzero.iam.domain.entity.SecGrpDclDimLine">
+        <result column="sec_grp_dcl_dim_line_id" property="secGrpDclDimLineId" jdbcType="DECIMAL"/>
+        <result column="sec_grp_dcl_dim_id" property="secGrpDclDimId" jdbcType="DECIMAL"/>
+        <result column="sec_grp_id" property="secGrpId" jdbcType="DECIMAL"/>
+        <result column="tenant_id" property="tenantId" jdbcType="DECIMAL"/>
+        <result column="auth_type_code" property="authTypeCode" jdbcType="VARCHAR"/>
+        <result column="object_version_number" property="objectVersionNumber" jdbcType="DECIMAL"/>
+        <result column="creation_date" property="creationDate" jdbcType="DATE"/>
+        <result column="created_by" property="createdBy" jdbcType="DECIMAL"/>
+        <result column="last_updated_by" property="lastUpdatedBy" jdbcType="DECIMAL"/>
+        <result column="last_update_date" property="lastUpdateDate" jdbcType="DATE"/>
+    </resultMap>
+
+    <resultMap id="SecGrpDclDimLineDTOResultMap" type="org.hzero.iam.api.dto.SecGrpDclDimLineDTO">
+        <result column="sec_grp_dcl_dim_line_id" property="secGrpDclDimLineId" jdbcType="DECIMAL"/>
+        <result column="doc_type_id" property="docTypeId" jdbcType="DECIMAL"/>
+        <result column="auth_type_code" property="authTypeCode" jdbcType="VARCHAR"/>
+        <result column="dimension_type" property="dimensionType" jdbcType="VARCHAR"/>
+        <result column="sec_grp_dcl_dim_line_checked_flag" property="secGrpDclDimLineCheckedFlag" jdbcType="DECIMAL"/>
+    </resultMap>
+
+    <select id="listSecGrpDclDimLine" resultMap="SecGrpDclDimLineDTOResultMap">
+        SELECT
+        hsgddl.sec_grp_dcl_dim_line_id,
+        hdtad.doc_type_id,
+        CASE WHEN hsgddl.sec_grp_dcl_dim_line_id IS NOT NULL THEN 1 ELSE 0 END as sec_grp_dcl_dim_line_checked_flag,
+        hdtad.auth_type_code,
+        hdtd.dimension_type
+
+        FROM hiam_doc_type_auth_dim hdtad
+        LEFT JOIN hiam_doc_type_dimension hdtd ON hdtad.auth_type_code = hdtd.dimension_code
+
+        LEFT JOIN hiam_sec_grp_dcl_dim hsgdd ON hsgdd.auth_doc_type_id = hdtad.doc_type_id AND hsgdd.sec_grp_id =
+        #{secGrpId}
+        LEFT JOIN hiam_sec_grp_dcl_dim_line hsgddl ON hsgdd.sec_grp_dcl_dim_id = hsgddl.sec_grp_dcl_dim_id AND
+        hsgddl.auth_type_code = hdtad.auth_type_code
+        WHERE hdtad.doc_type_id IN
+        <foreach collection="docTypeIds" item="docTypeId" separator="," open="(" close=")">
+            #{docTypeId}
+        </foreach>
+    </select>
+
+    <select id="selectBuildDclDimDetailBindAuthTypeCodeInRoleAndSubRole"
+            resultType="org.hzero.iam.domain.service.secgrp.dto.SecGrpDclDimDetailDTO">
+        SELECT
+        hsgddl.sec_grp_dcl_dim_line_id,
+        hsgddl.sec_grp_dcl_dim_id,
+        hsgddl.sec_grp_id,
+        hsgddl.tenant_id,
+        hsgddl.auth_type_code,
+        hsgddl.assign_type_code,
+        hsgdd.auth_doc_type_id,
+        ir_out.id AS role_id,
+        ir_out.h_parent_role_id AS parent_role_id
+
+        FROM hiam_sec_grp_dcl_dim_line hsgddl
+        JOIN hiam_sec_grp_dcl_dim hsgdd ON hsgddl.sec_grp_dcl_dim_id = hsgdd.sec_grp_dcl_dim_id
+        JOIN hiam_sec_grp hsg ON hsgdd.sec_grp_id = hsg.sec_grp_id
+        JOIN iam_role ir_out ON hsg.role_id = ir_out.id
+        WHERE
+        CONCAT(hsgdd.auth_doc_type_id,hsgddl.auth_type_code) IN
+        <foreach item="item" collection="secGrpDclDimKeys" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        --限制为指定角色的子角色
+        AND EXISTS(
+        SELECT
+        1
+        FROM
+        iam_role ir
+        WHERE ir.id = #{roleId}
+        AND (ir_out.h_level_path LIKE CONCAT(ir.h_level_path,"|%")OR ir_out.h_level_path = ir.h_level_path)
+        )
+    </select>
+    <select id="selectAssignedDclDimDetailBindAuthTypeCodeInRoleAndSubRole"
+            resultType="org.hzero.iam.domain.service.secgrp.dto.SecGrpDclDimDetailDTO">
+        SELECT
+        hsgddl.sec_grp_dcl_dim_line_id,
+        hsgddl.sec_grp_dcl_dim_id,
+        hsgddl.sec_grp_id,
+        hsgddl.tenant_id,
+        hsgddl.auth_type_code,
+        hsgddl.assign_type_code,
+        hsgdd.auth_doc_type_id,
+        ir.id AS role_id,
+        ir.h_parent_role_id AS parent_role_id
+        FROM hiam_sec_grp_dcl_dim_line hsgddl
+        JOIN hiam_sec_grp_dcl_dim hsgdd ON hsgddl.sec_grp_dcl_dim_id = hsgdd.sec_grp_dcl_dim_id
+        JOIN hiam_sec_grp hsg ON hsg.sec_grp_id = hsgdd.sec_grp_id AND hsg.enabled_flag = 1
+        JOIN iam_role_permission irp ON irp.type = 'SG'
+        AND irp.permission_id = hsg.sec_grp_id
+        AND (
+        irp.h_create_flag = 'Y'
+        OR irp.h_inherit_flag = 'Y'
+        )
+        JOIN iam_role ir ON irp.role_id = ir.id
+        WHERE
+        CONCAT(hsgdd.auth_doc_type_id,hsgddl.auth_type_code) IN
+        <foreach item="item" collection="secGrpDclDimKeys" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        -- 限定为指定角色的子角色
+        AND EXISTS (
+        SELECT
+        1
+        FROM
+        iam_role ir_in
+        WHERE
+        ir_in.id = #{roleId}
+        AND (
+        ir.h_level_path LIKE CONCAT(ir_in.h_level_path, "|%")
+        OR ir_in.h_level_path = ir.h_level_path
+        )
+        )
+        -- 没有被屏蔽
+        AND NOT EXISTS (
+        SELECT
+        1
+        FROM
+        hiam_sec_grp_revoke hsgr
+        WHERE
+        (
+        hsgr.revoke_type = 'SHIELD'
+        AND hsgr.authority_id = hsgddl.sec_grp_dcl_dim_line_id
+        AND hsgr.authority_type = 'DCL_DIM'
+        AND hsgr.shield_role_id = ir.id
+        )
+        )
+    </select>
+
+    <delete id="deleteDimLine">
+        DELETE FROM HIAM_SEC_GRP_DCL_DIM_LINE
+        WHERE sec_grp_dcl_dim_id
+        <choose>
+            <when test="@org.apache.commons.collections.CollectionUtils@isNotEmpty(secGrpDimIds)">
+                IN
+                <foreach collection="secGrpDimIds" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </when>
+            <otherwise>
+                IS NULL
+            </otherwise>
+        </choose>
+    </delete>
+
+    <select id="selectDimLineId" resultType="java.lang.Long">
+        SELECT
+        HSGDDL.SEC_GRP_DCL_DIM_LINE_ID
+        FROM HIAM_SEC_GRP HSG
+        JOIN HIAM_SEC_GRP_DCL_DIM HSGDD ON (
+        HSG.SEC_GRP_ID = HSGDD.SEC_GRP_ID
+        AND HSGDD.AUTH_DOC_TYPE_ID = #{authDocTypeId}
+        AND HSGDD.AUTH_SCOPE_CODE = #{authScopeCode}
+        )
+        JOIN HIAM_SEC_GRP_DCL_DIM_LINE HSGDDL ON HSGDDL.SEC_GRP_DCL_DIM_ID = HSGDD.SEC_GRP_DCL_DIM_ID
+        WHERE
+        HSG.SEC_GRP_ID
+        <choose>
+            <when test="@org.apache.commons.collections.CollectionUtils@isNotEmpty(secGrpIds)">
+                IN
+                <foreach collection="secGrpIds" item="id" open="(" separator="," close=")">
+                    #{id}
+                </foreach>
+            </when>
+            <otherwise>
+                IS NULL
+            </otherwise>
+        </choose>
+        AND HSGDDL.ASSIGN_TYPE_CODE = #{assignTypeCode}
+        AND HSGDDL.AUTH_TYPE_CODE
+        <choose>
+            <when test="@org.apache.commons.collections.CollectionUtils@isNotEmpty(authTypeCodes)">
+                IN
+                <foreach collection="authTypeCodes" item="code" open="(" separator="," close=")">
+                    #{code}
+                </foreach>
+            </when>
+            <otherwise>
+                IS NULL
+            </otherwise>
+        </choose>
+    </select>
+
+    <select id="selectAuthTypeCodes" resultType="java.lang.String">
+        SELECT
+        HSGDDL.AUTH_TYPE_CODE
+        FROM HIAM_SEC_GRP HSG
+        JOIN HIAM_SEC_GRP_DCL_DIM HSGDD ON (
+        HSG.SEC_GRP_ID = HSGDD.SEC_GRP_ID
+        AND HSGDD.AUTH_DOC_TYPE_ID = #{authDocTypeId}
+        AND HSGDD.AUTH_SCOPE_CODE = #{authScopeCode}
+        )
+        JOIN HIAM_SEC_GRP_DCL_DIM_LINE HSGDDL ON HSGDDL.SEC_GRP_DCL_DIM_ID = HSGDD.SEC_GRP_DCL_DIM_ID
+        WHERE
+        HSG.SEC_GRP_ID = #{secGrpId}
+        AND HSGDD.ASSIGN_TYPE_CODE = #{assignTypeCode}
+        AND HSGDDL.ASSIGN_TYPE_CODE = #{assignTypeCode}
+        AND HSGDDL.AUTH_TYPE_CODE
+        <choose>
+            <when test="@org.apache.commons.collections.CollectionUtils@isNotEmpty(authTypeCodes)">
+                IN
+                <foreach collection="authTypeCodes" item="code" open="(" separator="," close=")">
+                    #{code}
+                </foreach>
+            </when>
+            <otherwise>
+                IS NULL
+            </otherwise>
+        </choose>
+    </select>
+
+    <delete id="batchDeleteBySql">
+        DELETE FROM HIAM_SEC_GRP_DCL_DIM_LINE
+        WHERE SEC_GRP_DCL_DIM_LINE_ID
+        <choose>
+            <when test="@org.apache.commons.collections.CollectionUtils@isNotEmpty(dimLineIds)">
+                IN
+                <foreach collection="dimLineIds" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </when>
+            <otherwise>
+                IS NULL
+            </otherwise>
+        </choose>
+    </delete>
+
+    <update id="batchUpdateBySql">
+        <bind name="now" value="@java.time.LocalDateTime@now()" />
+        <bind name="lastUpdatedBy" value="@org.hzero.iam.infra.common.utils.UserUtils@getCurrentUserId()"/>
+        UPDATE HIAM_SEC_GRP_DCL_DIM_LINE SET
+            ASSIGN_TYPE_CODE = #{assignTypeCode},
+            lastUpdatedBy = #{lastUpdatedBy},
+            last_update_date = #{now}
+        WHERE SEC_GRP_DCL_DIM_LINE_ID
+        <choose>
+            <when test="@org.apache.commons.collections.CollectionUtils@isNotEmpty(dimLineIds)">
+                IN
+                <foreach collection="dimLineIds" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </when>
+            <otherwise>
+                IS NULL
+            </otherwise>
+        </choose>
+    </update>
+
+    <select id="selectDclDimDetailById" resultType="org.hzero.iam.domain.service.secgrp.dto.SecGrpDclDimDetailDTO">
+        SELECT
+        hsgddl.sec_grp_dcl_dim_line_id,
+        hsgddl.sec_grp_dcl_dim_id,
+        hsgddl.sec_grp_id,
+        hsgddl.tenant_id,
+        hsgddl.auth_type_code,
+        hsgddl.assign_type_code,
+        hsgdd.auth_doc_type_id
+
+        FROM hiam_sec_grp_dcl_dim_line hsgddl
+        JOIN hiam_sec_grp_dcl_dim hsgdd ON  hsgddl.sec_grp_dcl_dim_id = hsgdd.sec_grp_dcl_dim_id
+        WHERE
+        hsgddl.sec_grp_dcl_dim_line_id = #{secGrpDclDimLineId}
+
+    </select>
+
+    <select id="selectRoleSecGrpIncludedDimLine" resultType="java.lang.String">
+        SELECT
+        hsgddl.auth_type_code
+        FROM hiam_sec_grp hsg
+        JOIN iam_role_permission irp
+        ON (
+        hsg.enabled_flag = 1
+        AND hsg.draft_flag = 0
+        AND hsg.sec_grp_id &lt;> #{excludeSecGrpId}
+        AND irp.role_id = #{roleId}
+        AND irp.type = 'SG'
+        AND (irp.h_create_flag = 'Y' OR irp.h_inherit_flag = 'Y')
+        AND irp.permission_id = hsg.sec_grp_id
+        )
+        JOIN hiam_sec_grp_dcl_dim hsgdd
+        ON (
+        hsgdd.auth_doc_type_id = #{authDocTypeId}
+        AND hsgdd.auth_scope_code = #{authScopeCode}
+        AND hsg.sec_grp_id = hsgdd.sec_grp_id
+        )
+        JOIN hiam_sec_grp_dcl_dim_line hsgddl
+        ON hsgdd.sec_grp_dcl_dim_id = hsgddl.sec_grp_dcl_dim_id
+        AND hsgddl.auth_type_code
+        <choose>
+            <when test="@org.apache.commons.collections.CollectionUtils@isNotEmpty(authTypeCodes)">
+                IN
+                <foreach collection="authTypeCodes" item="code" open="(" separator="," close=")">
+                    #{code}
+                </foreach>
+            </when>
+            <otherwise>
+                IS NULL
+            </otherwise>
+        </choose>
+    </select>
+
+    <select id="selectUserSecGrpIncludedDimLine" resultType="java.lang.String">
+        SELECT
+        hsgddl.auth_type_code
+        FROM hiam_sec_grp hsg
+        JOIN hiam_sec_grp_assign hsga
+        ON (
+        hsg.enabled_flag = 1
+        AND hsg.draft_flag = 0
+        AND hsg.sec_grp_id &lt;> #{excludeSecGrpId}
+        AND hsga.assign_dimension = 'USER'
+        AND hsga.dimension_value = #{userId}
+        AND hsg.sec_grp_id = hsga.sec_grp_id
+        )
+        JOIN hiam_sec_grp_dcl_dim hsgdd
+        ON (
+        hsgdd.auth_doc_type_id = #{authDocTypeId}
+        AND hsgdd.auth_scope_code = #{authScopeCode}
+        AND hsg.sec_grp_id = hsgdd.sec_grp_id
+        )
+        JOIN hiam_sec_grp_dcl_dim_line hsgddl
+        ON hsgdd.sec_grp_dcl_dim_id = hsgddl.sec_grp_dcl_dim_id
+        AND hsgddl.auth_type_code
+        <choose>
+            <when test="@org.apache.commons.collections.CollectionUtils@isNotEmpty(authTypeCodes)">
+                IN
+                <foreach collection="authTypeCodes" item="code" open="(" separator="," close=")">
+                    #{code}
+                </foreach>
+            </when>
+            <otherwise>
+                IS NULL
+            </otherwise>
+        </choose>
+    </select>
+
+    <select id="queryRoleIncludedDimLines" resultType="org.hzero.iam.domain.entity.SecGrpDclDimLine">
+        SELECT
+        IRP.ROLE_ID,
+        HSGDDL.AUTH_TYPE_CODE
+        FROM HIAM_SEC_GRP HSG
+        JOIN IAM_ROLE_PERMISSION IRP ON (
+        IRP.PERMISSION_ID = HSG.SEC_GRP_iD
+        AND IRP.TYPE = 'SG'
+        AND (IRP.H_CREATE_FLAG = 'Y' OR IRP.H_INHERIT_FLAG = 'Y')
+        )
+        JOIN HIAM_SEC_GRP_DCL_DIM HSGDD ON (
+        HSGDD.SEC_GRP_ID = HSG.SEC_GRP_ID
+        AND HSGDD.AUTH_DOC_TYPE_ID = #{authDocTypeId}
+        AND HSGDD.AUTH_SCOPE_CODE = #{authScopeCode}
+        )
+        JOIN HIAM_SEC_GRP_DCL_DIM_LINE HSGDDL ON HSGDDL.SEC_GRP_DCL_DIM_ID = HSGDD.SEC_GRP_DCL_DIM_ID
+        WHERE HSG.ENABLED_FLAG = 1
+        AND HSG.DRAFT_FLAG = 0
+        AND HSG.SEC_GRP_ID &lt;> #{excludeSecGrpId}
+        AND IRP.ROLE_ID
+        <choose>
+            <when test="@org.apache.commons.collections.CollectionUtils@isNotEmpty(roleIds)">
+                IN
+                <foreach collection="roleIds" item="roleId" open="(" separator="," close=")">
+                    #{roleId}
+                </foreach>
+            </when>
+            <otherwise>
+                IS NULL
+            </otherwise>
+        </choose>
+        AND HSGDDL.AUTH_TYPE_CODE
+        <choose>
+            <when test="@org.apache.commons.collections.CollectionUtils@isNotEmpty(authTypeCodes)">
+                IN
+                <foreach collection="authTypeCodes" item="code" open="(" separator="," close=")">
+                    #{code}
+                </foreach>
+            </when>
+            <otherwise>
+                IS NULL
+            </otherwise>
+        </choose>
+    </select>
+
+    <select id="selectRoleIncludedDimLineSecGrp" resultType="org.hzero.iam.domain.entity.SecGrp">
+        SELECT
+        HSG.SEC_GRP_ID,
+        HSG.SEC_GRP_CODE
+        FROM HIAM_SEC_GRP HSG
+        JOIN HIAM_SEC_GRP_DCL_DIM HSGDD ON (
+        HSG.SEC_GRP_ID = HSGDD.SEC_GRP_ID
+        AND HSGDD.AUTH_DOC_TYPE_ID = #{authDocTypeId}
+        AND HSGDD.AUTH_SCOPE_CODE = #{authScopeCode}
+        )
+        JOIN HIAM_SEC_GRP_DCL_DIM_LINE HSGDDL ON HSGDDL.SEC_GRP_DCL_DIM_ID = HSGDD.SEC_GRP_DCL_DIM_ID
+        WHERE
+        HSG.ROLE_ID = #{roleId}
+        AND HSGDD.ASSIGN_TYPE_CODE IN ('PARENT', 'SELF_PARENT')
+        AND HSGDDL.ASSIGN_TYPE_CODE IN ('PARENT', 'SELF_PARENT')
+        AND HSGDDL.AUTH_TYPE_CODE
+        <choose>
+            <when test="@org.apache.commons.collections.CollectionUtils@isNotEmpty(authTypeCodes)">
+                IN
+                <foreach collection="authTypeCodes" item="code" open="(" separator="," close=")">
+                    #{code}
+                </foreach>
+            </when>
+            <otherwise>
+                IS NULL
+            </otherwise>
+        </choose>
+    </select>
+</mapper>

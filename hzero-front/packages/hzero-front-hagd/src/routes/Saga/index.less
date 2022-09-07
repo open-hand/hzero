@@ -1,0 +1,215 @@
+.c7n-saga {
+  &-img {
+    width: 512px;
+    text-align: center;
+    float: left;
+    &-circle {
+      width: 98px;
+      height: 98px;
+      border: 1px solid #000;
+      border-radius: 50%;
+      text-align: center;
+      line-height: 98px;
+      z-index: 2;
+      display: inline-block;
+      cursor: pointer;
+
+      &.output {
+        cursor: default;
+      }
+    }
+    &-square {
+      padding: 10px;
+      width: 102px;
+      height: 102px;
+      border-radius: 10px;
+      border: 1px solid rgba(0, 0, 0, 0.24);
+      text-align: center;
+      z-index: 2;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+
+      &.failed {
+        color: #f44336;
+        border: 4px solid #f44336;
+      }
+      &.queue {
+        color: #ffb100;
+        border: 4px solid #ffb100;
+      }
+      &.running {
+        color: #4d90fe;
+        border: 4px solid #4d90fe;
+      }
+      &.completed {
+        color: #00bfa5;
+        border: 4px solid #00bfa5;
+      }
+      > span {
+        display: block;
+        width: 82px;
+        max-height: 82px;
+        overflow: hidden;
+        word-break: break-all;
+      }
+    }
+    &-squares {
+      border-radius: 10px;
+      border: 1px solid rgba(0, 0, 0, 0.24);
+      text-align: center;
+      z-index: 2;
+      display: inline-block;
+      padding: 10px;
+      > div {
+        margin: 10px;
+        float: left;
+      }
+    }
+    &-line {
+      position: relative;
+      height: 37px;
+      &:before {
+        content: '';
+        height: 28px;
+        width: 1px;
+        border-left: 2px solid transparent;
+        background: #000;
+        opacity: 0.24;
+        position: absolute;
+      }
+      &:after {
+        width: 0;
+        height: 0;
+        opacity: 0.24;
+        border-width: 9px 6px 0;
+        border-style: solid;
+        border-color: rgba(0, 0, 0, 0.78) transparent transparent;
+        transform: translateX(-5px);
+        content: '';
+        bottom: 0;
+        position: absolute;
+        z-index: 1;
+      }
+    }
+  }
+
+  &-img-detail {
+    width: 600px;
+    padding: 10px;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    background: #fff;
+    border-radius: 2px;
+  }
+
+  &-detail-item {
+    font-size: 13px;
+    line-height: 20px;
+    margin-bottom: 10px;
+  }
+
+  &-task-active {
+    background: rgba(0, 0, 0, 0.08);
+
+    &.failed {
+      background: rgba(244, 67, 54, 0.08);
+    }
+    &.queue {
+      background: rgba(255, 177, 0, 0.08);
+    }
+    &.running {
+      background: rgba(77, 144, 254, 0.08);
+    }
+    &.completed {
+      background: rgba(0, 191, 165, 0.08);
+    }
+  }
+
+  &-task-output {
+    border: 1px solid #000;
+    cursor: auto;
+  }
+
+  &-task-detail {
+    color: #000;
+    &-title {
+      font-family: PingFangSC-Regular, sans-serif;
+      font-size: 14px;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+      padding-bottom: 5px;
+      font-weight: 600;
+      margin-bottom: 15px; // margin 会合并 相等于marginBottom 5px
+    }
+    &-content > div {
+      font-family: PingFangSC-Regular, sans-serif;
+      font-size: 13px;
+      line-height: 20px;
+      margin-top: 10px;
+    }
+    .c7n-saga-detail {
+      &-json {
+        position: relative;
+        i.icon.copy-icon {
+          color: #3f51b5;
+          position: absolute;
+          top: 10px;
+          right: 20px;
+          cursor: pointer;
+          font-size: 20px;
+          background: white;
+          display: none;
+        }
+        &:hover {
+          i.icon.copy-icon {
+            display: inline-block;
+          }
+        }
+      }
+    }
+
+    #failed {
+      position: absolute;
+      top: 0;
+      left: 0;
+      opacity: 0;
+      z-index: -999;
+    }
+  }
+
+  &-task-btns {
+    font-family: PingFangSC-Medium, sans-serif;
+    font-size: 13px;
+    color: #3f51b5;
+    line-height: 15px;
+    > span + span {
+      margin-left: 25px;
+    }
+    > span {
+      display: inline-block;
+      cursor: pointer;
+      i.icon {
+        margin-right: 5px;
+        vertical-align: text-top;
+      }
+    }
+  }
+
+  &-status {
+    color: white;
+    padding: 2px 5px;
+    border-radius: 2px;
+    &.failed {
+      background: #f44336;
+    }
+    &.running {
+      background: #4d90fe;
+    }
+    &.completed {
+      background: #00bfa5;
+    }
+    &.queue {
+      background: #ffb100;
+    }
+  }
+}

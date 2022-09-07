@@ -1,0 +1,577 @@
+@import '../../assets/styles/variables';
+@import '../../assets/styles/mixins';
+
+.default-layout-header-search(
+  @hzeroNormalLayoutPrefix: hzero-normal,
+  @hzeroNormalLayoutInGutter: @hzero-gutter-md,
+  @hzeroNormalLayoutNormalGutter: @hzero-gutter,
+  @hzeroNormalLayoutSearchColor: #a5adbb,
+  @hzeroNormalLayoutSearchBGC: #4b5b77,
+  @hzeroNormalLayoutSearchHistoryColor: #dfe2e7,
+  @hzeroNormalLayoutSearchHistoryBGC: #616f88,
+  // search and menu tabs
+  @hzeroNormalLayoutHeaderNavHeight: 36px
+) {
+  .@{hzeroNormalLayoutPrefix}-normal-search {
+    &-container {
+      width: 100%;
+      position: relative;
+
+      &-focus {
+        background-color: transparent;
+      }
+
+      &-collapsed {
+        display: none;
+      }
+    }
+
+    &-search {
+      width: 100%;
+      height: @hzeroNormalLayoutHeaderNavHeight;
+
+      .ant-select-selection.ant-select-selection--single {
+        width: 100%;
+        height: 100%;
+
+        color: #fff;
+        background-color: @hzeroNormalLayoutSearchBGC;
+        border: 0;
+
+        .ant-select-selection__rendered {
+          width: 100%;
+          height: 100%;
+          padding-left: @hzeroNormalLayoutNormalGutter+ @hzeroNormalLayoutInGutter;
+
+          .ant-select-selection__placeholder {
+            left: @hzeroNormalLayoutNormalGutter + @hzeroNormalLayoutInGutter;
+          }
+        }
+      }
+    }
+
+    &-icon {
+      position: absolute;
+      height: 12px;
+      width: 12px;
+      top: 11px;
+      left: 20px;
+      background-image: url('../../assets/search.svg');
+      background-size: 12px;
+      background-repeat: no-repeat;
+      z-index: 1;
+    }
+
+    &-history {
+      max-height: 80px;
+      overflow: hidden;
+
+      &-title {
+        padding: 0 @hzeroNormalLayoutNormalGutter;
+        margin: 2px;
+        color: @hzeroNormalLayoutSearchColor;
+        font-size: 12px;
+      }
+    }
+
+    &-btn-clear.ant-btn {
+      border: 0;
+    }
+
+    &-history-content {
+      //搜索历史
+      display: flex;
+      flex-wrap: wrap;
+      padding: 0 @hzeroNormalLayoutNormalGutter;
+      list-style: none;
+      justify-items: start;
+      margin: 0;
+
+      > div {
+        // Tag
+        border: 0;
+        flex-shrink: 0;
+        line-height: 22px;
+        margin: 2px;
+        border-radius: 2px;
+        background-color: @hzeroNormalLayoutSearchHistoryBGC;
+        color: @hzeroNormalLayoutSearchHistoryColor;
+        font-size: 12px;
+        position: relative;
+
+        > i.anticon.anticon-cross {
+          position: absolute;
+          border-radius: 50%;
+          display: none;
+          top: 5px;
+          right: 3px;
+          background-color: #eee;
+          color: #333;
+        }
+
+        &:hover {
+          > i.anticon.anticon-cross {
+            display: inline-block;
+          }
+        }
+      }
+    }
+  }
+}
+
+.default-layout(
+  @hzeroNormalLayoutPrefix: hzero-normal,
+  @hzeroNormalLayoutHeaderHeight: 44px,
+  @hzeroNormalLayoutNavWidth: 220px,
+  @hzeroNormalLayoutCollapsedWith: 80px,
+  @hzeroNormalLayoutBgc: @hzero-primary-color,
+  @hzeroNormalLayoutLightBGC: @hzero-bgc-color-lightest,
+  @hzeroNormalLayoutColor: #fff,
+  @hzeroNormalLayoutLightColor: #ccc,
+  @hzeroNormalLayoutActiveColor: @hzero-primary-color-2,
+  @hzeroNormalLayoutInGutter: @hzero-gutter-md,
+  @hzeroNormalLayoutNormalGutter: @hzero-gutter,
+  @hzeroNormalLayoutOutGutter: @hzero-gutter-xl,
+  @hzeroNormalLayoutSearchColor: #a5adbb,
+  @hzeroNormalLayoutSearchBGC: #4b5b77,
+  @hzeroNormalLayoutSearchHistoryColor: #dfe2e7,
+  @hzeroNormalLayoutSearchHistoryBGC: #616f88,
+  // header
+  @hzeroNormalLayoutLogoSize: 20px,
+  // search and menu tabs
+  @hzeroNormalLayoutHeaderNavHeight: 36px,
+  @hzeroNormalLayoutCollapsedTransition: width 0.2s linear,
+  @hzeroNormalLayoutFullscreen: hzero-fullscreen
+) {
+  @hzeroNormalLayoutContainer: ~'@{hzeroNormalLayoutPrefix}-container';
+  @hzeroNormalLayoutHeader: ~'@{hzeroNormalLayoutPrefix}-header';
+  @hzeroNormalLayoutHeaderContainer: ~'@{hzeroNormalLayoutHeader}-container';
+  @hzeroNormalLayoutHeaderLeft: ~'@{hzeroNormalLayoutHeader}-left';
+  @hzeroNormalLayoutHeaderRight: ~'@{hzeroNormalLayoutHeader}-right';
+  @hzeroNormalLayoutHeaderLogo: ~'@{hzeroNormalLayoutHeader}-logo';
+  @hzeroNormalLayoutHeaderLogoSign: ~'@{hzeroNormalLayoutHeader}-logo-sign';
+  @hzeroNormalLayoutHeaderTitle: ~'@{hzeroNormalLayoutHeader}-title';
+  @hzeroNormalLayoutHeaderSign: ~'@{hzeroNormalLayoutHeader}-sign';
+  @hzeroNormalLayoutHeaderSignTitle: ~'@{hzeroNormalLayoutHeader}-sign-title';
+  @hzeroNormalLayoutHeaderTrialImg: ~'@{hzeroNormalLayoutHeader}-trail-img-icon';
+  @hzeroNormalLayoutBody: ~'@{hzeroNormalLayoutPrefix}-body';
+  @hzeroNormalLayoutContent: ~'@{hzeroNormalLayoutPrefix}-content';
+  @hzeroNormalLayoutNav: ~'@{hzeroNormalLayoutPrefix}-nav';
+
+  .@{hzeroNormalLayoutFullscreen}.@{hzeroNormalLayoutContainer} {
+    .@{hzeroNormalLayoutHeader} {
+      display: none;
+    }
+
+    .@{hzeroNormalLayoutBody} {
+      height: 100vh;
+      .@{hzeroNormalLayoutNav} {
+        display: none;
+      }
+
+      .@{hzeroNormalLayoutContent} {
+        &-container {
+          > .ant-tabs.ant-tabs-top {
+            > .ant-tabs-bar {
+              display: none;
+            }
+
+            > .ant-tabs-content {
+              height: 100vh;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .@{hzeroNormalLayoutContainer} {
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
+    min-width: 820px;
+
+    .@{hzeroNormalLayoutHeader} {
+      height: calc(@hzeroNormalLayoutHeaderHeight + 4px);
+      background-color: darken(@hzeroNormalLayoutBgc, 5%);
+      font-size: 12px;
+    }
+
+    .@{hzeroNormalLayoutBody} {
+      height: ~'calc(100vh - @{hzeroNormalLayoutHeaderHeight})';
+      display: flex;
+
+      .@{hzeroNormalLayoutNav} {
+        width: @hzeroNormalLayoutNavWidth;
+        flex-shrink: 0;
+        transition: @hzeroNormalLayoutCollapsedTransition;
+        position: relative;
+
+        &-container {
+          height: 100%;
+          background-color: @hzeroNormalLayoutBgc;
+          display: flex;
+          flex-direction: column;
+        }
+
+        &-normal-search {
+          flex-shrink: 0;
+        }
+
+        &-menu {
+          flex-grow: 1;
+          overflow-y: auto;
+        }
+      }
+
+      .@{hzeroNormalLayoutContent} {
+        flex-grow: 1;
+        flex-shrink: 0;
+        width: ~'calc(100vw - @{hzeroNormalLayoutNavWidth})';
+        height: 100%;
+        transition: @hzeroNormalLayoutCollapsedTransition;
+        position: relative;
+        min-width: 600px;
+
+        &-container {
+          width: 100%;
+          height: 100%;
+
+          > .ant-tabs.ant-tabs-top {
+            height: 100%;
+            width: 100%;
+
+            > .ant-tabs-bar {
+              height: @hzeroNormalLayoutHeaderNavHeight;
+              margin: 0;
+
+              > .ant-tabs-nav-container {
+                height: @hzeroNormalLayoutHeaderNavHeight;
+
+                // 未激活的 tab 出现 下划线
+                > .ant-tabs-nav-wrap {
+                  > .ant-tabs-nav-scroll {
+                    > .ant-tabs-nav {
+                      > div {
+                        > .ant-tabs-tab {
+                          border: 0 none;
+                          height: @hzeroNormalLayoutHeaderNavHeight - 4px;
+                          background-color: darken(@hzeroNormalLayoutLightBGC, 5%);
+                          border-radius: 4px 4px 0 0;
+                          margin: 3px 2px 0 0;
+                          padding-left: @hzero-gutter-md;
+                          padding-right: @hzero-gutter-md;
+
+                          &:first-child {
+                            border: 0 none;
+                            margin: 3px 2px 0 3px;
+                            position: relative;
+                            z-index: 10;
+                            background-color: @hzeroNormalLayoutBgc;
+                          }
+
+                          &:last-child {
+                            margin-right: 3px;
+                          }
+
+                          &.ant-tabs-tab-active {
+                            color: @hzeroNormalLayoutActiveColor;
+                            background-color: @hzeroNormalLayoutLightBGC;
+
+                            &:first-child {
+                              background-color: lighten(@hzeroNormalLayoutBgc, 5%);
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+
+            > .ant-tabs-content {
+              height: ~'calc(100vh - @{hzeroNormalLayoutHeaderHeight} - @{hzeroNormalLayoutHeaderNavHeight})';
+
+              > .ant-tabs-tabpane.ant-tabs-tabpane-active {
+                height: 100%;
+              }
+
+              > .ant-tabs-tabpane {
+                > .page-container {
+                  height: 100%;
+
+                  > .page-content-wrap {
+                    // components/Page~Header 高度
+                    height: ~'calc(100% - 48px)';
+
+                    > .page-content {
+                      min-height: calc(~'100% - @{hzero-gutter} - @{hzero-gutter}');
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+
+      .@{hzeroNormalLayoutPrefix}-collapsed-trigger {
+        left: @hzeroNormalLayoutHeaderNavHeight / 4;
+        z-index: 1;
+        top: -34px;
+        font-size: @hzeroNormalLayoutHeaderNavHeight / 2;
+        cursor: pointer;
+        position: absolute;
+        color: @hzeroNormalLayoutColor;
+      }
+    }
+  }
+
+  .@{hzeroNormalLayoutHeaderContainer} {
+    display: flex;
+    height: calc(@hzeroNormalLayoutHeaderHeight + 4px);
+    justify-content: space-between;
+
+    .@{hzeroNormalLayoutHeaderLeft} {
+      width: @hzeroNormalLayoutNavWidth;
+      flex-shrink: 0;
+
+      .@{hzeroNormalLayoutHeaderLogo} {
+        margin-left: 20px;
+      }
+
+      .@{hzeroNormalLayoutHeaderLogoSign} {
+        margin-left: 20px;
+      }
+
+      .@{hzeroNormalLayoutHeaderSign} {
+        // width: @hzeroNormalLayoutNavWidth;
+        font-size: 12px;
+        color: #fff;
+        background: #ff6680;
+        text-align: center;
+        width: 100%;
+
+        .@{hzeroNormalLayoutHeaderTrialImg} {
+          margin-right: 4px;
+        }
+      }
+    }
+
+    .@{hzeroNormalLayoutHeaderRight} {
+      display: flex;
+      align-items: center;
+      padding-right: @hzeroNormalLayoutNormalGutter;
+
+      &-item {
+        margin-right: @hzeroNormalLayoutInGutter;
+
+        &-divider {
+          background-color: @hzero-bgc-color-dark;
+          height: 16px;
+          width: 1px;
+        }
+
+        &-select {
+          // 公共的下拉框样式
+          color: @hzeroNormalLayoutLightColor;
+          font-size: 14px;
+
+          .ant-select-selection.ant-select-selection--single {
+            height: calc(@hzeroNormalLayoutHeaderNavHeight + 4px);
+
+            .ant-select-selection__rendered {
+              line-height: calc(@hzeroNormalLayoutHeaderNavHeight + 4px);
+            }
+          }
+
+          .ant-select-arrow {
+            color: @hzeroNormalLayoutLightColor;
+          }
+        }
+
+        &-notice {
+          // 铃铛消息, 由于 铃铛悬浮 不参与计算, 所以 宽度给多点
+          margin-right: @hzeroNormalLayoutOutGutter;
+
+          .ant-badge {
+            .ant-badge-count {
+              // margin-top: 2px !important; // 覆盖 style 样式
+              // margin-left: 6px !important;
+              height: 12px;
+              line-height: 12px;
+              font-size: 12px;
+            }
+          }
+        }
+
+        &-language {
+          .ant-select-arrow {
+            color: @hzeroNormalLayoutLightColor;
+          }
+        }
+
+        &-data {
+          color: @hzeroNormalLayoutLightColor;
+          cursor: pointer;
+          margin-right: @hzeroNormalLayoutInGutter;
+          font-size: 14px;
+        }
+
+        &-avatar {
+          // 放出来的是头像
+          cursor: pointer;
+          height: @hzeroNormalLayoutHeaderHeight;
+          line-height: @hzeroNormalLayoutHeaderHeight;
+
+          &-img {
+            border-radius: 50%;
+            margin-right: @hzeroNormalLayoutInGutter;
+            width: 30px;
+            height: 30px;
+            border: 1px solid #fff;
+          }
+
+          &-name {
+            color: @hzeroNormalLayoutLightColor;
+            font-size: 14px;
+
+            &-realName {
+              &::before {
+                font-size: 14px;
+                line-height: 7px;
+              }
+            }
+          }
+        }
+
+        &-last {
+          // 最后一个 不需要右间距
+          margin-right: 0;
+        }
+      }
+    }
+  }
+
+  .@{hzeroNormalLayoutHeaderLogoSign},
+  .@{hzeroNormalLayoutHeaderLogo} {
+    > a {
+      // Link
+      height: @hzeroNormalLayoutHeaderHeight;
+      display: flex;
+      flex-wrap: nowrap;
+      align-items: center;
+      text-decoration: none;
+
+      .@{hzeroNormalLayoutHeaderTitle} {
+        .text-over-flow();
+        margin: 0 0 0 @hzeroNormalLayoutInGutter;
+        color: @hzeroNormalLayoutColor;
+        font-size: 14px;
+      }
+    }
+
+    &-icon {
+      &-icon {
+        width: @hzeroNormalLayoutLogoSize;
+        height: @hzeroNormalLayoutLogoSize;
+        font-size: @hzeroNormalLayoutLogoSize;
+      }
+
+      &-img {
+        width: @hzeroNormalLayoutLogoSize;
+        height: @hzeroNormalLayoutLogoSize;
+      }
+    }
+  }
+
+  .@{hzeroNormalLayoutHeaderLogoSign} {
+    > a {
+      height: 30px;
+      // color: #040405;
+    }
+  }
+
+  // 组件样式
+  .default-layout-header-search(@hzeroNormalLayoutPrefix);
+  // 分离层级 最右侧 下拉框样式
+
+  .@{hzeroNormalLayoutHeaderRight}-item-avatar-dropdown {
+    color: #666;
+    width: 160px;
+    // 下拉菜单的样式
+    padding: 0;
+
+    > li {
+      font-size: 14px;
+    }
+
+    .ant-menu-submenu {
+      .ant-menu-submenu-title {
+        margin: 0 auto;
+      }
+    }
+
+    .ant-dropdown-menu-item {
+      line-height: 28px;
+      padding: 6px 16px;
+
+      .ant-avatar {
+        // 隐藏 头像
+        display: none;
+      }
+    }
+
+    .@{hzeroNormalLayoutHeaderRight}-item-user-logout {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: #ff4141;
+
+      > .logout-icon {
+        height: 12px;
+        width: 12px;
+        background-repeat: no-repeat;
+        background-image: url('../../assets/logout.svg');
+      }
+    }
+  }
+
+  .@{hzeroNormalLayoutContainer}-collapsed {
+    .@{hzeroNormalLayoutHeaderContainer} {
+      .@{hzeroNormalLayoutHeaderLeft} {
+        width: @hzeroNormalLayoutCollapsedWith;
+
+        .@{hzeroNormalLayoutHeaderTrialImg} {
+          margin-right: 0;
+        }
+
+        .@{hzeroNormalLayoutHeaderSignTitle} {
+          display: none;
+        }
+
+        .@{hzeroNormalLayoutHeaderLogoSign},
+        .@{hzeroNormalLayoutHeaderLogo} {
+          margin-left: (@hzeroNormalLayoutCollapsedWith - @hzeroNormalLayoutLogoSize) / 2;
+        }
+      }
+    }
+
+    .@{hzeroNormalLayoutBody} {
+      .@{hzeroNormalLayoutNav} {
+        width: @hzeroNormalLayoutCollapsedWith;
+      }
+
+      .@{hzeroNormalLayoutContent} {
+        width: ~'calc(100vw - @{hzeroNormalLayoutCollapsedWith})';
+      }
+    }
+  }
+
+  // 重写选择语言下拉框
+  .hzero-normal-header-container-language {
+    color: #666;
+    font-size: 14px;
+  }
+}

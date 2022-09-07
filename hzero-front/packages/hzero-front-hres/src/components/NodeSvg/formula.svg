@@ -1,0 +1,27 @@
+<svg width="88" height="76" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs>
+    <rect id="b" x="0" y="0" width="80" height="48" rx="4"/>
+    <filter x="-8.8%" y="-10.4%" width="117.5%" height="129.2%" filterUnits="objectBoundingBox" id="a">
+      <feOffset dy="2" in="SourceAlpha" result="shadowOffsetOuter1"/>
+      <feGaussianBlur stdDeviation="2" in="shadowOffsetOuter1" result="shadowBlurOuter1"/>
+      <feComposite in="shadowBlurOuter1" in2="SourceAlpha" operator="out" result="shadowBlurOuter1"/>
+      <feColorMatrix values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.04 0" in="shadowBlurOuter1"/>
+    </filter>
+  </defs>
+  <g fill="none" fill-rule="evenodd">
+    <g transform="translate(4 2)">
+      <use fill="#000" filter="url(#a)" xlink:href="#b"/>
+      <use fill-opacity=".92" fill="#E6F7FF" xlink:href="#b"/>
+      <rect stroke="#1890FF" x=".5" y=".5" width="79" height="47" rx="4"/>
+    </g>
+    <text font-family="PingFangSC-Regular, PingFang SC" font-size="12" fill="#000" fill-opacity=".65"
+          transform="translate(4 2)">
+      <tspan x="17" y="65">公式组件</tspan>
+    </text>
+    <g stroke="null" id="svg_13">
+      <path stroke="null" id="svg_11" fill="#515151" d="m42.22956,40.25784l-11.54088,0a0.96174,0.96174 0 0 1 -0.80786,-1.50031l7.3477,-11.00231l-7.3477,-11.00231a0.96174,0.96174 0 0 1 0.80786,-1.50031l11.54088,0a0.96174,0.96174 0 0 1 0,1.92348l-9.75205,0l6.71295,10.04057a1.00021,1.00021 0 0 1 0,1.07715l-6.71295,10.04057l9.75205,0a0.96174,0.96174 0 0 1 0,1.92348zm3.84696,0a1.09638,1.09638 0 0 1 -0.53857,-0.15388a0.98098,0.98098 0 0 1 -0.26929,-1.34644l7.69392,-11.54088a0.96174,0.96174 0 0 1 1.61572,1.07715l-7.69392,11.54088a1.00021,1.00021 0 0 1 -0.80786,0.42317z"/>
+      <path stroke="null" id="svg_12" fill="#515151" d="m53.77045,40.25784a1.00021,1.00021 0 0 1 -0.80786,-0.42317l-7.69392,-11.54088a0.96174,0.96174 0 1 1 1.61572,-1.07715l7.69392,11.54088a0.98098,0.98098 0 0 1 -0.26929,1.34644a1.09638,1.09638 0 0 1 -0.53857,0.15388zm2.88522,-21.15829l-9.6174,0a0.96174,0.96174 0 0 1 0,-1.92348l9.6174,0a0.96174,0.96174 0 0 1 0,1.92348z"/>
+      <path stroke="null" id="svg_13" fill="#515151" d="m51.84697,23.90825a0.96174,0.96174 0 0 1 -0.96174,-0.96174l0,-9.6174a0.96174,0.96174 0 0 1 1.92348,0l0,9.6174a0.96174,0.96174 0 0 1 -0.96174,0.96174z"/>
+    </g>
+  </g>
+</svg>
