@@ -6,10 +6,9 @@
     <parent>
         <groupId>org.hzero</groupId>
         <artifactId>hzero-parent</artifactId>
-        <version>1.5.6.RELEASE</version>
+        <version>1.5.6</version>
     </parent>
     <artifactId>hzero-admin-saas</artifactId>
-    <version>1.5.5.RELEASE</version>
     <name>hzero-admin-saas</name>
 
     <dependencies>

@@ -5,11 +5,10 @@
     <parent>
         <groupId>org.hzero</groupId>
         <artifactId>hzero-parent</artifactId>
-        <version>1.5.6.RELEASE</version>
+        <version>1.5.6</version>
     </parent>
 
     <artifactId>hzero-report-saas</artifactId>
-    <version>1.5.4.RELEASE</version>
     <name>hzero-report</name>
     <description>HZero 报表平台</description>
 

@@ -6,10 +6,9 @@
     <parent>
         <artifactId>hzero-boot-parent</artifactId>
         <groupId>org.hzero.boot</groupId>
-        <version>1.5.0.RELEASE</version>
+        <version>1.5.6</version>
     </parent>
     <artifactId>hzero-boot-platform</artifactId>
-    <version>1.5.7.RELEASE</version>
     <description>Hzero平台服务组件</description>
 
     <dependencies>
@@ -29,7 +28,6 @@
         <dependency>
             <groupId>org.hzero.starter</groupId>
             <artifactId>hzero-starter-mybatis-mapper</artifactId>
-            <version>1.5.5.RELEASE</version>
             <optional>true</optional>
         </dependency>
         <dependency>

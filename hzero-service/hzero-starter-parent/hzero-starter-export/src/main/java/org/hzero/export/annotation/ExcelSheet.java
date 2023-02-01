@@ -4,6 +4,8 @@ import java.lang.annotation.*;
 
 import org.springframework.core.annotation.AliasFor;
 
+import org.hzero.export.constant.ExportConstants;
+
 /**
  * Excel Sheet 一个类对应一个Sheet页
  *
@@ -33,6 +35,7 @@ public @interface ExcelSheet {
 
     /**
      * 多语言KEY 根据 key & code 获取多语言
+     *
      * @see #promptCode
      * @see #title
      */
@@ -40,6 +43,7 @@ public @interface ExcelSheet {
 
     /**
      * 多语言CODE 根据 key & code 获取多语言
+     *
      * @see #promptKey
      * @see #title
      */
@@ -53,6 +57,7 @@ public @interface ExcelSheet {
     /**
      * 占位符，偏移的列可使用占位符显示
      */
+    @Deprecated
     String placeholder() default "*****";
 
     /**
@@ -63,6 +68,11 @@ public @interface ExcelSheet {
     /**
      * 分页大小 每次查询的数量
      */
-    int pageSize() default 5000;
+    int pageSize() default ExportConstants.PAGE_SIZE;
+
+    /**
+     * sheet页只读
+     */
+    boolean readOnly() default false;
 
 }

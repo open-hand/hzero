@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.hzero</groupId>
         <artifactId>hzero-parent</artifactId>
-        <version>1.5.0.RELEASE</version>
+        <version>1.5.6</version>
     </parent>
 
     <groupId>org.hzero.starter</groupId>
@@ -53,7 +53,6 @@
         <module>hzero-starter-jdbc</module>
         <module>hzero-starter-excel</module>
         <module>hzero-starter-fragment</module>
-        <module>hzero-starter-sqlparser</module>
         <module>hzero-starter-keyencrypt</module>
         <module>hzero-starter-seata</module>
     </modules>

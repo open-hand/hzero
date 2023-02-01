@@ -6,8 +6,7 @@ import org.apache.poi.ss.usermodel.IndexedColors;
 /**
  * 默认空颜色
  *
- * @author XCXCXCXCX
- * @date 2020/5/9 3:20 下午
+ * @author XCXCXCXCX 2020/5/9 3:20
  */
 public class EmptyColor implements Color {
 

@@ -3,8 +3,7 @@ package org.hzero.export.annotation;
 /**
  * 批注属性
  *
- * @author XCXCXCXCX
- * @date 2020/5/9 12:20 下午
+ * @author XCXCXCXCX 2020/5/9 12:20
  */
 public class CommentProperty {
 

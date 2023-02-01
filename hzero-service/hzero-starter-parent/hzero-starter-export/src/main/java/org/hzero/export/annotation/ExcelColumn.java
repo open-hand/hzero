@@ -2,7 +2,6 @@ package org.hzero.export.annotation;
 
 import java.lang.annotation.*;
 
-import org.hzero.core.base.BaseConstants;
 import org.hzero.export.render.ValueRenderer;
 import org.springframework.core.annotation.AliasFor;
 
@@ -76,7 +75,9 @@ public @interface ExcelColumn {
     int order() default 1;
 
     /**
-     * Cell 格式，参考 {@link BaseConstants.Pattern}
+     * Cell 格式，参考
+     *
+     * @link BaseConstants.Pattern
      */
     String pattern() default "";
 
@@ -117,7 +118,7 @@ public @interface ExcelColumn {
     int width() default 0;
 
     /**
-     * 分组标识
+     * 分组标识 (处理过个导出使用同一DTO但导出列不同的情况)
      */
     Class<?>[] groups() default {};
 
@@ -142,7 +143,7 @@ public @interface ExcelColumn {
     boolean defaultSelected() default false;
 
     /**
-     * 值集编码
+     * 值集编码  指定编码会为导出的excel渲染下拉选项
      */
     String lovCode() default "";
 

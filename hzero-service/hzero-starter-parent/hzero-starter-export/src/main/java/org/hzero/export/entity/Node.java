@@ -12,10 +12,8 @@ public class Node {
     public Node() {
     }
 
-    public Node(Object data, int rowIndex, int colIndex, ExportColumn exportColumn, Node parent, Node child) {
+    public Node(Object data, ExportColumn exportColumn, Node parent, Node child) {
         this.data = data;
-        this.rowIndex = rowIndex;
-        this.colIndex = colIndex;
         this.exportColumn = exportColumn;
         this.parent = parent;
         this.child = child;
@@ -25,14 +23,6 @@ public class Node {
      * 当前数据
      */
     private Object data;
-    /**
-     * 行下标
-     */
-    private int rowIndex;
-    /**
-     * 起始列下表
-     */
-    private int colIndex;
     /**
      * 列定义
      */
@@ -52,24 +42,6 @@ public class Node {
 
     public Node setData(Object data) {
         this.data = data;
-        return this;
-    }
-
-    public int getRowIndex() {
-        return rowIndex;
-    }
-
-    public Node setRowIndex(int rowIndex) {
-        this.rowIndex = rowIndex;
-        return this;
-    }
-
-    public int getColIndex() {
-        return colIndex;
-    }
-
-    public Node setColIndex(int colIndex) {
-        this.colIndex = colIndex;
         return this;
     }
 

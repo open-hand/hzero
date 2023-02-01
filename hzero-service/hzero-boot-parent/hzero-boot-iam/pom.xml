@@ -6,7 +6,7 @@
     <parent>
         <artifactId>hzero-boot-parent</artifactId>
         <groupId>org.hzero.boot</groupId>
-        <version>1.5.0.RELEASE</version>
+        <version>1.5.6</version>
     </parent>
     <artifactId>hzero-boot-iam</artifactId>
     <description>HZero Iam服务客户端</description>

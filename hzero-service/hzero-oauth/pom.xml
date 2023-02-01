@@ -6,10 +6,9 @@
     <parent>
         <groupId>org.hzero</groupId>
         <artifactId>hzero-parent</artifactId>
-        <version>1.5.6.RELEASE</version>
+        <version>1.5.6</version>
     </parent>
     <artifactId>hzero-oauth</artifactId>
-    <version>1.5.7.RELEASE</version>
 
     <dependencies>
         <dependency>

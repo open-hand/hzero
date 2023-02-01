@@ -7,10 +7,9 @@
     <parent>
         <groupId>org.hzero</groupId>
         <artifactId>hzero-parent</artifactId>
-        <version>1.5.6.RELEASE</version>
+        <version>1.5.6</version>
     </parent>
     <artifactId>hzero-platform-saas</artifactId>
-    <version>1.5.6.RELEASE</version>
 
     <dependencies>
         <!-- hzero starter -->
@@ -55,7 +54,6 @@
         <dependency>
             <groupId>org.hzero.boot</groupId>
             <artifactId>hzero-boot-platform</artifactId>
-            <version>1.5.7.RELEASE</version>
         </dependency>
         <dependency>
             <groupId>org.hzero.boot</groupId>

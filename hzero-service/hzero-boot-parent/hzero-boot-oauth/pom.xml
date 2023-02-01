@@ -5,10 +5,9 @@
     <parent>
         <groupId>org.hzero.boot</groupId>
         <artifactId>hzero-boot-parent</artifactId>
-        <version>1.5.0.RELEASE</version>
+        <version>1.5.6</version>
     </parent>
     <artifactId>hzero-boot-oauth</artifactId>
-    <version>1.5.1.RELEASE</version>
     <description>用户安全相关客户端程序</description>
 
     <dependencies>

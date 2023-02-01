@@ -5,10 +5,9 @@
     <parent>
         <groupId>org.hzero.boot</groupId>
         <artifactId>hzero-boot-parent</artifactId>
-        <version>1.5.0.RELEASE</version>
+        <version>1.5.6</version>
     </parent>
     <artifactId>hzero-boot-file</artifactId>
-    <version>1.5.1.RELEASE</version>
     <description>配合hzero-file文件平台的客户端程序</description>
 
     <dependencies>

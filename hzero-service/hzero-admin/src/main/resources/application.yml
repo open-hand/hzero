@@ -128,13 +128,6 @@ hzero:
     health-check:
       connect-timeout: 3000
       read-timeout: 6000
-  market:
-    server:
-      enable: ${HZERO_MARKET_SERVER_ENABLE:false}
-      host: ${HZERO_MARKET_SERVER_HOST:http://hzerodevb.saas.hand-china.com}
-      login:
-        clientId: ${HZERO_MARKET_SERVER_LOGIN_CLIENTID:client}
-        clientSecret: ${HZERO_MARKET_SERVER_LOGIN_SECRET:secret}
 
 logging:
   level:

@@ -6,18 +6,16 @@
     <parent>
         <groupId>org.hzero.starter</groupId>
         <artifactId>hzero-starter-sso-parent</artifactId>
-        <version>1.5.0.RELEASE</version>
+        <version>1.5.6</version>
     </parent>
     <artifactId>hzero-starter-sso-cas</artifactId>
     <name>hzero-starter-sso-cas</name>
     <description>sso cas</description>
-    <version>1.5.1.RELEASE</version>
 
     <dependencies>
         <dependency>
             <groupId>org.hzero.starter</groupId>
             <artifactId>hzero-starter-sso-core</artifactId>
-            <version>1.5.4.RELEASE</version>
         </dependency>
 
         <dependency>

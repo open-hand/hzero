@@ -5,11 +5,10 @@
     <parent>
         <groupId>org.hzero</groupId>
         <artifactId>hzero-parent</artifactId>
-        <version>1.5.6.RELEASE</version>
+        <version>1.5.6</version>
     </parent>
 
     <artifactId>hzero-scheduler-saas</artifactId>
-    <version>1.5.3.RELEASE</version>
     <description>HSDR</description>
 
     <dependencies>

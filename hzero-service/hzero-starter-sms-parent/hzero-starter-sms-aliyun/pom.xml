@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.hzero.starter</groupId>
         <artifactId>hzero-starter-sms-parent</artifactId>
-        <version>1.5.0.RELEASE</version>
+        <version>1.5.6</version>
     </parent>
     <artifactId>hzero-starter-sms-aliyun</artifactId>
 

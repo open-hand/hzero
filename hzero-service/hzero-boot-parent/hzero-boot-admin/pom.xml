@@ -5,7 +5,7 @@
     <parent>
         <artifactId>hzero-boot-parent</artifactId>
         <groupId>org.hzero.boot</groupId>
-        <version>1.5.0.RELEASE</version>
+        <version>1.5.6</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -25,12 +25,6 @@
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
-        </dependency>
-
-        <!-- market -->
-        <dependency>
-            <groupId>org.hzero.starter</groupId>
-            <artifactId>hzero-starter-market</artifactId>
         </dependency>
 
     </dependencies>

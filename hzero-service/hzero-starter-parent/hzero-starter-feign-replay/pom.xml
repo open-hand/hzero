@@ -6,10 +6,9 @@
     <parent>
         <artifactId>hzero-starter-parent</artifactId>
         <groupId>org.hzero.starter</groupId>
-        <version>1.5.0.RELEASE</version>
+        <version>1.5.6</version>
     </parent>
     <artifactId>hzero-starter-feign-replay</artifactId>
-    <version>1.5.1.RELEASE</version>
 
     <properties>
         <spring-security-jwt.version>1.0.10.RELEASE</spring-security-jwt.version>

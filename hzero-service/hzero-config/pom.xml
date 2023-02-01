@@ -7,10 +7,9 @@
     <parent>
         <groupId>org.hzero</groupId>
         <artifactId>hzero-parent</artifactId>
-        <version>1.5.6.RELEASE</version>
+        <version>1.5.6</version>
     </parent>
     <artifactId>hzero-config</artifactId>
-    <version>1.5.0.RELEASE</version>
 
     <dependencies>
         <dependency>

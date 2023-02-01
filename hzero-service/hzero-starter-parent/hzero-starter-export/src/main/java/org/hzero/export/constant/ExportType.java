@@ -11,16 +11,13 @@ public enum ExportType {
      */
     COLUMN,
     /**
-     * 导出数据
-     */
-    DATA,
-    /**
      * 导出模板
      */
-    TEMPLATE
-
-    ;
-
+    TEMPLATE,
+    /**
+     * 导出数据
+     */
+    DATA;
 
     public static boolean match(ExportType type) {
         for (ExportType value : ExportType.values()) {

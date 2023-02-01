@@ -5,12 +5,11 @@
     <parent>
         <artifactId>hzero-starter-parent</artifactId>
         <groupId>org.hzero.starter</groupId>
-        <version>1.5.0.RELEASE</version>
+        <version>1.5.6</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>hzero-starter-jdbc</artifactId>
-    <version>1.5.2.RELEASE</version>
 
     <dependencies>
         <!-- hzero -->

@@ -11,7 +11,7 @@
 
     <groupId>org.hzero</groupId>
     <artifactId>hzero-parent</artifactId>
-    <version>1.5.6.RELEASE</version>
+    <version>1.5.6</version>
     <packaging>pom</packaging>
 
     <properties>
@@ -19,37 +19,37 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>1.8</java.version>
 
-        <hzero.starter.version>1.5.0.RELEASE</hzero.starter.version>
-        <hzero.starter.social.version>1.5.0.RELEASE</hzero.starter.social.version>
-        <hzero.starter.sso.version>1.5.0.RELEASE</hzero.starter.sso.version>
-        <hzero.starter.integrate.version>1.5.0.RELEASE</hzero.starter.integrate.version>
-        <hzero.starter.file.version>1.5.0.RELEASE</hzero.starter.file.version>
-        <hzero.starter.sms.version>1.5.0.RELEASE</hzero.starter.sms.version>
-        <hzero.starter.call.version>1.5.0.RELEASE</hzero.starter.call.version>
-        <hzero.starter.pay.version>1.5.0.RELEASE</hzero.starter.pay.version>
-        <hzero.starter.iot.version>1.5.0.RELEASE</hzero.starter.iot.version>
-        <hzero.starter.datasync.version>1.5.0.RELEASE</hzero.starter.datasync.version>
-        <hzero.starter.ebank.version>1.5.0.RELEASE</hzero.starter.ebank.version>
-        <hzero.starter.dynamic.route.version>1.5.1.RELEASE</hzero.starter.dynamic.route.version>
-        <hzero.starter.data.route.version>1.5.0.RELEASE</hzero.starter.data.route.version>
-        <hzero.starter.report.version>1.5.0.RELEASE</hzero.starter.report.version>
+        <hzero.starter.version>1.5.6</hzero.starter.version>
+        <hzero.starter.social.version>1.5.6</hzero.starter.social.version>
+        <hzero.starter.sso.version>1.5.6</hzero.starter.sso.version>
+        <hzero.starter.integrate.version>1.5.6</hzero.starter.integrate.version>
+        <hzero.starter.file.version>1.5.6</hzero.starter.file.version>
+        <hzero.starter.sms.version>1.5.6</hzero.starter.sms.version>
+        <hzero.starter.call.version>1.5.6</hzero.starter.call.version>
+        <hzero.starter.pay.version>1.5.6</hzero.starter.pay.version>
+        <hzero.starter.iot.version>1.5.6</hzero.starter.iot.version>
+        <hzero.starter.datasync.version>1.5.6</hzero.starter.datasync.version>
+        <hzero.starter.ebank.version>1.5.6</hzero.starter.ebank.version>
+        <hzero.starter.dynamic.route.version>1.5.6</hzero.starter.dynamic.route.version>
+        <hzero.starter.data.route.version>1.5.6</hzero.starter.data.route.version>
+        <hzero.starter.report.version>1.5.6</hzero.starter.report.version>
 
-        <hzero.boot.version>1.5.0.RELEASE</hzero.boot.version>
-        <hzero.boot.charge.version>1.5.0.RELEASE</hzero.boot.charge.version>
-        <hzero.boot.rule.engine.version>1.5.0.RELEASE</hzero.boot.rule.engine.version>
-        <hzero.boot.interface.version>1.5.6.RELEASE</hzero.boot.interface.version>
-        <hzero.boot.search.version>1.5.0.RELEASE</hzero.boot.search.version>
-        <hzero.boot.ocr.version>1.5.1.RELEASE</hzero.boot.ocr.version>
-        <hzero.boot.alert.version>1.4.0.RELEASE</hzero.boot.alert.version>
-        <hzero.boot.event.version>1.5.1.RELEASE</hzero.boot.event.version>
-        <hzero.boot.orchestration.version>1.5.2.RELEASE</hzero.boot.orchestration.version>
+        <hzero.boot.version>1.5.6</hzero.boot.version>
+        <hzero.boot.charge.version>1.5.6</hzero.boot.charge.version>
+        <hzero.boot.rule.engine.version>1.5.6</hzero.boot.rule.engine.version>
+        <hzero.boot.interface.version>1.5.6</hzero.boot.interface.version>
+        <hzero.boot.search.version>1.5.6</hzero.boot.search.version>
+        <hzero.boot.ocr.version>1.5.6</hzero.boot.ocr.version>
+        <hzero.boot.alert.version>1.5.6</hzero.boot.alert.version>
+        <hzero.boot.event.version>1.5.6</hzero.boot.event.version>
+        <hzero.boot.orchestration.version>1.5.6</hzero.boot.orchestration.version>
 
-        <hzero.plugin.version>1.5.0.RELEASE</hzero.plugin.version>
-        <hzero.plugin.three-role.version>1.5.0.RELEASE</hzero.plugin.three-role.version>
-        <hzero.plugin.interface.version>1.5.0.RELEASE</hzero.plugin.interface.version>
-        <hzero.gateway-helper.version>1.5.0.RELEASE</hzero.gateway-helper.version>
-        <hzero.template.version>1.5.0.RELEASE</hzero.template.version>
-        <hzero.service.version>1.5.0.RELEASE</hzero.service.version>
+        <hzero.plugin.version>1.5.6</hzero.plugin.version>
+        <hzero.plugin.three-role.version>1.5.6</hzero.plugin.three-role.version>
+        <hzero.plugin.interface.version>1.5.6</hzero.plugin.interface.version>
+        <hzero.gateway-helper.version>1.5.6</hzero.gateway-helper.version>
+        <hzero.template.version>1.5.6</hzero.template.version>
+        <hzero.service.version>1.5.6</hzero.service.version>
 
         <spring.cloud.nacos.version>0.2.2.RELEASE</spring.cloud.nacos.version>
         <com.baidu.formula.version>2.0.1-SNAPSHOT</com.baidu.formula.version>
@@ -106,37 +106,37 @@
             <dependency>
                 <groupId>org.hzero.starter</groupId>
                 <artifactId>hzero-starter-core</artifactId>
-                <version>1.5.5.RELEASE</version>
+                <version>${hzero.starter.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.hzero.starter</groupId>
                 <artifactId>hzero-starter-excel</artifactId>
-                <version>1.5.2.RELEASE</version>
+                <version>${hzero.starter.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.hzero.starter</groupId>
                 <artifactId>hzero-starter-export</artifactId>
-                <version>1.5.6.RELEASE</version>
+                <version>${hzero.starter.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.hzero.starter</groupId>
                 <artifactId>hzero-starter-feign-replay</artifactId>
-                <version>1.5.1.RELEASE</version>
+                <version>${hzero.starter.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.hzero.starter</groupId>
                 <artifactId>hzero-starter-fragment</artifactId>
-                <version>1.5.1.RELEASE</version>
+                <version>${hzero.starter.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.hzero.starter</groupId>
                 <artifactId>hzero-starter-jdbc</artifactId>
-                <version>1.5.2.RELEASE</version>
+                <version>${hzero.starter.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.hzero.starter</groupId>
                 <artifactId>hzero-starter-keyencrypt</artifactId>
-                <version>1.5.1.RELEASE</version>
+                <version>${hzero.starter.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.hzero.starter</groupId>
@@ -146,17 +146,17 @@
             <dependency>
                 <groupId>org.hzero.starter</groupId>
                 <artifactId>hzero-starter-lock</artifactId>
-                <version>1.5.1.RELEASE</version>
+                <version>${hzero.starter.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.hzero.starter</groupId>
                 <artifactId>hzero-starter-mybatis-mapper</artifactId>
-                <version>1.5.5.RELEASE</version>
+                <version>${hzero.starter.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.hzero.starter</groupId>
                 <artifactId>hzero-starter-redis</artifactId>
-                <version>1.5.1.RELEASE</version>
+                <version>${hzero.starter.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.hzero.starter</groupId>
@@ -171,7 +171,7 @@
             <dependency>
                 <groupId>org.hzero.starter</groupId>
                 <artifactId>hzero-starter-websocket</artifactId>
-                <version>1.5.1.RELEASE</version>
+                <version>${hzero.starter.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.hzero.starter</groupId>
@@ -181,7 +181,7 @@
             <dependency>
                 <groupId>org.hzero.starter</groupId>
                 <artifactId>hzero-starter-seata</artifactId>
-                <version>1.5.1.RELEASE</version>
+                <version>${hzero.starter.version}</version>
             </dependency>
             <!-- hzero starter social -->
             <dependency>
@@ -192,7 +192,7 @@
             <dependency>
                 <groupId>org.hzero.starter</groupId>
                 <artifactId>hzero-starter-social-core</artifactId>
-                <version>1.5.1.RELEASE</version>
+                <version>${hzero.starter.social.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.hzero.starter</groupId>
@@ -233,7 +233,7 @@
             <dependency>
                 <groupId>org.hzero.starter</groupId>
                 <artifactId>hzero-starter-sso-core</artifactId>
-                <version>1.5.2.RELEASE</version>
+                <version>${hzero.starter.sso.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.hzero.starter</groupId>
@@ -258,7 +258,7 @@
             <dependency>
                 <groupId>org.hzero.starter</groupId>
                 <artifactId>hzero-starter-sso-saml</artifactId>
-                <version>1.5.2.RELEASE</version>
+                <version>${hzero.starter.sso.version}</version>
             </dependency>
             <!-- hzero starter integrate -->
             <dependency>
@@ -398,7 +398,7 @@
             <dependency>
                 <groupId>org.hzero.boot</groupId>
                 <artifactId>hzero-boot-file</artifactId>
-                <version>1.5.1.RELEASE</version>
+                <version>${hzero.boot.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.hzero.boot</groupId>
@@ -408,27 +408,27 @@
             <dependency>
                 <groupId>org.hzero.boot</groupId>
                 <artifactId>hzero-boot-import</artifactId>
-                <version>1.5.5.RELEASE</version>
+                <version>${hzero.boot.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.hzero.boot</groupId>
                 <artifactId>hzero-boot-message</artifactId>
-                <version>1.5.4.RELEASE</version>
+                <version>${hzero.boot.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.hzero.boot</groupId>
                 <artifactId>hzero-boot-oauth</artifactId>
-                <version>1.5.1.RELEASE</version>
+                <version>${hzero.boot.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.hzero.boot</groupId>
                 <artifactId>hzero-boot-platform</artifactId>
-                <version>1.5.7.RELEASE</version>
+                <version>${hzero.boot.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.hzero.boot</groupId>
                 <artifactId>hzero-boot-scheduler</artifactId>
-                <version>1.5.4.RELEASE</version>
+                <version>${hzero.boot.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.hzero.boot</groupId>
@@ -444,7 +444,7 @@
             <dependency>
                 <groupId>org.hzero.plugin</groupId>
                 <artifactId>platform-hr-saas</artifactId>
-                <version>1.5.2.RELEASE</version>
+                <version>${hzero.plugin.version}</version>
             </dependency>
             
             <!-- hzero gateway helper -->
@@ -456,17 +456,17 @@
             <dependency>
                 <groupId>org.hzero</groupId>
                 <artifactId>hzero-gateway-helper-api</artifactId>
-                <version>1.5.1.RELEASE</version>
+                <version>${hzero.gateway-helper.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.hzero</groupId>
                 <artifactId>hzero-gateway-helper-default</artifactId>
-                <version>1.5.3.RELEASE</version>
+                <version>${hzero.gateway-helper.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.hzero</groupId>
                 <artifactId>hzero-gateway-helper-login</artifactId>
-                <version>1.5.2.RELEASE</version>
+                <version>${hzero.gateway-helper.version}</version>
             </dependency>
             <!-- hzero-template-parent -->
             <dependency>
@@ -477,18 +477,18 @@
             <dependency>
                 <groupId>org.hzero.template</groupId>
                 <artifactId>hzero-template-oauth-main</artifactId>
-                <version>1.5.1.RELEASE</version>
+                <version>${hzero.template.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.hzero.template</groupId>
                 <artifactId>hzero-template-oauth-slide</artifactId>
-                <version>1.5.1.RELEASE</version>
+                <version>${hzero.template.version}</version>
             </dependency>
             <!-- hzero service -->
             <dependency>
                 <groupId>org.hzero</groupId>
                 <artifactId>hzero-admin-saas</artifactId>
-                <version>1.5.5.RELEASE</version>
+                <version>${hzero.service.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.hzero</groupId>
@@ -498,37 +498,37 @@
             <dependency>
                 <groupId>org.hzero</groupId>
                 <artifactId>hzero-file-saas</artifactId>
-                <version>1.5.3.RELEASE</version>
+                <version>${hzero.service.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.hzero</groupId>
                 <artifactId>hzero-gateway</artifactId>
-                <version>1.5.2.RELEASE</version>
+                <version>${hzero.service.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.hzero</groupId>
                 <artifactId>hzero-iam</artifactId>
-                <version>1.5.6.RELEASE</version>
+                <version>${hzero.service.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.hzero</groupId>
                 <artifactId>hzero-import-saas</artifactId>
-                <version>1.5.2.RELEASE</version>
+                <version>${hzero.service.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.hzero</groupId>
                 <artifactId>hzero-message-saas</artifactId>
-                <version>1.5.2.RELEASE</version>
+                <version>${hzero.service.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.hzero</groupId>
                 <artifactId>hzero-oauth</artifactId>
-                <version>1.5.7.RELEASE</version>
+                <version>${hzero.service.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.hzero</groupId>
                 <artifactId>hzero-platform-saas</artifactId>
-                <version>1.5.6.RELEASE</version>
+                <version>${hzero.service.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.hzero</groupId>
@@ -538,17 +538,17 @@
             <dependency>
                 <groupId>org.hzero</groupId>
                 <artifactId>hzero-report-saas</artifactId>
-                <version>1.5.2.RELEASE</version>
+                <version>${hzero.service.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.hzero</groupId>
                 <artifactId>hzero-scheduler-saas</artifactId>
-                <version>1.5.2.RELEASE</version>
+                <version>${hzero.service.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.hzero</groupId>
                 <artifactId>hzero-swagger</artifactId>
-                <version>1.5.1.RELEASE</version>
+                <version>${hzero.service.version}</version>
             </dependency>
 
             <!-- Spring Cloud alibaba -->

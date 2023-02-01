@@ -7,10 +7,9 @@
     <parent>
         <groupId>org.hzero</groupId>
         <artifactId>hzero-parent</artifactId>
-        <version>1.5.6.RELEASE</version>
+        <version>1.5.6</version>
     </parent>
     <artifactId>hzero-iam</artifactId>
-    <version>1.5.6.RELEASE</version>
 
     <properties>
         <spock.version>1.0-groovy-2.4</spock.version>

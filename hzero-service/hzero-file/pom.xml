@@ -6,10 +6,9 @@
     <parent>
         <groupId>org.hzero</groupId>
         <artifactId>hzero-parent</artifactId>
-        <version>1.5.6.RELEASE</version>
+        <version>1.5.6</version>
     </parent>
     <artifactId>hzero-file-saas</artifactId>
-    <version>1.5.3.RELEASE</version>
 
     <properties>
         <aspose-words.version>1.4.0.RELEASE</aspose-words.version>

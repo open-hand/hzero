@@ -11,14 +11,13 @@ import org.springframework.boot.actuate.endpoint.annotation.Selector;
 import org.springframework.boot.actuate.endpoint.annotation.WriteOperation;
 import org.springframework.util.Assert;
 
-import org.hzero.core.async.AsyncTaskState;
 import org.hzero.export.ExportFutureManager;
+import org.hzero.export.constant.AsyncTaskState;
 
 /**
  * 异步导出端点
  *
- * @author XCXCXCXCX
- * @date 2019/8/5
+ * @author XCXCXCXCX 2019/8/5
  */
 @Endpoint(id = "async-export-endpoint")
 public class AsyncExportEndpoint {
@@ -31,26 +30,24 @@ public class AsyncExportEndpoint {
     private ExportFutureManager futureManager;
 
     @ReadOperation
-    public List<String> getExportTaskIds(){
+    public List<String> getExportTaskIds() {
         return futureManager == null ? null : futureManager.getAllKeys();
     }
 
     /**
      * 404 or done or cancelled or doing
-     * @param uuid
-     * @return
      */
     @ReadOperation
-    public String getExportTaskState(@Selector String uuid){
+    public String getExportTaskState(@Selector String uuid) {
         Assert.notNull(uuid, "UUID must not be empty");
-        Future future;
-        if(futureManager == null || (future = futureManager.get(UUID.fromString(uuid))) == null){
+        Future<?> future;
+        if (futureManager == null || (future = futureManager.get(UUID.fromString(uuid))) == null) {
             return NOT_FOUND;
         }
-        if(future.isDone()){
+        if (future.isDone()) {
             return AsyncTaskState.DONE.getCode();
         }
-        if(future.isCancelled()){
+        if (future.isCancelled()) {
             return AsyncTaskState.CANCELLED.getCode();
         }
         return AsyncTaskState.DOING.getCode();
@@ -58,15 +55,14 @@ public class AsyncExportEndpoint {
 
     /**
      * success or failed
-     *
+     * <p>
      * success when task canceled or removed
      * failed when task done or canceled failed
-     *
      */
     @WriteOperation
-    public ExportFutureManager.TaskState cancelExportTask(@Selector String uuid){
+    public ExportFutureManager.TaskState cancelExportTask(@Selector String uuid) {
         Assert.notNull(uuid, "UUID must not be empty");
-        if(futureManager != null){
+        if (futureManager != null) {
             return futureManager.cancel(uuid);
         }
         return ExportFutureManager.TaskState.FAILED;
