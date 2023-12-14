@@ -30,7 +30,7 @@ public class RuleEngineController extends BaseController {
     @Autowired
     private RuleEngineService ruleEngineService;
 
-    @Permission(permissionLogin = true)
+    @Permission(permissionWithin = true)
     @PostMapping(RuleConstants.POST_MAPPING)
     public ResponseEntity<ScriptResult> runGroovyScript(@RequestBody RuleEngine ruleEngine) {
         String script = ruleEngine.getScript();
