@@ -19,11 +19,20 @@ public class XForwardedForFilter implements GlobalFilter, Ordered {
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         ServerHttpRequest request = exchange.getRequest();
-        String remoteAddress = request.getRemoteAddress().getHostString();
+        List<String> xForwardedForList = new ArrayList<>();
+        List<String> temp = request.getHeaders().get(HTTP_X_FORWARDED_FOR);
+        if (CollectionUtils.isNotEmpty(temp)) {
+            xForwardedForList.addAll(temp);
+        }
+        InetSocketAddress remoteAddress = request.getRemoteAddress();
+        if (Objects.nonNull(remoteAddress)) {
+            xForwardedForList.add(remoteAddress.getHostString());
+        }
+        String xForwardedFor = String.join(",", xForwardedForList);
         return chain.filter(
                 exchange.mutate()
                         .request(
-                                builder -> builder.header(HTTP_X_FORWARDED_FOR, remoteAddress)
+                                builder -> builder.header(HTTP_X_FORWARDED_FOR, xForwardedFor)
                         )
                         .build());
     }
