@@ -1,11 +1,16 @@
 package org.hzero.gateway.filter;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.core.Ordered;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
+import java.net.InetSocketAddress;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * 添加 X-Forwarded-For 记录客户端真实IP
