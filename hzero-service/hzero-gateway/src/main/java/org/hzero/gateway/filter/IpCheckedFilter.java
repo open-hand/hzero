@@ -1,5 +1,6 @@
 package org.hzero.gateway.filter;
 
+import org.apache.commons.lang3.StringUtils;
 import org.hzero.gateway.filter.metric.RequestCountRules;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,6 +22,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.Objects;
 
 /**
  * @author XCXCXCXCX
@@ -77,20 +79,24 @@ public class IpCheckedFilter implements WebFilter{
 
     private String getRealIp(ServerWebExchange exchange) {
         String realIp = null;
-        InetSocketAddress remoteAddress = exchange.getRequest().getRemoteAddress();
-        if (remoteAddress != null) {
-            realIp = remoteAddress.getHostName();
-        }
 
+        // 先从 x-forwarded-for 取
         HttpHeaders headers = exchange.getRequest().getHeaders();
-        List<String> forwardedIps = headers.get(X_FORWARDED_FOR);
-        if (!CollectionUtils.isEmpty(forwardedIps)){
-            realIp = forwardedIps.get(0);
+        List<String> xForwardedFor = headers.get(X_FORWARDED_FOR);
+        if (!CollectionUtils.isEmpty(xForwardedFor)) {
+            realIp = xForwardedFor.get(0);
         }
 
-        List<String> realIps = headers.get(X_REAL_IP);
-        if (!CollectionUtils.isEmpty(realIps)){
-            realIp = realIps.get(0);
+        // 取不到就从 x-real-ip 取, 这种情况对应着 网关前边有nginx
+        List<String> xRealIps;
+        if (StringUtils.isBlank(realIp) && !CollectionUtils.isEmpty(xRealIps = headers.get(X_REAL_IP))) {
+            realIp = xRealIps.get(0);
+        }
+
+        // 实在取不到, 就使用 tcp 创建连接时的 remoteAddr, 这时取到的可能是nginx地址
+        InetSocketAddress remoteAddress;
+        if (StringUtils.isBlank(realIp) && Objects.nonNull(remoteAddress = exchange.getRequest().getRemoteAddress())) {
+            realIp = remoteAddress.getHostString();
         }
         return realIp;
     }
