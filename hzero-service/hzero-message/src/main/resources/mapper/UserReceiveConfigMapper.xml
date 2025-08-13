@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.message.infra.mapper.UserReceiveConfigMapper">
+    <!-- 可根据自己的需求，是否要使用 -->
+    <resultMap id="BaseResultMap" type="org.hzero.message.domain.entity.UserReceiveConfig">
+        <result column="user_receive_id" property="userReceiveId" jdbcType="DECIMAL"/>
+        <result column="user_id" property="userId" jdbcType="DECIMAL"/>
+        <result column="receive_code" property="receiveCode" jdbcType="VARCHAR"/>
+        <result column="receive_type" property="receiveType" jdbcType="VARCHAR"/>
+        <result column="object_version_number" property="objectVersionNumber" jdbcType="DECIMAL"/>
+        <result column="creation_date" property="creationDate" jdbcType="DATE"/>
+        <result column="created_by" property="createdBy" jdbcType="DECIMAL"/>
+        <result column="last_updated_by" property="lastUpdatedBy" jdbcType="DECIMAL"/>
+        <result column="last_update_date" property="lastUpdateDate" jdbcType="DATE"/>
+    </resultMap>
+
+    <select id="listConfigByUserId" resultType="org.hzero.message.api.dto.UserReceiveConfigDTO">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        SELECT
+            hurc.user_receive_id,
+            hrc.parent_receive_code,
+            hrc.default_receive_type,
+            hurc.user_id,
+            hurc.receive_code,
+            hrct.receive_name,
+            hurc.receive_type,
+            hurc.tenant_id,
+            hrc.tenant_id config_tenant_id,
+            hurc.object_version_number
+        FROM
+            hmsg_user_receive_config hurc
+        JOIN hmsg_receive_config hrc ON hurc.receive_code = hrc.receive_code
+        JOIN hmsg_receive_config_tl hrct ON hrc.receive_id = hrct.receive_id AND hrct.lang = #{lang}
+        AND (hurc.tenant_id = hrc.tenant_id OR hrc.tenant_id = 0)
+        WHERE
+            hurc.user_id = #{userId}
+        AND hurc.tenant_id = #{tenantId}
+    </select>
+
+    <select id="selectParent" resultType="org.hzero.message.domain.entity.UserReceiveConfig">
+        SELECT
+        	hurcp.user_receive_id,
+        	hurcp.user_id,
+        	hurcp.receive_code,
+        	hurcp.receive_type
+        FROM
+        	hmsg_user_receive_config hurc
+        	JOIN hmsg_receive_config hrc ON hrc.receive_code = hurc.receive_code
+        	JOIN hmsg_receive_config hrcp ON hrcp.receive_id = hrc.parent_receive_id
+        	JOIN hmsg_user_receive_config hurcp ON hurcp.receive_code = hrcp.receive_code
+        WHERE hurc.user_id = #{userId}
+        	AND hurc.receive_code = #{receiveCode}
+    </select>
+
+    <select id="selectChildren" resultType="org.hzero.message.domain.entity.UserReceiveConfig">
+        SELECT
+        	hurcp.user_receive_id,
+        	hurcp.user_id,
+        	hurcp.receive_code,
+        	hurcp.receive_type
+        FROM
+        	hmsg_user_receive_config hurc
+        	JOIN hmsg_receive_config hrc ON hrc.receive_code = hurc.receive_code
+        	JOIN hmsg_receive_config hrcp ON hrc.receive_id = hrcp.parent_receive_id
+        	JOIN hmsg_user_receive_config hurcp ON hurcp.receive_code = hrcp.receive_code
+        WHERE hurc.user_id = #{userId}
+        	AND hurc.receive_code = #{receiveCode}
+    </select>
+
+    <select id="getUserInfo" resultType="org.hzero.message.domain.vo.UserInfoVO">
+        SELECT
+        	iu.id,
+        	iu.phone,
+        	iu.email,
+        	hhse.userid open_user_id
+        FROM
+        	iam_user iu
+        	LEFT JOIN hpfm_employee_user heu ON heu.user_id = iu.id
+        	LEFT JOIN hpfm_employee he ON he.employee_id = heu.employee_id
+        	LEFT JOIN hpfm_hr_sync_employee hhse on hhse.employee_num = he.employee_num
+        	AND hhse.tenant_id = he.tenant_id
+        WHERE
+        	iu.id = #{userId}
+        	AND ( heu.tenant_id = #{tenantId} OR heu.tenant_id IS NULL)
+    </select>
+    <select id="listAllTenantId" resultType="java.lang.Long">
+        SELECT
+            hurc.tenant_id
+        FROM hmsg_user_receive_config hurc
+        GROUP BY
+            hurc.tenant_id
+    </select>
+
+    <delete id="deleteByCode">
+        DELETE FROM hmsg_user_receive_config WHERE receive_code = #{receiveCode}
+    </delete>
+
+</mapper>

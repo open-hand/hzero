@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.admin.infra.mapper.MaintainTableMapper">
+
+    <select id="listMaintainTable" resultType="org.hzero.admin.domain.entity.MaintainTable">
+        SELECT
+        mt.maintain_table_id,
+        mt.maintain_id,
+        mt.service_code,
+        mt.table_name,
+        mt.maintain_mode,
+        mt.object_version_number
+        FROM hadm_maintain_table mt
+        <where>
+            mt.maintain_id = #{maintainId}
+            <if test="serviceCode != null and serviceCode != ''">
+                <bind name="serviceCodeLike" value="'%' + serviceCode + '%'"/>
+                AND mt.service_code LIKE #{serviceCodeLike}
+            </if>
+            <if test="tableName != null and tableName != ''">
+                <bind name="tableNameLike" value="'%' + tableName + '%'"/>
+                AND mt.table_name LIKE #{tableNameLike}
+            </if>
+        </where>
+    </select>
+
+    <select id="selectMaintainTables" resultType="org.hzero.admin.domain.entity.MaintainTable">
+        SELECT
+        mt.maintain_table_id,
+        mt.maintain_id,
+        mt.service_code,
+        mt.table_name,
+        mt.maintain_mode,
+        mt.object_version_number
+        FROM hadm_maintain_table mt
+        <where>
+            <if test="maintainId != null and maintainId != ''">
+                AND mt.maintain_id = #{maintainId}
+            </if>
+            <if test="serviceCode != null and serviceCode != ''">
+                AND mt.service_code = #{serviceCode}
+            </if>
+        </where>
+    </select>
+
+    <select id="selectMaintainTable" resultType="org.hzero.admin.domain.entity.MaintainTable">
+        SELECT
+        mt.maintain_table_id,
+        mt.maintain_id,
+        mt.service_code,
+        mt.table_name,
+        mt.maintain_mode,
+        mt.object_version_number
+        FROM hadm_maintain_table mt
+        <where>
+            <if test="maintainId != null and maintainId != ''">
+                AND mt.maintain_id = #{maintainId}
+            </if>
+            <if test="serviceCode != null and serviceCode != ''">
+                AND mt.service_code = #{serviceCode}
+            </if>
+            <if test="tableName != null and tableName != ''">
+                AND mt.table_name = #{tableName}
+            </if>
+        </where>
+    </select>
+
+</mapper>

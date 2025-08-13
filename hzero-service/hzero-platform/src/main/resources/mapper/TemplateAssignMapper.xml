@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.platform.infra.mapper.TemplateAssignMapper">
+    <!-- 可根据自己的需求，是否要使用 -->
+    <resultMap id="BaseResultMap" type="org.hzero.platform.domain.entity.TemplateAssign">
+        <result column="template_assign_id" property="templateAssignId" jdbcType="DECIMAL"/>
+        <result column="source_type" property="sourceType" jdbcType="VARCHAR"/>
+        <result column="source_key" property="sourceKey" jdbcType="VARCHAR"/>
+        <result column="template_id" property="templateId" jdbcType="DECIMAL"/>
+        <result column="tenant_id" property="tenantId" jdbcType="DECIMAL"/>
+        <result column="default_flag" property="defaultFlag" jdbcType="DECIMAL"/>
+        <result column="object_version_number" property="objectVersionNumber" jdbcType="DECIMAL"/>
+        <result column="creation_date" property="creationDate" jdbcType="DATE"/>
+        <result column="created_by" property="createdBy" jdbcType="DECIMAL"/>
+        <result column="last_updated_by" property="lastUpdatedBy" jdbcType="DECIMAL"/>
+        <result column="last_update_date" property="lastUpdateDate" jdbcType="DATE"/>
+    </resultMap>
+    <select id="selectTemplateAssigns" resultType="org.hzero.platform.api.dto.TemplateAssignDTO">
+        SELECT
+            hta.template_assign_id,
+            hta.source_type,
+            hta.source_key,
+            hta.template_id,
+            hta.tenant_id,
+            hta.default_flag,
+            ht.template_code,
+            ht.template_name,
+            ht.template_avatar,
+            ht.template_path
+          FROM hpfm_template_assign hta
+          JOIN hpfm_template ht ON hta.template_id = ht.template_id
+          WHERE hta.source_type = #{sourceType}
+          AND hta.source_key = #{sourceKey}
+          AND hta.tenant_id = #{tenantId}
+    </select>
+    <select id="selectAssignableTemplates" resultType="org.hzero.platform.api.dto.TemplateAssignDTO">
+          SELECT
+            ht.template_id,
+            ht.template_code,
+            ht.template_name,
+            ht.template_path
+          FROM hpfm_template ht
+          WHERE 1=1
+          AND (ht.template_level_code = 'SITE' OR (ht.tenant_id = #{templates.tenantId} AND ht.template_level_code = 'TENANT'))
+          AND ht.enabled_flag = 1
+          AND NOT EXISTS(
+            SELECT 1
+              FROM hpfm_template_assign hta
+             WHERE hta.template_id = ht.template_id
+             AND hta.source_type = #{templates.sourceType}
+             AND hta.source_key = #{templates.sourceKey}
+             AND hta.tenant_id = #{templates.tenantId}
+          )
+        <if test="templates.templateCode != null">
+            <bind name="templateCodeLike" value="'%'+templates.templateCode+'%'" />
+            AND ht.template_code LIKE #{templateCodeLike}
+        </if>
+        <if test="templates.templateName != null">
+            <bind name="templateNameLike" value="'%'+templates.templateName+'%'" />
+            AND ht.template_name LIKE #{templateNameLike}
+        </if>
+    </select>
+</mapper>

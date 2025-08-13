@@ -1,0 +1,54 @@
+@import '~hzero-ui/es/style/themes/default.less';
+
+.popover {
+  width: 361px;
+  :global {
+    .ant-popover-inner-content {
+      padding: 0;
+    }
+    .ant-popover-arrow {
+      background-color: #fafafa;
+    }
+  }
+}
+
+.noticeButton {
+  cursor: pointer;
+  display: inline-block;
+  transition: all 0.3s;
+  padding-left: 10px;
+  &.hasCount {
+    padding-right: 10px;
+  }
+  :global {
+    .ant-badge-count {
+      height: 16px;
+      line-height: 16px;
+      padding: 0 6px;
+    }
+  }
+}
+
+.icon {
+  // font-size: 16px;
+  // padding: 4px 0 4px 12px;
+  width: 16px;
+  height: 16px;
+  background-image: url('../../assets/icon-nav-message.svg');
+  background-repeat: no-repeat;
+  &:hover,
+  &-active {
+    background-image: url('../../assets/icon-nav-message-hover.svg');
+  }
+}
+
+.tabs {
+  :global {
+    .ant-tabs-nav-scroll {
+      text-align: center;
+    }
+    .ant-tabs-bar {
+      margin-bottom: 4px;
+    }
+  }
+}

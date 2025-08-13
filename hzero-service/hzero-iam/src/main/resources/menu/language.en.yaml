@@ -1,0 +1,29 @@
+"iam": "platform settings"
+# site
+"iam.organization": "Organization"
+"iam.menu-management": "Menu Setting"
+"iam.role": "Role"
+"iam.member-role-global": "Role Assignment"
+"iam.root-user": "Root User Setting"
+
+"microservice": "Microservice"
+"microservice.route-management": "Route Management"
+
+"rentsetting": "Organization settings"
+# organization
+"rentsetting.project": "Project"
+"rentsetting.user": "User"
+"rentsetting.member-role-organization": "Role Assignment"
+"rentsetting.client": "Client"
+"rentsetting.ldap": "LDAP"
+"rentsetting.password-policy": "Password Policy"
+
+"prosetting": "Project Manage"
+# project
+"prosetting.proManage": "Project Manage"
+"prosetting.member-role-project": "Role Assignment"
+
+"usercenter": "Profile"
+# user
+"usercenter.user-info": "User Information Maintenance"
+"usercenter.password": "Password Modification"

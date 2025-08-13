@@ -1,0 +1,21 @@
+@import './mixins.less';
+
+@hzeroSideLayoutPrefix: hzero-side-layout;
+@hzeroSideLayoutCollapsedWidth: 64px;
+
+:global {
+  .side-layout(@hzeroSideLayoutPrefix);
+  // override normal-header-search
+  .@{hzeroSideLayoutPrefix}-container-collapsed {
+    .@{hzeroSideLayoutPrefix}-body {
+      .@{hzeroSideLayoutPrefix}-nav {
+        width: @hzeroSideLayoutCollapsedWidth;
+        transition: width 0.2s;
+
+        &-normal-search {
+          height: @hzeroSideLayoutCollapsedWidth;
+        }
+      }
+    }
+  }
+}

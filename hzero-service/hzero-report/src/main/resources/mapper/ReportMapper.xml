@@ -1,0 +1,454 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.report.infra.mapper.ReportMapper">
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap id="BaseResultMap" type="org.hzero.report.domain.entity.Report">
+        <result column="report_id" property="reportId" jdbcType="DECIMAL"/>
+        <result column="report_uuid" property="reportUuid" jdbcType="VARCHAR"/>
+        <result column="report_type_code" property="reportTypeCode" jdbcType="VARCHAR"/>
+        <result column="report_code" property="reportCode" jdbcType="VARCHAR"/>
+        <result column="report_name" property="reportName" jdbcType="VARCHAR"/>
+        <result column="dataset_id" property="datasetId" jdbcType="DECIMAL"/>
+        <result column="dataset_name" property="datasetName" jdbcType="VARCHAR"/>
+        <result column="meta_columns" property="metaColumns" jdbcType="VARCHAR"/>
+        <result column="options" property="options" jdbcType="VARCHAR"/>
+        <result column="template_type_code" property="templateTypeCode" jdbcType="VARCHAR"/>
+        <result column="enabled_flag" property="enabledFlag" jdbcType="DECIMAL"/>
+        <result column="order_seq" property="orderSeq" jdbcType="DECIMAL"/>
+        <result column="remark" property="remark" jdbcType="VARCHAR"/>
+        <result column="tenant_id" property="tenantId" jdbcType="DECIMAL"/>
+        <result column="tenant_name" property="tenantName" jdbcType="VARCHAR"/>
+        <result column="query_params" property="queryParams" jdbcType="VARCHAR"/>
+        <result column="page_flag" property="pageFlag" jdbcType="DECIMAL"/>
+        <result column="async_flag" property="asyncFlag" jdbcType="DECIMAL"/>
+        <result column="limit_rows" property="limitRows" jdbcType="DECIMAL"/>
+        <result column="sql_text" property="sqlText" jdbcType="VARCHAR"/>
+        <result column="datasource_code" property="datasourceCode" jdbcType="DECIMAL"/>
+        <result column="query_params" property="queryParams" jdbcType="VARCHAR"/>
+        <result column="object_version_number" property="objectVersionNumber" jdbcType="DECIMAL"/>
+        <result column="creation_date" property="creationDate" jdbcType="DATE"/>
+        <result column="created_by" property="createdBy" jdbcType="DECIMAL"/>
+        <result column="last_updated_by" property="lastUpdatedBy" jdbcType="DECIMAL"/>
+        <result column="last_update_date" property="lastUpdateDate" jdbcType="DATE"/>
+    </resultMap>
+
+    <!-- 获取报表定义列表 -->
+    <select id="selectReportDesigners" parameterType="org.hzero.report.domain.entity.Report" resultType="org.hzero.report.domain.entity.Report">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()" />
+        SELECT
+            hr.report_id,
+            hr.report_uuid,
+            hr.order_seq,
+            hr.report_code,
+            hrt.report_name,
+            hr.report_type_code,
+            hd.dataset_name,
+            hr.tenant_id,
+            ht.tenant_name,
+            hr.enabled_flag,
+            hr.remark,
+            hr.object_version_number
+        FROM
+            hrpt_report hr
+        LEFT JOIN hrpt_dataset hd ON hr.dataset_id = hd.dataset_id
+        JOIN hpfm_tenant_tl ht ON hr.tenant_id = ht.tenant_id AND ht.lang = #{lang}
+        LEFT JOIN hrpt_report_tl hrt ON hrt.report_id = hr.report_id AND hrt.lang = #{lang}
+        <where>
+            <if test="reportCode != null and reportCode != ''">
+                <bind name="reportCodeLike" value="'%' + reportCode + '%'" />
+                AND hr.report_code LIKE #{reportCodeLike}
+            </if>
+            <if test="reportName != null and reportName != ''">
+                <bind name="reportNameLike" value="'%' + reportName + '%'" />
+                AND hrt.report_name LIKE #{reportNameLike}
+            </if>
+            <if test="reportTypeCode != null and reportTypeCode != ''">
+                AND hr.report_type_code = #{reportTypeCode}
+            </if>
+            <if test="tenantId != null">
+                AND hr.tenant_id = #{tenantId}
+            </if>
+        </where>
+    </select>
+
+    <select id="selectReportById" parameterType="org.hzero.report.domain.entity.Report" resultType="org.hzero.report.domain.entity.Report">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()" />
+        SELECT
+            hr.report_id,
+            hr.report_uuid,
+            hr.report_type_code,
+            hr.report_code,
+            hrt.report_name,
+            hr.dataset_id,
+            hr.meta_columns,
+            hr.options,
+            hr.template_type_code,
+            hr.page_flag,
+            hr.async_flag,
+            hr.limit_rows,
+            hr.enabled_flag,
+            hr.order_seq,
+            hr.remark,
+            hr.tenant_id
+        FROM
+            hrpt_report hr
+        LEFT JOIN hrpt_dataset hd ON hr.dataset_id = hd.dataset_id
+        LEFT JOIN hrpt_report_tl hrt ON hrt.report_id = hr.report_id AND hrt.lang = #{lang}
+        WHERE
+        EXISTS (
+        SELECT
+            1
+        FROM
+            hrpt_report_permission hrp
+        WHERE
+            hrp.report_id = hr.report_id
+        AND hrp.tenant_id = #{tenantId}
+        AND hr.report_id = #{reportId}
+        AND (
+        ( hrp.start_date &lt;= #{nowDate} AND hrp.end_date &gt;= #{nowDate} )
+        OR ( hrp.start_date &lt;= #{nowDate} AND hrp.end_date IS NULL )
+        OR ( hrp.start_date IS NULL AND hrp.end_date &gt;= #{nowDate} )
+        OR ( hrp.start_date IS NULL AND hrp.end_date IS NULL )
+        )
+        )
+    </select>
+
+    <select id="selectTenantReportDesigners" parameterType="org.hzero.report.domain.entity.Report" resultType="org.hzero.report.domain.entity.Report">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()" />
+        ( SELECT
+        hr.report_id,
+        hr.order_seq,
+        hr.report_code,
+        hr.report_uuid,
+        hrt.report_name,
+        hr.report_type_code,
+        hd.dataset_name,
+        hr.tenant_id,
+        ht.tenant_name,
+        hr.enabled_flag,
+        hr.remark,
+        hr.object_version_number
+        FROM
+        hrpt_report hr
+        LEFT JOIN hrpt_dataset hd ON hr.dataset_id = hd.dataset_id
+        JOIN hpfm_tenant_tl ht ON hr.tenant_id = ht.tenant_id AND ht.lang = #{lang}
+        LEFT JOIN hrpt_report_tl hrt ON hrt.report_id = hr.report_id AND hrt.lang = #{lang}
+        WHERE
+        hr.tenant_id = #{tenantId}
+        <if test="reportCode != null and reportCode != ''">
+            <bind name="reportCodeLike" value="'%' + reportCode + '%'" />
+            AND hr.report_code LIKE #{reportCodeLike}
+        </if>
+        <if test="reportName != null and reportName != ''">
+            <bind name="reportNameLike" value="'%' + reportName + '%'" />
+            AND hrt.report_name LIKE #{reportNameLike}
+        </if>
+        <if test="reportTypeCode != null and reportTypeCode != ''">
+            AND hr.report_type_code = #{reportTypeCode}
+        </if>
+        ) UNION ALL
+        (
+        SELECT
+        hr.report_id,
+        hr.order_seq,
+        hr.report_code,
+        hr.report_uuid,
+        hrt.report_name,
+        hr.report_type_code,
+        hd.dataset_name,
+        hr.tenant_id,
+        ht.tenant_name,
+        hr.enabled_flag,
+        hr.remark,
+        hr.object_version_number
+        FROM
+        hrpt_report hr
+        LEFT JOIN hrpt_dataset hd ON hr.dataset_id = hd.dataset_id
+        JOIN hpfm_tenant_tl ht ON hr.tenant_id = ht.tenant_id AND ht.lang = #{lang}
+        LEFT JOIN hrpt_report_tl hrt ON hrt.report_id = hr.report_id AND hrt.lang = #{lang}
+        WHERE
+        EXISTS (
+        SELECT
+        1
+        FROM
+        hrpt_report_permission hrp
+        WHERE
+        hrp.report_id = hr.report_id
+        AND hrp.tenant_id = #{tenantId}
+        AND hr.report_code NOT IN ( SELECT t.report_code FROM hrpt_report t WHERE t.tenant_id = #{tenantId} )
+        AND (
+        ( hrp.start_date &lt;= #{nowDate} AND hrp.end_date &gt;= #{nowDate} )
+        OR ( hrp.start_date &lt;= #{nowDate} AND hrp.end_date IS NULL )
+        OR ( hrp.start_date IS NULL AND hrp.end_date &gt;= #{nowDate} )
+        OR ( hrp.start_date IS NULL AND hrp.end_date IS NULL )
+        )
+        <if test="reportCode != null and reportCode != ''">
+            <bind name="reportCodeLike" value="'%' + reportCode + '%'" />
+            AND hr.report_code LIKE #{reportCodeLike}
+        </if>
+        <if test="reportName != null and reportName != ''">
+            <bind name="reportNameLike" value="'%' + reportName + '%'" />
+            AND hrt.report_name LIKE #{reportNameLike}
+        </if>
+        <if test="reportTypeCode != null and reportTypeCode != ''">
+            AND hr.report_type_code = #{reportTypeCode}
+        </if>
+        )
+        )
+    </select>
+
+     <!-- 获取报表定义明细 -->
+    <select id="selectReportDesigner" resultType="org.hzero.report.domain.entity.Report">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()" />
+        SELECT
+        	hr.report_id,
+        	hr.report_code,
+        	hrt.report_name,
+        	hr.report_type_code,
+        	hr.dataset_id,
+        	hd.dataset_name,
+        	hr.options,
+        	hr.template_type_code,
+        	hr.page_flag,
+        	hr.async_flag,
+        	hr.limit_rows,
+        	hr.meta_columns,
+        	hr.order_seq,
+        	hr.tenant_id,
+        	ht.tenant_name,
+        	hr.enabled_flag,
+        	hr.remark,
+        	hr.object_version_number,
+            hr.export_type
+        FROM
+            hrpt_report hr
+        LEFT JOIN hrpt_dataset hd ON hr.dataset_id = hd.dataset_id
+        JOIN hpfm_tenant_tl ht ON hr.tenant_id = ht.tenant_id AND ht.lang = #{lang}
+        LEFT JOIN hrpt_report_tl hrt ON hrt.report_id = hr.report_id AND hrt.lang = #{lang}
+        WHERE hr.report_id = #{reportId}
+        <if test="tenantId != null">
+            AND hr.tenant_id = #{tenantId}
+        </if>
+    </select>
+
+    <!-- 查询报表汇总 -->
+    <select id="selectReports" resultType="org.hzero.report.domain.entity.Report">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()" />
+        SELECT
+            hr.report_id,
+            hr.report_uuid,
+            hr.order_seq,
+            hr.report_type_code,
+            hr.report_code,
+            hrt.report_name,
+            hr.remark,
+            hr.enabled_flag,
+            hr.object_version_number
+        FROM
+            hrpt_report hr
+        LEFT JOIN hrpt_report_tl hrt ON hrt.report_id = hr.report_id AND hrt.lang = #{lang}
+        WHERE
+            hr.enabled_flag = 1
+            AND EXISTS (
+        SELECT
+            1
+        FROM
+            hrpt_report_permission hrp
+        WHERE
+            hr.report_id = hrp.report_id
+        AND hrp.tenant_id = #{tenantId}
+        AND ( hrp.role_id IN
+            <foreach collection="roleIds" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        OR hrp.role_id = -1)
+        AND (
+        ( hrp.start_date &lt;= #{nowDate} AND hrp.end_date &gt;= #{nowDate} )
+        OR ( hrp.start_date &lt;= #{nowDate} AND hrp.end_date IS NULL )
+        OR ( hrp.start_date IS NULL AND hrp.end_date &gt;= #{nowDate} )
+        OR ( hrp.start_date IS NULL AND hrp.end_date IS NULL )
+        )
+        <if test="report.reportCode != null and report.reportCode != ''">
+            <bind name="reportCodeLike" value="'%' + report.reportCode + '%'" />
+            AND hr.report_code LIKE #{reportCodeLike}
+        </if>
+        <if test="report.reportName != null and report.reportName != ''">
+            <bind name="reportNameLike" value="'%' + report.reportName + '%'" />
+            AND hrt.report_name LIKE #{reportNameLike}
+        </if>
+        <if test="report.reportTypeCode != null and report.reportTypeCode != ''">
+            AND hr.report_type_code = #{report.reportTypeCode}
+        </if>
+        )
+        ORDER BY
+            hr.order_seq ASC
+    </select>
+
+    <!-- 查询报表详细 -->
+    <select id="selectReport" parameterType="java.lang.String" resultType="org.hzero.report.domain.entity.Report">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()" />
+        SELECT
+            hr.report_id,
+            hr.dataset_id,
+            hr.report_uuid,
+            hr.order_seq,
+            hr.report_type_code,
+            hr.template_type_code,
+            hr.report_code,
+            hrt.report_name,
+            hr.options,
+            hr.meta_columns,
+            hr.page_flag,
+            hr.async_flag,
+            hr.limit_rows,
+            hr.remark,
+            hr.enabled_flag,
+            hr.tenant_id,
+            hd.sql_text,
+            hd.query_params,
+            hd.datasource_code
+        FROM
+            hrpt_report hr
+        LEFT JOIN hrpt_dataset hd ON hr.dataset_id = hd.dataset_id
+        LEFT JOIN hrpt_report_tl hrt ON hrt.report_id = hr.report_id AND hrt.lang = #{lang}
+        WHERE
+        EXISTS (
+        SELECT
+            1
+        FROM
+            hrpt_report_permission hrp
+        WHERE
+            hr.report_id = hrp.report_id
+        AND hrp.tenant_id = #{tenantId}
+        AND ( hrp.role_id IN
+        <foreach collection="roleIds" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        OR hrp.role_id = -1)
+        AND (
+        ( hrp.start_date &lt;= #{nowDate} AND hrp.end_date &gt;= #{nowDate} )
+        OR ( hrp.start_date &lt;= #{nowDate} AND hrp.end_date IS NULL )
+        OR ( hrp.start_date IS NULL AND hrp.end_date &gt;= #{nowDate} )
+        OR ( hrp.start_date IS NULL AND hrp.end_date IS NULL )
+        )
+        <if test="reportUuid != null and reportUuid != ''">
+            AND hr.report_uuid = #{reportUuid}
+        </if>
+        <if test="reportCode != null and reportCode != ''">
+            AND hr.report_code = #{reportCode}
+        </if>
+        <if test="reportTenantId != null">
+            AND hr.tenant_id = #{reportTenantId}
+        </if>
+        )
+    </select>
+
+    <!-- 查询报表详细 -->
+    <select id="selectReportIgnorePermission" parameterType="java.lang.String" resultType="org.hzero.report.domain.entity.Report">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()" />
+        SELECT
+            hr.report_id,
+            hr.dataset_id,
+            hr.report_uuid,
+            hr.order_seq,
+            hr.report_type_code,
+            hr.template_type_code,
+            hr.report_code,
+            hrt.report_name,
+            hr.options,
+            hr.meta_columns,
+            hr.page_flag,
+            hr.async_flag,
+            hr.limit_rows,
+            hr.remark,
+            hr.enabled_flag,
+            hr.tenant_id,
+            hd.sql_text,
+            hd.query_params,
+            hd.datasource_code
+        FROM
+            hrpt_report hr
+        LEFT JOIN hrpt_dataset hd ON hr.dataset_id = hd.dataset_id
+        LEFT JOIN hrpt_report_tl hrt ON hrt.report_id = hr.report_id AND hrt.lang = #{lang}
+       <where>
+            <if test="reportUuid != null and reportUuid != ''">
+                AND hr.report_uuid = #{reportUuid}
+            </if>
+            <if test="reportCode != null and reportCode != ''">
+                AND hr.report_code = #{reportCode}
+            </if>
+            <if test="tenantId != null">
+                AND hr.tenant_id = #{tenantId}
+            </if>
+       </where>
+    </select>
+
+    <select id="selectReportMateData" parameterType="java.lang.String" resultType="org.hzero.report.domain.entity.Report">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()" />
+        SELECT
+            hr.report_id,
+            hr.report_code,
+            hr.report_uuid,
+            hrt.report_name,
+            hr.report_type_code,
+            hr.template_type_code,
+            hr.dataset_id,
+            hr.page_flag,
+            hr.export_type
+        FROM
+            hrpt_report hr
+        LEFT JOIN hrpt_report_tl hrt ON hrt.report_id = hr.report_id AND hrt.lang = #{lang}
+        WHERE
+        EXISTS (
+        SELECT
+            1
+        FROM
+            hrpt_report_permission hrp
+        WHERE
+            hr.report_id = hrp.report_id
+        AND hrp.tenant_id = #{tenantId}
+        AND ( hrp.role_id IN
+        <foreach collection="roleIds" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        OR hrp.role_id = -1)
+        AND (
+        ( hrp.start_date &lt;= #{nowDate} AND hrp.end_date &gt;= #{nowDate} )
+        OR ( hrp.start_date &lt;= #{nowDate} AND hrp.end_date IS NULL )
+        OR ( hrp.start_date IS NULL AND hrp.end_date &gt;= #{nowDate} )
+        OR ( hrp.start_date IS NULL AND hrp.end_date IS NULL )
+        )
+        <if test="reportUuid != null and reportUuid != ''">
+            AND hr.report_uuid = #{reportUuid}
+        </if>
+        <if test="reportCode != null and reportCode != ''">
+            AND hr.report_code = #{reportCode}
+        </if>
+        <if test="reportTenantId != null">
+            AND hr.tenant_id = #{reportTenantId}
+        </if>
+        )
+    </select>
+
+    <select id="listReportByDataSet" resultType="org.hzero.report.domain.entity.Report">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()" />
+        SELECT
+            hr.report_id,
+            hr.dataset_id,
+            hr.report_code,
+            hrt.report_name,
+            hr.enabled_flag,
+            hr.tenant_id,
+            ht.tenant_name
+        FROM
+            hrpt_report hr
+        JOIN hpfm_tenant_tl ht ON ht.tenant_id = hr.tenant_id AND ht.lang = #{lang}
+        LEFT JOIN hrpt_report_tl hrt ON hrt.report_id = hr.report_id AND hrt.lang = #{lang}
+        WHERE
+            hr.dataset_id = #{datasetId}
+        <if test="tenantId != null">
+            AND hr.tenant_id = #{tenantId}
+        </if>
+    </select>
+
+</mapper>

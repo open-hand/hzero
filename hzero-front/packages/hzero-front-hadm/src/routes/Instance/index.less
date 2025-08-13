@@ -1,0 +1,116 @@
+:global {
+  .c7n-instance {
+    display: flex;
+    width: 100%;
+    height: 100%-24px;
+    padding: 0;
+    border-top: 0.01rem solid rgba(0, 0, 0, 0.12);
+    .hidden-button {
+      display: inline-block;
+      cursor: pointer;
+      width: 22px;
+      height: 22px;
+      background-color: #1bc3cc;
+      color: white;
+      text-align: center;
+      line-height: 18px;
+      margin-left: 11px;
+      border-radius: 3px;
+    }
+    .c7n-iam-apitest {
+      &-bar {
+        //position: fixed;
+        width: 22.5px;
+        border-right: 1px solid rgba(0, 0, 0, 0.12);
+        &-button {
+          cursor: pointer;
+          width: 22px;
+          height: 22px;
+          background-color: #1bc3cc;
+          color: white;
+          text-align: center;
+          line-height: 18px;
+          border-radius: 3px;
+          margin-bottom: 10px;
+        }
+        p {
+          cursor: pointer;
+          background: rgba(0, 0, 0, 0.08);
+          text-align: center;
+          color: rgba(0, 0, 0, 0.65);
+          font-size: 13px;
+          font-weight: 400;
+          letter-spacing: 0.01em;
+          line-height: 20px;
+          margin-bottom: 24px;
+        }
+      }
+    }
+    .c7n-tree-switcher + .c7n-tree-node-content-wrapper {
+      .tree-title {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        max-width: 1.95rem;
+        display: inline-block;
+        position: relative;
+        top: -0.01rem;
+        .icon {
+          position: relative;
+          top: -0.02rem;
+        }
+      }
+    }
+    &-tree {
+      width: 2.3rem;
+      padding: 0.1rem;
+      box-sizing: content-box;
+      border-right: 0.01rem solid rgba(0, 0, 0, 0.12);
+      overflow: auto;
+      flex-shrink: 0;
+      .c7n-tree {
+        .c7n-tree-switcher-noop {
+          width: 0.05rem;
+          cursor: default;
+        }
+        &-title {
+          .tree-title {
+            display: flex;
+            align-items: center;
+            line-height: 0.24rem;
+            color: rgba(0, 0, 0, 0.65);
+            .icon {
+              font-size: 0.14rem;
+              margin-right: 0.05rem;
+            }
+          }
+        }
+      }
+      .c7n-input-has-border.c7n-input-wrapper:before {
+        background: rgba(0, 0, 0, 0.06);
+        border: none;
+      }
+
+      .c7n-input-wrapper {
+        margin-bottom: 0;
+      }
+
+      .c7n-input-rendered-wrapper {
+        padding-left: 10px;
+      }
+
+      .c7n-input-prefix {
+        left: 8px;
+      }
+    }
+    &-content {
+      flex: 1;
+      flex-direction: column;
+      overflow-x: hidden;
+      overflow-y: auto;
+      .description {
+        display: none;
+      }
+    }
+  }
+}

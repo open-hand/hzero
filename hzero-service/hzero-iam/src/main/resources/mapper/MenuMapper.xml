@@ -1,0 +1,1593 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.iam.infra.mapper.MenuMapper">
+    <resultMap id="MenuMap" type="org.hzero.iam.domain.entity.Menu">
+        <id column="id" property="id"/>
+        <result column="h_inherit_flag" property="inheritFlag"/>
+        <result column="h_create_flag" property="createFlag"/>
+        <result column="code" property="code"/>
+        <result column="name" property="name"/>
+        <result column="h_permission_type" property="permissionType"/>
+        <result column="h_controller_type" property="controllerType"/>
+        <result column="h_quick_index" property="quickIndex"/>
+        <result column="fd_level" property="level"/>
+        <result column="parent_id" property="parentId"/>
+        <result column="type" property="type"/>
+        <result column="sort" property="sort"/>
+        <result column="is_default" property="isDefault"/>
+        <result column="icon" property="icon"/>
+        <result column="route" property="route"/>
+        <result column="h_custom_flag" property="customFlag"/>
+        <result column="h_tenant_id" property="tenantId"/>
+        <result column="h_enabled_flag" property="enabledFlag"/>
+        <result column="h_description" property="description"/>
+        <result column="h_level_path" property="levelPath"/>
+        <result column="h_virtual_flag" property="virtualFlag"/>
+        <result column="edit_detail_flag" property="editDetailFlag"/>
+        <result column="new_subnode_flag" property="newSubnodeFlag"/>
+        <result column="ps_leaf_flag" property="psLeafFlag"/>
+        <result column="checked_flag" property="checkedFlag"/>
+        <result column="parent_name" property="parentName"/>
+        <result column="zh_name" property="zhName"/>
+        <result column="en_name" property="enName"/>
+        <result column="level_meaning" property="levelMeaning"/>
+        <result column="type_meaning" property="typeMeaning"/>
+        <result column="shield_flag" property="shieldFlag"/>
+        <result column="sec_grp_acl_id" property="secGrpAclId"/>
+        <result column="tenant_name" property="tenantName"/>
+        <result column="root_node" property="rootNode"/>
+    </resultMap>
+
+    <resultMap id="MenuMapDetail" type="org.hzero.iam.domain.entity.Menu">
+        <id column="id" property="id"/>
+        <result column="code" property="code"/>
+        <result column="name" property="name"/>
+        <result column="h_permission_type" property="permissionType"/>
+        <result column="h_controller_type" property="controllerType"/>
+        <result column="h_quick_index" property="quickIndex"/>
+        <result column="fd_level" property="level"/>
+        <result column="parent_id" property="parentId"/>
+        <result column="type" property="type"/>
+        <result column="sort" property="sort"/>
+        <result column="is_default" property="isDefault"/>
+        <result column="icon" property="icon"/>
+        <result column="route" property="route"/>
+        <result column="h_custom_flag" property="customFlag"/>
+        <result column="h_tenant_id" property="tenantId"/>
+        <result column="h_enabled_flag" property="enabledFlag"/>
+        <result column="h_description" property="description"/>
+        <result column="h_level_path" property="levelPath"/>
+        <result column="h_virtual_flag" property="virtualFlag"/>
+        <result column="edit_detail_flag" property="editDetailFlag"/>
+        <result column="new_subnode_flag" property="newSubnodeFlag"/>
+        <result column="ps_leaf_flag" property="psLeafFlag"/>
+        <result column="checked_flag" property="checkedFlag"/>
+        <result column="parent_code" property="parentCode"/>
+        <result column="parent_tenant_id" property="parentTenantId"/>
+        <result column="root_node" property="rootNode"/>
+        <collection property="menuPermissions" resultMap="MenuPermissions"/>
+        <collection property="menuTls" resultMap="MenuTls"/>
+    </resultMap>
+
+    <resultMap id="MenuTls" type="org.hzero.iam.domain.entity.MenuTl">
+        <result column="lang" property="lang"/>
+        <result column="name" property="name"/>
+    </resultMap>
+
+    <resultMap id="MenuPermissions" type="org.hzero.iam.domain.entity.MenuPermission">
+        <result column="menu_id" property="menuId"/>
+        <result column="permission_code" property="permissionCode"/>
+    </resultMap>
+
+    <resultMap id="RolePermissionVO" type="org.hzero.iam.domain.vo.RolePermissionVO">
+        <result column="tenant_id" property="tenantId"/>
+        <result column="fd_level" property="level"/>
+        <result column="h_level_path" property="levelPath"/>
+    </resultMap>
+
+    <resultMap id="ExportMenuMap" type="org.hzero.iam.api.dto.MenuSiteExportDTO">
+        <result column="code" property="code"/>
+        <result column="name" property="name"/>
+        <result column="h_permission_type" property="permissionType"/>
+        <result column="h_quick_index" property="quickIndex"/>
+        <result column="fd_level" property="level"/>
+        <result column="type" property="type"/>
+        <result column="sort" property="sort"/>
+        <result column="is_default" property="isDefault"/>
+        <result column="icon" property="icon"/>
+        <result column="route" property="route"/>
+        <result column="h_custom_flag" property="customFlag"/>
+        <result column="h_enabled_flag" property="enabledFlag"/>
+        <result column="h_description" property="description"/>
+        <result column="h_level_path" property="levelPath"/>
+        <result column="h_virtual_flag" property="virtualFlag"/>
+        <result column="parent_name" property="parentName"/>
+    </resultMap>
+
+
+    <sql id="sqlSelectMenu">
+        select
+          im.id,
+          im.code as code,
+          (case when imt.name is not null then imt.name else im.name end ) as name,
+          im.h_quick_index as quick_index,
+          im.fd_level as "level",
+          im.parent_id,
+          im.type as type,
+          im.sort,
+          im.is_default,
+          im.icon,
+          im.route,
+          im.object_version_number,
+          im.h_custom_flag as custom_flag,
+          im.h_tenant_id as tenant_id,
+          im.h_description as description,
+          im.h_enabled_flag as enabled_flag,
+          im.h_virtual_flag as virtual_flag,
+          im.h_level_path as level_path
+    </sql>
+
+    <!-- 限制菜单范围, 标准/客户化/全部显示 -->
+    <sql id="sqlWhereMenuScopeFilter">
+        <if test="scope != null and scope != ''">
+            <choose>
+                <when test="scope == 'STANDARD'">
+                    and im.h_custom_flag = 0
+                </when>
+                <when test="scope == 'CUSTOM'">
+                    and im.h_custom_flag = 1 and im.h_tenant_id = #{tenantId}
+                </when>
+                <when test="scope == 'BOTH'">
+                    and (im.h_custom_flag = 0 or (im.h_custom_flag = 1 and im.h_tenant_id = #{tenantId}))
+                </when>
+                <otherwise>
+                    and 1 = 2
+                </otherwise>
+            </choose>
+        </if>
+    </sql>
+
+    <!-- 根据角色ID限制菜单 -->
+    <sql id="sqlSelectByRoleId">
+        and exists (
+            select 1
+            from iam_role ir
+            where ir.id = #{roleId}
+            and ir.is_enabled = 1
+            and ir.fd_level = im.fd_level
+            and (
+                ir.code in ('role/organization/default/administrator')
+                or ir.h_inherit_role_id = (select id from iam_role where code = 'role/organization/default/template/administrator')
+                or exists (
+                    select 1
+                    from iam_role_permission irp
+                    join iam_menu im_ps ON (im_ps.id = irp.permission_id )
+                    where 1=1
+                        and irp.role_id = ir.id
+                        and irp.type = 'PS'
+                        and im_ps.type = 'ps'
+                        and im_ps.fd_level = ir.fd_level
+                        and im_ps.h_enabled_flag = 1
+                        and ( irp.h_create_flag = 'Y' or irp.h_inherit_flag = 'Y' )
+                        and ( im_ps.h_level_path like concat( im.h_level_path, '|%' ) )
+                )
+            )
+        )
+    </sql>
+
+    <!-- 根据条件查询菜单 -->
+    <!-- 请勿轻易调整查询条件之间的位置，尤其是子查询逻辑。由于要通过角色权限筛选数据且要树形 所有使用到了子查询嵌套 -->
+    <select id="selectMenusByCondition" resultMap="MenuMap">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        <bind name="menuLabelDataType" value="@org.hzero.iam.domain.entity.Menu@LABEL_DATA_TYPE"/>
+        <bind name="menuDirs" value="@org.hzero.iam.domain.entity.Menu@MENU_DIR"/>
+
+        select
+            im.id,
+            im.code as code,
+            (case when imt_out.name is not null then imt_out.name else im.name end) name,
+            im.h_quick_index,
+            im.fd_level,
+            im.parent_id,
+            case when im.parent_id = 0 then 1 else 0 end as root_node,
+            im.type as type,
+            im.sort,
+            im.is_default,
+            im.icon,
+            im.route,
+            im.object_version_number,
+            im.h_custom_flag,
+            im.h_tenant_id,
+            im.h_description,
+            im.h_enabled_flag,
+            im.h_virtual_flag,
+            im.h_level_path,
+            hlvt.meaning level_meaning,
+            im.h_permission_type
+        from iam_menu im
+        join iam_menu_tl imt_out on imt_out.id = im.id and imt_out.lang = #{lang}
+        <if test="@org.apache.commons.collections4.CollectionUtils@isNotEmpty(labels)">
+            INNER JOIN hiam_label_rel hlr ON hlr.data_type = #{menuLabelDataType} AND hlr.data_id = im.id
+            INNER JOIN iam_label il ON hlr.label_id = il.id AND il.name IN
+            <foreach collection="labels" open="(" separator="," close=")" item="label">
+                #{label}
+            </foreach>
+        </if>
+        left join hpfm_lov_value hlv ON (hlv.lov_code = 'HIAM.RESOURCE_LEVEL' and hlv.value = im.fd_level)
+        left join hpfm_lov_value_tl hlvt on (hlv.lov_value_id = hlvt.lov_value_id and hlvt.lang = #{lang})
+        where
+        im.type in
+        <foreach collection="menuDirs" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        <choose>
+            <when test="queryLevel == 'site'">
+                and im.h_custom_flag = 0
+                <if test="level != null and level != ''">
+                    and im.fd_level = #{level}
+                </if>
+            </when>
+            <otherwise>
+                and im.fd_level = 'organization'
+                and (
+                    (im.h_custom_flag = 0 and im.h_tenant_id = 0)
+                    or (im.h_custom_flag = 1 and im.h_tenant_id = #{tenantId} <include refid="sqlSelectByRoleId" /> )
+                )
+            </otherwise>
+        </choose>
+        <if test="enabledFlag != null">
+            and im.h_enabled_flag = #{enabledFlag}
+        </if>
+        <if test="queryParam">
+            and exists (
+                <!-- 查询限制各个层次的菜单/目录，通过子查询 level_path 查询树形结构 -->
+                select 1
+                from iam_menu imi
+                join iam_menu_tl imit on imit.id = imi.id and imit.lang = #{lang}
+                where imi.type in
+                <foreach collection="menuDirs" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+                <if test="code != null and code != ''">
+                    <bind name="menuCodeLike" value="'%' + code + '%'"/>
+                    and imi.code like #{menuCodeLike}
+                </if>
+                <if test="name != null and name != ''">
+                    <bind name="menuNameLike" value="'%' + name + '%'"/>
+                    and imit.name like #{menuNameLike}
+                </if>
+                <if test="quickIndex != null and quickIndex != ''">
+                    <bind name="quickIndexLike" value="'%' + quickIndex + '%'"/>
+                    and imi.h_quick_index like #{quickIndexLike}
+                </if>
+                <if test="description != null and description != ''">
+                    <bind name="menuDescriptionLike" value="'%' + description + '%'"/>
+                    and imi.h_description like #{menuDescriptionLike}
+                </if>
+                <if test="(parentName != null and parentName != '') or (parentCode != null and parentCode != '')">
+                    and exists (
+                        select 1
+                        from iam_menu imip
+                        where imip.id = imi.parent_id
+                        <if test="parentCode != null and parentCode != ''">
+                            <bind name="menuParentCodeLike" value="'%' + parentCode + '%'"/>
+                            and imip.code like #{menuParentCodeLike}
+                        </if>
+                        <if test="parentName != null and parentName != ''">
+                            <bind name="menuParentNameLike" value="'%' + parentName + '%'"/>
+                            and imip.name like #{menuParentNameLike}
+                        </if>
+                    )
+                </if>
+                <choose>
+                    <when test="queryLevel == 'site'">
+                        and imi.h_custom_flag = 0
+                        <if test="level != null and level != ''">
+                            and imi.fd_level = #{level}
+                        </if>
+                    </when>
+                    <otherwise>
+                        and imi.fd_level = 'organization'
+                        and ( (imi.h_custom_flag = 1 and imi.h_tenant_id = #{tenantId})
+                            or (imi.h_custom_flag = 0 and imi.h_tenant_id = 0)
+                        )
+                    </otherwise>
+                </choose>
+                and (imi.h_level_path = im.h_level_path or imi.h_level_path like concat(im.h_level_path, '|%'))
+            )
+        </if>
+        <if test="@org.apache.commons.collections4.CollectionUtils@isNotEmpty(labels)">
+            <bind name="labelsSize" value="labels.size()"/>
+            AND (SELECT COUNT(1)
+                FROM hiam_label_rel hlr
+                INNER JOIN iam_label il ON hlr.label_id = il.id
+                WHERE hlr.data_type = #{menuLabelDataType}
+                AND hlr.data_id = im.id
+                AND il.name IN
+                <foreach collection="labels" open="(" separator="," close=")" item="label">
+                    #{label}
+                </foreach>
+            ) = #{labelsSize}
+        </if>
+        order by im.code
+    </select>
+
+
+    <!-- 询菜单详情 -->
+    <select id="selectMenusDetail" resultMap="MenuMapDetail">
+        select
+        im_out.id,
+        im_out.code as code,
+        im_out.name as name,
+        im_out.h_quick_index,
+        im_out.fd_level,
+        im_out.parent_id,
+        case when im_out.parent_id = 0 then 1 else 0 end as root_node,
+        im_out.type as type,
+        im_out.sort,
+        im_out.is_default,
+        im_out.icon,
+        im_out.route,
+        im_out.h_custom_flag,
+        im_out.h_description,
+        im_out.h_enabled_flag,
+        im_out.h_virtual_flag,
+        im_out.h_permission_type,
+        im_out.h_tenant_id,
+
+        <!-- 多语言信息 -->
+        imt.lang,
+        imt.name as name,
+        <!-- 权限code -->
+        imp.menu_id,
+        imp.permission_code,
+        <!-- 父节点code -->
+        imi.code as parent_code,
+        imi.h_tenant_id as parent_tenant_id
+        from iam_menu im_out
+        left join iam_menu_tl imt on imt.id = im_out.id
+        <!-- 菜单对应的权限-->
+        left join iam_menu_permission imp on imp.menu_id = im_out.id
+        left join iam_menu imi on imi.id = im_out.parent_id
+        where
+        <choose>
+            <when test="queryLevel == 'site'">
+                im_out.h_custom_flag = 0
+                <if test="level != null and level != ''">
+                    and im_out.fd_level = #{level}
+                </if>
+            </when>
+            <otherwise>
+                im_out.h_custom_flag = 1
+                and im_out.h_tenant_id = #{tenantId}
+                and im_out.fd_level = 'organization'
+            </otherwise>
+        </choose>
+        <if test="menuIds != null and menuIds.size()!=0">
+            and im_out.id in
+            <foreach item="item" collection="menuIds" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        order by im_out.code
+    </select>
+
+    <!-- 询菜单及其子菜单 -->
+    <select id="selectSubMenus" resultMap="MenuMap">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        SELECT
+        im_out.id,
+        im_out.code as code,
+        (case when imt.name is not null then imt.name else im_out.name end) name,
+        im_out.fd_level,
+        im_out.parent_id,
+        im_out.type as type,
+        im_out.sort,
+        im_out.h_description,
+        im_out.h_enabled_flag,
+        im_out.h_permission_type,
+        im_parent.code AS parent_code
+        FROM
+        iam_menu im_out
+        LEFT JOIN iam_menu_tl imt ON imt.id = im_out.id AND imt.lang = #{lang}
+        LEFT JOIN iam_menu im_parent ON im_parent.id = im_out.parent_id
+        WHERE 1=1
+        <choose>
+            <when test="queryLevel == 'site'">
+                <if test="level != null and level != ''">
+                    and im_out.fd_level = #{level}
+                </if>
+            </when>
+            <otherwise>
+                and im_out.h_custom_flag = 1
+                and im_out.h_tenant_id = #{tenantId}
+                and im_out.fd_level = 'organization'
+            </otherwise>
+        </choose>
+        AND EXISTS (
+        SELECT
+        1
+        FROM
+        iam_menu im_in
+        WHERE
+        im_in.id = #{id}
+        AND (im_out.h_level_path LIKE concat(im_in.h_level_path, '|%') OR im_out.id = im_in.id)
+        )
+    </select>
+
+
+    <!-- 查询角色菜单 -->
+    <select id="selectRoleMenus" resultMap="MenuMap">
+        <bind name="menuLabelDataType" value="@org.hzero.iam.domain.entity.Menu@LABEL_DATA_TYPE"/>
+        <bind name="menuDirs" value="@org.hzero.iam.domain.entity.Menu@MENU_DIR"/>
+        <bind name="siteSuperRole" value="@org.hzero.common.HZeroConstant$RoleCode@SITE"/>
+        <bind name="tenantSuperRole" value="@org.hzero.common.HZeroConstant$RoleCode@TENANT"/>
+        select
+            im.id,
+            im.code as code,
+            imt.name as name,
+            im.fd_level,
+            im.parent_id,
+            case when im.parent_id = 0 then 1 else 0 end as root_node,
+            im.type as type,
+            im.sort,
+            im.icon,
+            im.h_quick_index,
+            (case when im.route is null then '' else im.route end) route
+        from iam_menu im
+        join iam_menu_tl imt on imt.id = im.id and imt.lang = #{lang}
+        where im.type in
+        <foreach collection="menuDirs" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        and (im.h_custom_flag = 0 or (im.h_custom_flag = 1 and im.h_tenant_id = #{tenantId}))
+        and im.h_enabled_flag = 1
+        and im.h_virtual_flag = 0
+        <if test="@org.apache.commons.collections4.CollectionUtils@isNotEmpty(labels)">
+            <bind name="labelsSize" value="labels.size()"/>
+            and exists (
+                select 1
+                from hiam_label_rel hlr
+                join iam_label il on il.id = hlr.label_id
+                where
+                    hlr.data_type = #{menuLabelDataType}
+                    and hlr.data_id = im.id
+                    and il.name in
+                    <foreach collection="labels" open="(" separator="," close=")" item="label">
+                        #{label}
+                    </foreach>
+                    <choose>
+                        <when test="unionLabel">
+                            having count(*) > 0
+                        </when>
+                        <otherwise>
+                            having count(*) = #{labelsSize}
+                        </otherwise>
+                    </choose>
+            )
+        </if>
+        and (
+            exists (
+                select 1
+                from iam_role ir
+                where
+                    ir.is_enabled = 1
+                    and ir.id in
+                    <foreach collection="roleIds" item="roleId" open="(" separator="," close=")">
+                        #{roleId}
+                    </foreach>
+                    and ir.code in (#{siteSuperRole}, #{tenantSuperRole})
+                    and im.fd_level = ir.fd_level
+            )
+            or exists (
+                select 1
+                from iam_role ir
+                join iam_menu im_ps on (ir.fd_level = im_ps.fd_level)
+                join iam_role_permission irp on (irp.permission_id = im_ps.id and irp.role_id = ir.id and irp.type = 'PS')
+                where
+                    ir.is_enabled = 1
+                    and ir.id in
+                    <foreach collection="roleIds" item="roleId" open="(" separator="," close=")">
+                        #{roleId}
+                    </foreach>
+                    and im_ps.h_enabled_flag = 1
+                    and im_ps.type = 'ps'
+                    and im.fd_level = ir.fd_level
+                    and (irp.h_create_flag = 'Y' or irp.h_inherit_flag = 'Y')
+                    <!-- 权限集限定查询菜单 -->
+                    and (im_ps.h_level_path like concat(im.h_level_path, '|%'))
+            )
+        )
+    </select>
+
+    <!-- 查询安全组关联的导航栏菜单 -->
+    <select id="selectSecGrpMenus" resultMap="MenuMap">
+        <bind name="menuLabelDataType" value="@org.hzero.iam.domain.entity.Menu@LABEL_DATA_TYPE"/>
+        <bind name="menuDirs" value="@org.hzero.iam.domain.entity.Menu@MENU_DIR"/>
+        <bind name="siteSuperRole" value="@org.hzero.common.HZeroConstant$RoleCode@SITE"/>
+        <bind name="tenantSuperRole" value="@org.hzero.common.HZeroConstant$RoleCode@TENANT"/>
+        select
+            im.id,
+            im.code as code,
+            imt.name as name,
+            im.fd_level,
+            im.parent_id,
+            case when im.parent_id = 0 then 1 else 0 end as root_node,
+            im.type as type,
+            im.sort,
+            im.icon,
+            im.h_quick_index,
+            (case when im.route is null then '' else im.route end) route
+        from iam_menu im
+        join iam_menu_tl imt on imt.id = im.id and imt.lang = #{lang}
+        where im.type in
+        <foreach collection="menuDirs" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        and (im.h_custom_flag = 0 or (im.h_custom_flag = 1 and im.h_tenant_id = #{tenantId}))
+        and im.h_enabled_flag = 1
+        and im.h_virtual_flag = 0
+        <if test="@org.apache.commons.collections4.CollectionUtils@isNotEmpty(labels)">
+            <bind name="labelsSize" value="labels.size()"/>
+            and exists (
+                select 1
+                from hiam_label_rel hlr
+                join iam_label il on il.id = hlr.label_id
+                where
+                    hlr.data_type = #{menuLabelDataType}
+                    and hlr.data_id = im.id
+                    and il.name in
+                    <foreach collection="labels" open="(" separator="," close=")" item="label">
+                        #{label}
+                    </foreach>
+                    <choose>
+                        <when test="unionLabel">
+                            having count(*) > 0
+                        </when>
+                        <otherwise>
+                            having count(*) = #{labelsSize}
+                        </otherwise>
+                    </choose>
+            )
+        </if>
+        and exists (
+            select 1
+            from iam_role ir
+            join iam_role_permission irp on (irp.role_id = ir.id and irp.type = 'SG')
+            join hiam_sec_grp hsg on (hsg.sec_grp_id = irp.permission_id and hsg.enabled_flag = 1)
+            join hiam_sec_grp_acl hsga on (hsga.sec_grp_id = hsg.sec_grp_id)
+            join iam_menu im_ps on (hsga.permission_id = im_ps.id and im_ps.type = 'ps' and im_ps.h_enabled_flag = 1)
+            where
+                ir.is_enabled = 1
+                and ir.id in
+                <foreach collection="roleIds" item="roleId" open="(" separator="," close=")">
+                    #{roleId}
+                </foreach>
+            and (irp.h_create_flag = 'Y' or irp.h_inherit_flag = 'Y')
+            and im.fd_level = ir.fd_level
+            and (im_ps.h_level_path like concat(im.h_level_path, '|%'))
+            <!--    排除回收的数据    -->
+            and not exists (
+                select 1
+                from hiam_sec_grp_revoke hsgr
+                where hsgr.tenant_id = #{tenantId}
+                and hsgr.authority_type = 'ACL'
+                and hsga.sec_grp_acl_id = hsgr.authority_id
+                and hsg.sec_grp_id = hsgr.sec_grp_id
+            )
+        )
+    </select>
+
+    <!-- 查询目录列表 root、dir 类型 -->
+    <select id="selectMenuDirs" resultMap="MenuMap">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        select
+        im.id,
+        im.code as code,
+        im.fd_level,
+        im.type as type,
+        (case when imt.name is not null then imt.name else im.name end ) as name
+        from iam_menu im
+        left join iam_menu_tl imt on (imt.id = im.id and imt.lang = #{lang})
+        where im.h_enabled_flag = 1
+        and im.type in ('root', 'dir')
+        <choose>
+            <when test="queryLevel == 'site'">
+                and im.h_custom_flag = 0
+                <if test="level != null and level != ''">
+                    and im.fd_level = #{level}
+                </if>
+            </when>
+            <otherwise>
+                <!-- 租户客制化菜单可挂到平台目录下，同时必须是租户级目录 -->
+                and (im.h_custom_flag = 0 or (im.h_custom_flag = 1 and im.h_tenant_id = #{tenantId}))
+                and im.fd_level = 'organization'
+            </otherwise>
+        </choose>
+        <if test="code != null and code != ''">
+            <bind name="codeLike" value="'%' + code + '%'"/>
+            and im.code like #{codeLike}
+        </if>
+        <if test="name != null and name != ''">
+            <bind name="nameLike" value="'%' + name + '%'"/>
+            and (imt.name like #{nameLike} or im.name like #{nameLike})
+        </if>
+        order by im.code, im.sort
+    </select>
+
+    <!-- 查询菜单关联的权限集 -->
+    <select id="selectMenuPermissionSet" resultMap="MenuMap">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        select
+        im_ps.id,
+        im_ps.code as code,
+        (case when imt_ps.name is not null then imt_ps.name else im_ps.name end ) as name,
+        im_ps.fd_level,
+        im_ps.parent_id,
+        im_ps.type as type,
+        im_ps.sort,
+        im_ps.is_default,
+        im_ps.icon,
+        im_ps.route,
+        im_ps.object_version_number,
+        im_ps.h_custom_flag,
+        im_ps.h_tenant_id,
+        im_ps.h_description,
+        im_ps.h_enabled_flag,
+        im_ps.h_virtual_flag,
+        im_ps.h_controller_type,
+        im_ps.h_level_path,
+        im_ps.h_permission_type
+        from iam_menu im_ps
+        left join iam_menu_tl imt_ps on imt_ps.id = im_ps.id and imt_ps.lang = #{lang}
+        where im_ps.type = 'ps'
+        and im_ps.h_tenant_id = #{tenantId}
+        and im_ps.parent_id = #{parentMenuId}
+        <if test="code != null and code != ''">
+            <bind name="codeLike" value="'%' + code + '%'"/>
+            and im_ps.code like #{codeLike}
+        </if>
+        <if test="name != null and name != ''">
+            <bind name="nameLike" value="'%' + name + '%'"/>
+            and (im_ps.name like #{nameLike} or imt_ps.name like #{nameLike})
+        </if>
+        order by im_ps.sort, im_ps.id
+    </select>
+
+    <!-- 查询菜单关联的权限集编码 -->
+    <select id="selectPermissionSetCodes" resultType="java.lang.String">
+        <bind name="siteSuperRole" value="@org.hzero.common.HZeroConstant$RoleCode@SITE"/>
+        <bind name="tenantSuperRole" value="@org.hzero.common.HZeroConstant$RoleCode@TENANT"/>
+        select
+          im_ps.code
+        from iam_menu im_ps
+        join iam_role ir on (ir.id = #{roleId} and ir.fd_level = im_ps.fd_level and ir.is_enabled = 1)
+        join iam_role_permission irp on (irp.role_id = ir.id and irp.permission_id = im_ps.id and irp.type = 'PS')
+        where im_ps.type = 'ps'
+        and im_ps.h_enabled_flag = 1
+        and (im_ps.h_custom_flag = 0 or (im_ps.h_custom_flag = 1 and im_ps.h_tenant_id = #{tenantId}))
+        and (
+          ir.code in (#{siteSuperRole}, #{tenantSuperRole})
+          or (irp.h_create_flag = 'Y' or irp.h_inherit_flag = 'Y')
+        )
+        and exists (
+          select
+            1
+          from iam_menu im
+          where im.type in ('menu', 'link', 'inner-link', 'window')
+          and im.code = #{menuCode}
+          and (im.h_tenant_id = 0 or im.h_tenant_id = #{tenantId})
+          and (im_ps.h_level_path like concat(im.h_level_path, '|%'))
+        )
+    </select>
+
+    <!-- 返回权限集检查状态 -->
+    <select id="checkPermissionSets" resultType="org.hzero.iam.api.dto.PermissionCheckDTO">
+        select
+            ps.code as "code"
+        from iam_menu ps
+        join iam_role ir on ps.fd_level = ir.fd_level and ir.is_enabled = 1 and ir.id in
+        <foreach collection="roleIds" open="(" separator="," close=")" item="roleId">
+            #{roleId}
+        </foreach>
+        join iam_role_permission irp on (
+            irp.role_id = ir.id
+            and ps.id = irp.permission_id
+            and irp.type = 'PS'
+            and (irp.h_create_flag = 'Y' OR irp.h_inherit_flag = 'Y')
+        )
+        where
+            ps.h_enabled_flag = 1 and ps.type = 'ps' and
+            <foreach collection="codes" item="code" open="(" separator="or" close=")">
+                ps.code like concat('%',#{code})
+            </foreach>
+        UNION
+        select
+            ps.code as "code"
+        from iam_menu ps
+        join iam_role ir on ps.fd_level = ir.fd_level and ir.is_enabled = 1 and ir.id in
+        <foreach collection="roleIds" open="(" separator="," close=")" item="roleId">
+            #{roleId}
+        </foreach>
+        join iam_role_permission irp on (
+            irp.role_id = ir.id
+            and irp.type = 'SG'
+            and (irp.h_create_flag = 'Y' OR irp.h_inherit_flag = 'Y')
+        )
+        join hiam_sec_grp hsg on hsg.sec_grp_id = irp.permission_id and hsg.enabled_flag = 1
+        join hiam_sec_grp_acl hsga on hsga.sec_grp_id = hsg.sec_grp_id and hsga.permission_id = ps.id
+        where ps.h_enabled_flag = 1
+        and not exists (
+            SELECT 1
+            FROM hiam_sec_grp_revoke hsgr
+            WHERE
+            -- 没有对当前角色屏蔽
+            (
+                hsgr.revoke_type = 'SHIELD'
+                AND hsgr.authority_id = hsga.sec_grp_acl_id
+                AND hsgr.authority_type = 'ACL'
+                AND hsgr.shield_role_id IN
+                <foreach collection="roleIds" open="(" separator="," close=")" item="roleId">
+                    #{roleId}
+                </foreach>
+            )
+            OR
+            -- 没有在回收表
+            (
+                hsgr.revoke_type = 'REVOKE'
+                AND hsgr.authority_id = hsga.sec_grp_acl_id
+                AND hsgr.authority_type = 'ACL'
+            )
+        )
+        and
+        <foreach collection="codes" open="(" separator="or" close=")" item="code">
+            ps.code like concat('%',#{code})
+        </foreach>
+    </select>
+
+    <!-- 查询权限集关联的权限 -->
+    <select id="selectPermissionSetPermissions" resultType="org.hzero.iam.domain.entity.Permission">
+        select
+        ip.id,
+        ip.code as code,
+        ip.path as path,
+        ip.method as method,
+        ip.fd_level as "level",
+        ip.login_access,
+        ip.public_access,
+        ip.sign_access,
+        ip.description,
+        ip.service_name
+        from iam_menu_permission imp
+        join iam_menu im_ps on im_ps.id = imp.menu_id
+        join iam_permission ip on ip.code = imp.permission_code
+        where imp.menu_id = #{permissionSetId}
+        and im_ps.type = 'ps'
+        and im_ps.fd_level = ip.fd_level
+        and (
+            im_ps.h_custom_flag = 0 or (im_ps.h_tenant_id = #{tenantId} and im_ps.h_custom_flag = 1)
+        )
+        <if test="code != null and code != ''">
+            <bind name="codeLike" value="'%' + code + '%'"/>
+            and ip.code like #{codeLike}
+        </if>
+        <if test="condition != null and condition != ''">
+            <bind name="conditionLike" value="'%' + condition + '%'"/>
+            and (ip.path like #{conditionLike} or ip.description like #{conditionLike})
+        </if>
+
+    </select>
+
+    <!-- 查询权限集关联的Lov -->
+    <select id="selectPermissionSetLovs" resultType="org.hzero.iam.domain.vo.Lov">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        select
+        hl.lov_id,
+        hl.lov_code,
+        hlt.lov_name,
+        hl.lov_type_code,
+        hl.tenant_id
+        from iam_menu_permission imp
+        join iam_menu im_ps on im_ps.id = imp.menu_id
+        join hpfm_lov hl on hl.lov_code = imp.permission_code
+        join hpfm_lov_tl hlt on hlt.lov_id = hl.lov_id and hlt.lang = #{lang}
+        where imp.menu_id = #{permissionSetId}
+        and (hl.lov_type_code = 'SQL' or hl.lov_type_code = 'URL')
+        and im_ps.type = 'ps'
+        and (
+            im_ps.h_custom_flag = 0 or (im_ps.h_tenant_id = #{tenantId} and im_ps.h_custom_flag = 1)
+        )
+        and (hl.tenant_id = 0 or hl.tenant_id = #{tenantId})
+        <if test="condition != null and condition != ''">
+            <bind name="conditionLike" value="'%' + condition + '%'"/>
+            and (hl.lov_code like #{conditionLike} or hlt.lov_name like #{conditionLike})
+        </if>
+    </select>
+
+    <!-- 平台层查询可分配的权限 -->
+    <select id="selectAssignablePermissions" resultType="org.hzero.iam.domain.entity.Permission">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        select
+        ip.id,
+        ip.code as code,
+        ip.path as path,
+        ip.method as method,
+        ip.fd_level as "level",
+        case when ipt.description is null then ip.description else ipt.description end as description,
+        ip.service_name
+        from iam_permission ip
+        left join iam_permission_tl ipt on (ip.id = ipt.id and ipt.lang = #{lang})
+        join iam_menu im_ps on ip.fd_level = im_ps.fd_level
+        where im_ps.id = #{permissionSetId}
+        <choose>
+            <when test="level != null and level == 'organization'">
+                and im_ps.h_custom_flag = 1
+                and im_ps.h_tenant_id = #{tenantId}
+            </when>
+            <otherwise>
+                and im_ps.h_custom_flag = 0
+            </otherwise>
+        </choose>
+        and ip.is_within = 0
+        and ip.public_access = 0
+        and ip.login_access = 0
+        and ip.sign_access = 0
+        and not exists (
+        select 1 from iam_menu_permission imp
+        where imp.menu_id = #{permissionSetId} and imp.permission_code = ip.code
+        )
+        <if test="code != null and code != ''">
+            <bind name="codeLike" value="'%' + code + '%'"/>
+            and ip.code like #{codeLike}
+        </if>
+        <if test="condition != null and condition != ''">
+            <bind name="conditionLike" value="'%' + condition + '%'"/>
+            and (ip.path like #{conditionLike} or ip.description like #{conditionLike})
+        </if>
+    </select>
+
+    <!-- 查询可分配的Lov -->
+    <select id="selectAssignableLovs" resultType="org.hzero.iam.domain.vo.Lov">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        select
+        hl.lov_id,
+        hl.lov_code,
+        hlt.lov_name,
+        hl.lov_type_code,
+        hl.tenant_id
+        from hpfm_lov hl
+        join hpfm_lov_tl hlt on hlt.lov_id = hl.lov_id and hlt.lang = #{lang}
+        where (hl.tenant_id = 0 or hl.tenant_id = #{tenantId})
+        and (hl.lov_type_code = 'SQL' OR hl.lov_type_code = 'URL')
+        and hl.enabled_flag = 1
+        and not exists (
+        select
+        1
+        from iam_menu_permission imp
+        where imp.menu_id = #{permissionSetId}
+        and imp.permission_code = hl.lov_code
+        )
+        <if test="condition != null and condition != ''">
+            <bind name="conditionLike" value="'%' + condition + '%'"/>
+            and (hl.lov_code like #{conditionLike} or hlt.lov_name like #{conditionLike})
+        </if>
+    </select>
+
+    <!-- 查询当前角色可分配的权限集以及根据某个角色ID判断权限集选择状态 -->
+    <select id="selectRolePermissionSet" resultMap="MenuMap">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        <bind name="siteSuperRole" value="@org.hzero.common.HZeroConstant$RoleCode@SITE"/>
+        <bind name="tenantSuperRole" value="@org.hzero.common.HZeroConstant$RoleCode@TENANT"/>
+        select distinct
+        im_out.id,
+        im_out.code as code,
+        (case when imt_out.name is not null then imt_out.name else im_out.name end) name,
+        im_out.parent_id,
+        im_out.type as type,
+        im_out.sort,
+        im_out.h_tenant_id,
+        im_out.h_permission_type,
+        im_out.h_controller_type,
+        irp_out.h_create_flag,
+        irp_out.h_inherit_flag,
+        case when im_out.type = 'ps' then
+        case when (irp_out.h_create_flag = 'Y' or irp_out.h_inherit_flag = 'Y') then 'Y'
+        else 'N'
+        end
+        else null
+        end as checked_flag
+        from iam_menu im_out
+        join (select im_ps.h_level_path, current_role.code, current_role.fd_level, irp.h_create_flag, irp.h_inherit_flag
+        from iam_menu im_ps
+        <!-- 父级必须存在 -->
+        join iam_menu im_parent on (im_parent.id = im_ps.parent_id and im_parent.h_enabled_flag = 1)
+        <!-- 限制角色层级 -->
+        join iam_role iam_current_role on (
+        im_ps.fd_level = iam_current_role.fd_level
+        and iam_current_role.id = #{currentRoleId}
+        and iam_current_role.is_enabled = 1
+        )
+        left join iam_menu_tl imt_ps on imt_ps.id = im_ps.id and imt_ps.lang = #{lang}
+        left join iam_role_permission irp on (irp.permission_id = im_ps.id and irp.role_id = iam_current_role.id and
+        irp.type = 'PS')
+        where im_ps.type = 'ps'
+        and im_ps.h_enabled_flag = 1
+        <if test="code != null and code != ''">
+            <bind name="menuCodeLike" value="'%' + code + '%'"/>
+            and im_ps.code like #{menuCodeLike}
+        </if>
+        <if test="name != null and name != ''">
+            <bind name="menuNameLike" value="'%' + name + '%'"/>
+            and (imt_ps.name like #{menuNameLike} or im_ps.name like #{menuNameLike})
+        </if>
+        <!-- 平台管理员&租户管理员不限制权限集，否则限制权限集 -->
+        and (
+        current_role.code in (#{siteSuperRole}, #{tenantSuperRole})
+        or (irp.h_create_flag = 'Y' or irp.h_inherit_flag = 'Y')
+        )) im_t on
+        <!-- 限制外层层级 -->
+        im_out.fd_level = im_t.fd_level
+        <!-- 子查询 level_path 限制外层查询 -->
+        and (im_t.h_level_path like concat(im_out.h_level_path, '|%') or im_t.h_level_path = im_out.h_level_path)
+        left join iam_menu_tl imt_out on imt_out.id = im_out.id and imt_out.lang = #{lang}
+        left join iam_role_permission irp_out on (irp_out.role_id = #{allocateRoleId} and irp_out.permission_id =
+        im_out.id and irp_out.type = 'PS')
+        where im_out.h_enabled_flag = 1
+        <!-- 平台层展示标准菜单(tenant_id=0), 租户层展示标准菜单及个性化菜单 -->
+        and (
+            im_out.h_custom_flag = 0 or (im_out.h_custom_flag = 1 and im_out.h_tenant_id = (select h_tenant_id from iam_role where id = #{allocateRoleId}))
+        )
+    </select>
+    <select id="listRolePermissionSet" resultMap="MenuMap">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        <bind name="menuLabelDataType" value="@org.hzero.iam.domain.entity.Menu@LABEL_DATA_TYPE"/>
+
+        select DISTINCT
+        im_out.id,
+        im_out.code as "code",
+        (case when imt_out.name is not null then imt_out.name else im_out.name end) as "name",
+        im_out.parent_id,
+        im_out.type as type,
+        im_out.sort,
+        im_out.h_permission_type,
+        im_out.h_tenant_id,
+        im_out.h_level_path,
+        case when im_out.type = 'ps' then
+            case when (irp_out.h_create_flag = 'Y' or irp_out.h_inherit_flag = 'Y') then 'Y' else 'N'
+            end else null
+        end as "checked_flag"
+        from iam_menu im_out
+        <!-- 限制菜单层级 -->
+        join iam_role ir on (
+            ir.id = #{allocateRoleId}
+            and ir.fd_level = im_out.fd_level
+        )
+        <if test="@org.apache.commons.collections4.CollectionUtils@isNotEmpty(labels)">
+            INNER JOIN hiam_label_rel hlr ON hlr.data_type = #{menuLabelDataType} AND hlr.data_id = im_out.id
+            INNER JOIN iam_label il ON hlr.label_id = il.id AND il.name IN
+            <foreach collection="labels" open="(" separator="," close=")" item="label">
+                #{label}
+            </foreach>
+        </if>
+        left join iam_menu_tl imt_out on imt_out.id = im_out.id and imt_out.lang = #{lang}
+        left join iam_role_permission irp_out on (
+            irp_out.role_id = #{allocateRoleId}
+            and irp_out.permission_id = im_out.id
+            and irp_out.type = 'PS'
+        )
+        where im_out.h_enabled_flag = 1
+        <!-- 平台层展示标准菜单(tenant_id=0), 租户层展示标准菜单及个性化菜单 -->
+        and (
+            im_out.h_custom_flag = 0 or (im_out.h_custom_flag = 1 and im_out.h_tenant_id = (select h_tenant_id from iam_role where id = #{allocateRoleId}))
+        )
+        <if test="@org.apache.commons.collections4.CollectionUtils@isNotEmpty(labels)">
+            <bind name="labelsSize" value="labels.size()"/>
+            AND (SELECT COUNT(1)
+            FROM hiam_label_rel hlr
+            INNER JOIN iam_label il ON hlr.label_id = il.id
+            WHERE hlr.data_type = #{menuLabelDataType}
+            AND hlr.data_id = im_out.id
+            AND il.name IN
+            <foreach collection="labels" open="(" separator="," close=")" item="label">
+                #{label}
+            </foreach>
+            ) = #{labelsSize}
+        </if>
+        order by im_out.code
+    </select>
+
+    <select id="listRolePermission" resultMap="RolePermissionVO">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        <bind name="menuLabelDataType" value="@org.hzero.iam.domain.entity.Menu@LABEL_DATA_TYPE"/>
+        <bind name="siteSuperRole" value="@org.hzero.common.HZeroConstant$RoleCode@SITE"/>
+        <bind name="tenantSuperRole" value="@org.hzero.common.HZeroConstant$RoleCode@TENANT"/>
+        select
+            im_ps.h_tenant_id as tenant_id,
+            im_ps.h_level_path
+        from iam_menu im_ps
+        <if test="@org.apache.commons.collections4.CollectionUtils@isNotEmpty(labels)">
+            INNER JOIN hiam_label_rel hlr ON hlr.data_type = #{menuLabelDataType} AND hlr.data_id = im_ps.id
+            INNER JOIN iam_label il ON hlr.label_id = il.id AND il.name IN
+            <foreach collection="labels" open="(" separator="," close=")" item="label">
+                #{label}
+            </foreach>
+        </if>
+        <!-- 父级必须存在 -->
+        join iam_menu im_parent on (im_parent.id = im_ps.parent_id and im_parent.h_enabled_flag = 1)
+        <!-- 限制角色层级 -->
+        join iam_role iam_current_role on (
+            im_ps.fd_level = iam_current_role.fd_level
+            and iam_current_role.id = #{currentRoleId}
+         -- 不用限制父级角色启用状态
+         -- and iam_current_role.is_enabled = 1
+        )
+        left join iam_menu_tl imt_ps on imt_ps.id = im_ps.id and imt_ps.lang = #{lang}
+        left join iam_role_permission irp on (irp.permission_id = im_ps.id and irp.role_id = iam_current_role.id and
+        irp.type = 'PS')
+        where im_ps.type = 'ps'
+        and im_ps.h_enabled_flag = 1
+        <if test="code != null and code != ''">
+            <bind name="menuCodeLike" value="'%' + code + '%'"/>
+            and im_ps.code like #{menuCodeLike}
+        </if>
+        <if test="name != null and name != ''">
+            <bind name="menuNameLike" value="'%' + name + '%'"/>
+            and (imt_ps.name like #{menuNameLike} or im_ps.name like #{menuNameLike})
+        </if>
+        <!-- 平台管理员&租户管理员不限制权限集，否则限制权限集 -->
+        and (
+            iam_current_role.code in (#{siteSuperRole}, #{tenantSuperRole})
+            or (irp.h_create_flag = 'Y' or irp.h_inherit_flag = 'Y')
+        )
+        <if test="@org.apache.commons.collections4.CollectionUtils@isNotEmpty(labels)">
+            <bind name="labelsSize" value="labels.size()"/>
+            AND (SELECT COUNT(1)
+            FROM hiam_label_rel hlr
+            INNER JOIN iam_label il ON hlr.label_id = il.id
+            WHERE hlr.data_type = #{menuLabelDataType}
+            AND hlr.data_id = im_ps.id
+            AND il.name IN
+            <foreach collection="labels" open="(" separator="," close=")" item="label">
+                #{label}
+            </foreach>
+            ) = #{labelsSize}
+        </if>
+        GROUP BY im_ps.h_tenant_id,im_ps.h_level_path
+    </select>
+
+    <select id="listMenuAssignRole" resultType="org.hzero.iam.api.dto.AccessAuthDTO">
+        <bind name="user" value="@org.hzero.iam.infra.common.utils.UserUtils@getUserDetails()"/>
+
+        SELECT
+        ir.id,
+        irt.name as name,
+        ir.code as code,
+        ir_parent_tl.name as parent_name
+        FROM
+        iam_role ir
+        left join iam_role_tl irt on(ir.id = irt.id)
+        left join iam_role ir_parent on(ir.h_parent_role_id = ir_parent.id)
+        left join iam_role_tl ir_parent_tl on(ir_parent.id = ir_parent_tl.id)
+        WHERE
+        EXISTS(
+        SELECT 1 from iam_role_permission irp where irp.role_id = ir.id and irp.type = 'PS'
+        <!-- 应用层预先查出权限集、减轻SQL压力 -->
+        <if test="permissionIds!=null and permissionIds.size()> 0">
+            and irp.permission_id in
+            <foreach collection="permissionIds" index="index" item="psId" open="(" close=")" separator=",">
+                #{psId}
+            </foreach>
+        </if>
+        )
+        <if test="menu.code!=null and menu.code!=''">
+            <bind name="codeLike" value="'%'+menu.code+'%'"/>
+            and ir.code = #{codeLike}
+        </if>
+        <if test="menu.name!=null and menu.name!=''">
+            <bind name="nameLike" value="'%'+ menu.name +'%'"/>
+            and irt.name like #{nameLike}
+        </if>
+        <!-- 限制角色当前用户可见 -->
+        and (ir.h_tenant_id = #{user.organizationId} or ir.created_by_tenant_id = #{user.organizationId}
+        OR
+        EXISTS (
+        SELECT
+        1
+        FROM
+        iam_menu im
+        JOIN iam_role_permission irp ON (
+        im.id = irp.permission_id
+        AND im.type = 'ps'
+        AND im.h_enabled_flag = 1
+        AND im.CODE LIKE '%role.ps.create'
+        AND irp.type = 'PS'
+        AND ( irp.h_create_flag = 'Y' OR irp.h_inherit_flag = 'Y' )
+        )
+        JOIN iam_member_role imr_admin ON imr_admin.role_id = irp.role_id
+        JOIN iam_role ir_admin ON (
+        ( ir_admin.id = imr_admin.role_id AND ir_admin.is_enabled = 1 )
+        OR ( ir_admin.h_parent_role_assign_level = imr_admin.h_assign_level AND ir_admin.h_parent_role_assign_level_val
+        = imr_admin.h_assign_level_value AND imr_admin.h_assign_level = 'org' )
+        )
+        WHERE
+        imr_admin.member_id = #{user.userId}
+        AND imr_admin.member_type = 'user'
+        AND ir.h_level_path LIKE CONCAT( ir_admin.h_level_path, '|%' )
+        )
+        )
+    </select>
+
+    <select id="checkRolePermission" resultType="org.hzero.iam.domain.entity.RolePermission">
+        SELECT
+        irp.id,
+        irp.permission_id,
+        irp.role_id,
+        irp.type
+        FROM
+        iam_role_permission irp where irp.type = 'ps' and irp.role_id = #{roleId}
+        <if test="permissionIds!=null and permissionIds.length > 0">
+            and irp.permission_id in
+            <foreach collection="permissionIds" item="psId" open="(" close=")" index="index">
+                #{psId}
+            </foreach>
+        </if>
+    </select>
+
+
+    <!-- 查询安全组可分配的权限集 -->
+    <select id="selectSecGrpAssignablePermissionSet" resultMap="MenuMap">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        <bind name="siteSuperRole" value="@org.hzero.common.HZeroConstant$RoleCode@SITE"/>
+        <bind name="tenantSuperRole" value="@org.hzero.common.HZeroConstant$RoleCode@TENANT"/>
+        <bind name="menuPss" value="@org.hzero.iam.domain.entity.Menu@MENU_PS"/>
+
+        SELECT
+            im_out.id,
+            im_out.code as code,
+            imt_out.name as name,
+            im_out.parent_id,
+            im_out.type as type,
+            im_out.sort,
+            im_out.h_tenant_id,
+            im_out.h_permission_type,
+            im_out.h_controller_type,
+            im_out.h_level_path,
+            im_out.fd_level,
+            <!-- 分配标识 -->
+            (CASE
+                WHEN im_out.type = 'ps' THEN
+                    CASE WHEN hsgc.sec_grp_acl_id IS NOT NULL THEN 'Y'
+                    ELSE 'N' END
+                ELSE NULL
+            END) checked_flag
+        FROM iam_menu im_out
+        JOIN iam_menu_tl imt_out ON imt_out.id = im_out.id AND imt_out.lang = #{lang}
+        LEFT JOIN hiam_sec_grp_acl hsgc ON (im_out.id = hsgc.permission_id AND im_out.type = 'ps' AND hsgc.sec_grp_id = #{secGrpId})
+        WHERE im_out.type in
+        <foreach collection="menuPss" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        AND im_out.h_enabled_flag = 1
+        AND im_out.fd_level = #{secGrpLevel}
+        <choose>
+            <when test="secGrpLevel == 'site'">
+                AND im_out.h_custom_flag = 0
+            </when>
+            <otherwise>
+                AND (im_out.h_custom_flag = 0 or (im_out.h_custom_flag = 1 AND  im_out.h_tenant_id = #{tenantId}) )
+            </otherwise>
+        </choose>
+        AND (
+            EXISTS (
+                SELECT 1 FROM iam_role ir
+                WHERE ir.id = #{roleId}
+                AND ir.code IN (#{siteSuperRole}, #{tenantSuperRole})
+            )
+            OR
+            EXISTS (
+                SELECT 1 FROM iam_menu im_in
+                JOIN hiam_sec_grp_acl hsga_in ON (im_in.id = hsga_in.permission_id)
+                JOIN hiam_sec_grp hsg ON hsg.sec_grp_id = hsga_in.sec_grp_id and hsg.enabled_flag = 1
+                JOIN iam_role_permission irp ON (
+                    hsg.sec_grp_id = irp.permission_id
+                    AND irp.type = 'SG'
+                    AND irp.role_id = #{roleId}
+                    AND (irp.h_create_flag = 'Y' OR irp.h_inherit_flag = 'Y')
+                )
+                WHERE im_in.type = 'ps'
+                AND im_in.h_enabled_flag = 1
+                AND NOT EXISTS (
+                    SELECT 1
+                    FROM hiam_sec_grp_revoke hsgr
+                    WHERE
+                    hsgr.authority_id = hsga_in.sec_grp_acl_id
+                    AND ((
+                        hsgr.revoke_type = 'SHIELD'
+                        AND hsgr.authority_type = 'ACL'
+                        AND hsgr.shield_role_id = #{roleId}
+                    )
+                    OR (
+                        hsgr.revoke_type = 'REVOKE'
+                        AND hsgr.authority_type = 'ACL'
+                    ))
+                )
+                AND im_in.h_level_path LIKE CONCAT(im_out.h_level_path, '%')
+            )
+        )
+    </select>
+
+    <!-- 查询安全组已分配的权限集 -->
+    <select id="selectSecGrpAssignedPermissionSet" resultMap="MenuMap">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        <bind name="menuPss" value="@org.hzero.iam.domain.entity.Menu@MENU_PS"/>
+
+        SELECT
+            im_out.id,
+            im_out.code as code,
+            imt_out.name as name,
+            im_out.parent_id,
+            im_out.type as type,
+            im_out.sort,
+            im_out.h_tenant_id,
+            im_out.h_permission_type,
+            im_out.h_controller_type,
+            im_out.h_level_path,
+            im_out.fd_level
+        FROM iam_menu im_out
+        JOIN iam_menu_tl imt_out ON imt_out.id = im_out.id AND imt_out.lang = #{lang}
+        WHERE im_out.type in
+        <foreach collection="menuPss" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        AND im_out.h_enabled_flag = 1
+        AND EXISTS (
+            SELECT 1 FROM iam_menu im_in
+            JOIN hiam_sec_grp_acl hsga ON (im_in.id = hsga.permission_id)
+            JOIN hiam_sec_grp hsg ON hsg.sec_grp_id = hsga.sec_grp_id and hsg.enabled_flag = 1
+            WHERE hsg.sec_grp_id = #{secGrpId}
+            AND im_in.type = 'ps'
+            AND im_in.h_enabled_flag = 1
+            AND NOT EXISTS (
+                SELECT 1
+                FROM hiam_sec_grp_revoke hsgr
+                WHERE
+                hsgr.authority_id = hsga.sec_grp_acl_id
+                AND (
+                  (
+                    hsgr.revoke_type = 'REVOKE'
+                    AND hsgr.authority_type = 'ACL'
+                  )
+                  <if test="secGrpSource != null and secGrpSource == 'parent'">
+                      OR
+                      (
+                          hsgr.revoke_type = 'SHIELD'
+                          AND hsgr.authority_type = 'ACL'
+                          AND hsgr.shield_role_id = #{roleId}
+                      )
+                  </if>
+                )
+            )
+            AND im_out.fd_level = im_in.fd_level
+            AND im_in.h_level_path LIKE CONCAT(im_out.h_level_path, '%')
+        )
+    </select>
+
+    <!-- 角色分配安全组时查询可分配的权限集 -->
+    <select id="selectRoleSecGrpAssignablePermissionSet" resultMap="MenuMap">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        <bind name="menuPss" value="@org.hzero.iam.domain.entity.Menu@MENU_PS"/>
+        SELECT DISTINCT
+            im_out.id,
+            im_out.code as code,
+            imt_out.name as name,
+            im_out.parent_id,
+            im_out.type as type,
+            im_out.sort,
+            im_out.h_tenant_id,
+            im_out.h_permission_type,
+            im_out.h_controller_type,
+            im_out.h_level_path,
+            im_out.fd_level,
+            hsga_out.sec_grp_acl_id,
+            (
+                CASE WHEN im_out.type = 'ps' THEN
+                    CASE WHEN hsgr.authority_id IS NOT NULL THEN 1 ELSE 0 END
+                ELSE NULL END
+            ) as shield_flag
+        FROM iam_menu im_out
+        JOIN iam_menu_tl imt_out ON (imt_out.id = im_out.id AND imt_out.lang = #{lang})
+        JOIN hiam_sec_grp hcg ON (hcg.sec_grp_id = #{secGrpId} and hcg.enabled_flag = 1 and hcg.sec_grp_level = im_out.fd_level)
+        JOIN hiam_sec_grp_acl hsga ON (
+            hsga.sec_grp_id = hcg.sec_grp_id
+            AND hsga.sec_grp_acl_id NOT IN (
+                SELECT hsgr.authority_id
+                FROM hiam_sec_grp_revoke hsgr
+                WHERE hsgr.revoke_type = 'REVOKE'
+                AND hsgr.authority_type = 'ACL'
+            )
+        )
+        JOIN iam_menu im_in ON (
+            hsga.permission_id = im_in.id
+            AND im_in.h_level_path LIKE CONCAT(im_out.h_level_path,'%')
+        )
+        LEFT JOIN hiam_sec_grp_acl hsga_out ON (
+            hsga_out.permission_id = im_out.id
+            AND im_out.type = 'ps'
+            AND hsga_out.sec_grp_id = hcg.sec_grp_id
+        )
+        LEFT JOIN hiam_sec_grp_revoke hsgr ON (
+            hsgr.authority_id = hsga_out.sec_grp_acl_id
+            AND hsgr.revoke_type = 'SHIELD'
+            AND hsgr.authority_type = 'ACL'
+            AND hsgr.sec_grp_id = hcg.sec_grp_id
+            AND hsgr.shield_role_id = #{roleId}
+        )
+        WHERE im_out.type in
+        <foreach collection="menuPss" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        AND im_out.h_enabled_flag = 1
+    </select>
+
+    <select id="selectTenantCustomMenu" resultMap="MenuMap">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        <bind name="menuDirs" value="@org.hzero.iam.domain.entity.Menu@MENU_DIR"/>
+
+        SELECT
+        im_out.id,
+        im_out.code as code,
+        imt_out.name as name,
+        im_out.h_quick_index,
+        im_out.fd_level,
+        im_out.parent_id,
+        im_out.type as type,
+        im_out.sort,
+        im_out.is_default,
+        im_out.icon,
+        im_out.route,
+        im_out.object_version_number,
+        im_out.h_custom_flag,
+        im_out.h_tenant_id,
+        ht.tenant_name,
+        im_out.h_description,
+        im_out.h_enabled_flag,
+        im_out.h_virtual_flag,
+        im_out.h_level_path,
+        hlvt.meaning level_meaning,
+        im_out.h_permission_type
+        FROM
+        iam_menu im_out
+        JOIN iam_menu_tl imt_out ON imt_out.id = im_out.id AND imt_out.lang = #{lang}
+        JOIN hpfm_tenant_tl ht ON im_out.h_tenant_id = ht.tenant_id AND ht.lang = #{lang}
+        JOIN hpfm_lov_value hlv ON ( hlv.lov_code = 'HIAM.RESOURCE_LEVEL' AND hlv.VALUE = im_out.fd_level )
+        JOIN hpfm_lov_value_tl hlvt ON ( hlv.lov_value_id = hlvt.lov_value_id AND hlvt.lang = #{lang}
+        )
+        WHERE
+        im_out.type IN
+        <foreach collection="menuDirs" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        AND im_out.fd_level = 'organization'
+        AND (
+            (im_out.h_tenant_id = #{tenantId} AND im_out.h_custom_flag = 1)
+            OR EXISTS (
+                SELECT 1
+                FROM
+                    iam_role_permission irp,
+                    iam_role ir,
+                    iam_menu im
+                WHERE
+                    irp.permission_id = im.id
+                    AND irp.type = 'PS'
+                    AND irp.role_id = ir.id
+                    AND ir.h_tenant_id = #{tenantId}
+                    AND im.parent_id = im_out.id
+            )
+        )
+    </select>
+
+    <select id="parentMenu" resultMap="MenuMap">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        <bind name="menuDirs" value="@org.hzero.iam.domain.entity.Menu@MENU_DIR"/>
+
+        SELECT
+        im_out.id,
+        im_out.code as code,
+        imt_out.name as name,
+        im_out.h_quick_index,
+        im_out.fd_level,
+        im_out.parent_id,
+        im_out.type as type,
+        im_out.sort,
+        im_out.is_default,
+        im_out.icon,
+        im_out.route,
+        im_out.object_version_number,
+        im_out.h_custom_flag,
+        im_out.h_tenant_id,
+        ht.tenant_name,
+        im_out.h_description,
+        im_out.h_enabled_flag,
+        im_out.h_virtual_flag,
+        im_out.h_level_path,
+        hlvt.meaning level_meaning,
+        im_out.h_permission_type
+        FROM
+        iam_menu im_out
+        JOIN iam_menu_tl imt_out ON imt_out.id = im_out.id AND imt_out.lang = #{lang}
+        JOIN hpfm_tenant_tl ht ON im_out.h_tenant_id = ht.tenant_id AND ht.lang = #{lang}
+        JOIN hpfm_lov_value hlv ON ( hlv.lov_code = 'HIAM.RESOURCE_LEVEL' AND hlv.VALUE = im_out.fd_level )
+        JOIN hpfm_lov_value_tl hlvt ON ( hlv.lov_value_id = hlvt.lov_value_id AND hlvt.lang = #{lang}
+        )
+        WHERE
+        im_out.type IN
+        <foreach collection="menuDirs" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        AND im_out.fd_level = 'organization'
+        AND im_out.id IN
+        <foreach item="item" collection="idList" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
+    <select id="selectPermissionSets" resultMap="MenuMap" parameterType="org.hzero.iam.api.dto.PermissionSetSearchDTO">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        SELECT
+        im.id,
+        im.code as code,
+        imt.name as name,
+        impt.name parent_name,
+        im.fd_level,
+        im.type as type,
+        im.h_permission_type,
+        im.object_version_number,
+        im.h_enabled_flag,
+        im.h_description
+        FROM iam_menu im
+        LEFT JOIN iam_menu_tl imt ON (imt.id=im.id and imt.lang = #{lang})
+        LEFT JOIN iam_menu_tl impt ON (im.parent_id = impt.id and impt.lang = #{lang})
+        WHERE im.type = 'ps'
+        AND im.h_enabled_flag = 1
+        and im.h_permission_type = 'api'
+        <if test="level != null and level != ''">
+            and im.fd_level = #{level}
+        </if>
+        <if test="code != null and code != ''">
+            <bind name="codeLike" value="'%'+code+'%'"/>
+            and im.code like #{codeLike}
+        </if>
+        <if test="parentName != null and parentName != ''">
+            <bind name="parentNameLike" value="'%'+parentName+'%'"/>
+            and impt.name like #{parentNameLike}
+        </if>
+    </select>
+    <select id="selectExportSiteMenuData" resultMap="ExportMenuMap">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        <bind name="menuDirs" value="@org.hzero.iam.domain.entity.Menu@MENU_DIR"/>
+        select
+        im_out.code as code,
+        (case when imt_out.name is not null then imt_out.name else im_out.name end) name,
+        im_out.h_quick_index,
+        im_out.fd_level,
+        im_out.parent_id,
+        (case when imt_parent.name is not null then imt_parent.name else im_parent.name end) parent_name,
+        im_parent.code parent_code,
+        im_out.type as type,
+        im_out.sort,
+        im_out.is_default,
+        im_out.icon,
+        im_out.route,
+        im_out.h_custom_flag,
+        im_out.h_description,
+        im_out.h_enabled_flag,
+        im_out.h_virtual_flag,
+        im_out.h_level_path,
+        im_out.h_permission_type
+        from iam_menu im_out
+        left join iam_menu im_parent ON im_out.parent_id = im_parent.id
+        left join iam_menu_tl imt_out on imt_out.id = im_out.id and imt_out.lang = #{lang}
+        left join iam_menu_tl imt_parent on imt_parent.id = im_parent.id and imt_parent.lang = #{lang}
+        where im_out.type in
+        <foreach collection="menuDirs" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        <choose>
+            <when test="queryLevel == 'site'">
+                and im_out.h_custom_flag = 0
+                <if test="level != null and level != ''">
+                    and im_out.fd_level = #{level}
+                </if>
+            </when>
+            <otherwise>
+                <!-- 有权限的租户级的标准菜单和租户下所有菜单-->
+                and (im_out.h_custom_flag = 0 or (im_out.h_custom_flag = 1 and im_out.h_tenant_id = #{tenantId}))
+                and im_out.fd_level = 'organization'
+            </otherwise>
+        </choose>
+        and exists (
+        <!-- 查询限制各个层次的菜单/目录，通过子查询 level_path 查询树形结构 -->
+        select 1
+        from iam_menu im
+        left join iam_menu_tl imt on imt.id = im.id and imt.lang = #{lang}
+        where im.type in
+        <foreach collection="menuDirs" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        <choose>
+            <when test="queryLevel == 'site'">
+                and im.h_custom_flag = 0
+                <if test="level != null and level != ''">
+                    and im.fd_level = #{level}
+                </if>
+            </when>
+            <otherwise>
+                and im.fd_level = 'organization'
+            </otherwise>
+        </choose>
+
+        <if test="code != null and code != ''">
+            <bind name="menuCodeLike" value="'%' + code + '%'"/>
+            and im.code like #{menuCodeLike}
+        </if>
+        <if test="name != null and name != ''">
+            <bind name="menuNameLike" value="'%' + name + '%'"/>
+            and (imt.name like #{menuNameLike} or im.name like #{menuNameLike})
+        </if>
+        <if test="quickIndex != null and quickIndex != ''">
+            <bind name="quickIndexLike" value="'%' + quickIndex + '%'"/>
+            and im.h_quick_index like #{quickIndexLike}
+        </if>
+        <if test="enabledFlag != null">
+            and im.h_enabled_flag = #{enabledFlag}
+        </if>
+        <if test="description != null and description != ''">
+            <bind name="menuDescriptionLike" value="'%' + description + '%'"/>
+            and im.h_description like #{menuDescriptionLike}
+        </if>
+
+        and (im.h_level_path like concat(im_out.h_level_path, '|%') or im.h_level_path = im_out.h_level_path)
+        <if test="(parentName != null and parentName != '') or (parentCode != null and parentCode != '')">
+            and exists (
+            select 1
+            from iam_menu im_parent
+            where im_parent.id = im.parent_id
+            <if test="parentCode != null and parentCode != ''">
+                <bind name="menuParentCodeLike" value="'%' + parentCode + '%'"/>
+                and im_parent.code like #{menuParentCodeLike}
+            </if>
+            <if test="parentName != null and parentName != ''">
+                <bind name="menuParentNameLike" value="'%' + parentName + '%'"/>
+                and im_parent.name like #{menuParentNameLike}
+            </if>
+            )
+        </if>
+
+        <if test="queryLevel == 'organization'">
+            <!-- 租户客制化菜单可挂到平台目录下，同时必须是租户级目录 -->
+            and
+            (
+                (im.h_custom_flag = 0 <include refid="sqlSelectByRoleId"/>)
+            or
+                (im.h_custom_flag = 1 and im.h_tenant_id = #{tenantId})
+            )
+        </if>
+        )
+        order by im_out.code
+    </select>
+
+    <select id="selectByCodeLike" resultType="org.hzero.iam.domain.entity.Menu">
+        select
+            ps.code,
+            ps.h_controller_type as controller_type
+        from iam_menu ps
+        where ps.h_enabled_flag = 1
+        and ps.type = 'ps'
+        and ps.fd_level = #{menuLevel}
+        and (
+            <foreach collection="list" item="code" open="(" separator="or" close=")">
+                ps.code like concat('%', #{code})
+            </foreach>
+        )
+    </select>
+</mapper>

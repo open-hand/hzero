@@ -1,0 +1,2351 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.iam.infra.mapper.RoleMapper">
+
+    <resultMap id="BaseResultMap" type="org.hzero.iam.domain.vo.RoleVO">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="code" property="code"/>
+        <result column="description" property="description"/>
+        <result column="fd_level" property="level"/>
+        <result column="is_enabled" property="isEnabled" javaType="Boolean"/>
+        <result column="is_modified" property="isModified" javaType="Boolean"/>
+        <result column="is_enable_forbidden" property="isEnableForbidden" javaType="Boolean"/>
+        <result column="is_built_in" property="isBuiltIn" javaType="Boolean"/>
+        <result column="is_assignable" property="isAssignable" javaType="Boolean"/>
+        <result column="h_tenant_id" property="tenantId"/>
+        <result column="h_inherit_role_id" property="inheritRoleId"/>
+        <result column="h_parent_role_id" property="parentRoleId"/>
+        <result column="h_parent_role_assign_level" property="parentRoleAssignLevel"/>
+        <result column="h_parent_role_assign_level_val" property="parentRoleAssignLevelValue"/>
+        <result column="creation_date" property="creationDate" jdbcType="DATE"/>
+        <result column="created_by" property="createdBy" jdbcType="DECIMAL"/>
+        <result column="object_version_number" property="objectVersionNumber"/>
+
+        <result column="admin_flag" property="adminFlag"/>
+        <result column="assigned_flag" property="assignedFlag"/>
+        <result column="have_admin_flag" property="haveAdminFlag"/>
+
+        <result column="admin_role_id" property="adminRoleId"/>
+        <result column="admin_role_code" property="adminRoleCode"/>
+        <result column="admin_role_name" property="adminRoleName"/>
+        <result column="admin_role_level" property="adminRoleLevel"/>
+        <result column="admin_role_tenant_id" property="adminRoleTenantId"/>
+        <result column="admin_role_tenant_num" property="adminRoleTenantNum"/>
+        <result column="admin_role_tenant_name" property="adminRoleTenantName"/>
+        <result column="h_inherit_level_path" property="inheritLevelPath"/>
+
+        <result column="parent_role_assign_unit_id" property="parentRoleAssignUnitId"/>
+        <result column="parent_role_assign_unit_name" property="parentRoleAssignUnitName"/>
+
+        <result column="is_default_role" property="isDefaultRole"/>
+        <result column="default_role_id" property="defaultRoleId"/>
+        <result column="level_meaning" property="levelMeaning"/>
+        <result column="inherited_role_name" property="inheritedRoleName"/>
+        <result column="parent_role_name" property="parentRoleName"/>
+        <result column="tenant_name" property="tenantName"/>
+        <result column="source_id" property="sourceId"/>
+        <result column="source_type" property="sourceType"/>
+        <result column="h_assign_level" property="assignLevel"/>
+        <result column="h_assign_level_value" property="assignLevelValue"/>
+        <result column="assign_level_value_meaning" property="assignLevelValueMeaning"/>
+        <result column="role_source" property="roleSource"/>
+        <result column="member_role_id" property="memberRoleId"/>
+        <result column="h_level_path" property="levelPath"/>
+        <result column="children_num" property="childrenNum"/>
+
+        <result column="inherited_role_id" property="inheritedRole.id"/>
+        <result column="inherited_role_name" property="inheritedRole.name"/>
+        <result column="inherited_role_code" property="inheritedRole.code"/>
+        <result column="inherited_role_description" property="inheritedRole.description"/>
+        <result column="start_date_active" property="startDateActive"/>
+        <result column="end_date_active" property="endDateActive"/>
+
+        <result column="enable_role_inherit" property="enableRoleInherit"/>
+        <result column="enable_role_allocate" property="enableRoleAllocate"/>
+        <result column="enable_role_permission" property="enableRolePermission"/>
+
+        <result column="inherited_role_tenant_name" property="inheritedRoleTenantName"/>
+        <result column="parent_role_tenant_name" property="parentRoleTenantName"/>
+        <result column="member_id" property="memberId"/>
+    </resultMap>
+
+    <resultMap id="RoleMap" type="org.hzero.iam.domain.entity.Role">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="code" property="code"/>
+        <result column="description" property="description"/>
+        <result column="fd_level" property="level"/>
+        <result column="h_tenant_id" property="tenantId"/>
+        <result column="h_inherit_role_id" property="inheritRoleId"/>
+        <result column="h_parent_role_id" property="parentRoleId"/>
+        <result column="h_parent_role_assign_level" property="parentRoleAssignLevel"/>
+        <result column="h_parent_role_assign_level_val" property="parentRoleAssignLevelValue"/>
+        <result column="h_level_path" property="levelPath"/>
+        <result column="h_inherit_level_path" property="inheritLevelPath"/>
+        <result column="object_version_number" property="objectVersionNumber"/>
+        <result column="tenant_num" property="tenantNum"/>
+        <result column="created_by_tenant_id" property="createdByTenantId"/>
+        <result column="created_by_tenant_num" property="createdByTenantNum"/>
+    </resultMap>
+
+    <resultMap id="RolePsMap" type="org.hzero.iam.domain.entity.Role">
+        <id column="id" property="id"/>
+        <result column="h_tenant_id" property="tenantId"/>
+        <result column="name" property="name"/>
+        <result column="code" property="code"/>
+        <result column="h_parent_role_id" property="parentRoleId"/>
+        <result column="h_inherit_role_id" property="inheritRoleId"/>
+        <collection property="permissionSets" ofType="org.hzero.iam.domain.entity.RolePermission">
+            <id column="role_permission_id" property="id" />
+            <result column="permission_id" property="permissionSetId" />
+            <result column="h_create_flag" property="createFlag" />
+            <result column="h_inherit_flag" property="inheritFlag" />
+            <result column="permission_type" property="type" />
+        </collection>
+    </resultMap>
+
+    <resultMap id="RoleLabel" type="org.hzero.iam.domain.entity.Role">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="code" property="code"/>
+        <result column="fd_level" property="level"/>
+        <result column="h_tenant_id" property="tenantId"/>
+        <result column="h_inherit_role_id" property="inheritRoleId"/>
+        <result column="h_parent_role_id" property="parentRoleId"/>
+        <collection property="roleLabels" ofType="org.hzero.iam.domain.entity.Label">
+            <id column="label_id" property="id" />
+            <result column="label_name" property="name" />
+            <result column="label_type" property="type" />
+        </collection>
+    </resultMap>
+
+
+    <sql id="RoleBaseColumn">
+        ir.id,
+        ir.code as code,
+        irt.name as name,
+        ir.description,
+        ir.fd_level,
+        ir.h_tenant_id,
+        ir.h_inherit_role_id,
+        ir.h_parent_role_id,
+        ir.h_parent_role_assign_level,
+        ir.h_parent_role_assign_level_val,
+        ir.is_enabled,
+        ir.is_modified,
+        ir.is_enable_forbidden,
+        ir.is_built_in,
+        case when ir.is_built_in = 1 then 'default' else 'custom' end as role_source,
+        ir.is_assignable,
+        ir.h_level_path,
+        ir.h_inherit_level_path,
+        ir.object_version_number,
+        ir.created_by,
+        ir.creation_date
+    </sql>
+
+    <sql id="RoleBaseCondition">
+        <if test="id != null">
+            and ir.id = #{id}
+        </if>
+        <if test="tenantId != null">
+            and ir.h_tenant_id = #{tenantId}
+        </if>
+        <if test="code != null and code != ''">
+            <bind name="codeLike" value="'%' + code + '%'" />
+            and ir.code LIKE #{codeLike}
+        </if>
+        <if test="level != null and level != ''">
+            and ir.fd_level = #{level}
+        </if>
+        <if test="parentRoleId != null">
+            and ir.h_parent_role_id = #{parentRoleId}
+        </if>
+        <if test="parentRoleAssignLevel != null and parentRoleAssignLevel != ''">
+            and ir.h_parent_role_assign_level = #{parentRoleAssignLevel}
+        </if>
+        <if test="parentRoleAssignLevelValue != null">
+            and ir.h_parent_role_assign_level_val = #{parentRoleAssignLevelValue}
+        </if>
+        <if test="isEnabled != null">
+            and ir.is_enabled = #{isEnabled}
+        </if>
+        <if test="isBuiltIn != null">
+            and ir.is_built_in = #{isBuiltIn}
+        </if>
+        <if test="createStartDate != null ">
+            and ir.creation_date >= #{createStartDate}
+        </if>
+        <if test="createEndDate != null ">
+            and ir.creation_date &lt;= #{createEndDate}
+        </if>
+        <if test="updateStartDate != null ">
+            and ir.last_update_date >= #{updateStartDate}
+        </if>
+        <if test="updateEndDate != null ">
+            and ir.last_update_date &lt;= #{updateEndDate}
+        </if>
+        <choose>
+            <when test="roleSource == 'default'">
+                and ir.is_built_in = 1
+            </when>
+            <when test="roleSource == 'custom'">
+                and ir.is_built_in = 0
+            </when>
+        </choose>
+    </sql>
+
+    <sql id="Con_Role">
+        <if test="code != null and code != ''">
+            <bind name="codeLike" value="'%' + code + '%'" />
+            and ${roleTableAlias}.code LIKE #{codeLike}
+        </if>
+        <if test="name != null and name != ''">
+            <bind name="nameLike" value="'%' + name + '%'" />
+            and ${roleTableAlias}t.name LIKE #{nameLike}
+        </if>
+        <if test="tenantId != null">
+            and ${roleTableAlias}.h_tenant_id = #{tenantId}
+        </if>
+        <choose>
+            <when test="roleSource == 'default'">
+                and ${roleTableAlias}.is_built_in = 1
+            </when>
+            <when test="roleSource == 'custom'">
+                and ${roleTableAlias}.is_built_in = 0
+            </when>
+        </choose>
+        <include refid="Con_Labels" />
+    </sql>
+
+    <sql id="Con_Labels">
+        <if test="labels != null and labels.size() > 0">
+            <bind name="roleLabelDataType" value="@org.hzero.iam.domain.entity.Role@LABEL_DATA_TYPE"/>
+            <bind name="labelsSize" value="labels.size()"/>
+           and (select count(*)
+            from hiam_label_rel hlr
+            inner join iam_label il on hlr.label_id = il.id
+            where hlr.data_type = #{roleLabelDataType}
+            and hlr.data_id = ${roleTableAlias}.id
+            and il.name in
+            <foreach collection="labels" open="(" separator="," close=")" item="label">
+                #{label}
+            </foreach>
+            ) = #{labelsSize}
+        </if>
+    </sql>
+
+    <sql id="Con_Admin_Role">
+        <bind name="siteSuperRole" value="@org.hzero.common.HZeroConstant$RoleCode@SITE"/>
+        <bind name="tenantSuperRole" value="@org.hzero.common.HZeroConstant$RoleCode@TENANT"/>
+        <bind name="adminRolePs" value="@org.hzero.iam.infra.constant.Constants@ADMIN_ROLE_PS"/>
+        (
+            ${adminRoleTableAlias}.code in (#{siteSuperRole}, #{tenantSuperRole})
+            or exists (
+                select 1
+                from iam_menu ps
+                join iam_role_permission irp on (irp.permission_id = ps.id and irp.type = 'PS')
+                where irp.role_id = ${adminRoleTableAlias}.id
+                and (irp.h_create_flag = 'Y' or irp.h_inherit_flag = 'Y')
+                and ps.type = 'ps'
+                and ps.h_enabled_flag = 1
+                and ps.code like #{adminRolePs}
+            )
+        )
+    </sql>
+
+    <sql id="Member_Role_Id">
+        (
+            select imr.role_id
+            from iam_member_role imr
+            join iam_role ir2 on (imr.role_id = ir2.id)
+            where imr.member_id = #{userId}
+            and imr.member_type = 'user'
+            and (imr.start_date_active is null or imr.start_date_active &lt;= #{now})
+            and (imr.end_date_active is null or imr.end_date_active &gt;= #{now})
+            <!-- 有上级角色则可以看到已分配的禁用的角色... -->
+            <!-- and ir2.is_enabled = 1 -->
+        )
+    </sql>
+
+    <!--  查询用户的管理角色  -->
+    <select id="selectUserAdminRoles" resultMap="BaseResultMap">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        <bind name="now" value="@java.time.LocalDate@now()" />
+        <bind name="adminRoleTableAlias" value="'ir'" />
+        select
+            httl.tenant_name,
+            <include refid="RoleBaseColumn" />
+        from iam_member_role imr
+        join iam_role ir on ir.id = imr.role_id
+        join iam_role_tl irt on (ir.id = irt.id and irt.lang = #{lang})
+        join hpfm_tenant ht on ht.tenant_id = ir.h_tenant_id
+        left join hpfm_tenant_tl httl ON ht.tenant_id = httl.tenant_id AND httl.lang = #{lang}
+        where imr.member_type = 'user'
+        and imr.member_id = #{userId}
+        AND (
+            imr.start_date_active IS NULL
+            OR imr.start_date_active &lt;= #{now}
+        )
+        AND (
+            imr.end_date_active IS NULL OR
+            imr.end_date_active &gt;= #{now}
+        )
+        and ir.is_enabled = 1
+        and <include refid="Con_Admin_Role" />
+        <include refid="RoleBaseCondition" />
+        <if test="name != null and name != ''">
+            <bind name="nameLike" value="'%' + name + '%'" />
+            and irt.name LIKE #{nameLike}
+        </if>
+        order by ir.h_tenant_id, ir.id
+    </select>
+
+    <!--  查询用户的管理角色  -->
+    <select id="selectUserAssignedRoles" resultMap="BaseResultMap">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        <bind name="now" value="@java.time.LocalDate@now()" />
+        <bind name="tenantAdminLabel" value="@org.hzero.iam.domain.entity.Role@LABEL_TENANT_ADMIN"/>
+        <bind name="siteSuperRole" value="@org.hzero.common.HZeroConstant$RoleCode@SITE"/>
+        <bind name="tenantSuperRole" value="@org.hzero.common.HZeroConstant$RoleCode@TENANT"/>
+        <bind name="adminRoleTableAlias" value="'ir'" />
+
+        select
+            ir.id,
+            ir.code as code,
+            irt.name as name,
+            ir.description,
+            ir.fd_level,
+            ir.h_tenant_id,
+            ht.tenant_num,
+            httl.tenant_name,
+            case when <include refid="Con_Admin_Role" /> then 1 else 0 end AS admin_flag,
+            opp.enable_role_inherit,
+            opp.enable_role_allocate,
+            case
+                when opp.enable_role_permission = 1 then 1
+                when opp.enable_role_permission = 0 and (
+                    ir.code in (#{siteSuperRole}, #{tenantSuperRole})
+                    or exists (
+                        select 1 from
+                        hiam_label_rel hlr
+                        join iam_label il on (hlr.label_id = il.id)
+                        where hlr.data_id = ir.id
+                        and hlr.data_type = 'ROLE'
+                        and hlr.assign_type = 'A'
+                        and il.name = #{tenantAdminLabel}
+                    )
+                ) then 1
+                else 0
+            end as enable_role_permission
+        from iam_role ir
+        join iam_role_tl irt on (ir.id = irt.id and irt.lang = #{lang})
+        join hpfm_tenant ht on ht.tenant_id = ir.h_tenant_id
+        left join hpfm_tenant_tl httl ON ht.tenant_id = httl.tenant_id AND httl.lang = #{lang}
+        left join oauth_password_policy opp on (opp.organization_id = ir.h_tenant_id)
+        where ir.is_enabled = 1
+        and (
+            ir.id in (
+                select imr.role_id
+                from iam_member_role imr
+                where imr.member_type = 'user'
+                and imr.member_id = #{userId}
+                and (imr.start_date_active IS NULL OR imr.start_date_active &lt;= #{now})
+                and (imr.end_date_active IS NULL OR imr.end_date_active &gt;= #{now})
+            )
+            <if test="rootUser and queryRoleIds != null and queryRoleIds.size > 0">
+               or ir.id in
+                 <foreach collection="queryRoleIds" open="(" item="queryRoleId" separator="," close=")">
+                    #{queryRoleId}
+                 </foreach>
+            </if>
+        )
+        <include refid="RoleBaseCondition" />
+        <if test="name != null and name != ''">
+            <bind name="nameLike" value="'%' + name + '%'" />
+            and irt.name LIKE #{nameLike}
+        </if>
+        order by ir.h_tenant_id, ir.id
+    </select>
+
+    <select id="selectUserManageableRoleTree" resultMap="BaseResultMap">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        <bind name="roleLabelDataType" value="@org.hzero.iam.domain.entity.Role@LABEL_DATA_TYPE"/>
+        <bind name="now" value="@java.time.LocalDate@now()" />
+        <bind name="adminRolePs" value="@org.hzero.iam.infra.constant.Constants@ADMIN_ROLE_PS"/>
+
+        SELECT DISTINCT ir.*,
+        <!-- 查孩子数量 -->
+            <if test="parentRoleId!=null or @java.util.Objects@equals(1,queryRootNodeFlag) == true">
+               (SELECT COUNT(1)
+                FROM iam_role ir_temp
+                WHERE ir_temp.h_parent_role_id = ir.id
+                  <if test="isEnabled != null">
+                      and ir.is_enabled = #{isEnabled}
+                  </if>
+                  <!-- 所属租户不等于空，并且当前租户不等于0，即平台租户不受控制 -->
+                  <if test="userOrganizationId !=null and userTenantId != 0">
+                  AND (ir_temp.h_tenant_id = #{userOrganizationId}
+                       OR ir_temp.created_by_tenant_id = #{userOrganizationId})
+                  </if>
+                    AND ir_temp.id IN
+                        (SELECT ir_assign.id
+                         FROM iam_member_role imr
+                                  JOIN iam_role ir_admin ON (ir_admin.id = imr.role_id AND ir_admin.is_enabled = 1)
+                                  JOIN iam_role_permission irp ON (irp.role_id = ir_admin.id AND irp.TYPE = 'PS' AND
+                                                                   (irp.h_create_flag = 'Y' OR
+                                                                    irp.h_inherit_flag = 'Y'))
+                                  JOIN iam_menu ps ON (ps.id = irp.permission_id AND ps.TYPE = 'ps' AND
+                                                       ps.h_enabled_flag = 1 AND ps.code LIKE #{adminRolePs})
+                                  JOIN iam_role ir_assign ON (ir_assign.h_level_path LIKE
+                                                              concat(ir_admin.h_level_path, '|%') AND
+                                                              (imr.h_assign_level = 'organization'))
+                JOIN iam_role_tl irt_admin2 ON (ir_assign.id = irt_admin2.id AND
+                irt_admin2.lang = #{lang})
+                JOIN hpfm_tenant ht2 ON ht2.tenant_id = ir_assign.h_tenant_id
+                WHERE (imr.member_id = #{userId} AND imr.member_type = 'user'
+                AND (
+                imr.start_date_active IS NULL OR imr.start_date_active &lt;= #{now}
+                )
+                AND (
+                imr.end_date_active IS NULL OR imr.end_date_active &gt;= #{now}
+                )
+                ) OR
+                (imr.member_id = #{userId} AND imr.member_type = 'user') OR
+                (ir_temp.id IN (SELECT imrr.role_id
+                FROM iam_member_role imrr
+                WHERE imrr.member_type = 'user'
+                AND imrr.member_id = #{userId}
+                AND (
+                imrr.start_date_active IS NULL OR imrr.start_date_active &lt;= #{now}
+                )
+                AND (
+                imrr.end_date_active IS NULL OR imrr.end_date_active &gt;= #{now}
+                )
+                                        )) AND ir_temp.is_enabled = 1)) children_num,
+            </if>
+            ir_admin.*,
+            (CASE
+             WHEN ir_admin.admin_role_id IS NOT NULL THEN 1
+             ELSE 0 END) have_admin_flag
+        FROM (SELECT assgine_role.h_assign_level,
+                     htta.tenant_name assign_level_value_meaning,
+                     (CASE
+                      WHEN (SELECT COUNT(1)
+                              FROM iam_menu ps
+                              JOIN iam_role_permission irp ON (ps.id = irp.permission_id AND
+                                                              irp.TYPE = 'PS')
+                              JOIN iam_member_role imr ON (imr.role_id = irp.role_id AND imr.member_id = #{userId} AND
+                                                          imr.member_type = 'user')
+                             WHERE ps.code LIKE #{adminRolePs}
+                               AND ps.TYPE = 'ps'
+                               AND ps.h_enabled_flag = 1
+                               AND irp.role_id = tn.id
+                               AND (irp.h_create_flag = 'Y' OR irp.h_inherit_flag = 'Y')) >= 1 THEN 1
+                      ELSE  0 END) admin_flag,
+                     (CASE
+                      WHEN assgine_role.role_id IS NOT NULL THEN 1
+                      ELSE 0 END) assigned_flag,
+                     httl.tenant_name,
+                     irpt.name as parent_role_name,
+                     irit.name as inherited_role_name,
+                     http.tenant_name as parent_role_tenant_name,
+                     htti.tenant_name as inherited_role_tenant_name,
+                     tn.id,
+                     tn.code as code,
+                     tnl.name as name,
+                     tn.description,
+                     tn.fd_level,
+                     tn.h_tenant_id,
+                     tn.h_inherit_role_id,
+                     tn.h_parent_role_id,
+                     tn.h_parent_role_assign_level,
+                     tn.h_parent_role_assign_level_val,
+                     tn.is_enabled,
+                     tn.is_modified,
+                     tn.is_enable_forbidden,
+                     tn.is_built_in,
+                     (CASE
+                      WHEN tn.is_built_in = 1 THEN 'default'
+                      ELSE 'custom' END) role_source,
+                     tn.is_assignable,
+                     tn.h_level_path,
+                     tn.h_inherit_level_path,
+                     tn.object_version_number,
+                     tn.created_by,
+                     tn.creation_date
+            FROM iam_role tn
+        <if test="@org.apache.commons.collections4.CollectionUtils@isNotEmpty(labels)">
+            INNER JOIN hiam_label_rel hlr ON hlr.data_type = #{roleLabelDataType} AND hlr.data_id = tn.id
+            INNER JOIN iam_label il ON hlr.label_id = il.id AND il.name IN
+            <foreach collection="labels" open="(" separator="," close=")" item="label">
+                #{label}
+            </foreach>
+        </if>
+                 JOIN hpfm_tenant ht ON tn.h_tenant_id = ht.tenant_id
+                 JOIN iam_role_tl tnl ON ( tn.id = tnl.id AND tnl.lang = #{lang} )
+                 LEFT JOIN hpfm_tenant_tl httl ON ht.tenant_id = httl.tenant_id AND httl.lang = #{lang}
+                 LEFT JOIN iam_role irp on irp.id = tn.h_parent_role_id
+                 LEFT JOIN iam_role_tl irpt ON ( irp.id = irpt.id AND irpt.lang = #{lang})
+                 LEFT JOIN hpfm_tenant_tl http ON http.tenant_id = irp.h_tenant_id AND http.lang = #{lang}
+                 LEFT JOIN iam_role iri on iri.id = tn.h_inherit_role_id
+                 LEFT JOIN iam_role_tl irit ON ( iri.id = irit.id AND irit.lang = #{lang} )
+                 LEFT JOIN hpfm_tenant_tl htti ON htti.tenant_id = iri.h_tenant_id AND htti.lang = #{lang}
+                 LEFT JOIN iam_member_role assgine_role ON ( tn.id = assgine_role.role_id AND assgine_role.member_id = #{userId} AND assgine_role.member_type = 'user' )
+                 LEFT JOIN hpfm_tenant_tl htta ON (htta.tenant_id = assgine_role.h_assign_level_value AND htta.lang = #{lang})
+            WHERE
+            <choose>
+                <!-- 查询根节点 -->
+                <when test="parentRoleId == null and queryRootNodeFlag == 1">
+                    tn.is_enabled = 1
+                    AND assgine_role.role_id IS NOT NULL
+                    AND NOT EXISTS (SELECT 1
+                           FROM iam_role ir2, iam_member_role imr_sub2
+                          WHERE imr_sub2.role_id = ir2.id
+                            AND imr_sub2.member_id = #{userId}
+                            AND imr_sub2.member_type = 'user'
+                            AND tn.h_level_path LIKE concat(ir2.h_level_path, '|%')
+                            AND ir2.is_enabled = 1)
+                </when>
+                <!-- 查询整棵树 -->
+                <when test="parentRoleId == null and queryRootNodeFlag != 1">
+                    (tn.id IN
+                    (SELECT ir2.h_parent_role_id
+                       FROM iam_role ir2
+                      WHERE
+                    <if test="name != null and name != ''">
+                        <bind name="nameLike" value="'%' + name + '%'" />
+                        ir2.NAME LIKE #{nameLike} AND
+                    </if>
+                        ((
+		                  <!-- 所属租户不等于空，并且当前租户不等于0，即平台租户不受控制 -->
+		                  <if test="userOrganizationId !=null and userTenantId != 0">
+		                  (ir2.h_tenant_id = #{userOrganizationId}
+		                       OR ir2.created_by_tenant_id = #{userOrganizationId}) AND
+                          </if>
+                          ir2.id IN
+                             (SELECT ir_assign.id
+                                        FROM iam_member_role imr
+                                        JOIN iam_role ir_admin ON (ir_admin.id = imr.role_id AND
+                                                                  ir_admin.is_enabled = 1)
+                                        JOIN iam_role_permission irp ON (irp.role_id = ir_admin.id AND
+                                                                        irp.TYPE = 'PS' AND
+                                                                        (irp.h_create_flag = 'Y' OR
+                                                                        irp.h_inherit_flag = 'Y'))
+                                        JOIN iam_menu ps ON (ps.id = irp.permission_id AND ps.TYPE = 'ps' AND
+                                                            ps.h_enabled_flag = 1 AND
+                                                            ps.code LIKE #{adminRolePs})
+                                        JOIN iam_role ir_assign ON (ir_assign.h_level_path LIKE
+                                                                   concat(ir_admin.h_level_path, '|%') AND
+                                                                   (imr.h_assign_level = 'organization'))
+                                       WHERE (imr.member_id = #{userId} AND imr.member_type = 'user'
+                                        AND (
+                                        imr.start_date_active IS NULL OR imr.start_date_active &lt;= #{now}
+                                        )
+                                        AND (
+                                        imr.end_date_active IS NULL OR imr.end_date_active &gt;= #{now}
+                                        )
+                                        ))) OR
+                            (ir2.id IN (SELECT imrr.role_id
+                                           FROM iam_member_role imrr
+                                          WHERE imrr.member_type = 'user'
+                                            AND imrr.member_id = #{userId}
+                                            AND (
+                                            imrr.start_date_active IS NULL OR imrr.start_date_active &lt;= #{now}
+                                            )
+                                            AND (
+                                            imrr.end_date_active IS NULL OR imrr.end_date_active &gt;= #{now}
+                                            )
+                                        )) AND ir2.is_enabled = 1)) OR
+                   tn.id IN
+                   (SELECT ir2.id
+                       FROM iam_role ir2
+                      WHERE
+                    <if test="name != null and name != ''">
+                        <bind name="nameLike" value="'%' + name + '%'" />
+                        ir2.NAME LIKE #{nameLike} AND
+                    </if>
+                        ((
+                          <!-- 所属租户不等于空，并且当前租户不等于0，即平台租户不受控制 -->
+                          <if test="userOrganizationId !=null and userTenantId != 0">
+                          (ir2.h_tenant_id = #{userOrganizationId}
+                               OR ir2.created_by_tenant_id = #{userOrganizationId})  AND
+                          </if>
+                          ir2.id IN
+                             (SELECT ir_assign.id
+                                        FROM iam_member_role imr
+                                        JOIN iam_role ir_admin ON (ir_admin.id = imr.role_id AND
+                                                                  ir_admin.is_enabled = 1)
+                                        JOIN iam_role_permission irp ON (irp.role_id = ir_admin.id AND
+                                                                        irp.TYPE = 'PS' AND
+                                                                        (irp.h_create_flag = 'Y' OR
+                                                                        irp.h_inherit_flag = 'Y'))
+                                        JOIN iam_menu ps ON (ps.id = irp.permission_id AND ps.TYPE = 'ps' AND
+                                                            ps.h_enabled_flag = 1 AND
+                                                            ps.code LIKE #{adminRolePs})
+                                        JOIN iam_role ir_assign ON (ir_assign.h_level_path LIKE
+                                                                   concat(ir_admin.h_level_path, '|%') AND
+                                                                   (imr.h_assign_level = 'organization'))
+                                       WHERE (imr.member_id = #{userId} AND imr.member_type = 'user'
+                                            AND (
+                                            imr.start_date_active IS NULL OR imr.start_date_active &lt;= #{now}
+                                            )
+                                            AND (
+                                            imr.end_date_active IS NULL OR imr.end_date_active &gt;= #{now}
+                                            )
+                                       ))) OR
+                            (ir2.id IN (SELECT imrr.role_id
+                                           FROM iam_member_role imrr
+                                          WHERE imrr.member_type = 'user'
+                                            AND imrr.member_id = #{userId}
+                                            AND (
+                                            imrr.start_date_active IS NULL OR imrr.start_date_active &lt;= #{now}
+                                            )
+                                            AND (
+                                            imrr.end_date_active IS NULL OR imrr.end_date_active &gt;= #{now}
+                                            )
+                                        )) AND ir2.is_enabled = 1)))
+               AND ((
+                    <!-- 所属租户不等于空，并且当前租户不等于0，即平台租户不受控制 -->
+                    <if test="userOrganizationId !=null and userTenantId != 0">
+                    (tn.h_tenant_id = #{userOrganizationId}
+                         OR tn.created_by_tenant_id = #{userOrganizationId}) AND
+                    </if>
+                    tn.id IN
+                    (SELECT ir_assign.id
+                        FROM iam_member_role imr
+                        JOIN iam_role ir_admin ON (ir_admin.id = imr.role_id AND ir_admin.is_enabled = 1)
+                        JOIN iam_role_permission irp ON (irp.role_id = ir_admin.id AND irp.TYPE = 'PS' AND
+                                                        (irp.h_create_flag = 'Y' OR
+                                                        irp.h_inherit_flag = 'Y'))
+                        JOIN iam_menu ps ON (ps.id = irp.permission_id AND ps.TYPE = 'ps' AND
+                                            ps.h_enabled_flag = 1 AND ps.code LIKE #{adminRolePs})
+                        JOIN iam_role ir_assign ON (ir_assign.h_level_path LIKE
+                                                   concat(ir_admin.h_level_path, '|%') AND
+                                                   (imr.h_assign_level = 'organization'))
+                       WHERE (imr.member_id = #{userId} AND imr.member_type = 'user'
+                            AND (
+                            imr.start_date_active IS NULL OR imr.start_date_active &lt;= #{now}
+                            )
+                            AND (
+                            imr.end_date_active IS NULL OR imr.end_date_active &gt;= #{now}
+                            )
+                       ))) OR
+                   (tn.id IN (SELECT imrr.role_id
+                                 FROM iam_member_role imrr
+                                WHERE imrr.member_type = 'user'
+                                  AND imrr.member_id = #{userId}
+                                  AND (
+                                  imrr.start_date_active IS NULL OR imrr.start_date_active &lt;= #{now}
+                                  )
+                                  AND (
+                                  imrr.end_date_active IS NULL OR imrr.end_date_active &gt;= #{now}
+                                  )
+                            ) AND tn.is_enabled = 1))
+                </when>
+                <!-- 查询子节点 -->
+                <otherwise>
+                    tn.h_parent_role_id = #{parentRoleId}
+                    AND ((
+	                    <!-- 所属租户不等于空，并且当前租户不等于0，即平台租户不受控制 -->
+	                    <if test="userOrganizationId !=null and userTenantId != 0">
+	                    (tn.h_tenant_id = #{userOrganizationId}
+	                         OR tn.created_by_tenant_id = #{userOrganizationId}) AND
+                        </if>
+                        tn.id IN
+                        (SELECT ir_assign.id
+                         FROM iam_member_role imr
+                         JOIN iam_role ir_admin ON (ir_admin.id = imr.role_id AND ir_admin.is_enabled = 1)
+                         JOIN iam_role_permission irp ON (irp.role_id = ir_admin.id AND irp.TYPE = 'PS' AND
+                                                         (irp.h_create_flag = 'Y' OR
+                                                         irp.h_inherit_flag = 'Y'))
+                         JOIN iam_menu ps ON (ps.id = irp.permission_id AND ps.TYPE = 'ps' AND
+                                             ps.h_enabled_flag = 1 AND ps.code LIKE #{adminRolePs})
+                         JOIN iam_role ir_assign ON (ir_assign.h_level_path LIKE
+                                                    concat(ir_admin.h_level_path, '|%') AND
+                                                     (imr.h_assign_level = 'organization'))
+                        WHERE (imr.member_id = #{userId} AND imr.member_type = 'user'
+                            AND (
+                            imr.start_date_active IS NULL OR imr.start_date_active &lt;= #{now}
+                            )
+                            AND (
+                            imr.end_date_active IS NULL OR imr.end_date_active &gt;= #{now}
+                            )
+                        ))) OR
+                    (tn.id IN (SELECT imrr.role_id
+                                 FROM iam_member_role imrr
+                                WHERE imrr.member_type = 'user'
+                                  AND imrr.member_id = #{userId}
+                                  AND (
+                                  imrr.start_date_active IS NULL OR imrr.start_date_active &lt;= #{now}
+                                  )
+                                  AND (
+                                  imrr.end_date_active IS NULL OR imrr.end_date_active &gt;= #{now}
+                                  )
+                                ) AND tn.is_enabled = 1))
+                </otherwise>
+            </choose>
+        ) ir
+        <!-- 查每个角色的管理角色 -->
+        LEFT JOIN (SELECT ir_admin_sub.id      role_id,
+                    ir_admin.id          admin_role_id,
+                    ir_admin.code        admin_role_code,
+                    irt_admin.NAME       admin_role_name,
+                    ir_admin.fd_level    admin_role_level,
+                    ir_admin.h_tenant_id admin_role_tenant_id,
+                    ht.tenant_num        admin_role_tenant_num,
+                    httl.tenant_name     admin_role_tenant_name
+               FROM iam_role ir_admin
+               JOIN iam_role_tl irt_admin ON (ir_admin.id = irt_admin.id AND
+                                             irt_admin.lang = #{lang})
+               JOIN hpfm_tenant ht ON ht.tenant_id = ir_admin.h_tenant_id
+               LEFT JOIN hpfm_tenant_tl httl ON (ht.tenant_id = httl.tenant_id AND
+                                                httl.lang = #{lang})
+               JOIN (SELECT MAX(ir_sub.id) admin_role_id, sub_ir.id
+                       FROM iam_member_role imr_sub
+                       JOIN iam_role ir_sub ON (ir_sub.id = imr_sub.role_id AND ir_sub.is_enabled = 1)
+                       JOIN iam_role_permission irp_sub ON (irp_sub.role_id = ir_sub.id AND
+                                                           irp_sub.TYPE = 'PS' AND
+                                                           (irp_sub.h_create_flag = 'Y' OR
+                                                           irp_sub.h_inherit_flag = 'Y'))
+                       JOIN iam_menu ps_sub ON (ps_sub.id = irp_sub.permission_id AND
+                                               ps_sub.TYPE = 'ps' AND ps_sub.h_enabled_flag = 1 AND
+                                               ps_sub.code LIKE #{adminRolePs})
+                       JOIN iam_role sub_ir ON (sub_ir.h_level_path LIKE
+                                               concat(ir_sub.h_level_path, '|%'))
+                      WHERE imr_sub.member_type = 'user'
+                        AND imr_sub.member_id = #{userId}
+                        AND (
+                        imr_sub.start_date_active IS NULL OR imr_sub.start_date_active &lt;= #{now}
+                        )
+                        AND (
+                        imr_sub.end_date_active IS NULL OR imr_sub.end_date_active &gt;= #{now}
+                        )
+                      GROUP BY sub_ir.id) ir_admin_sub ON ir_admin_sub.admin_role_id = ir_admin.id
+              WHERE ir_admin.is_enabled = 1) ir_admin ON ir.id = ir_admin.role_id
+        <where>
+            <if test="@org.apache.commons.collections4.CollectionUtils@isNotEmpty(labels)">
+                <bind name="labelsSize" value="labels.size()"/>
+                (SELECT COUNT(1)
+                FROM hiam_label_rel hlr
+                INNER JOIN iam_label il ON hlr.label_id = il.id
+                WHERE hlr.data_type = #{roleLabelDataType}
+                AND hlr.data_id = ir.id
+                AND il.name IN
+                <foreach collection="labels" open="(" separator="," close=")" item="label">
+                    #{label}
+                </foreach>
+                ) = #{labelsSize}
+            </if>
+            <if test="tenantName != null and tenantName != ''">
+                <bind name="tenantNameLike" value="'%' + tenantName + '%'"/>
+                AND ir.tenant_name like #{tenantNameLike}
+            </if>
+            <if test="tenantId != null">
+                AND ir.h_tenant_id = #{tenantId}
+            </if>
+            <if test="level!=null and level!=''">
+                AND ir.fd_level = #{level}
+            </if>
+            <choose>
+                <when test="roleSource == 'default'">
+                    AND ir.is_built_in = 1
+                </when>
+                <when test="roleSource == 'custom'">
+                    AND ir.is_built_in = 0
+                </when>
+            </choose>
+            <if test="isEnabled != null">
+                and ir.is_enabled = #{isEnabled}
+            </if>
+        </where>
+        ORDER BY ir.admin_flag DESC, ir.assigned_flag DESC, ir.id ASC
+    </select>
+
+    <select id="queryUserManageableSonRoleList" resultType="java.lang.Integer">
+        SELECT
+	      count( 1 )
+        FROM
+	      iam_role ir
+        WHERE
+	      ir.h_parent_role_id = #{roleId}
+          <if test="levelPath != null and levelPath != ''">
+              <bind name="levelPathLike" value="levelPath+'|%'"/>
+              and ir.h_level_path like #{levelPathLike}
+          </if>
+	    AND EXISTS (
+            SELECT
+                  1
+            FROM
+              iam_user iu
+            WHERE
+                iu.id = #{userId}
+            AND (
+                ir.h_tenant_id = iu.organization_id
+            OR EXISTS ( SELECT 1 FROM iam_user cr WHERE cr.id = ir.created_by AND cr.organization_id = iu.organization_id ) )
+	    )
+    </select>
+
+    <!--  查询用户管理的角色  -->
+    <select id="selectUserManageableRoles" resultMap="BaseResultMap">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        <bind name="now" value="@java.time.LocalDate@now()" />
+        <bind name="roleLabelDataType" value="@org.hzero.iam.domain.entity.Role@LABEL_DATA_TYPE"/>
+        <bind name="adminRolePs" value="@org.hzero.iam.infra.constant.Constants@ADMIN_ROLE_PS"/>
+        SELECT DISTINCT ir.*
+        FROM (SELECT imr.h_assign_level h_assign_level,
+        htta.tenant_name assign_level_value_meaning,
+        (CASE
+        WHEN imr.h_assign_level IS NOT NULL AND
+        (SELECT COUNT(1)
+        FROM iam_menu ps
+        JOIN iam_role_permission irp ON (ps.id = irp.permission_id AND irp.TYPE = 'PS')
+        WHERE ps.code LIKE #{adminRolePs}
+        AND ps.TYPE = 'ps'
+        AND ps.h_enabled_flag = 1
+                                  AND irp.role_id = ir.id
+                                  AND (irp.h_create_flag = 'Y' OR irp.h_inherit_flag = 'Y')) >= 1 THEN 1
+                          ELSE 0 END)        admin_flag,
+                     (CASE
+                          WHEN imr.h_assign_level IS NOT NULL THEN 1
+                          ELSE 0 END)        assigned_flag,
+                     httl.tenant_name,
+                     irpt.NAME               parent_role_name,
+                     irit.NAME               inherited_role_name,
+                     ir.id,
+                     ir.code as code,
+                     irt.name as name,
+                     ir.description,
+                     ir.fd_level,
+                     ir.h_tenant_id,
+                     ir.h_inherit_role_id,
+                     ir.h_parent_role_id,
+                     ir.h_parent_role_assign_level,
+                     ir.h_parent_role_assign_level_val,
+                     ir.is_enabled,
+                     ir.is_modified,
+                     ir.is_enable_forbidden,
+                     ir.is_built_in,
+                     (CASE
+                          WHEN ir.is_built_in = 1 THEN 'default'
+                          ELSE 'custom' END) role_source,
+                     ir.is_assignable,
+                     ir.h_level_path,
+                     ir.h_inherit_level_path,
+                     ir.object_version_number,
+                     ir.created_by,
+                     ir.creation_date,
+                     ir.last_update_date,
+                     ir.last_updated_by,
+                     ir_admin.*,
+                     (CASE
+                          WHEN ir_admin.admin_role_id IS NOT NULL THEN 1
+                          ELSE 0 END)        have_admin_flag
+              FROM iam_role ir
+                        <if test="@org.apache.commons.collections4.CollectionUtils@isNotEmpty(labels)">
+                            INNER JOIN hiam_label_rel hlr ON hlr.data_type = #{roleLabelDataType} AND hlr.data_id = ir.id
+                            INNER JOIN iam_label il ON hlr.label_id = il.id AND il.name IN
+                            <foreach collection="labels" open="(" separator="," close=")" item="label">
+                                #{label}
+                            </foreach>
+                        </if>
+                       JOIN iam_role_tl irt ON (ir.id = irt.id AND irt.lang = #{lang})
+                       JOIN hpfm_tenant ht ON ir.h_tenant_id = ht.tenant_id
+                       LEFT JOIN hpfm_tenant_tl httl ON (ht.tenant_id = httl.tenant_id AND httl.lang = #{lang})
+                       LEFT JOIN iam_role_tl irpt ON (ir.h_parent_role_id = irpt.id AND irpt.lang = #{lang})
+                       LEFT JOIN iam_role_tl irit ON (ir.h_inherit_role_id = irit.id AND irit.lang = #{lang})
+                       LEFT JOIN iam_member_role imr
+                                 ON (ir.id = imr.role_id AND imr.member_type = 'user' AND imr.member_id = #{userId})
+                       LEFT JOIN hpfm_tenant_tl htta ON (htta.tenant_id = imr.h_assign_level_value AND htta.lang = #{lang})
+                       LEFT JOIN (SELECT ir_admin_sub.id      role_id,
+                                         ir_admin.id          admin_role_id,
+                                         ir_admin.code        admin_role_code,
+                                         irt_admin.NAME       admin_role_name,
+                                         ir_admin.fd_level    admin_role_level,
+                                         ir_admin.h_tenant_id admin_role_tenant_id,
+                                         ht.tenant_num        admin_role_tenant_num,
+                                         httl.tenant_name     admin_role_tenant_name
+                                  FROM iam_role ir_admin
+                                           JOIN iam_role_tl irt_admin
+                                                ON (ir_admin.id = irt_admin.id AND irt_admin.lang = #{lang})
+                                           JOIN hpfm_tenant ht ON ht.tenant_id = ir_admin.h_tenant_id
+                                           JOIN hpfm_tenant_tl httl
+                                                     ON ht.tenant_id = httl.tenant_id AND httl.lang = #{lang}
+                                           JOIN (SELECT MAX(ir_sub.id) admin_role_id, sub_ir.id
+                                                 FROM iam_member_role imr_sub
+                                                          JOIN iam_role ir_sub
+                                                               ON (ir_sub.id = imr_sub.role_id AND ir_sub.is_enabled = 1)
+                                                          JOIN iam_role_permission irp_sub
+                                                               ON (irp_sub.role_id = ir_sub.id AND irp_sub.TYPE = 'PS'
+                                                                   AND
+                                                                   (irp_sub.h_create_flag = 'Y' OR irp_sub.h_inherit_flag = 'Y'))
+                                                          JOIN iam_menu ps_sub
+                                                               ON (ps_sub.id = irp_sub.permission_id
+                                                                   AND ps_sub.TYPE = 'ps'
+                                                                   AND ps_sub.h_enabled_flag = 1
+                                                                   AND ps_sub.code LIKE #{adminRolePs})
+                                                          JOIN iam_role sub_ir
+                                                               ON (sub_ir.h_level_path LIKE concat(ir_sub.h_level_path, '|%'))
+                                                 WHERE imr_sub.member_type = 'user'
+                                                   AND imr_sub.member_id = #{userId}
+                                                    AND (
+                                                    imr_sub.start_date_active IS NULL
+                                                    OR imr_sub.start_date_active &lt;= #{now}
+                                                    )
+                                                    AND (
+                                                    imr_sub.end_date_active IS NULL OR
+                                                    imr_sub.end_date_active &gt;= #{now}
+                                                    )
+                                                    <if test="adminRoleId != null">
+                                                        and ir_sub.id = #{adminRoleId}
+                                                    </if>
+                                                 GROUP BY sub_ir.id) ir_admin_sub ON ir_admin_sub.admin_role_id = ir_admin.id
+                                  WHERE ir_admin.is_enabled = 1
+                                  ) ir_admin ON ir.id = ir_admin.role_id
+        WHERE (
+                  <!-- 所属租户不等于空，并且当前租户不等于0，即平台租户不受控制 -->
+                  <if test="userOrganizationId !=null and userTenantId != 0">
+                  (ir.h_tenant_id = #{userOrganizationId}
+                     OR ir.created_by_tenant_id = #{userOrganizationId}) AND
+                  </if>
+                  ir.id IN
+                      (SELECT ir_assign.id
+                       FROM iam_member_role imr, iam_role ir_admin, iam_role ir_assign
+                       WHERE imr.member_id = #{userId} AND imr.member_type = 'user'
+                            AND (imr.start_date_active IS NULL OR imr.start_date_active &lt;= #{now})
+                            AND (imr.end_date_active IS NULL OR imr.end_date_active &gt;= #{now})
+                            <if test="adminRoleId != null">
+                                and ir_admin.id = #{adminRoleId}
+                            </if>
+                            AND (ir_admin.id = imr.role_id AND ir_admin.is_enabled = 1 AND
+                                    ir_admin.id IN
+                                    (SELECT irp.role_id
+                                        FROM iam_role_permission irp
+                                       WHERE irp.permission_id IN
+                                             (SELECT ps.id
+                                                FROM iam_menu ps
+                                               WHERE ps.TYPE = 'ps'
+                                                 AND ps.h_enabled_flag = 1
+                                                 AND ps.code LIKE #{adminRolePs})
+                                         AND (irp.TYPE = 'PS' AND
+                                             (irp.h_create_flag = 'Y' OR irp.h_inherit_flag = 'Y'))
+                                       ))
+                             AND (ir_assign.h_level_path LIKE
+                                    concat(ir_admin.h_level_path, '|%') AND
+                                    (imr.h_assign_level = 'organization'))
+                       ))
+                 OR (ir.id IN (SELECT imrr.role_id
+                               FROM iam_member_role imrr
+                               WHERE imrr.member_type = 'user'
+                                AND imrr.member_id = #{userId}
+                                AND (imrr.start_date_active IS NULL OR imrr.start_date_active &lt;= #{now})
+                                AND (imrr.end_date_active IS NULL OR imrr.end_date_active &gt;= #{now})
+                                <if test="adminRoleId != null">
+                                    and imrr.role_id = #{adminRoleId}
+                                </if>
+                                ) AND ir.is_enabled = 1)) ir
+        <where>
+            <if test="@org.apache.commons.collections4.CollectionUtils@isNotEmpty(labels)">
+                <bind name="labelsSize" value="labels.size()"/>
+                (SELECT COUNT(1)
+                FROM hiam_label_rel hlr
+                INNER JOIN iam_label il ON hlr.label_id = il.id
+                WHERE hlr.data_type = #{roleLabelDataType}
+                AND hlr.data_id = ir.id
+                AND il.name IN
+                <foreach collection="labels" open="(" separator="," close=")" item="label">
+                    #{label}
+                </foreach>
+                ) = #{labelsSize}
+            </if>
+            <if test="selectAssignedRoleFlag == true">
+                <!-- 只包含管理型角色和有父级管理角色的 -->
+                AND (ir.admin_flag = 1 OR ir.admin_role_id IS NOT NULL)
+            </if>
+            <include refid="RoleBaseCondition"/>
+            <if test="memberId != null">
+                AND NOT EXISTS (
+                    SELECT 1
+                    FROM iam_member_role imr
+                    WHERE imr.member_id = #{memberId}
+                    AND imr.role_id = ir.id
+                    AND imr.member_type = #{memberType}
+                )
+            </if>
+            <if test="excludeSecGrpId != null">
+                AND NOT EXISTS (
+                    SELECT 1
+                    FROM iam_role_permission irp
+                    WHERE irp.permission_id = #{excludeSecGrpId}
+                    AND irp.type = 'SG'
+                    AND irp.role_id = ir.id
+                )
+            </if>
+            <if test="excludeRoleIds != null and excludeRoleIds.size > 0">
+                AND ir.id NOT IN
+                <foreach collection="excludeRoleIds" open="(" item="excludeRoleId" separator="," close=")">
+                    #{excludeRoleId}
+                </foreach>
+            </if>
+            <if test="queryRoleIds != null and queryRoleIds.size > 0">
+                AND ir.id IN
+                <foreach collection="queryRoleIds" open="(" item="queryRoleId" separator="," close=")">
+                    #{queryRoleId}
+                </foreach>
+            </if>
+            <if test="name != null and name != ''">
+                <bind name="nameLike" value="'%' + name + '%'"/>
+                AND ir.name LIKE #{nameLike}
+            </if>
+            <if test="tenantName != null and tenantName != ''">
+                <bind name="tenantNameLike" value="'%' + tenantName + '%'"/>
+                AND ir.tenant_name LIKE #{tenantNameLike}
+            </if>
+        </where>
+            ORDER BY
+              admin_flag DESC,
+              assigned_flag DESC,
+              ir.id ASC
+    </select>
+
+    <select id="selectUserManageableRolesOfAdminRole"  resultMap="BaseResultMap">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        <bind name="now" value="@java.time.LocalDate@now()" />
+        select
+            ir.id,
+            ir.code as code,
+            irt.name as name,
+            ir.description,
+            ir.fd_level,
+            ir.h_tenant_id,
+            ir.h_inherit_role_id,
+            ir.h_parent_role_id,
+            ir.is_enabled,
+            case when ir.is_built_in = 1 then 'default' else 'custom' end as role_source,
+            ir.h_level_path,
+            ir.object_version_number,
+            ir.created_by,
+            httl.tenant_name,
+            irit.name as inherited_role_name,
+            htti.tenant_name as inherited_role_tenant_name,
+            irpt.name as parent_role_name,
+            http.tenant_name as parent_role_tenant_name,
+            case when ir.id = #{adminRoleId} then 1 else 0 end as assigned_flag
+        from iam_role ir
+        join iam_role_tl irt ON (ir.id = irt.id AND irt.lang = #{lang})
+        join hpfm_tenant ht  on ht.tenant_id = ir.h_tenant_id
+        left join hpfm_tenant_tl httl ON ht.tenant_id = httl.tenant_id AND httl.lang = #{lang}
+        left join iam_role iri on iri.id = ir.h_inherit_role_id
+        left join iam_role_tl irit on (irit.id = iri.id and irit.lang = #{lang})
+        left join hpfm_tenant_tl htti ON htti.tenant_id = iri.h_tenant_id AND htti.lang = #{lang}
+        left join iam_role irp on irp.id = ir.h_parent_role_id
+        left join iam_role_tl irpt on (irpt.id = irp.id and irpt.lang = #{lang})
+        left join hpfm_tenant_tl http ON http.tenant_id = irp.h_tenant_id AND http.lang = #{lang}
+        <if test="adminFlag != 0">
+            join (
+                select iri.h_level_path
+                from iam_role iri
+                where iri.id = #{adminRoleId}
+                and iri.is_enabled = 1
+            ) tmp on (ir.h_level_path like concat(tmp.h_level_path, '%'))
+        </if>
+        where 1=1
+        <choose>
+            <when test="adminFlag == 0">
+                and ir.id = #{adminRoleId}
+            </when>
+            <when test="rootUser == false and userOrganizationId != null and userTenantId != 0">
+                and (
+                    ir.h_level_path = tmp.h_level_path
+                    or (
+                        ir.h_tenant_id = #{userOrganizationId}
+                        or ir.created_by_tenant_id = #{userOrganizationId}
+                        or ir.id in <include refid="Member_Role_Id" />
+                    )
+                )
+            </when>
+        </choose>
+        <if test="name != null and name != ''">
+            <bind name="nameLike" value="'%' + name + '%'" />
+            and irt.name LIKE #{nameLike}
+        </if>
+        <bind name="roleTableAlias" value="'ir'" />
+        <include refid="Con_Labels" />
+        <include refid="RoleBaseCondition" />
+        order by
+            assigned_flag desc, ir.h_tenant_id, ir.h_level_path
+    </select>
+
+    <!-- 查询成员可分配的角色 by: 康总 -->
+    <select id="selectMemberAssignableRoles" resultType="org.hzero.iam.domain.vo.RoleVO">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        <bind name="tplRoleLabel" value="@org.hzero.iam.domain.entity.Role@LABEL_ROLE_TPL_LIKE"/>
+        <bind name="siteSuperRole" value="@org.hzero.common.HZeroConstant$RoleCode@SITE"/>
+        <bind name="tenantSuperRole" value="@org.hzero.common.HZeroConstant$RoleCode@TENANT"/>
+        <bind name="adminRolePs" value="@org.hzero.iam.infra.constant.Constants@ADMIN_ROLE_PS"/>
+        <bind name="now" value="@java.time.LocalDate@now()" />
+
+        select
+            ir.id,
+            ir.code as "code",
+            irt.name as "name",
+            ir.fd_level as "level",
+            ir.h_tenant_id as tenant_id,
+            ht.tenant_num,
+            httl.tenant_name
+        from iam_role ir
+        left join iam_role_tl irt ON (ir.id = irt.id AND irt.lang = #{lang})
+        left join hpfm_tenant ht ON ht.tenant_id = ir.h_tenant_id
+        left join hpfm_tenant_tl httl ON ht.tenant_id = httl.tenant_id AND httl.lang = #{lang}
+        where ir.is_enabled = 1
+        and ir.id in (
+            select ir2.id
+            from
+                iam_role iri,
+                iam_member_role imr,
+                iam_role ir2
+                left join oauth_password_policy opp on (ir2.h_tenant_id = opp.organization_id)
+            where iri.is_enabled = 1
+            and imr.role_id = iri.id
+            and imr.member_id = #{userId}
+            and imr.member_type = 'user'
+            and (imr.start_date_active is null or imr.start_date_active &lt;= #{now})
+            and (imr.end_date_active is null or imr.end_date_active &gt;= #{now})
+            and (
+                iri.code in (#{siteSuperRole}, #{tenantSuperRole})
+                or iri.id in (
+                    select irp.role_id
+                    from iam_menu ps
+                    join iam_role_permission irp on (irp.permission_id = ps.id and irp.type = 'PS')
+                    where 1=1
+                    and (irp.h_create_flag = 'Y' or irp.h_inherit_flag = 'Y')
+                    and ps.type = 'ps'
+                    and ps.h_enabled_flag = 1
+                    and ps.code like #{adminRolePs}
+                )
+            )
+            and (
+                (imr.role_id = ir2.id and (opp.enable_role_allocate = 1 or opp.enable_role_allocate is null))
+                or imr.role_id != ir2.id
+            )
+            and (
+                ir2.h_level_path like concat(iri.h_level_path, '%')
+                <if test="rootUser == false and userOrganizationId != null and userTenantId != 0">
+                    and (
+                        ir2.h_tenant_id = #{userOrganizationId}
+                        or ir2.created_by_tenant_id = #{userOrganizationId}
+                        or ir2.id in (
+                            select imr2.role_id
+                            from iam_member_role imr2
+                            where imr2.member_id = #{userId}
+                            and imr2.member_type = 'user'
+                            and (imr2.start_date_active is null or imr2.start_date_active &lt;= #{now})
+                            and (imr2.end_date_active is null or imr2.end_date_active &gt;= #{now})
+                        )
+                    )
+                </if>
+            )
+        )
+        <!-- 模板角色不可分配 -->
+        and ir.id not in (
+            select hlr.data_id
+            from hiam_label_rel hlr
+            join iam_label il on hlr.label_id = il.id
+            where
+                il.name like #{tplRoleLabel}
+                and hlr.data_type = 'ROLE'
+        )
+        <if test="memberId != null">
+            and ir.id not in (
+                select imr.role_id
+                from iam_member_role imr
+                where imr.member_id = #{memberId}
+                and imr.member_type = #{memberType}
+            )
+        </if>
+        <if test="excludeRoleIds != null and excludeRoleIds.size > 0">
+            and ir.id not in
+            <foreach collection="excludeRoleIds" open="(" item="excludeRoleId" separator="," close=")">
+                #{excludeRoleId}
+            </foreach>
+        </if>
+        <if test="excludeSecGrpId != null">
+            and ir.id not in (
+                select irp.role_id
+                from iam_role_permission irp
+                where irp.permission_id = #{excludeSecGrpId}
+                and irp.type = 'SG'
+            )
+        </if>
+        <if test="name != null and name != ''">
+            <bind name="nameLike" value="'%' + name + '%'" />
+            and irt.name LIKE #{nameLike}
+        </if>
+        <if test="tenantNum != null and tenantNum != ''">
+            <bind name="tenantNumLike" value="'%' + tenantNum + '%'" />
+            and ht.tenant_num LIKE #{tenantNumLike}
+        </if>
+        <if test="tenantName != null and tenantName != ''">
+            <bind name="tenantNameLike" value="'%' + tenantName + '%'" />
+            and httl.tenant_name LIKE #{tenantNameLike}
+        </if>
+        <bind name="roleTableAlias" value="'ir'" />
+        <include refid="Con_Labels" />
+        <include refid="RoleBaseCondition" />
+        order by
+            ir.h_tenant_id, ir.id
+    </select>
+
+    <!-- 查询 member 关联的角色 -->
+    <select id="selectMemberRoles" resultMap="BaseResultMap">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        <bind name="now" value="@java.time.LocalDate@now()" />
+        <bind name="tenantAdminLabel" value="@org.hzero.iam.domain.entity.Role@LABEL_TENANT_ADMIN"/>
+        <bind name="siteSuperRole" value="@org.hzero.common.HZeroConstant$RoleCode@SITE"/>
+        <bind name="tenantSuperRole" value="@org.hzero.common.HZeroConstant$RoleCode@TENANT"/>
+        <bind name="adminRoleTableAlias" value="'ir'" />
+
+        select
+            imr.id member_role_id,
+            ir.id,
+            ir.code as code,
+            ir.fd_level,
+            irt.name as name,
+            ir.h_tenant_id,
+            httl.tenant_name,
+            ir.h_parent_role_assign_level,
+            ir.h_parent_role_assign_level_val,
+            case when huc.default_role_id is not null then 1 else 0 end as is_default_role,
+            imr.start_date_active,
+            imr.end_date_active
+            <if test="queryAdminFlag">
+                ,
+                case when <include refid="Con_Admin_Role" /> then 1 else 0 end as admin_flag
+            </if>
+            <if test="queryRoleControlPolicy ">
+                ,
+                opp.enable_role_inherit,
+                opp.enable_role_allocate,
+                case
+                    when opp.enable_role_permission = 1 then 1
+                    when opp.enable_role_permission = 0 and (
+                        ir.code in (#{siteSuperRole}, #{tenantSuperRole})
+                        or exists (
+                            select 1 from
+                            hiam_label_rel hlr
+                            join iam_label il on (hlr.label_id = il.id)
+                            where hlr.data_id = ir.id
+                            and hlr.data_type = 'ROLE'
+                            and hlr.assign_type = 'A'
+                            and il.name = #{tenantAdminLabel}
+                        )
+                    ) then 1
+                    else 0
+                end as enable_role_permission
+            </if>
+        from iam_member_role imr
+        join iam_role ir ON ir.id = imr.role_id
+        join iam_role_tl irt ON (ir.id = irt.id and irt.lang = #{lang})
+        join hpfm_tenant ht on ht.tenant_id = ir.h_tenant_id
+        left join hpfm_tenant_tl httl ON ht.tenant_id = httl.tenant_id AND httl.lang = #{lang}
+        left join hiam_user_config huc on (
+            imr.member_id = huc.user_id
+            and imr.h_assign_level_value = huc.tenant_id
+            and imr.role_id = huc.default_role_id
+        )
+        <if test="queryRoleControlPolicy ">
+            left join oauth_password_policy opp on (opp.organization_id = ir.h_tenant_id)
+        </if>
+        where imr.member_id = #{memberId}
+        and imr.member_type = #{memberType}
+        and ir.is_enabled = 1
+        <if test="checkMemberRoleExpire">
+            AND (imr.start_date_active IS NULL OR imr.start_date_active &lt;= #{now})
+            AND (imr.end_date_active IS NULL OR imr.end_date_active &gt;= #{now})
+        </if>
+        <if test="tenantId != null">
+            and ir.h_tenant_id = #{tenantId}
+        </if>
+        <if test="id != null">
+            and ir.id = #{id}
+        </if>
+        <if test="name != null and name != ''">
+            <bind name="nameLike" value="'%' + name + '%'" />
+            and irt.name LIKE #{nameLike}
+        </if>
+        order by ir.h_tenant_id, ir.id asc
+    </select>
+
+    <!-- 查询 Root 用户访问租户的租户管理员角色 -->
+    <select id="selectRootMemberRoles" resultMap="BaseResultMap">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        <bind name="roleLabelDataType" value="@org.hzero.iam.domain.entity.Role@LABEL_DATA_TYPE"/>
+        <bind name="tenantAdminLabel" value="@org.hzero.iam.domain.entity.Role@LABEL_TENANT_ADMIN"/>
+        <bind name="tplRoleLabel" value="@org.hzero.iam.domain.entity.Role@LABEL_ROLE_TPL_LIKE"/>
+        <bind name="siteSuperRole" value="@org.hzero.common.HZeroConstant$RoleCode@SITE"/>
+        <bind name="tenantSuperRole" value="@org.hzero.common.HZeroConstant$RoleCode@TENANT"/>
+        <bind name="adminRolePs" value="@org.hzero.iam.infra.constant.Constants@ADMIN_ROLE_PS"/>
+
+        select
+            ir.id,
+            ir.code as code,
+            ir.fd_level,
+            irt.name as name,
+            ir.h_tenant_id,
+            httl.tenant_name,
+            ir.h_parent_role_assign_level,
+            ir.h_parent_role_assign_level_val,
+            case when huc.default_role_id is not null then 1 else 0 end as is_default_role,
+            opp.enable_role_inherit,
+            opp.enable_role_allocate,
+            case
+                when opp.enable_role_permission = 1 then 1
+                when opp.enable_role_permission = 0 and (
+                    ir.code in (#{siteSuperRole}, #{tenantSuperRole})
+                    or exists (
+                        select 1 from
+                        hiam_label_rel hlr
+                        join iam_label il on (hlr.label_id = il.id)
+                        where hlr.data_id = ir.id
+                        and hlr.data_type = 'ROLE'
+                        and hlr.assign_type = 'A'
+                        and il.name = #{tenantAdminLabel}
+                    )
+                ) then 1
+                else 0
+            end as enable_role_permission
+            <if test="queryAdminFlag">
+                ,
+                case when
+                    ir.code in (#{siteSuperRole}, #{tenantSuperRole})
+                    or exists (
+                        select 1
+                        from iam_menu ps
+                        join iam_role_permission irp on (irp.permission_id = ps.id and irp.type = 'PS')
+                        where irp.role_id = ir.id
+                        and (irp.h_create_flag = 'Y' or irp.h_inherit_flag = 'Y')
+                        and ps.type = 'ps'
+                        and ps.h_enabled_flag = 1
+                        and ps.code like #{adminRolePs}
+                    ) then 1 else 0
+                end as admin_flag
+            </if>
+        from
+            iam_role ir
+            join iam_role_tl irt ON (ir.id = irt.id and irt.lang = #{lang})
+            join iam_user iu on iu.id = #{memberId}
+            join hpfm_tenant ht on ht.tenant_id = ir.h_tenant_id
+            join hpfm_tenant_tl httl ON ht.tenant_id = httl.tenant_id AND httl.lang = #{lang}
+            left join hiam_user_config huc on (
+                iu.id = huc.user_id
+                and ht.tenant_id = huc.tenant_id
+                and ir.id = huc.default_role_id
+            )
+            left join oauth_password_policy opp on (opp.organization_id = ir.h_tenant_id)
+        where
+            ir.h_tenant_id = #{tenantId}
+            and ir.is_enabled = 1
+            and iu.is_enabled = 1
+            and iu.is_locked = 0
+            and iu.is_admin = 1
+            and (
+                ir.code in (#{siteSuperRole}, #{tenantSuperRole})
+                or (
+                    exists (
+                        select 1
+                        from hiam_label_rel hlr
+                        join iam_label il on hlr.label_id = il.id
+                        where
+                            il.name = #{tenantAdminLabel}
+                            and hlr.data_type = #{roleLabelDataType}
+                            and hlr.data_id = ir.id
+                    )
+                    and not exists (
+                        select 1
+                        from hiam_label_rel hlr
+                        join iam_label il on hlr.label_id = il.id
+                        where
+                            il.name like #{tplRoleLabel}
+                            and hlr.data_type = #{roleLabelDataType}
+                            and hlr.data_id = ir.id
+                    )
+                )
+            )
+        order by ir.h_tenant_id,ir.id asc
+    </select>
+
+    <!-- 查询角色详细信息 -->
+    <select id="selectRoleDetails" resultMap="BaseResultMap">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        select
+            irt.name as name,
+            httl.tenant_name,
+            iri.code inherited_role_code,
+            irit.name inherited_role_name,
+            irp.code parent_role_code,
+            irpt.name parent_role_name,
+            <include refid="RoleBaseColumn" />
+        from iam_role ir
+        join iam_role_tl irt ON (ir.id = irt.id AND irt.lang = #{lang})
+        join hpfm_tenant ht ON ht.tenant_id = ir.h_tenant_id
+        LEFT JOIN hpfm_tenant_tl httl ON ht.tenant_id = httl.tenant_id AND httl.lang = #{lang}
+        left join iam_role iri on iri.id = ir.h_inherit_role_id
+        left join iam_role_tl irit on (irit.id = iri.id and irit.lang = #{lang})
+        left join iam_role irp on irp.id = ir.h_parent_role_id
+        left join iam_role_tl irpt on (irpt.id = irp.id and irpt.lang = #{lang})
+        where ir.id = #{roleId}
+    </select>
+
+    <!-- 根据条件查询角色简要信息 -->
+    <select id="selectSimpleRoles" resultType="org.hzero.iam.domain.entity.Role">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        SELECT
+            ir.id,
+            ir.code as "code",
+            irt.name as "name",
+            ir.description,
+            ir.fd_level as "level",
+            ir.h_tenant_id as tenantId,
+            ir.h_parent_role_id as parentRoleId,
+            ir.h_inherit_role_id as inheritRoleId,
+            ir.is_built_in as isBuiltIn,
+            ir.object_version_number,
+            ht.tenant_num,
+            httl.tenant_name,
+            ir.created_by
+        FROM iam_role ir
+        JOIN iam_role_tl irt ON ir.id = irt.id AND irt.lang = #{lang}
+        JOIN hpfm_tenant ht ON ht.tenant_id = ir.h_tenant_id
+        JOIN hpfm_tenant_tl httl ON ht.tenant_id = httl.tenant_id AND httl.lang = #{lang}
+        <where>
+            <include refid="RoleBaseCondition" />
+            <if test="name != null">
+                <bind name="nameLike" value="'%' + name + '%'"/>
+                and irt.name LIKE #{nameLike}
+            </if>
+        </where>
+        ORDER BY ir.id
+    </select>
+
+    <select id="selectAdminRole" resultMap="BaseResultMap">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        <bind name="now" value="@java.time.LocalDate@now()" />
+        <bind name="adminRolePs" value="@org.hzero.iam.infra.constant.Constants@ADMIN_ROLE_PS"/>
+        <bind name="siteSuperRole" value="@org.hzero.common.HZeroConstant$RoleCode@SITE"/>
+        <bind name="tenantSuperRole" value="@org.hzero.common.HZeroConstant$RoleCode@TENANT"/>
+        SELECT
+            ir.id,
+            ir.code as "code",
+            irt.name as "name",
+            ir.description,
+            ir.fd_level,
+            ir.h_tenant_id,
+            ht.tenant_num,
+            ht.tenant_name
+        FROM iam_role ir
+        JOIN iam_role_tl irt ON ir.id = irt.id AND irt.lang = #{lang}
+        JOIN hpfm_tenant ht ON ht.tenant_id = ir.h_tenant_id
+        WHERE ir.is_enabled = 1
+        AND (ir.id = #{id} and ir.code in (#{siteSuperRole}, #{tenantSuperRole}))
+        OR ir.h_level_path = (
+            select
+                max(ir_admin.h_level_path)
+            from iam_role ir_admin
+            join iam_role_permission irp on (irp.role_id = ir_admin.id and irp.type = 'PS')
+            join iam_menu ps on (ps.id = irp.permission_id and ps.type = 'ps' and ps.h_enabled_flag = 1)
+            join iam_role ir on (ir.h_level_path like concat(ir_admin.h_level_path, '%'))
+            <if test="rootUser == false">
+                join iam_member_role imr on (ir_admin.id = imr.role_id)
+            </if>
+            where
+            ir_admin.is_enabled = 1
+            and ps.code like #{adminRolePs}
+            and (irp.h_create_flag = 'Y' or irp.h_inherit_flag = 'Y')
+            and ir.id = #{id}
+            <if test="rootUser == false">
+                AND imr.member_type = 'user'
+                AND imr.member_id = #{userId}
+                AND (imr.start_date_active IS NULL OR imr.start_date_active &lt;= #{now})
+                AND (imr.end_date_active IS NULL OR imr.end_date_active &gt;= #{now})
+            </if>
+        )
+    </select>
+
+    <!-- 查询角色的父级角色 -->
+    <select id="selectAllParentRoles"  resultType="org.hzero.iam.domain.entity.Role">
+        SELECT
+            ir_parent.id,
+            ir_parent.code as code,
+            ir_parent.name as name,
+            ir_parent.is_enabled,
+            ir_parent.object_version_number
+        from iam_role ir_parent
+        where exists (
+            select 'x'
+            from iam_role ir
+            where ir.id = #{roleId}
+            and ir.fd_level = ir_parent.fd_level
+            and ir.h_level_path like concat(ir_parent.h_level_path, '|%')
+        )
+    </select>
+
+    <!-- 查询角色的所有子孙角色 -->
+    <select id="selectAllSubRoles"  resultType="org.hzero.iam.domain.entity.Role">
+        SELECT
+            ir_child.id,
+            ir_child.code as code,
+            ir_child.name as name,
+            ir_child.is_enabled,
+            ir_child.object_version_number
+        from iam_role ir_child
+        where exists (
+            select 'x'
+            from iam_role ir
+            where ir.id = #{roleId}
+            and ir.fd_level = ir_child.fd_level
+            and ir_child.h_level_path like concat(ir.h_level_path, '|%')
+        )
+    </select>
+
+    <!-- 查询继承角色树，且包含角色已分配的权限集 -->
+    <select id="selectInheritSubRolesWithPermissionSets" resultMap="RolePsMap">
+        SELECT
+            ir.id,
+            ir.h_tenant_id,
+            ir.h_parent_role_id,
+            ir.h_inherit_role_id,
+            irp.id as role_permission_id,
+            irp.permission_id,
+            irp.h_create_flag,
+            irp.h_inherit_flag
+        from iam_role ir
+        left join iam_role_permission irp on (
+          irp.role_id = ir.id and irp.type = #{permissionType}
+          <if test="permissionSetIds != null and permissionSetIds.size > 0">
+            and irp.permission_id in
+            <foreach collection="permissionSetIds" item="permissionSetId" open="(" separator="," close=")">
+              #{permissionSetId}
+            </foreach>
+          </if>
+        )
+        where 1=1
+        and exists (
+          select 1 from iam_role ir_in
+          where ir_in.id = #{inheritRoleId}
+          and ir.h_inherit_level_path like concat(ir_in.h_inherit_level_path, '|%')
+        )
+    </select>
+
+    <!-- 查询继承角色树，且包含角色已分配的权限集 -->
+    <select id="selectCreatedSubRolesWithPermissionSets" resultMap="RolePsMap">
+        SELECT
+            ir.id,
+            ir.code as code,
+            ir.h_parent_role_id,
+            ir.h_inherit_role_id,
+            irp.id as role_permission_id,
+            irp.permission_id,
+            irp.h_create_flag,
+            irp.h_inherit_flag
+        from iam_role ir
+        left join iam_role_permission irp on (
+          irp.role_id = ir.id and irp.type = #{permissionType}
+          <if test="permissionSetIds != null and permissionSetIds.size > 0">
+            and irp.permission_id in
+            <foreach collection="permissionSetIds" item="permissionSetId" open="(" separator="," close=")">
+              #{permissionSetId}
+            </foreach>
+          </if>
+        )
+        where 1=1
+        and exists (
+            select 1 from iam_role ir_in
+            where ir_in.id = #{parentRoleId}
+            and ir.h_level_path like concat(ir_in.h_level_path, '|%')
+        )
+    </select>
+
+    <select id="countUserRole" resultType="int">
+        SELECT
+          COUNT(*)
+        FROM iam_member_role
+        WHERE member_id = #{userId} AND role_id = #{roleId}
+    </select>
+
+    <select id="selectTenantAdmin" resultType="org.hzero.iam.domain.entity.Role">
+        SELECT
+            id,
+            name,
+            code,
+            description,
+            fd_level,
+            h_tenant_id,
+            h_inherit_role_id,
+            h_parent_role_id,
+            h_parent_role_assign_level,
+            h_parent_role_assign_level_val,
+            is_enabled,
+            is_modified,
+            is_enable_forbidden,
+            is_built_in,
+            is_assignable,
+            object_version_number
+        FROM iam_role ir
+        WHERE
+            (ir.code = 'role/organization/default/administrator'
+            OR EXISTS(SELECT 1
+                         FROM   iam_role ir2
+                         WHERE  ir2.code = 'role/organization/default/template/administrator'
+                                      AND ir.h_inherit_role_id = ir2.id))
+        <if test="tenantId != null">
+            AND ir.h_tenant_id = #{tenantId}
+        </if>
+        order by ir.h_level_path
+    </select>
+
+    <select id="selectUserRole" resultType="org.hzero.iam.domain.entity.Role">
+        <bind name="now" value="@java.time.LocalDate@now()" />
+        SELECT
+            id,
+            name,
+            code,
+            description,
+            fd_level,
+            h_tenant_id,
+            h_inherit_role_id,
+            h_parent_role_id,
+            h_parent_role_assign_level,
+            h_parent_role_assign_level_val,
+            is_enabled,
+            is_modified,
+            is_enable_forbidden,
+            is_built_in,
+            is_assignable
+        FROM iam_role ir
+        WHERE ir.h_tenant_id = #{tenantId}
+        AND EXISTS (
+            SELECT 1
+              FROM iam_member_role imr
+             WHERE imr.member_id = #{userId}
+               AND imr.member_type = 'user'
+               AND imr.role_id = ir.id
+               AND (
+                imr.start_date_active IS NULL OR imr.start_date_active &lt;= #{now}
+               )
+               AND (
+                imr.end_date_active IS NULL OR imr.end_date_active &gt;= #{now}
+               )
+        )
+    </select>
+
+    <!-- 查询角色的所有子孙角色 -->
+    <select id="selectAllSubRolesIncludeSelf"  resultMap="RoleMap">
+        SELECT
+        ir_child.id,
+        ir_child.code as code,
+        ir_child.name as name,
+        ir_child.is_enabled,
+        ir_child.h_parent_role_id,
+        ir_child.h_inherit_role_id,
+        ir_child.object_version_number
+        from iam_role ir_child
+        where exists (
+        select 'x'
+        from iam_role ir
+        where ir.id = #{roleId}
+        and ir.fd_level = ir_child.fd_level
+        and (ir_child.h_level_path like concat(ir.h_level_path, '|%') or ir_child.h_level_path = ir.h_level_path)
+        )
+    </select>
+
+    <select id="selectDirectAssignedRolesOfSecGrp" resultMap="RoleMap">
+        SELECT
+        ir_out.id,
+        ir_out.code as code,
+        ir_out.name as name,
+        ir_out.is_enabled,
+        ir_out.h_parent_role_id,
+        ir_out.h_inherit_role_id,
+        ir_out.object_version_number
+        FROM iam_role ir_out
+        JOIN iam_role_permission irp ON irp.role_id = ir_out.id AND  irp.type = 'SG'AND ( irp.h_create_flag = 'Y' or irp.h_inherit_flag = 'Y') AND irp.permission_id =  #{secGrpId}
+        ORDER BY ir_out.id
+    </select>
+
+    <select id="selectSecGrpAssignableRole" resultType="org.hzero.iam.domain.vo.RoleVO">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        SELECT
+        ir_out.id,
+        ir_out.code as code,
+        ir_out.name as name,
+        ir_out.fd_level,
+        ir_out.is_enabled,
+        ir_out.h_parent_role_id,
+        ir_out.h_inherit_role_id,
+        ht.tenant_id,
+        ht.tenant_num,
+        ht.tenant_name
+        FROM iam_role ir_out
+        INNER JOIN hpfm_tenant ht
+        ON ir_out.h_tenant_id = ht.tenant_id
+        WHERE ir_out.is_enabled = 1
+        AND ht.enabled_flag = 1
+        AND EXISTS (
+        SELECT 1
+        FROM iam_role ir
+        WHERE ir.id = #{roleId}
+        AND ir_out.fd_level = ir.fd_level
+        AND ir_out.h_level_path like concat(ir.h_level_path, '|%')
+        )
+        AND NOT EXISTS (
+        SELECT 1
+        FROM iam_role_permission irp
+        WHERE irp.role_id = ir_out.id
+        AND irp.type = 'SG'
+        AND irp.permission_id = #{secGrpId}
+        )
+        <if test="@java.util.Objects@nonNull(query)">
+            <if test="@org.apache.commons.lang3.StringUtils@isNotBlank(query.code)">
+                <bind name="codeLike" value="'%' + query.code + '%'"/>
+                and ir_out.code LIKE #{codeLike}
+            </if>
+            <if test="@org.apache.commons.lang3.StringUtils@isNotBlank(query.name)">
+                <bind name="nameLike" value="'%' + query.name + '%'"/>
+                and ir_out.name LIKE #{nameLike}
+            </if>
+            <if test="@java.util.Objects@nonNull(query.tenantId)">
+                and ht.tenant_id = #{query.tenantId}
+            </if>
+            <if test="@org.apache.commons.lang3.StringUtils@isNotBlank(query.tenantName)">
+                <bind name="tenantNameLike" value="'%' + query.tenantName + '%'"/>
+                and ht.tenant_name LIKE #{tenantNameLike}
+            </if>
+        </if>
+    </select>
+
+    <select id="selectAllInheritedRole" resultType="org.hzero.iam.domain.entity.Role">
+        select
+            ir.id,
+            ir.h_tenant_id as tenantId,
+            ir.h_inherit_role_id as inheritRoleId,
+            ir.h_parent_role_id as parentRoleId
+        from iam_role ir
+        where exists (
+            select 1
+            from iam_role iri
+            where iri.id = #{roleId}
+            and iri.is_enabled = 1
+            and ir.h_inherit_level_path like concat(iri.h_inherit_level_path, '|%')
+        )
+        order by ir.h_inherit_level_path asc
+    </select>
+
+    <select id="selectAllCreatedRole" resultType="org.hzero.iam.domain.entity.Role">
+        select
+            ir.id,
+            ir.h_tenant_id as tenantId,
+            ir.h_inherit_role_id as inheritRoleId,
+            ir.h_parent_role_id as parentRoleId
+        from iam_role ir
+        where ir.h_inherit_level_path like (
+            select concat(iri.h_inherit_level_path, '|%')
+            from iam_role iri
+            where iri.id = #{roleId}
+            and iri.is_enabled = 1
+        )
+        order by ir.h_level_path asc
+    </select>
+
+    <select id="selectByRoleIds" resultMap="BaseResultMap" parameterType="java.util.List">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        SELECT
+            ir.id,
+            irt.name as name,
+            ir.code as code,
+            ir.description,
+            ir.fd_level as "level",
+            ir.h_tenant_id,
+            ir.h_inherit_role_id,
+            ir.h_parent_role_id,
+            ir.h_parent_role_assign_level,
+            ir.h_parent_role_assign_level_val,
+            ir.is_enabled,
+            ir.is_modified,
+            ir.is_enable_forbidden,
+            ir.is_built_in,
+            ir.is_assignable,
+            htt.tenant_name
+        FROM
+            iam_role ir
+            join iam_role_tl irt on ir.id = irt.id and irt.lang = #{lang}
+            join hpfm_tenant ht on ir.h_tenant_id = ht.tenant_id
+            join hpfm_tenant_tl htt on ht.tenant_id = htt.tenant_id and htt.lang = #{lang}
+        WHERE ir.id in
+        <foreach collection="roleIds" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </select>
+
+    <!-- 查询模板角色 -->
+    <select id="selectBuiltInTemplateRole" resultMap="RoleLabel">
+        select
+            ir.id,
+            ir.name as "name",
+            ir.code as "code",
+            ir.fd_level,
+            ir.h_tenant_id,
+            ir.h_inherit_role_id,
+            ir.h_parent_role_id,
+            ir.tpl_role_name,
+            il.id label_id,
+            il.name label_name,
+            il.type label_type
+        from iam_role ir
+        join hiam_label_rel hlr on (
+            hlr.data_type = 'ROLE'
+            and hlr.data_id = ir.id
+        )
+        join iam_label il on il.id = hlr.label_id
+        where ir.is_enabled = 1
+        and il.preset_flag = 1
+        and il.enabled_flag = 1
+        and exists (
+            select 1
+            from iam_label il
+            join hiam_label_rel hlr on (
+                hlr.data_type = 'ROLE'
+                and hlr.label_id = il.id
+            )
+            where
+            hlr.data_id = ir.id
+            and il.enabled_flag = 1
+            and il.preset_flag = 1
+            and il.name = #{roleLabel}
+        )
+    </select>
+
+
+    <select id="selectTplRoleNameById" resultType="java.util.HashMap">
+        select
+            irt.lang as "lang",
+            irt.tpl_role_name as "name"
+        from iam_role ir
+        join iam_role_tl irt on ir.id = irt.id
+        where ir.id = #{roleId}
+    </select>
+
+    <select id="countSubRole" resultType="java.lang.Long">
+        select count(*)
+        from iam_role ir
+        join iam_role irp on ir.h_level_path like concat(irp.h_level_path, '|%')
+        where
+        ir.id = #{roleId}
+        and irp.id = #{parentRoleId}
+    </select>
+
+    <select id="selectSubAssignedRoles" resultType="org.hzero.iam.domain.vo.RoleVO">
+        select
+            ir.id,
+            ir.code
+        from iam_role ir
+        join iam_member_role imr on (
+            imr.role_id = ir.id
+            and imr.member_id = #{userId}
+            and imr.member_type = 'user'
+        )
+        where ir.id = #{roleId}
+        or exists (
+            select 1
+            from iam_role irp
+            where irp.id = #{roleId}
+            and ir.h_level_path like concat(irp.h_level_path, '|%')
+        )
+    </select>
+
+    <select id="selectRoleByLabel" resultType="org.hzero.iam.domain.entity.Role">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        <bind name="roleLabelDataType" value="@org.hzero.iam.domain.entity.Role@LABEL_DATA_TYPE"/>
+        <bind name="tplRoleLabel" value="@org.hzero.iam.domain.entity.Role@LABEL_ROLE_TPL_LIKE"/>
+        select
+            <include refid="RoleBaseColumn" />
+        from iam_role ir
+        join iam_role_tl irt on (ir.id = irt.id and irt.lang = #{lang})
+        join hiam_label_rel hlr on (
+            hlr.data_type = #{roleLabelDataType}
+            and hlr.data_id = ir.id
+        )
+        join iam_label il on (hlr.label_id = il.id)
+        where il.enabled_flag = 1
+        and il.name in
+        <foreach collection="roleLabels" item="label" open="(" separator="," close=")">
+            #{label}
+        </foreach>
+        <if test="tenantId != null">
+            and ir.h_tenant_id = #{tenantId}
+        </if>
+        <if test="assignType != null and assignType != ''">
+            and hlr.assign_type = #{assignType}
+        </if>
+        and not exists (
+            select 1
+            from iam_label il
+            join hiam_label_rel hlr on (hlr.data_type = #{roleLabelDataType} and hlr.label_id = il.id)
+            where hlr.data_id = ir.id
+            and il.name like #{tplRoleLabel}
+        )
+    </select>
+
+    <select id="querySelfAdminRole" resultType="org.hzero.iam.domain.vo.RoleVO">
+        <bind name="adminRoleTableAlias" value="'ir'" />
+        select
+            ir.id,
+            case when <include refid="Con_Admin_Role" /> then 1 else 0 end as admin_flag
+        from iam_role ir
+        <if test="rootUser == false">
+            join iam_member_role imr on (
+                imr.role_id = ir.id
+                and imr.member_id = #{userId}
+                and imr.member_type = 'user'
+            )
+        </if>
+        where
+        ir.id = #{roleId}
+    </select>
+
+    <select id="selectRootUserAssignableRoles" resultType="org.hzero.iam.domain.vo.RoleVO">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        <bind name="roleTableAlias" value="'ir'" />
+        select
+            ir.id,
+            ir.code as code,
+            irt.name as name,
+            ir.fd_level,
+            ir.h_tenant_id as tenant_id,
+            httl.tenant_name
+        from iam_role ir
+        join iam_role_tl irt ON (ir.id = irt.id AND irt.lang = #{lang})
+        join hpfm_tenant ht ON ht.tenant_id = ir.h_tenant_id
+        join hpfm_tenant_tl httl ON ht.tenant_id = httl.tenant_id AND httl.lang = #{lang}
+        where ir.is_enabled = 1
+        <if test="memberId != null">
+            and not exists (
+                select 1
+                from iam_member_role imr
+                where imr.role_id = ir.id
+                and imr.member_id = #{memberId}
+                and imr.member_type = #{memberType}
+            )
+        </if>
+        <if test="excludeRoleIds != null and excludeRoleIds.size > 0">
+            and ir.id not in
+            <foreach collection="excludeRoleIds" item="excludeRoleId" open="(" separator="," close=")">
+                #{excludeRoleId}
+            </foreach>
+        </if>
+        <if test="tenantId != null">
+            and ir.h_tenant_id = #{tenantId}
+        </if>
+        <if test="name != null">
+            <bind name="nameLike" value="'%' + name + '%'"/>
+            and irt.name like #{nameLike}
+        </if>
+        <include refid="Con_Labels" />
+        order by ir.h_tenant_id, ir.id
+    </select>
+
+    <select id="selectAllManageRoleIds" resultType="java.lang.Long">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        <bind name="tplRoleLabel" value="@org.hzero.iam.domain.entity.Role@LABEL_ROLE_TPL_LIKE"/>
+        <bind name="now" value="@java.time.LocalDate@now()" />
+        select
+            <!--join 临时表可能会有重复数据-->
+            distinct ir.id
+        from iam_role ir
+        <choose>
+            <when test="rootUser == false">
+                ,
+                (
+                    select iri.h_level_path
+                    from iam_role iri
+                    join iam_member_role imr on (
+                        imr.role_id = iri.id
+                        and imr.member_id = #{userId}
+                        and imr.member_type = 'user'
+                        and (imr.start_date_active IS NULL OR imr.start_date_active &lt;= #{now})
+                        and (imr.end_date_active IS NULL OR imr.end_date_active &gt;= #{now})
+                    )
+                    where iri.is_enabled = 1
+                    <bind name="adminRoleTableAlias" value="'iri'" />
+                    and <include refid="Con_Admin_Role" />
+                ) tmp
+                where (
+                    (
+                        ir.h_level_path like concat(tmp.h_level_path, '|%')
+                        <if test="userOrganizationId != null and userTenantId != 0">
+                            and (
+                                ir.h_tenant_id = #{userOrganizationId}
+                                or ir.created_by_tenant_id = #{userOrganizationId}
+                                or ir.id in <include refid="Member_Role_Id" />
+                            )
+                        </if>
+                    )
+                    or ir.h_level_path = tmp.h_level_path
+                )
+            </when>
+            <otherwise>
+                where 1=1
+            </otherwise>
+        </choose>
+        <if test="queryRoleIds != null and queryRoleIds.size > 0">
+            and ir.id in
+            <foreach collection="queryRoleIds" open="(" item="queryRoleId" separator="," close=")">
+                #{queryRoleId}
+            </foreach>
+        </if>
+        <if test="id != null">
+            and ir.id = #{id}
+        </if>
+    </select>
+
+    <select id="selectAssignedRoles" resultMap="BaseResultMap">
+        <bind name="now" value="@java.time.LocalDate@now()" />
+        <bind name="adminRoleTableAlias" value="'ir'" />
+        select
+            ir.id,
+            ir.code as code,
+            ir.fd_level,
+            ir.h_tenant_id,
+            ir.h_inherit_role_id,
+            ir.h_parent_role_id,
+            ir.h_level_path,
+            ir.created_by_tenant_id,
+            case when <include refid="Con_Admin_Role" /> then 1 else 0 end as admin_flag,
+            opp.enable_role_allocate
+        from iam_member_role imr
+        join iam_role ir on (imr.role_id = ir.id)
+        join oauth_password_policy opp on ir.h_tenant_id = opp.organization_id
+        where imr.member_id = #{memberId}
+        and imr.member_type = #{memberType}
+        and (imr.start_date_active IS NULL OR imr.start_date_active &lt;= #{now})
+        and (imr.end_date_active IS NULL OR imr.end_date_active &gt;= #{now})
+        and ir.is_enabled = 1
+    </select>
+
+    <!--  查询用户的管理角色  -->
+    <select id="selectUserAssignedRolesForTree" resultMap="BaseResultMap">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        <bind name="now" value="@java.time.LocalDate@now()" />
+        <bind name="tenantAdminLabel" value="@org.hzero.iam.domain.entity.Role@LABEL_TENANT_ADMIN"/>
+        <bind name="siteSuperRole" value="@org.hzero.common.HZeroConstant$RoleCode@SITE"/>
+        <bind name="tenantSuperRole" value="@org.hzero.common.HZeroConstant$RoleCode@TENANT"/>
+        <bind name="adminRoleTableAlias" value="'ir'" />
+
+        select
+            ir.id,
+            ir.code as code,
+            irt.name as name,
+            ir.description,
+            ir.fd_level,
+            ir.h_tenant_id,
+            ir.h_parent_role_id,
+            ir.h_inherit_role_id,
+            ir.is_enabled,
+            case when ir.is_built_in = 1 then 'default' else 'custom' end as role_source,
+            ir.h_level_path,
+            ir.object_version_number,
+            ir.created_by,
+            ht.tenant_num,
+            httl.tenant_name,
+            irit.name as inherited_role_name,
+            htti.tenant_name as inherited_role_tenant_name,
+            irpt.name as parent_role_name,
+            http.tenant_name as parent_role_tenant_name,
+            case when <include refid="Con_Admin_Role" /> then 1 else 0 end AS admin_flag,
+            case when <include refid="Con_Admin_Role" /> then
+            (
+                select count(*)
+                from iam_role sub
+                join iam_role_tl subt on sub.id = subt.id and subt.lang =#{lang}
+                join hpfm_tenant ht on sub.h_tenant_id = ht.tenant_id
+                where sub.fd_level = ir.fd_level
+                and (
+                    sub.h_level_path like concat(ir.h_level_path, '|%')
+                    <if test="rootUser == false and userOrganizationId != null and userTenantId != 0">
+                        and (
+                            sub.h_tenant_id = #{userOrganizationId}
+                            or sub.created_by_tenant_id = #{userOrganizationId}
+                            or sub.id in <include refid="Member_Role_Id" />
+                        )
+                    </if>
+                )
+                <if test="isEnabled != null">
+                    and sub.is_enabled = #{isEnabled}
+                </if>
+                <bind name="roleTableAlias" value="'sub'" />
+                <include refid="Con_Role" />
+            ) else 0 end AS children_num,
+            opp.enable_role_inherit,
+            opp.enable_role_allocate,
+            case
+                when opp.enable_role_permission = 1 then 1
+                when opp.enable_role_permission = 0 and (
+                    ir.code in (#{siteSuperRole}, #{tenantSuperRole})
+                    or exists (
+                        select 1 from
+                        hiam_label_rel hlr
+                        join iam_label il on (hlr.label_id = il.id)
+                        where hlr.data_id = ir.id
+                        and hlr.data_type = 'ROLE'
+                        and hlr.assign_type = 'A'
+                        and il.name = #{tenantAdminLabel}
+                    )
+                ) then 1
+                else 0
+            end as enable_role_permission
+        from iam_role ir
+        join iam_role_tl irt on (ir.id = irt.id and irt.lang = #{lang})
+        join hpfm_tenant ht on ht.tenant_id = ir.h_tenant_id
+        left join hpfm_tenant_tl httl ON ht.tenant_id = httl.tenant_id AND httl.lang = #{lang}
+        left join iam_role iri on iri.id = ir.h_inherit_role_id
+        left join iam_role_tl irit on (irit.id = iri.id and irit.lang = #{lang})
+        left join hpfm_tenant_tl htti ON htti.tenant_id = iri.h_tenant_id AND htti.lang = #{lang}
+        left join iam_role irp on irp.id = ir.h_parent_role_id
+        left join iam_role_tl irpt on (irpt.id = irp.id and irpt.lang = #{lang})
+        left join hpfm_tenant_tl http ON http.tenant_id = irp.h_tenant_id AND http.lang = #{lang}
+        left join oauth_password_policy opp on (opp.organization_id = ir.h_tenant_id)
+        where ir.is_enabled = 1
+        and (
+            ir.id in <include refid="Member_Role_Id" />
+            <if test="rootUser and queryRoleIds != null and queryRoleIds.size > 0">
+                or ir.id in
+                <foreach collection="queryRoleIds" open="(" item="queryRoleId" separator="," close=")">
+                    #{queryRoleId}
+                </foreach>
+            </if>
+        )
+        <if test="level != null and level != ''">
+            and ir.fd_level = #{level}
+        </if>
+        having (
+            children_num > 0
+            or (
+                <trim prefixOverrides="and" prefix="">
+                    <if test="isEnabled != null">
+                        and ir.is_enabled = #{isEnabled}
+                    </if>
+                    <choose>
+                        <when test="hasQueryParams">
+                            <bind name="roleTableAlias" value="'ir'" />
+                            <include refid="Con_Role" />
+                        </when>
+                        <otherwise>
+                            and 1=1
+                        </otherwise>
+                    </choose>
+                </trim>
+            )
+        )
+        order by ir.h_tenant_id, ir.h_level_path
+    </select>
+
+    <select id="selectNextSubRoles" resultMap="BaseResultMap">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        <bind name="now" value="@java.time.LocalDate@now()" />
+        <bind name="tenantAdminLabel" value="@org.hzero.iam.domain.entity.Role@LABEL_TENANT_ADMIN"/>
+
+        select
+            ir.id,
+            ir.code as code,
+            irt.name as name,
+            ir.description,
+            ir.fd_level,
+            ir.h_tenant_id,
+            ir.h_parent_role_id,
+            ir.h_inherit_role_id,
+            ir.is_enabled,
+            case when ir.is_built_in = 1 then 'default' else 'custom' end as role_source,
+            ir.h_level_path,
+            ir.object_version_number,
+            ir.created_by,
+            ht.tenant_num,
+            httl.tenant_name,
+            irit.name as inherited_role_name,
+            htti.tenant_name as inherited_role_tenant_name,
+            irpt.name as parent_role_name,
+            http.tenant_name as parent_role_tenant_name,
+            (
+                select count(*)
+                from iam_role sub
+                join iam_role_tl subt on sub.id = subt.id and subt.lang =#{lang}
+                join hpfm_tenant ht on sub.h_tenant_id = ht.tenant_id
+                where sub.fd_level = ir.fd_level
+                and (
+                    sub.h_level_path like concat(ir.h_level_path, '|%')
+                    <if test="rootUser == false and userOrganizationId != null and userTenantId != 0">
+                        and (
+                            sub.h_tenant_id = #{userOrganizationId}
+                            or sub.created_by_tenant_id = #{userOrganizationId}
+                            or sub.id in <include refid="Member_Role_Id" />
+                        )
+                    </if>
+                )
+                <if test="isEnabled != null">
+                    and sub.is_enabled = #{isEnabled}
+                </if>
+                <bind name="roleTableAlias" value="'sub'" />
+                <include refid="Con_Role" />
+            ) as children_num
+        from iam_role ir
+        join iam_role_tl irt on (ir.id = irt.id and irt.lang = #{lang})
+        join hpfm_tenant ht on ht.tenant_id = ir.h_tenant_id
+        left join hpfm_tenant_tl httl ON ht.tenant_id = httl.tenant_id AND httl.lang = #{lang}
+        left join iam_role iri on iri.id = ir.h_inherit_role_id
+        left join iam_role_tl irit on (irit.id = iri.id and irit.lang = #{lang})
+        left join hpfm_tenant_tl htti ON htti.tenant_id = iri.h_tenant_id AND htti.lang = #{lang}
+        left join iam_role irp on irp.id = ir.h_parent_role_id
+        left join iam_role_tl irpt on (irpt.id = irp.id and irpt.lang = #{lang})
+        left join hpfm_tenant_tl http ON http.tenant_id = irp.h_tenant_id AND http.lang = #{lang}
+        where ir.id in
+        <foreach collection="roleIds" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        <if test="level != null and level != ''">
+            and ir.fd_level = #{level}
+        </if>
+        having (
+            children_num > 0
+            or (
+                <trim prefixOverrides="and" prefix="">
+                    <if test="isEnabled != null">
+                        and ir.is_enabled = #{isEnabled}
+                    </if>
+                    <choose>
+                        <when test="hasQueryParams">
+                            <bind name="roleTableAlias" value="'ir'" />
+                            <include refid="Con_Role" />
+                        </when>
+                        <otherwise>
+                            and 1=1
+                        </otherwise>
+                    </choose>
+                </trim>
+            )
+        )
+        order by ir.h_tenant_id, ir.h_level_path
+    </select>
+
+    <select id="selectSubRolesForTree" resultMap="BaseResultMap">
+        <bind name="now" value="@java.time.LocalDate@now()" />
+        select
+            ir.id,
+            ir.h_level_path
+        from iam_role ir
+        join iam_role irp on (irp.id = #{parentRoleId})
+        where (
+            (ir.h_parent_role_id = #{parentRoleId} or ir.h_level_path like concat(irp.h_level_path, '|%'))
+            <if test="rootUser == false and userOrganizationId != null and userTenantId != 0">
+                and (
+                    ir.h_tenant_id = #{userOrganizationId}
+                    or ir.created_by_tenant_id = #{userOrganizationId}
+                    or ir.id in <include refid="Member_Role_Id" />
+                )
+            </if>
+        )
+        order by ir.h_tenant_id, ir.h_level_path
+    </select>
+
+    <update id="batchUpdateEnableFlagBySql">
+        <bind name="now" value="@java.time.LocalDateTime@now()" />
+        <bind name="lastUpdatedBy" value="@org.hzero.iam.infra.common.utils.UserUtils@getCurrentUserId()"/>
+        update iam_role set
+            is_enabled = #{enableFlag},
+            last_updated_by = #{lastUpdatedBy},
+            last_update_date = #{now},
+            object_version_number = object_version_number + 1
+        where id = #{roleId}
+        <if test="updateSubRole">
+            or id in (
+                select tmp.* from (
+                    select ir.id from iam_role ir
+                    where exists (select 1 from iam_role irp where irp.id = #{roleId} and ir.h_level_path like concat(irp.h_level_path, '|%'))
+                ) tmp
+            )
+        </if>
+    </update>
+
+    <!-- 查询成员不能删除的角色，by：康总 -->
+    <select id="selectMemberCantRemoveRoles" resultType="org.hzero.iam.domain.entity.MemberRole">
+        <bind name="now" value="@java.time.LocalDate@now()" />
+        <bind name="siteSuperRole" value="@org.hzero.common.HZeroConstant$RoleCode@SITE"/>
+        <bind name="tenantSuperRole" value="@org.hzero.common.HZeroConstant$RoleCode@TENANT"/>
+        <bind name="adminRolePs" value="@org.hzero.iam.infra.constant.Constants@ADMIN_ROLE_PS"/>
+        SELECT
+            sub_ir.id as role_id,
+            imr.member_id as member_id
+        FROM
+          iam_member_role imr,
+          iam_role sub_ir
+        WHERE imr.member_id IN
+            <foreach collection="memberIds" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        AND imr.member_type = 'user'
+        AND imr.role_id = sub_ir.id
+        AND sub_ir.is_enabled = 1
+        AND sub_ir.id NOT IN (
+            SELECT sub_ir2.id
+            FROM
+                iam_member_role imr2,
+                iam_role ir_admin2,
+                iam_role sub_ir2
+                left join oauth_password_policy opp on (sub_ir2.h_tenant_id = opp.organization_id)
+            WHERE imr2.member_id = #{userId}
+            AND imr2.member_type = 'user'
+            AND (
+                (
+                  imr2.role_id IN (
+                    SELECT irp.role_id
+                    FROM
+                        iam_menu ps,
+                        iam_role_permission irp
+                    WHERE
+                        (irp.h_create_flag = 'Y' OR irp.h_inherit_flag = 'Y')
+                        AND (irp.permission_id = ps.id AND irp.type = 'PS')
+                        AND ps.type = 'ps'
+                        AND ps.h_enabled_flag = 1
+                        AND ps.code LIKE #{adminRolePs}
+                  )
+                  OR ir_admin2.code in (#{siteSuperRole}, #{tenantSuperRole})
+                )
+                AND sub_ir2.h_level_path LIKE concat(ir_admin2.h_level_path, '%')
+                <if test="rootUser == false and userOrganizationId != null and userTenantId != 0">
+                    AND (
+                        sub_ir2.created_by_tenant_id = #{userOrganizationId}
+                        OR sub_ir2.h_tenant_id = #{userOrganizationId}
+                        <if test="currentMemberUser == false">
+                            OR sub_ir2.id IN (
+                                SELECT imr2.role_id
+                                FROM iam_member_role imr2
+                                WHERE imr2.member_id = #{userId}
+                                AND imr2.member_type = 'user'
+                                AND ir_admin2.is_enabled = 1
+                            )
+                        </if>
+                    )
+                </if>
+                AND ir_admin2.is_enabled = 1
+            )
+            AND (
+                imr2.role_id != sub_ir2.id
+                <if test="currentMemberUser == false">
+                    OR (opp.enable_role_allocate = 1 or opp.enable_role_allocate is null)
+                </if>
+            )
+           AND imr2.role_id = ir_admin2.id
+           AND sub_ir2.h_tenant_id = opp.organization_id
+           AND sub_ir2.is_enabled = 1
+        )
+    </select>
+
+</mapper>

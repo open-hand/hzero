@@ -1,0 +1,154 @@
+.braft-editor {
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+
+  :global {
+    .bf-content {
+      flex-grow: 1;
+    }
+
+    .bf-content::-webkit-scrollbar {
+      height: 10px;
+      width: 7px;
+      background: rgba(0, 0, 0, 0.1);
+    }
+
+    .bf-content::-webkit-scrollbar-thumb {
+      border-radius: 6px;
+      background-color: rgba(0, 0, 0, 0.3);
+    }
+
+    .bf-modal {
+      z-index: 999 !important;
+    }
+  }
+}
+
+.braft-view {
+  height: 100%;
+  overflow: hidden;
+
+  & > div {
+    display: inline-block;
+  }
+
+  & > div:nth-child(1) {
+    padding: 20px 20px 0;
+    height: 100%;
+    overflow: auto;
+
+    &::-webkit-scrollbar {
+      height: 10px;
+      width: 7px;
+      background: rgba(0, 0, 0, 0.1);
+    }
+
+    &::-webkit-scrollbar-thumb {
+      border-radius: 6px;
+      background-color: rgba(0, 0, 0, 0.3);
+    }
+  }
+
+  & > div:nth-child(2) {
+    vertical-align: top;
+  }
+
+  img {
+    max-width: 90%;
+  }
+
+  video {
+    max-height: 450px;
+    width: 100%;
+  }
+
+  pre {
+    background-color: #e9ecef;
+    padding: 20px 16px;
+  }
+
+  code {
+    word-wrap: break-word;
+    white-space: normal;
+  }
+}
+
+.braft-editor-container {
+  height: 100%;
+  position: relative;
+
+  .content {
+    height: 100%;
+  }
+
+  .quote-icon {
+    display: none;
+    position: fixed;
+    padding: 6px 8px;
+    background: #ff8a2b;
+    border-radius: 2px;
+    font-size: 14px;
+    color: #fff;
+    line-height: 20px;
+    cursor: pointer;
+    z-index: 3;
+  }
+}
+
+// quote-doc-modal.js
+.table-container {
+  height: 500px;
+  padding: 0 12px;
+  overflow-y: auto;
+
+  .scrollBar(@bg-color: #f7f7f7, @thumb-color: #d7d8d9) {
+    &::-webkit-scrollbar {
+      width: 4px;
+      background-color: @bg-color;
+    }
+
+    &::-webkit-scrollbar:horizontal {
+      height: 4px;
+      background-color: @bg-color;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      border-radius: 2px;
+      background: @thumb-color;
+    }
+  }
+}
+
+.modal {
+  :global {
+    .ant-form-item {
+      margin-bottom: 5px;
+    }
+  }
+
+  .upload-item {
+    :global {
+      .ant-upload-select {
+        position: relative;
+        height: 32px;
+        margin-bottom: 30px;
+      }
+    }
+
+    .tip {
+      position: absolute;
+      width: 250px;
+      top: 32px;
+      margin-top: 8px;
+      color: #666;
+      font-size: 13px;
+    }
+  }
+}
+
+.image-viewer {
+  position: fixed;
+  z-index: 1000;
+}

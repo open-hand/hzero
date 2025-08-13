@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.admin.infra.mapper.HystrixConfLineMapper">
+    <!-- 可根据自己的需求，是否要使用 -->
+    <resultMap id="BaseResultMap" type="org.hzero.admin.domain.entity.HystrixConfLine">
+        <result column="conf_line_id" property="confLineId" jdbcType="DECIMAL"/>
+        <result column="conf_id" property="confId" jdbcType="DECIMAL"/>
+        <result column="property_name" property="propertyName" jdbcType="VARCHAR"/>
+        <result column="property_value" property="propertyValue" jdbcType="VARCHAR"/>
+        <result column="enabled_flag" property="enabledFlag" jdbcType="DECIMAL"/>
+        <result column="order_seq" property="orderSeq" jdbcType="DECIMAL"/>
+        <result column="remark" property="remark" jdbcType="VARCHAR"/>
+        <result column="object_version_number" property="objectVersionNumber" jdbcType="DECIMAL"/>
+        <result column="creation_date" property="creationDate" jdbcType="DATE"/>
+        <result column="created_by" property="createdBy" jdbcType="DECIMAL"/>
+        <result column="last_updated_by" property="lastUpdatedBy" jdbcType="DECIMAL"/>
+        <result column="last_update_date" property="lastUpdateDate" jdbcType="DATE"/>
+    </resultMap>
+    <select id="listHystrixLinetByPropName" parameterType="org.hzero.admin.domain.entity.HystrixConfLine"
+            resultType="org.hzero.admin.domain.entity.HystrixConfLine">
+        select
+        hhcl.conf_line_id,
+        hhcl.conf_id,
+        hhcl.property_name,
+        hhcl.property_value,
+        hhcl.enabled_flag,
+        hhcl.order_seq,
+        hhcl.remark,
+        hhcl.object_version_number
+        from hadm_hystrix_conf_line hhcl
+        <where>
+            <if test="confId != null">
+                hhcl.conf_id = #{confId}
+            </if>
+            <if test="@org.springframework.util.StringUtils@hasText(propertyName)">
+                <bind name="propertyName" value="'%' + propertyName + '%'"/>
+                and hhcl.property_name like #{propertyName}
+            </if>
+        </where>
+    </select>
+
+    <select id="countExclusiveSelf" parameterType="org.hzero.admin.domain.entity.HystrixConfLine" resultType="java.lang.Integer">
+        select
+        COUNT(*)
+        from hadm_hystrix_conf_line hhcl
+        <where>
+            1 = 1
+            <if test="confId != null">
+                and hhcl.conf_id = #{confId}
+            </if>
+            <if test="confLineId != null">
+                and hhcl.conf_line_id != #{confLineId}
+            </if>
+            <if test="@org.springframework.util.StringUtils@hasText(propertyName)">
+                and hhcl.property_name = #{propertyName}
+            </if>
+        </where>
+    </select>
+</mapper>

@@ -1,0 +1,91 @@
+.data-hierarchies {
+  margin-top: 10px;
+
+  .data-hierarchies-td {
+    margin-bottom: 0;
+  }
+}
+
+.lovButton.lovButton.lovButton.lovButton {
+  background-color: transparent !important;
+  padding: 0 !important;
+  border: none !important;
+  font-size: 14px !important;
+  color: #666 !important;
+}
+
+.lovButton.lovButton:hover {
+  background-color: transparent !important;
+  padding: 0 !important;
+  color: rgb(51, 51, 51) !important;
+  border: none !important;
+}
+
+.lovButton.lovButton:before {
+  background-color: transparent !important;
+  padding: 0 !important;
+  border: none !important;
+  font-size: 14px !important;
+  color: #666 !important;
+}
+
+.lovButton.lovButton:after {
+  background-color: transparent !important;
+  padding: 0 !important;
+  border: none !important;
+  font-size: 14px !important;
+  color: #666 !important;
+}
+
+.select-hierarchical-wrap {
+  > ul {
+    li > .select-hierarchical-item-divider {
+      font-size: 14px;
+      color: #666;
+    }
+    li:not(:last-child) {
+      .select-hierarchical-item-divider {
+        &::after {
+          content: ' ';
+          display: block;
+          height: 1px;
+          width: 128px;
+          border-bottom: 1px solid #f1f1f1;
+        }
+      }
+    }
+  }
+  .select-hierarchical {
+    cursor: pointer;
+    width: 85%;
+    color: #666;
+    font-size: 14px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    word-break: break-all;
+    white-space: nowrap;
+    vertical-align: middle;
+    &-item {
+      height: 100%;
+      font-size: 14px;
+      color: #666;
+      &:hover {
+        background-color: #f0fffe;
+      }
+    }
+  }
+  &:hover {
+    background-color: #f0fffe;
+  }
+}
+
+:global {
+  .default-hierarchical-select-dropdown {
+    // 可选择角色 最多展示 10个
+    max-height: 320px;
+    overflow-y: auto;
+    .ant-menu-submenu-arrow {
+      transform: rotate(180deg);
+    }
+  }
+}

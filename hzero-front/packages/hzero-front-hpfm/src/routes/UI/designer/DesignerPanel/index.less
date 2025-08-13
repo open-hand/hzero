@@ -1,0 +1,512 @@
+@import '../config';
+
+.drop {
+  &-component {
+    padding: 10px;
+    border: @componentBorder;
+
+    &-active {
+      border: @componentActiveBorder;
+      background-color: @activeColor;
+    }
+  }
+
+  &-field {
+    // 在 cellControl 中 显示边框
+  }
+
+  &-page {
+    &-more {
+      font-size: 16px;
+      color: #aaa;
+      height: 100px;
+      margin: 20px 0;
+      text-align: center;
+      padding-top: 30px;
+    }
+  }
+}
+
+.draw {
+  &-drag {
+    &-component {
+      position: relative;
+      cursor: pointer;
+    }
+
+    &-field {
+      position: relative;
+      cursor: pointer;
+      margin: 5px;
+
+      // 当拖动的时候, 原位置只有一个 div, 并且不是 target
+      &-dragging {
+        border: @fieldDraggingBorder;
+        height: 40px;
+      }
+    }
+  }
+}
+
+// dynamic-form
+.dynamic-form {
+  margin-bottom: 10px;
+
+  &-row {
+    display: flex;
+    flex-wrap: nowrap;
+  }
+
+  //&-col{
+  //}
+  &-item {
+    display: flex;
+
+    line-height: 28px; // todo checkbox switch 的行高不对(修复checkbox, switch)
+
+    // 作为占位的表单组件
+    &-placeholder {
+      line-height: 28px;
+      height: 28px;
+    }
+
+    &-label {
+      text-align: right;
+      line-height: 28px;
+
+      &.required:before {
+        display: inline-block;
+        margin-right: 4px;
+        content: '*';
+        line-height: 1;
+        font-size: 14px;
+        color: #f5222d;
+      }
+    }
+
+    &-control {
+      flex: auto;
+      position: relative;
+      pointer-events: none;
+
+      :global {
+        .ant-input-number,
+        .ant-select,
+        .ant-calendar-picker {
+          width: 100%;
+        }
+      }
+    }
+  }
+
+  .cell-control {
+    display: flex;
+    position: relative;
+    min-height: 32px;
+    border: 1px solid transparent;
+
+    &:hover,
+    &-active {
+      background-color: @activeColor;
+      border: 1px solid @borderColor;
+
+      .cell-control-remove,
+      .cell-control-menu {
+        visibility: visible;
+      }
+    }
+
+    &-placeholder {
+      border: 1px dashed #ccc;
+      cursor: default;
+
+      &:hover {
+        border: 1px dashed @borderColor;
+      }
+    }
+
+    &-over {
+      border: @fieldOverBorder;
+      background-color: @activeColor;
+    }
+
+    &-component {
+      flex: auto;
+      padding: 5px 0;
+    }
+
+    &-remove {
+      visibility: hidden;
+      position: relative;
+      width: 24px;
+      min-width: 24px; // lov 会挤一部分位置
+
+      > i {
+        position: absolute;
+        top: 50%;
+        margin: -6px 6px 0;
+
+        &:before {
+          // close 小❌
+          content: '\E633';
+        }
+      }
+
+      &:hover {
+        > i:before {
+          // close-circle 圈中小❌
+          content: '\E62F';
+        }
+      }
+    }
+
+    &-menu {
+      visibility: hidden;
+
+      //width: 24px;
+      //min-width: 24px; // lov 会挤一部分位置
+      > button {
+        transition: none;
+        height: 100%;
+        border-color: transparent;
+        background-color: @borderColor;
+      }
+
+      :global {
+        .ant-dropdown-menu-item {
+          position: relative;
+          padding-left: 32px;
+        }
+      }
+    }
+
+    &-will-remove {
+      // 将要删除的字段的样式
+      background-color: #fce4ec;
+      border: 1px solid transparent;
+      //&-colspan{
+      //  background-color: #fce4ec;
+      //  border: 1px solid transparent;
+      //}
+    }
+  }
+
+  :global {
+    // 表单的 菜单
+    .menu-icon {
+      width: 16px;
+      height: 16px;
+      background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHAAAAAgCAMAAAD9sAyOAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA2lpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuNS1jMDE0IDc5LjE1MTQ4MSwgMjAxMy8wMy8xMy0xMjowOToxNSAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDo0YjU3ODA2Ny02OWJhLTU0NDQtYjJiOC03M2Q2MTE3NTQxODciIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6MTVDQTU0RDU5RTczMTFFN0I2ODJCNjFBNTI4NzlGNzEiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6MTVDQTU0RDQ5RTczMTFFN0I2ODJCNjFBNTI4NzlGNzEiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENDIChXaW5kb3dzKSI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOkMyMUZBMkRBMDYxMTExRTZCMEQyODc0RkY2MkQwQTlBIiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOkMyMUZBMkRCMDYxMTExRTZCMEQyODc0RkY2MkQwQTlBIi8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+3lIv+QAAACFQTFRF////mZmZsLCwJZHffn5+NKb4///lzMzM/zMz/5kAcHBwdK7eVwAAAZdJREFUeNq8lYuSwyAIRbGabtz//+D1jSBKmc30pmOtYzi9gQi8JIWk/A0Ajl5O/I2rrocAuO/8maKVeMCHMgbnQl8x6jW+7qw8adFWlgh0QAftNwIzEezArzosUxRmK+w1A0ECLjeUoklbco5j2d0U0Ma0GH6IJuCYMKAjCsRhjBxYc8aBv2OQHJuA0epwiTeeV3stxBzsgbpDBqQVoRXN+kh1h0w6kBeNVqXJ2XQtRdOBtWY/eC00aVWKwLsBWy6HPeNJw3OIZykFQuNVxSJSup+eNNyhtIU4RCKIQKvDPRBmIHQeWNuTUJULkCyL/dAnPdcPe7RDP/TX5Z/rFi3aqVtMwAf6oQ34VYdlisJs+b2EfkiByw2laNKWdrSlaZNHG9OifxN5oR8y4EXkicP0sjBgzRkHToPg2ASMVodLvPG82msh5mAP1B0yIK0IrWjWR6o7ZNKBvGi0Kn2TywvtqQDP/ZD+p6O0KkXgqR8aThqeQ6Ef1mjHfmg4abhDaQtxKPbDfzjcA0/90NCehKpcgPPynwADAFClGonjAHRqAAAAAElFTkSuQmCC')
+        no-repeat;
+      position: absolute;
+      top: 8px;
+      left: 8px;
+
+      &-append {
+        &-row {
+          background-position: 0 0;
+        }
+
+        &-col {
+          background-position: -16px 0;
+        }
+      }
+
+      &-remove {
+        &-row {
+          background-position: -80px 0;
+        }
+
+        &-col {
+          background-position: -96px 0;
+        }
+      }
+
+      &-merge-right {
+        background-position: -48px 0;
+      }
+
+      &-cancel-merge-right {
+        background-position: 0 0;
+      }
+    }
+  }
+}
+
+// dynamic-toolbar
+.dynamic-toolbar {
+  margin-bottom: 10px;
+
+  .drop-component {
+    height: 62px;
+    overflow-y: hidden;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  .draw-drag-field-dragging {
+    height: auto;
+    min-width: auto;
+  }
+
+  &-item {
+    display: inline-block;
+
+    div {
+      display: inline-block;
+    }
+
+    &-control {
+      flex: auto;
+      position: relative;
+      pointer-events: none;
+    }
+
+    button {
+      min-width: 60px;
+    }
+  }
+
+  .cell-control {
+    //height: 28px;
+    border: 1px solid transparent;
+    position: relative;
+
+    &:hover,
+    &-active {
+      background-color: @activeColor;
+      border: 1px solid @borderColor;
+
+      .cell-control-remove {
+        visibility: visible;
+      }
+    }
+
+    &-over {
+      border: @fieldOverBorder;
+      background-color: @activeColor;
+    }
+
+    &-remove {
+      visibility: hidden;
+      height: 28px;
+      width: 24px;
+      min-width: 24px; // lov 会挤一部分位置
+      position: absolute;
+      right: 0;
+      top: 0;
+
+      > i {
+        position: absolute;
+        top: 50%;
+        margin: -6px 6px 0;
+
+        &:before {
+          // close 小❌
+          content: '\E633';
+        }
+      }
+
+      &:hover {
+        > i:before {
+          // close-circle 圈中小❌
+          content: '\E62F';
+        }
+      }
+    }
+  }
+}
+
+// dynamic-table
+.dynamic-table {
+  margin-bottom: 10px;
+
+  &-content {
+    width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+
+    // field
+    &-field {
+      display: flex;
+      position: relative;
+      background-color: rgba(0, 0, 0, 0.04) !important;
+      color: #333;
+      font-weight: bold;
+      border: 1px solid #e8e8e8;
+      border-bottom: 1.1px solid rgba(0, 0, 0, 0.16);
+      word-break: break-word;
+    }
+
+    // field-width
+    &-field-width {
+      // table
+      position: relative;
+      width: 100%;
+      margin-bottom: 4px;
+      color: rgba(0, 0, 0, 0.45);
+
+      &-rule-bg {
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        height: 10px;
+        width: 100%;
+        background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAQCAYAAABk1z2tAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA2hpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuNS1jMDE0IDc5LjE1MTQ4MSwgMjAxMy8wMy8xMy0xMjowOToxNSAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDowMTgwMTE3NDA3MjA2ODExODA4M0I0N0E3Q0UyQkIwMCIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDpEODBDRUM4NzlFN0IxMUU3QUE2MEIzRDBENDBDN0YyRSIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDpEODBDRUM4NjlFN0IxMUU3QUE2MEIzRDBENDBDN0YyRSIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgQ1M2IChNYWNpbnRvc2gpIj4gPHhtcE1NOkRlcml2ZWRGcm9tIHN0UmVmOmluc3RhbmNlSUQ9InhtcC5paWQ6MjJCQkZCNTgwQjVEMTFFNkJGMDA4RDAzRUE1RDJBQTMiIHN0UmVmOmRvY3VtZW50SUQ9InhtcC5kaWQ6MjJCQkZCNTkwQjVEMTFFNkJGMDA4RDAzRUE1RDJBQTMiLz4gPC9yZGY6RGVzY3JpcHRpb24+IDwvcmRmOlJERj4gPC94OnhtcG1ldGE+IDw/eHBhY2tldCBlbmQ9InIiPz5t1lomAAAAgUlEQVR42mL8//8/w2AFN2/e/M/EMMjBqANHHTioHQjKRQMpj+HAgXYQNvnRNEgpYFy6dCnD69evwRwNDQ1YEDMCg5sBVMvk5+cPjhAEOc7d3Z0BhIHgv7q6+uCJYpjjYADmSKD4wDtQWFgYxXHojhzNJAQAC4jYuXPnoHUgQIABAGdsQrjlRq3pAAAAAElFTkSuQmCC);
+        border-bottom: 1px solid #e8e8e8;
+      }
+
+      &-wrap {
+        // wrap
+      }
+
+      &-item {
+        height: 36px;
+        line-height: 36px;
+        list-style: none;
+
+        > span {
+          position: relative;
+
+          &:after {
+            content: ' ';
+            position: absolute;
+            right: 0;
+            bottom: -6px;
+            height: 6px;
+            width: 9px;
+            display: block;
+            background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAQCAYAAABk1z2tAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA2hpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuNS1jMDE0IDc5LjE1MTQ4MSwgMjAxMy8wMy8xMy0xMjowOToxNSAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDowMTgwMTE3NDA3MjA2ODExODA4M0I0N0E3Q0UyQkIwMCIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDpEODBDRUM4NzlFN0IxMUU3QUE2MEIzRDBENDBDN0YyRSIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDpEODBDRUM4NjlFN0IxMUU3QUE2MEIzRDBENDBDN0YyRSIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgQ1M2IChNYWNpbnRvc2gpIj4gPHhtcE1NOkRlcml2ZWRGcm9tIHN0UmVmOmluc3RhbmNlSUQ9InhtcC5paWQ6MjJCQkZCNTgwQjVEMTFFNkJGMDA4RDAzRUE1RDJBQTMiIHN0UmVmOmRvY3VtZW50SUQ9InhtcC5kaWQ6MjJCQkZCNTkwQjVEMTFFNkJGMDA4RDAzRUE1RDJBQTMiLz4gPC9yZGY6RGVzY3JpcHRpb24+IDwvcmRmOlJERj4gPC94OnhtcG1ldGE+IDw/eHBhY2tldCBlbmQ9InIiPz5t1lomAAAAgUlEQVR42mL8//8/w2AFN2/e/M/EMMjBqANHHTioHQjKRQMpj+HAgXYQNvnRNEgpYFy6dCnD69evwRwNDQ1YEDMCg5sBVMvk5+cPjhAEOc7d3Z0BhIHgv7q6+uCJYpjjYADmSKD4wDtQWFgYxXHojhzNJAQAC4jYuXPnoHUgQIABAGdsQrjlRq3pAAAAAElFTkSuQmCC);
+          }
+        }
+      }
+    }
+  }
+
+  &-data {
+    border-top-width: 0;
+    border-left: 1px solid #e8e8e8;
+    border-right: 1px solid #e8e8e8;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+    position: relative;
+    padding: 16px;
+    background: #fff;
+    text-align: center;
+    font-size: 12px;
+    color: rgba(0, 0, 0, 0.45);
+    z-index: 1;
+  }
+
+  &-pagination {
+    text-align: right;
+    margin-top: 10px;
+    pointer-events: none;
+  }
+
+  .drop-component {
+    &-active {
+      background-color: inherit;
+    }
+  }
+
+  &-item {
+    display: flex;
+    line-height: 28px; // todo checkbox switch 的行高不对(修复checkbox, switch)
+
+    &-control {
+      flex: auto;
+      position: relative;
+      pointer-events: none;
+    }
+  }
+
+  .cell-control {
+    display: flex;
+    position: relative;
+    color: #333;
+    font-weight: bold;
+    padding: 14px 8px;
+    border: 1px solid #e8e8e8;
+    word-break: break-word;
+
+    &:hover,
+    &-active {
+      background-color: @activeColor;
+      border: 1px solid @borderColor;
+
+      .cell-control-remove,
+      .cell-control-menu {
+        visibility: visible;
+      }
+    }
+
+    &-over {
+      border: @fieldOverBorder;
+      background-color: @activeColor;
+    }
+
+    &-component {
+      flex: auto;
+    }
+
+    &-remove {
+      visibility: hidden;
+      position: relative;
+      width: 24px;
+      min-width: 24px; // lov 会挤一部分位置
+
+      > i {
+        position: absolute;
+        top: 50%;
+        margin: -6px 6px 0;
+
+        &:before {
+          // close 小❌
+          content: '\E633';
+        }
+      }
+
+      &:hover {
+        > i:before {
+          // close-circle 圈中小❌
+          content: '\E62F';
+        }
+      }
+    }
+  }
+}
+
+// dynamicTabs
+.dynamic-tabs {
+  margin-bottom: 10px;
+  border: @componentBorder;
+  padding: 10px;
+
+  &-active {
+    border: @componentActiveBorder;
+    background-color: @activeColor;
+  }
+
+  // TabPane 没有子 tpl
+  &-placeholder {
+    padding: 20px;
+  }
+
+  :global {
+    // tabs 对应的样式
+    .ant-tabs-bar {
+      margin: 0;
+    }
+  }
+  &-field-active {
+    :global {
+      .ant-tabs.ant-tabs-card > .ant-tabs-bar .ant-tabs-tab-active {
+        // 由于 antd-design 是层级嵌套的样式, 所以这边也需要嵌套 以覆盖antd样式
+        background-color: @activeColor;
+      }
+      .ant-tabs-content {
+        background-color: @activeColor;
+      }
+    }
+  }
+}

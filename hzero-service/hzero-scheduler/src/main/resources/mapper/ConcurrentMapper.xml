@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.scheduler.infra.mapper.ConcurrentMapper">
+    <!-- 可根据自己的需求，是否要使用 -->
+    <resultMap id="BaseResultMap" type="org.hzero.scheduler.domain.entity.Concurrent">
+        <result column="concurrent_id" property="concurrentId" jdbcType="DECIMAL"/>
+        <result column="executable_id" property="executableId" jdbcType="DECIMAL"/>
+        <result column="conc_code" property="concCode" jdbcType="VARCHAR"/>
+        <result column="conc_name" property="concName" jdbcType="VARCHAR"/>
+        <result column="conc_description" property="concDescription" jdbcType="VARCHAR"/>
+        <result column="alarm_email" property="alarmEmail" jdbcType="VARCHAR"/>
+        <result column="enabled_flag" property="enabledFlag" jdbcType="DECIMAL"/>
+        <result column="tenant_id" property="tenantId" jdbcType="DECIMAL"/>
+        <result column="tenant_name" property="tenantName" jdbcType="VARCHAR"/>
+        <result column="object_version_number" property="objectVersionNumber" jdbcType="DECIMAL"/>
+        <result column="creation_date" property="creationDate" jdbcType="DATE"/>
+        <result column="created_by" property="createdBy" jdbcType="DECIMAL"/>
+        <result column="last_updated_by" property="lastUpdatedBy" jdbcType="DECIMAL"/>
+        <result column="last_update_date" property="lastUpdateDate" jdbcType="DATE"/>
+        <result column="executable_code" property="executableCode" jdbcType="VARCHAR"/>
+        <result column="executable_name" property="executableName" jdbcType="VARCHAR"/>
+        <collection column="paramList" property="paramList" ofType="org.hzero.scheduler.domain.entity.ConcurrentParam">
+            <result column="conc_param_id" property="concParamId" jdbcType="DECIMAL"/>
+            <result column="hcp_concurrent_id" property="concurrentId" jdbcType="DECIMAL"/>
+            <result column="order_seq" property="orderSeq" jdbcType="DECIMAL"/>
+            <result column="param_code" property="paramCode" jdbcType="VARCHAR"/>
+            <result column="param_name" property="paramName" jdbcType="VARCHAR"/>
+            <result column="param_format_code" property="paramFormatCode" jdbcType="VARCHAR"/>
+            <result column="param_edit_type_code" property="paramEditTypeCode" jdbcType="VARCHAR"/>
+            <result column="notnull_flag" property="notnullFlag" jdbcType="DECIMAL"/>
+            <result column="business_model" property="businessModel" jdbcType="VARCHAR"/>
+            <result column="value_filed_from" property="valueFiledFrom" jdbcType="VARCHAR"/>
+            <result column="value_filed_to" property="valueFiledTo" jdbcType="VARCHAR"/>
+            <result column="default_value" property="defaultValue" jdbcType="DECIMAL"/>
+            <result column="show_flag" property="showFlag" jdbcType="DECIMAL"/>
+            <result column="hcp_enabled_flag" property="enabledFlag" jdbcType="DECIMAL"/>
+            <result column="hcp_tenant_id" property="tenantId" jdbcType="DECIMAL"/>
+            <result column="hcp_object_version_number" property="objectVersionNumber" jdbcType="DECIMAL"/>
+            <result column="creation_date" property="creationDate" jdbcType="DATE"/>
+            <result column="created_by" property="createdBy" jdbcType="DECIMAL"/>
+            <result column="last_updated_by" property="lastUpdatedBy" jdbcType="DECIMAL"/>
+            <result column="last_update_date" property="lastUpdateDate" jdbcType="DATE"/>
+        </collection>
+    </resultMap>
+
+    <select id="listConcurrent" resultType="org.hzero.scheduler.domain.entity.Concurrent">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()" />
+        SELECT
+            hc.concurrent_id,
+            hc.conc_code,
+            hct.conc_name,
+            hc.conc_description,
+            hc.executable_id,
+            hce.executable_code,
+            hcet.executable_name,
+            hc.alarm_email,
+            hc.enabled_flag,
+            hc.tenant_id,
+            ht.tenant_name,
+            hc.object_version_number
+        FROM
+            hsdr_concurrent hc
+        JOIN hsdr_conc_executable hce ON hc.executable_id = hce.executable_id
+        LEFT JOIN hpfm_tenant_tl ht ON ht.tenant_id = hc.tenant_id AND ht.lang = #{lang}
+        LEFT JOIN hsdr_conc_executable_tl hcet ON hcet.executable_id = hce.executable_id AND hcet.lang = #{lang}
+        LEFT JOIN hsdr_concurrent_tl hct ON hc.concurrent_id = hct.concurrent_id AND hct.lang = #{lang}
+        <where>
+            <if test="tenantId != null">
+                AND hc.tenant_id = #{tenantId}
+            </if>
+            <if test="concCode != null and concCode != ''">
+                <bind name="concCodeLike" value="'%' + concCode + '%'"/>
+                AND hc.conc_code LIKE #{concCodeLike}
+            </if>
+            <if test="concName != null and concName != ''">
+                <bind name="concNameLike" value="'%' + concName + '%'"/>
+                AND hct.conc_name LIKE #{concNameLike}
+            </if>
+            <if test="concDescription != null and concDescription != ''">
+                <bind name="concDescriptionLike" value="'%' + concDescription + '%'"/>
+                AND hc.conc_description LIKE #{concDescriptionLike}
+            </if>
+            <if test="enabledFlag != null">
+                AND hc.enabled_flag = #{enabledFlag}
+            </if>
+        </where>
+    </select>
+
+    <select id="queryConcurrentById" resultMap="BaseResultMap">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()" />
+        SELECT
+        	hc.concurrent_id,
+        	hc.conc_code,
+        	hct.conc_name,
+        	hc.conc_description,
+        	hc.executable_id,
+        	hce.executable_code,
+        	hcet.executable_name,
+        	hc.enabled_flag,
+        	hc.tenant_id,
+        	ht.tenant_name,
+        	hc.alarm_email,
+        	hc.object_version_number,
+        	hcp.conc_param_id,
+        	hcp.concurrent_id hcp_concurrent_id,
+        	hcp.order_seq,
+        	hcp.param_code,
+        	hcp.param_name,
+        	hcp.param_format_code,
+        	hcp.param_edit_type_code,
+        	hcp.notnull_flag,
+        	hcp.business_model,
+        	hcp.value_filed_from,
+        	hcp.value_filed_to,
+        	hcp.default_value,
+        	hcp.show_flag,
+        	hcp.enabled_flag hcp_enabled_flag,
+        	hcp.tenant_id hcp_tenant_id,
+        	hcp.object_version_number hcp_object_version_number
+        FROM
+	        hsdr_concurrent hc
+	    LEFT JOIN hpfm_tenant_tl ht ON ht.tenant_id = hc.tenant_id AND ht.lang = #{lang}
+        JOIN hsdr_conc_executable hce ON hc.executable_id = hce.executable_id
+        LEFT JOIN hsdr_conc_executable_tl hcet ON hcet.executable_id = hce.executable_id AND hcet.lang = #{lang}
+        LEFT JOIN hsdr_concurrent_tl hct ON hc.concurrent_id = hct.concurrent_id AND hct.lang = #{lang}
+        LEFT JOIN hsdr_conc_param hcp ON hc.concurrent_id = hcp.concurrent_id
+        WHERE
+            hc.concurrent_id = #{concurrentId}
+        <if test="tenantId != null">
+            AND hc.tenant_id = #{tenantId}
+        </if>
+        ORDER BY
+            hcp.order_seq ASC
+    </select>
+
+    <select id="listConcurrentByTenantId" resultType="org.hzero.scheduler.domain.entity.Concurrent">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()" />
+        SELECT
+            hct.concurrent_id,
+            hct.conc_code,
+            hctt.conc_name
+        FROM
+            hsdr_concurrent hct
+        LEFT JOIN hsdr_concurrent_tl hctt ON hct.concurrent_id = hctt.concurrent_id AND hctt.lang = #{lang}
+        WHERE
+        EXISTS (
+            SELECT
+                1
+            FROM
+                hsdr_conc_permission hcp
+            WHERE
+                hcp.concurrent_id = hct.concurrent_id
+            AND hcp.tenant_id = #{tenantId}
+            <if test="flag != true">
+            AND (hcp.role_id IN
+                <foreach collection="roleIds" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            OR hcp.role_id = -1 )
+            </if>
+            AND hcp.enabled_flag = 1
+            AND hct.enabled_flag = 1
+            <if test="concCode != null and concCode != ''">
+                <bind name="concCodeLike" value="'%' + concCode + '%'"/>
+                AND hct.conc_code LIKE #{concCodeLike}
+            </if>
+            <if test="concName != null and concName != ''">
+                <bind name="concNameLike" value="'%' + concName + '%'"/>
+                AND hctt.conc_name LIKE #{concNameLike}
+            </if>
+            AND (
+            ( hcp.start_date &lt;= #{nowDate} AND hcp.end_date &gt;= #{nowDate} )
+            OR ( hcp.start_date &lt;= #{nowDate} AND hcp.end_date IS NULL )
+            OR ( hcp.start_date IS NULL AND hcp.end_date &gt;= #{nowDate} )
+            OR ( hcp.start_date IS NULL AND hcp.end_date IS NULL )
+            )
+            )
+    </select>
+
+    <select id="adminListConcurrentByTenantId" resultType="org.hzero.scheduler.domain.entity.Concurrent">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()" />
+        (
+        SELECT
+            hct.concurrent_id,
+            hct.conc_code,
+            hctt.conc_name
+        FROM
+            hsdr_concurrent hct
+        LEFT JOIN hsdr_concurrent_tl hctt ON hct.concurrent_id = hctt.concurrent_id AND hctt.lang = #{lang}
+        WHERE
+        EXISTS (
+            SELECT
+                1
+            FROM
+                hsdr_conc_permission hcp
+            WHERE
+                hcp.concurrent_id = hct.concurrent_id
+            AND hcp.tenant_id = #{tenantId}
+            AND hcp.enabled_flag = 1
+            AND hct.enabled_flag = 1
+            <if test="concCode != null and concCode != ''">
+                <bind name="concCodeLike" value="'%' + concCode + '%'"/>
+                AND hct.conc_code LIKE #{concCodeLike}
+            </if>
+            <if test="concName != null and concName != ''">
+                <bind name="concNameLike" value="'%' + concName + '%'"/>
+                AND hctt.conc_name LIKE #{concNameLike}
+            </if>
+            AND (
+            ( hcp.start_date &lt;= #{nowDate} AND hcp.end_date &gt;= #{nowDate} )
+            OR ( hcp.start_date &lt;= #{nowDate} AND hcp.end_date IS NULL )
+            OR ( hcp.start_date IS NULL AND hcp.end_date &gt;= #{nowDate} )
+            OR ( hcp.start_date IS NULL AND hcp.end_date IS NULL )
+                )
+                )
+        )
+        UNION
+        (
+        SELECT
+            hc.concurrent_id,
+            hc.conc_code,
+            hc.conc_name
+        FROM
+            hsdr_concurrent hc
+        LEFT JOIN hsdr_concurrent_tl hct ON hc.concurrent_id = hct.concurrent_id AND hct.lang = #{lang}
+        WHERE
+            hc.tenant_id = #{tenantId}
+        AND hc.enabled_flag = 1
+        <if test="concCode != null and concCode != ''">
+            <bind name="concCodeLike" value="'%' + concCode + '%'"/>
+            AND hc.conc_code LIKE #{concCodeLike}
+        </if>
+        <if test="concName != null and concName != ''">
+            <bind name="concNameLike" value="'%' + concName + '%'"/>
+            AND hct.conc_name LIKE #{concNameLike}
+        </if>
+        )
+    </select>
+</mapper>

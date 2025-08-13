@@ -1,0 +1,109 @@
+@import '../../../assets/styles/variables';
+
+@fontColor: #666;
+
+.gridLayoutContainer {
+  .dragCard {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    visibility: visible;
+    cursor: move;
+  }
+  .closeBtn {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    font-size: 16px;
+    cursor: pointer;
+  }
+  .boxShadow {
+    border-radius: 2px;
+    transition: 0.5s;
+    box-shadow: rgba(0, 34, 77, 0.1) 0 1px 3px;
+  }
+  .boxShadow:hover {
+    box-shadow: 0 2px 6px 0 rgba(0, 0, 0, 0.2);
+  }
+  :global {
+    .react-grid-item {
+      overflow: hidden;
+      background-color: #fff;
+      display: flex;
+      flex-direction: column;
+    }
+    .react-grid-item.react-grid-placeholder {
+      background-color: #909090;
+      z-index: 0;
+    }
+    .ant-card-body {
+      overflow: auto;
+      flex: auto;
+    }
+    .react-grid-item.react-draggable {
+      border: 1px dashed #999;
+      padding: 1px;
+    }
+  }
+}
+// 卡片设置界面
+.card-setting {
+  :global {
+    .ant-modal-content {
+      .ant-modal-header {
+        border-bottom: none;
+      }
+    }
+    .ant-modal-body {
+      padding-top: 0;
+    }
+  }
+  &-title {
+    font-size: 16px;
+    color: @fontColor;
+  }
+  .card-row {
+    &:first-child {
+      margin-top: 0;
+    }
+    .card-col {
+      margin-top: 16px;
+      font-size: 14px;
+      &-tag {
+        border: 1px solid @hzero-bgc-color-dark;
+        background-color: transparent;
+        border-radius: 3px;
+        height: 30px;
+        line-height: 28px;
+        padding: 0 12px;
+        font-size: 14px;
+      }
+      :global {
+        .ant-tag-checkable-checked {
+          border: 1px solid @hzero-primary-color-2;
+          color: @hzero-primary-color-2;
+          &::after {
+            position: absolute;
+            display: inline-block;
+            margin-top: 18px;
+            margin-left: 2px;
+            content: ' ';
+            width: 10px;
+            height: 10px;
+            background-image: url(../../../assets/card-selected.png);
+            background-size: 10px 10px;
+          }
+        }
+      }
+    }
+  }
+  .card-col-title {
+    margin-top: 16px;
+    font-size: 14px;
+    :first-child {
+      margin-top: 0;
+    }
+  }
+}

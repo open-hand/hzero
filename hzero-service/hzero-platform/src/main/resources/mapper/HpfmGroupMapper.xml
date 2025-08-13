@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.platform.infra.mapper.HpfmGroupMapper">
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap id="BaseResultMap" type="org.hzero.platform.domain.entity.Group">
+        <result column="group_id" property="groupId" jdbcType="DECIMAL"/>
+        <result column="group_num" property="groupNum" jdbcType="VARCHAR"/>
+        <result column="group_name" property="groupName" jdbcType="VARCHAR"/>
+        <result column="tenant_id" property="tenantId" jdbcType="DECIMAL"/>
+        <result column="unit_id" property="unitId" jdbcType="DECIMAL"/>
+        <result column="source_key" property="sourceKey" jdbcType="VARCHAR"/>
+        <result column="source_code" property="sourceCode" jdbcType="VARCHAR"/>
+        <result column="enabled_flag" property="enabledFlag" jdbcType="DECIMAL"/>
+        <result column="core_flag" property="coreFlag" jdbcType="DECIMAL"/>
+        <result column="object_version_number" property="objectVersionNumber" jdbcType="DECIMAL"/>
+        <result column="creation_date" property="creationDate" jdbcType="DATE"/>
+        <result column="created_by" property="createdBy" jdbcType="DECIMAL"/>
+        <result column="last_updated_by" property="lastUpdatedBy" jdbcType="DECIMAL"/>
+        <result column="last_update_date" property="lastUpdateDate" jdbcType="DATE"/>
+    </resultMap>
+    
+    <select id="selectRepeatCount" parameterType="org.hzero.platform.domain.entity.Group" resultType="java.lang.Integer">
+        SELECT
+            count(*)
+        FROM
+            hpfm_group g
+        WHERE
+            1 = 1
+        AND g.group_num = #{groupNum,jdbcType=VARCHAR}
+        AND g.tenant_id = #{tenantId,jdbcType=DECIMAL}
+        <if test="groupId != null">
+            AND g.group_id != #{groupId}
+        </if>
+    </select>
+</mapper>

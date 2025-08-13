@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.admin.infra.mapper.GatewayRateLimitLineMapper">
+    <!-- 可根据自己的需求，是否要使用 -->
+    <resultMap id="BaseResultMap" type="org.hzero.admin.domain.entity.GatewayRateLimitLine">
+        <result column="rate_limit_line_id" property="rateLimitLineId" jdbcType="DECIMAL"/>
+        <result column="rate_limit_id" property="rateLimitId" jdbcType="DECIMAL"/>
+        <result column="enabled_flag" property="enabledFlag" jdbcType="DECIMAL"/>
+        <result column="remark" property="remark" jdbcType="VARCHAR"/>
+        <result column="object_version_number" property="objectVersionNumber" jdbcType="DECIMAL"/>
+        <result column="creation_date" property="creationDate" jdbcType="DATE"/>
+        <result column="created_by" property="createdBy" jdbcType="DECIMAL"/>
+        <result column="last_updated_by" property="lastUpdatedBy" jdbcType="DECIMAL"/>
+        <result column="last_update_date" property="lastUpdateDate" jdbcType="DATE"/>
+        <result column="service_route_id" property="serviceRouteId" jdbcType="DECIMAL"/>
+        <result column="replenish_rate" property="replenishRate" jdbcType="DECIMAL"/>
+        <result column="burst_capacity" property="burstCapacity" jdbcType="DECIMAL"/>
+        <result column="rate_limit_dimension" property="rateLimitDimension" jdbcType="VARCHAR"/>
+        <result column="path" property="path" jdbcType="VARCHAR"/>
+    </resultMap>
+    <select id="pageByCondition" resultType="org.hzero.admin.domain.entity.GatewayRateLimitLine">
+        SELECT
+        rrl.rate_limit_line_id,
+        rrl.rate_limit_id,
+        rrl.service_route_id,
+        r.path,
+        rrl.replenish_rate,
+        rrl.burst_capacity,
+        rrl.rate_limit_dimension,
+        rrl.enabled_flag,
+        rrl.remark,
+        rrl.object_version_number
+        FROM hadm_gw_rate_limit_line rrl JOIN hadm_service_route r
+        on rrl.service_route_id = r.service_route_id
+        <trim prefixOverrides="AND" prefix="WHERE">
+            <if test="gatewayRateLimitLine.rateLimitId!=null">
+                AND rate_limit_id = #{gatewayRateLimitLine.rateLimitId}
+            </if>
+        </trim>
+    </select>
+</mapper>

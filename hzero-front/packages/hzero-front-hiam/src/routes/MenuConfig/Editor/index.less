@@ -1,0 +1,38 @@
+@import '~hzero-front/lib/assets/styles/variables.less';
+
+@hzero-menu-config-icon-size: 24px;
+
+.hiam-menu-config-editor {
+  position: relative;
+  margin-bottom: 5%;
+
+  :global {
+    .ant-table-selection {
+      display: none;
+    }
+  }
+}
+
+.menu-icon-container {
+  .row {
+    height: 96px;
+
+    .col {
+      padding: 12px;
+      text-align: center;
+
+      .menu-icon {
+        font-size: @hzero-menu-config-icon-size;
+        height: @hzero-menu-config-icon-size;
+        line-height: @hzero-menu-config-icon-size;
+        width: @hzero-menu-config-icon-size;
+        cursor: pointer;
+        color: #333;
+
+        &:hover {
+          color: @hzero-primary-color-2;
+        }
+      }
+    }
+  }
+}

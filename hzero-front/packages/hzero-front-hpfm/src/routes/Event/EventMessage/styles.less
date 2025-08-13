@@ -1,0 +1,39 @@
+@import '~hzero-front/lib/assets/styles/variables.less';
+@import '~hzero-front/lib/assets/styles/mixins.less';
+
+.event-message {
+  &-form {
+    &:global(.ant-form) {
+      .event-message-form-field-view {
+        &:not(:last-child) {
+          margin-right: @hzero-gutter-xl;
+        }
+
+        display: flex;
+        align-items: center;
+
+        &:global(.ant-form-item) {
+          :global {
+            .ant-form-item-label {
+              flex-shrink: 0;
+            }
+
+            .ant-form-item-control-wrapper {
+              flex-grow: 1;
+              overflow: hidden;
+
+              .ant-form-item-control {
+                .text-over-flow();
+              }
+            }
+
+            .ant-form-item-label,
+            .ant-form-item-control-wrapper {
+              line-height: 20px;
+            }
+          }
+        }
+      }
+    }
+  }
+}

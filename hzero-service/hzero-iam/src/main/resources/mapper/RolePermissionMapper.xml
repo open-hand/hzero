@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.iam.infra.mapper.RolePermissionMapper">
+
+
+    <!-- 查询角色权限集 -->
+    <select id="selectRolePermissionSets" resultType="org.hzero.iam.domain.entity.RolePermission">
+        select
+        irps.id,
+        irps.role_id,
+        irps.tenant_id,
+        irps.permission_id permission_set_id,
+        irps.h_create_flag create_flag,
+        irps.h_inherit_flag inherit_flag
+        from iam_role_permission irps
+        <if test="type == 'PS'">
+            join iam_menu im_ps on irps.permission_id = im_ps.id
+        </if>
+        where irps.type = #{type}
+        <if test="roleId != null">
+            and irps.role_id = #{roleId}
+        </if>
+        <if test="createFlag != null">
+            and irps.h_create_flag = #{createFlag}
+        </if>
+        <if test="inheritFlag != null">
+            and irps.h_inherit_flag = #{inheritFlag}
+        </if>
+        <if test="bothCreateAndInheritFlag != null and bothCreateAndInheritFlag == true">
+            and (irps.h_create_flag = 'Y' OR irps.h_inherit_flag = 'Y')
+        </if>
+        <if test=" type == 'PS' and level != null and level != '' ">
+            and im_ps.fd_level = #{level}
+        </if>
+        <if test="permissionSetIds != null and permissionSetIds.size > 0">
+            and irps.permission_id in
+            <foreach collection="permissionSetIds" item="permissionSetId" open="(" separator="," close=")">
+                #{permissionSetId}
+            </foreach>
+        </if>
+        <if test="roleIds != null and roleIds.size > 0">
+            and irps.role_id in
+            <foreach collection="roleIds" item="roleId" open="(" separator="," close=")">
+                #{roleId}
+            </foreach>
+        </if>
+    </select>
+
+    <insert id="batchInsertBySql">
+        <choose>
+            <when test="_databaseId == 'oracle'">
+                INSERT INTO iam_role_permission (id, role_id, permission_id, h_create_flag, h_inherit_flag, tenant_id, type, created_by, last_updated_by)
+                SELECT iam_role_permission_S.nextval, t.*
+                FROM (
+                    <foreach collection="list" item="item" separator=" union all ">
+                        select #{item.roleId}, #{item.permissionSetId}, #{item.createFlag}, #{item.inheritFlag}, #{item.tenantId}, #{item.type}, #{item.createdBy}, #{item.lastUpdatedBy} FROM dual
+                    </foreach>
+                ) t
+            </when>
+            <otherwise>
+                INSERT INTO iam_role_permission (role_id, permission_id, h_create_flag, h_inherit_flag, tenant_id, type, created_by, last_updated_by )
+                VALUES
+                <foreach collection="list" item="item" separator=",">
+                    (#{item.roleId}, #{item.permissionSetId}, #{item.createFlag}, #{item.inheritFlag}, #{item.tenantId}, #{item.type}, #{item.createdBy}, #{item.lastUpdatedBy})
+                </foreach>
+            </otherwise>
+        </choose>
+    </insert>
+
+    <select id="checkPermission" resultType="java.lang.Integer">
+        <bind name="now" value="@java.time.LocalDate@now()" />
+        SELECT
+        count(*)
+        FROM iam_role_permission irp
+        WHERE irp.permission_id = #{permissionSetId}
+        and irp.type = #{type}
+        <!-- 角色权限创建及继承标识判断以及当前登录角色判断 -->
+        AND (irp.h_create_flag = 'Y' OR irp.h_inherit_flag = 'Y')
+        <if test="checkScope == 'user' or checkScope == 'client'">
+            and irp.role_id in (
+            select imr.role_id
+            from iam_member_role imr
+            JOIN iam_role ir ON (ir.id = imr.role_id and ir.is_enabled = 1)
+            where imr.member_type = #{checkScope}
+            <if test="checkScope =='user'">
+                and imr.member_id = #{userId}
+            </if>
+            <if test="checkScope =='client'">
+                and imr.member_id = #{clientId}
+            </if>
+            AND (
+            imr.start_date_active IS NULL
+            OR imr.start_date_active &lt;= #{now}
+            )
+            AND (
+            imr.end_date_active IS NULL OR
+            imr.end_date_active &gt;= #{now}
+            )
+            )
+        </if>
+        <if test="checkScope == 'roles' and roleIds != null and roleIds.size > 0">
+            and irp.role_id in
+            <foreach collection="roleIds" item="roleId" open="(" separator="," close=")">
+                #{roleId}
+            </foreach>
+        </if>
+    </select>
+    <select id="selectRoleWithPermission" resultType="org.hzero.iam.api.dto.RolePermissionWithDTO">
+        SELECT
+            ir.id role_id,
+            ir.code role_code,
+            ir.h_tenant_id tenant_id
+            CASE WHEN irp.id IS NOT NULL THEN 1 ELSE 0 END as has_permission
+        FROM iam_role ir
+            LEFT JOIN iam_role_permission irp on ir.id = irp.role_id
+            AND irp.permission_id = #{permissionSetId}
+            AND irp.type = #{menuType}
+        WHERE ir.id IN
+        <foreach collection="roleIds" item="roleId" open="(" close=")" separator=",">
+            #{roleId}
+        </foreach>
+    </select>
+    <select id="selectRoleAssigns" resultType="org.hzero.iam.domain.entity.RolePermission">
+        SELECT
+            id,
+            role_id,
+            permission_id
+        FROM
+            iam_role_permission
+        WHERE
+        permission_id IN (
+        SELECT
+            id
+        FROM
+            iam_menu
+        WHERE
+            type = 'ps'
+        AND h_tenant_id = #{tenantId}
+        AND h_level_path LIKE concat((SELECT h_level_path FROM iam_menu WHERE id = #{menuId} AND h_tenant_id = #{tenantId}), '|%')
+        )
+        AND h_create_flag = 'Y'
+    </select>
+    <select id="selectTenantCustomRoleAssign" resultType="org.hzero.iam.domain.entity.RolePermission">
+        SELECT
+            irp.id,
+            irp.role_id,
+            irp.permission_id,
+            (case when irt.id is not null or ir.code = 'role/organization/default/administrator' then 1 else 0 end) tenant_admin
+        FROM
+            iam_role_permission irp
+            LEFT JOIN iam_role ir ON ir.id = irp.role_id
+            LEFT JOIN iam_role irt ON irt.id = ir.h_inherit_role_id AND irt.code = #{tplCode}
+        WHERE
+            permission_id IN (
+                SELECT
+                  id
+                FROM
+                  iam_menu
+                WHERE
+                  type = 'ps'
+                AND h_tenant_id = #{tenantId}
+                AND h_level_path LIKE concat((SELECT h_level_path FROM iam_menu WHERE id = #{menuId} AND h_tenant_id = #{tenantId}), '|%'))
+            AND h_create_flag = 'Y'
+    </select>
+
+    <delete id="batchDeleteBySql">
+        delete from iam_role_permission where id in
+        <foreach collection="rolePermissionIds" item="item" separator="," open="(" close=")">
+            #{item}
+        </foreach>
+    </delete>
+
+    <update id="batchUpdateBySql">
+        <bind name="now" value="@java.time.LocalDateTime@now()" />
+        <bind name="lastUpdatedBy" value="@org.hzero.iam.infra.common.utils.UserUtils@getCurrentUserId()"/>
+        update iam_role_permission set
+            h_create_flag = #{createFlag},
+            h_inherit_flag = #{inheritFlag},
+            last_updated_by = #{lastUpdatedBy},
+            last_update_date = #{now}
+        where id in
+        <foreach collection="rolePermissionIds" item="item" separator="," open="(" close=")">
+            #{item}
+        </foreach>
+    </update>
+
+</mapper>

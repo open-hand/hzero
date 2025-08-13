@@ -1,0 +1,68 @@
+.lovmulti-wrapper {
+  :global {
+    .query-fields {
+      .ant-form-item-label {
+        text-align: left;
+      }
+    }
+
+    .transfer-wrapper {
+      display: flex;
+      justify-content: space-between;
+
+      .header {
+        display: flex;
+        padding-top: 2px;
+        padding-bottom: 4px;
+        line-height: 20px;
+        margin-bottom: 4px;
+
+        .inputs {
+          width: 70%;
+          display: flex;
+          align-items: center;
+
+          .ant-form-item-control-wrapper {
+            width: 100%;
+          }
+
+          & > * {
+            min-width: 180px;
+            margin-right: 8px;
+          }
+        }
+
+        .buttons {
+          width: 30%;
+          display: flex;
+          justify-content: flex-end;
+          align-items: center;
+
+          & > * {
+            margin-left: 8px;
+          }
+        }
+      }
+
+      .control {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+
+        & > * {
+          margin-bottom: 8px;
+        }
+
+        & > *:last-child {
+          margin-bottom: 0;
+        }
+      }
+
+      .left-unselect,
+      .right-selected {
+        height: 500px;
+      }
+    }
+  }
+}

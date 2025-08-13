@@ -1,0 +1,429 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.plugin.platform.hr.infra.mapper.EmployeeMapper">
+
+    <resultMap id="EmployeeDetailMap" type="org.hzero.plugin.platform.hr.api.dto.EmployeeDTO" autoMapping="true">
+        <result column="employee_id" property="employeeId" jdbcType="DECIMAL"/>
+        <result column="employee_code" property="employeeCode" jdbcType="VARCHAR"/>
+        <result column="name" property="name" jdbcType="VARCHAR"/>
+        <result column="name_en" property="nameEn" jdbcType="VARCHAR"/>
+        <result column="tenant_id" property="tenantId" jdbcType="DECIMAL"/>
+        <result column="email" property="email" jdbcType="VARCHAR"/>
+        <result column="mobile" property="mobile" jdbcType="VARCHAR"/>
+        <result column="gender" property="gender" jdbcType="INTEGER"/>
+        <result column="enabled_flag" property="enabledFlag" jdbcType="INTEGER"/>
+        <result column="object_version_number" property="objectVersionNumber" jdbcType="INTEGER"/>
+        <result column="status" property="status" jdbcType="VARCHAR"/>
+        <result column="company_name" property="companyName" jdbcType="VARCHAR"/>
+        <collection property="list" ofType="org.hzero.plugin.platform.hr.api.dto.UnitAssignDTO">
+            <result column="unit_id" property="unitId" jdbcType="DECIMAL"/>
+            <result column="unit_name" property="unitName" jdbcType="VARCHAR"/>
+            <result column="level_path" property="levelPath" jdbcType="VARCHAR"/>
+            <result column="position_id" property="positionId" jdbcType="DECIMAL"/>
+            <result column="position_name" property="positionName" jdbcType="VARCHAR"/>
+            <result column="primary_position_flag" property="primaryPositionFlag" jdbcType="DECIMAL"/>
+        </collection>
+    </resultMap>
+
+    <update id="updateLastUpdateTime">
+        UPDATE hpfm_employee SET last_update_date = #{now} WHERE employee_id IN
+        <foreach collection="employeeIds" item="employeeId" open="(" close=")" separator=",">
+            #{employeeId}
+        </foreach>
+    </update>
+
+    <select id="listEmployee" parameterType="java.lang.String"
+            resultType="org.hzero.plugin.platform.hr.domain.entity.Employee">
+        select
+        he.employee_id,
+        he.employee_num,
+        he.name,
+        he.name_en,
+        he.tenant_id,
+        he.email,
+        he.mobile,
+        he.gender,
+        he.cid,
+        he.enabled_flag,
+        he.quick_index,
+        he.phoneticize,
+        he.status,
+        he.entry_date,
+        he.object_version_number
+        from hpfm_employee he
+        where
+        he.tenant_id = #{tenantId}
+        <if test="employeeNum != null and employeeNum != ''">
+            <bind name="employeeNumLike" value="'%'+employeeNum+'%'"/>
+            and he.employee_num like #{employeeNumLike}
+        </if>
+
+        <if test="name != null and name !=''">
+            <bind name="nameLike" value="'%'+name+'%'"/>
+            and he.name like #{nameLike}
+        </if>
+
+        <if test="enabledFlag != null">
+            and he.enabled_flag = #{enabledFlag}
+        </if>
+        <if test="userId != null">
+            and exists (
+            select 1 from hpfm_employee_user heu
+            where heu.employee_id = he.employee_id
+            and heu.user_id = #{userId}
+            )
+        </if>
+    </select>
+    <select id="listEmployeeSuperiorNum" resultType="java.lang.String">
+        SELECT hep.employee_num
+        FROM
+            hpfm_employee he
+            JOIN hpfm_employee_assign hea
+                ON hea.employee_id = he.employee_id AND hea.enabled_flag = 1 AND hea.primary_position_flag = 1 AND
+                   hea.tenant_id = #{tenantId}
+            JOIN hpfm_position hp
+                ON hp.position_id = hea.position_id AND hp.enabled_flag = 1 AND hp.tenant_id = #{tenantId}
+            JOIN hpfm_employee_assign heap
+                ON heap.position_id = hp.parent_position_id AND heap.enabled_flag = 1 AND heap.tenant_id = #{tenantId}
+            JOIN hpfm_employee hep
+                ON hep.employee_id = heap.employee_id AND hep.enabled_flag = 1 AND hep.tenant_id = #{tenantId}
+        WHERE
+            he.enabled_flag = 1
+            AND he.employee_num = #{employeeNum}
+            AND he.tenant_id = #{tenantId}
+    </select>
+    <select id="listDepartmentSuperiorNum" resultType="java.lang.String">
+        SELECT
+            hep.employee_num
+        FROM
+            hpfm_employee he
+            JOIN hpfm_employee_assign hea ON hea.employee_id = he.employee_id AND hea.enabled_flag = 1 AND hea.primary_position_flag = 1 AND hea.tenant_id = #{tenantId}
+            JOIN hpfm_position hp ON hp.position_id = hea.position_id AND hp.enabled_flag = 1 AND hp.tenant_id = #{tenantId}
+            JOIN hpfm_position hpp ON hpp.unit_id = hp.unit_id AND hpp.supervisor_flag = 1
+            JOIN hpfm_employee_assign heap ON heap.position_id = hpp.position_id AND heap.enabled_flag = 1 AND heap.tenant_id = #{tenantId}
+            JOIN hpfm_employee hep ON hep.employee_id = heap.employee_id AND hep.enabled_flag = 1 AND hep.tenant_id = #{tenantId}
+        WHERE
+            he.enabled_flag = 1
+            AND he.employee_num = #{employeeNum}
+            AND he.tenant_id = #{tenantId}
+    </select>
+    <select id="listSuperiorDepartmentSuperiorNum" resultType="java.lang.String">
+        SELECT
+            hep.employee_num
+        FROM
+            hpfm_employee he
+            JOIN hpfm_employee_assign hea ON hea.employee_id = he.employee_id AND hea.enabled_flag = 1 AND hea.primary_position_flag = 1 AND hea.tenant_id = #{tenantId}
+            JOIN hpfm_position hp ON hp.position_id = hea.position_id AND hp.enabled_flag = 1 AND hp.tenant_id = #{tenantId}
+            JOIN hpfm_unit hu ON hu.unit_id = hp.unit_id AND hu.enabled_flag = 1 AND hu.tenant_id = #{tenantId}
+            JOIN hpfm_position hpp ON hpp.unit_id = hu.parent_unit_id AND hpp.supervisor_flag = 1
+            JOIN hpfm_employee_assign heap ON heap.position_id = hpp.position_id AND heap.enabled_flag = 1 AND heap.tenant_id = #{tenantId}
+            JOIN hpfm_employee hep ON hep.employee_id = heap.employee_id AND hep.enabled_flag = 1 AND hep.tenant_id = #{tenantId}
+        WHERE
+            he.enabled_flag = 1
+            AND he.employee_num = #{employeeNum}
+            AND he.tenant_id = #{tenantId}
+    </select>
+    <select id="listPositionEmployeeNum" resultType="java.lang.String">
+        SELECT he.employee_num
+        FROM
+            hpfm_position hp
+            JOIN hpfm_employee_assign hea
+                ON hea.position_id = hp.position_id AND hea.enabled_flag = 1 AND hea.tenant_id = #{tenantId}
+            JOIN hpfm_employee he
+                ON he.employee_id = hea.employee_id AND he.enabled_flag = 1 AND he.tenant_id = #{tenantId}
+        WHERE
+            hp.enabled_flag = 1
+            AND hp.position_code = #{positionCode}
+            AND hp.tenant_id = #{tenantId}
+    </select>
+    <select id="listEmployeePositionCode" resultType="java.lang.String">
+        SELECT hp.position_code
+        FROM
+            hpfm_employee he
+            JOIN hpfm_employee_assign hea
+                ON hea.employee_id = he.employee_id AND hea.enabled_flag = 1 AND hea.tenant_id = #{tenantId}
+            JOIN hpfm_position hp
+                ON hp.position_id = hea.position_id AND hp.enabled_flag = 1 AND hp.tenant_id = #{tenantId}
+        WHERE
+            he.enabled_flag = 1
+            AND he.employee_num = #{employeeNum}
+            AND he.tenant_id = #{tenantId}
+    </select>
+    <select id="queryEmployeeDetail" resultType="org.hzero.plugin.platform.hr.api.dto.EmployeeDTO">
+        SELECT
+            employee_id,
+            employee_num employee_code,
+            name,
+            email,
+            mobile,
+            gender,
+            cid          certificate_id,
+            enabled_flag,
+            created_by,
+            creation_date,
+            last_updated_by,
+            last_update_date
+        FROM
+            hpfm_employee
+        WHERE
+            tenant_id = #{tenantId}
+            AND employee_num = #{employeeNum}
+    </select>
+    <select id="queryEmployeeAllDetail" resultType="org.hzero.plugin.platform.hr.api.dto.EmployeeDTO">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        SELECT
+        he.employee_id,
+        he.employee_num employee_code,
+        he.name,
+        hp.position_id,
+        hpt.position_name,
+        hp.unit_id,
+        hut.unit_name
+        FROM
+        hpfm_employee he
+        LEFT JOIN hpfm_employee_assign hea
+        ON hea.employee_id = he.employee_id AND hea.enabled_flag = 1 AND hea.primary_position_flag = 1 AND
+        hea.tenant_id = #{tenantId}
+        LEFT JOIN hpfm_position hp
+        ON hp.position_id = hea.position_id AND hp.enabled_flag = 1 AND hp.tenant_id = #{tenantId}
+        LEFT JOIN hpfm_position_tl hpt ON hpt.position_id = hp.position_id AND hpt.lang = #{lang}
+        LEFT JOIN hpfm_unit_tl hut ON hut.unit_id = hp.unit_id AND hut.lang = #{lang}
+        WHERE
+        he.tenant_id = #{tenantId}
+        AND he.employee_num = #{employeeNum}
+    </select>
+    <select id="listEmployeePosition" resultType="org.hzero.plugin.platform.hr.domain.entity.Position">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        SELECT
+        hp.position_id,
+        hp.unit_id,
+        hp.position_code,
+        hp.position_name,
+        hp.description,
+        hp.parent_position_id
+        FROM
+        hpfm_employee he
+        JOIN hpfm_employee_assign hea
+        ON hea.employee_id = he.employee_id AND hea.enabled_flag = 1 AND hea.primary_position_flag = 1 AND
+        hea.tenant_id = #{tenantId}
+        JOIN hpfm_position hp
+        ON hp.position_id = hea.position_id AND hp.enabled_flag = 1 AND hp.tenant_id = #{tenantId}
+        JOIN hpfm_position_tl hpt ON hpt.position_id = hp.position_id AND hpt.lang = #{lang}
+        WHERE
+        he.tenant_id = #{tenantId}
+        AND he.employee_num = #{employeeNum}
+    </select>
+    <select id="listEmployeeAllDetail" resultType="org.hzero.plugin.platform.hr.api.dto.EmployeeDTO">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        SELECT
+        he.employee_id,
+        he.employee_num employee_code,
+        he.name,
+        he.email,
+        he.mobile,
+        hpt.position_name,
+        hut.unit_name
+        FROM
+        hpfm_employee he
+        JOIN hpfm_employee_assign hea ON hea.employee_id = he.employee_id <if test="enabledFlag != null">AND
+        hea.enabled_flag = #{enabledFlag}
+    </if> AND hea.primary_position_flag = 1 AND hea.tenant_id = #{tenantId}
+        JOIN hpfm_position hp ON hp.position_id = hea.position_id <if test="enabledFlag != null">AND hp.enabled_flag =
+        #{enabledFlag}
+    </if> AND hp.tenant_id = #{tenantId}
+        <if test="positionId != null">AND hp.position_id = #{positionId}</if>
+        <if test="unitId != null">AND hp.unit_id = #{unitId}</if>
+        JOIN hpfm_position_tl hpt ON hpt.position_id = hp.position_id AND hpt.lang = #{lang}
+        JOIN hpfm_unit_tl hut ON hut.unit_id = hp.unit_id AND hut.lang = #{lang}
+        WHERE
+        he.tenant_id = #{tenantId}
+        <if test="enabledFlag != null">
+            AND he.enabled_flag = #{enabledFlag}
+        </if>
+        <if test="employeeNum != null and employeeNum != ''">
+            <bind name="employeeNum" value="'%' + employeeNum + '%'"/>
+            AND he.employee_num like #{employeeNum}
+        </if>
+        <if test="name != null and name != ''">
+            <bind name="name" value="'%' + name + '%'"/>
+            AND he.name like #{name}
+        </if>
+        <if test="idList!=null and idList.size() > 0">
+            and he.employee_id not in
+            <foreach collection="idList" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+    </select>
+    <select id="listDepartmentEmployee" resultType="org.hzero.plugin.platform.hr.api.dto.EmployeeDTO">
+        SELECT he.employee_id,
+        he.employee_num employee_code,
+        he.name,
+        he.name_en,
+        he.tenant_id,
+        he.email,
+        he.mobile,
+        he.gender,
+        he.cid certificateId,
+        he.quick_index,
+        he.phoneticize,
+        hu.unit_id,
+        hu.level_path
+        FROM hpfm_employee he
+        JOIN hpfm_employee_assign hea ON he.employee_id = hea.employee_id AND hea.tenant_id = he.tenant_id
+        JOIN hpfm_unit hu ON hu.unit_type_code = 'D' AND hu.unit_id = hea.unit_id
+        <if test="departmentId != null">
+            AND (hu.unit_id = #{departmentId}
+            <if test="includeChildDepartment">
+                OR hu.level_path LIKE CONCAT((SELECT hu1.level_path FROM hpfm_unit hu1 WHERE hu1.unit_id =
+                #{departmentId}), '|%')
+            </if>
+            )
+        </if>
+        <if test="departmentCode != null and departmentCode != ''">
+            AND ((hu.unit_code = #{departmentCode} AND hu.tenant_id = #{tenantId})
+            <if test="includeChildDepartment">
+                OR hu.level_path LIKE CONCAT((SELECT hu1.level_path FROM hpfm_unit hu1 WHERE hu1.unit_code =
+                #{departmentCode} AND hu1.tenant_id = #{tenantId}), '|%')
+            </if>
+            )
+        </if>
+        WHERE he.tenant_id = #{tenantId}
+        AND he.enabled_flag = 1
+    </select>
+    <select id="selectEmployeesByEmployeeNum" resultType="org.hzero.plugin.platform.hr.api.dto.EmployeeDTO">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        SELECT
+        he.employee_id,
+        he.employee_num employee_code,
+        he.name,
+        he.email,
+        he.mobile,
+        he.gender,
+        he.cid certificate_id,
+        he.enabled_flag,
+        hp.position_name,
+        hu.unit_name
+        FROM
+        hpfm_employee he
+        LEFT JOIN hpfm_employee_assign hea ON he.employee_id = hea.employee_id AND hea.primary_position_flag = 1 AND
+        hea.enabled_flag = 1
+        LEFT JOIN hpfm_position_tl hp ON hp.position_id = hea.position_id AND hp.lang = #{lang}
+        LEFT JOIN hpfm_unit_tl hu ON hu.unit_id = hea.unit_id AND hu.lang = #{lang}
+        WHERE
+        he.tenant_id = #{tenantId}
+        AND he.employee_num IN
+        <foreach collection="employeeNums" index="index" open="(" close=")" separator="," item="item">
+            #{item}
+        </foreach>
+    </select>
+
+    <select id="selectEmployeeByEmployeeId" resultMap="EmployeeDetailMap">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        SELECT
+        he.employee_id,
+        he.employee_num employee_code,
+        he.name,
+        he.email,
+        he.mobile,
+        he.gender,
+        he.status,
+        he.cid certificate_id,
+        he.enabled_flag,
+        he.object_version_number,
+        hea.unit_id,
+        hea.primary_position_flag,
+        hu.level_path,
+        hu.unit_name,
+        hea.position_id,
+        hp.position_name
+        FROM
+        hpfm_employee he
+        LEFT JOIN hpfm_employee_assign hea ON he.employee_id = hea.employee_id AND hea.enabled_flag = 1
+        LEFT JOIN hpfm_position_tl hp ON hp.position_id = hea.position_id AND hp.lang = #{lang}
+        LEFT JOIN hpfm_unit hu ON hea.unit_id = hu.unit_id
+        LEFT JOIN hpfm_unit_tl hut ON hu.unit_id = hut.unit_id AND hut.lang = #{lang}
+        WHERE
+        he.tenant_id = #{tenantId}
+        AND he.employee_id = #{employeeId}
+    </select>
+
+    <select id="queryEmployeeByRoleId" resultType="java.lang.String">
+        SELECT
+        he.employee_num
+        FROM
+        hpfm_employee he
+        join hpfm_employee_user heu on heu.employee_id = he.employee_id
+        join iam_member_role imr on imr.member_id=heu.user_id
+        join iam_role ir on ir.id=imr.role_id and ir.h_tenant_id = #{tenantId}
+        WHERE ir.id=#{roleId}
+        group by he.tenant_id , he.employee_num;
+    </select>
+
+    <select id="queryEmployeeByCondition" resultType="org.hzero.plugin.platform.hr.domain.entity.Employee">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        SELECT
+        he.employee_num,
+        he.name,
+        hut.unit_name AS company_name
+        FROM
+        hpfm_employee he
+        left JOIN hpfm_employee_assign hea ON hea.employee_id = he.employee_id
+        left JOIN hpfm_unit_tl hut ON hut.unit_id = hea.unit_company_id
+        AND hut.lang = #{lang}
+        where
+        he.tenant_id = #{tenantId}
+        <if test="enabledFlag!=null">
+            and he.enabled_flag=#{enabledFlag}
+        </if>
+        <if test="employeeId!=null">
+            and he.employee_id=#{employeeId}
+        </if>
+        <if test="employeeNum!=null and ''!=employeeNum">
+            <bind name="employeeNumLike" value="'%' + employeeNum + '%'"/>
+            and he.employee_num like #{employeeNumLike}
+        </if>
+        <if test="name!=null and ''!=name">
+            <bind name="nameLike" value="'%' + name + '%'"/>
+            and he.name like #{nameLike}
+        </if>
+        <if test="nameEn!=null and ''!=nameEn">
+            <bind name="nameEnLike" value="'%' + nameEn + '%'"/>
+            and he.name_en like #{nameEnLike}
+        </if>
+        <if test="email!=null and ''!=email">
+            <bind name="emailLike" value="'%' + email + '%'"/>
+            and he.email like #{emailLike}
+        </if>
+        <if test="mobile!=null and ''!=mobile">
+            <bind name="mobileLike" value="'%' + mobile + '%'"/>
+            and he.mobile like #{mobileLike}
+        </if>
+        <if test="gender!=null">
+            and he.gender=#{gender}
+        </if>
+        <if test="cid!=null and ''!=cid">
+            <bind name="cidLike" value="'%' + cid + '%'"/>
+            and he.cid like #{cidLike}
+        </if>
+        <if test="status!=null and ''!=status">
+            and he.status=#{status}
+        </if>
+        <if test="quickIndex!=null and ''!=quickIndex">
+            <bind name="quickIndexLike" value="'%' + quickIndex + '%'"/>
+            and he.quick_index like #{quickIndexLike}
+        </if>
+        <if test="phoneticize!=null and ''!=phoneticize">
+            <bind name="phoneticizeLike" value="'%' + phoneticize + '%'"/>
+            and he.phoneticize like #{phoneticizeLike}
+        </if>
+        <if test="companyName !=null and ''!=companyName">
+            <bind name="companyNameLike" value="'%' + companyName + '%'"/>
+            and hut.unit_name like #{companyNameLike}
+        </if>
+        GROUP BY
+        he.employee_num,
+        he.name,
+        hut.unit_name
+    </select>
+</mapper>

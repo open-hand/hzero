@@ -1,0 +1,40 @@
+@import './mixins.less';
+@import '../SideLayout/mixins.less';
+
+@hzeroNormalLayoutPrefix: hzero-normal;
+@hzeroNormalLayoutCollapsedWith: 80px;
+
+:global {
+  .default-layout(@hzeroNormalLayoutPrefix);
+
+  .@{hzeroNormalLayoutPrefix}-container {
+    .side-layout-header-search-collapsed(@hzeroNormalLayoutPrefix);
+
+    // fix style
+    .@{hzeroNormalLayoutPrefix}-side-search {
+      .@{hzeroNormalLayoutPrefix}-side-search-icon {
+        background-color: transparent;
+      }
+    }
+
+    // override normal-style
+    &-collapsed {
+      .@{hzeroNormalLayoutPrefix}-body {
+        .@{hzeroNormalLayoutPrefix}-nav {
+          &-normal-search {
+            height: @hzeroNormalLayoutCollapsedWith;
+          }
+
+          .@{hzeroNormalLayoutPrefix}-side-search {
+            &-icon {
+              left: 24px;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .side-layout-header-search(@hzeroNormalLayoutPrefix);
+  .side-layout-header-search-global(@hzeroNormalLayoutPrefix);
+}

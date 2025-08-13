@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.iam.infra.mapper.HiamProfileMapper">
+    <select id="queryProfileVO" resultType="org.hzero.iam.domain.vo.ProfileVO">
+        SELECT
+            hpv.level_value,
+            hpv.value,
+            ir.h_level_path levelPath,
+            ir.h_inherit_level_path inheritLevelPath
+        FROM hpfm_profile pf
+        JOIN hpfm_profile_value hpv on pf.profile_id = hpv.profile_id
+        AND hpv.level_code = 'ROLE'
+        JOIN iam_role ir on hpv.level_value = concat('', ir.id)
+        WHERE pf.tenant_id = #{tenantId}
+        AND pf.profile_name = #{profileName}
+
+    </select>
+</mapper>

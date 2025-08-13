@@ -1,0 +1,420 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.oauth.infra.mapper.UserPlusMapper">
+
+    <resultMap id="RoleDetails" type="org.hzero.oauth.domain.vo.UserRoleDetails">
+        <result column="default_tenant_id" property="defaultTenantId" jdbcType="BIGINT"/>
+        <result column="tenant_id" property="tenantId" jdbcType="BIGINT"/>
+        <result column="tenant_num" property="tenantNum" jdbcType="VARCHAR"/>
+        <result column="default_role_id" property="defaultRoleId" jdbcType="BIGINT"/>
+        <result column="access_datetime" property="accessDatetime" jdbcType="TIMESTAMP"/>
+        <result column="role_merge_flag" property="roleMergeFlag" jdbcType="TINYINT"/>
+        <collection property="roles" ofType="org.hzero.oauth.domain.vo.Role">
+            <result column="role_id" property="id" jdbcType="BIGINT"/>
+            <result column="fd_level" property="level" jdbcType="VARCHAR"/>
+            <result column="h_assign_level" property="assignLevel" jdbcType="VARCHAR"/>
+            <result column="h_assign_level_value" property="assignValue" jdbcType="BIGINT"/>
+        </collection>
+    </resultMap>
+
+    <resultMap id="UserVO" type="org.hzero.oauth.domain.vo.UserVO">
+        <id property="id" column="id"/>
+        <result property="loginName" column="login_name"/>
+        <result property="email" column="email"/>
+        <result property="organizationId" column="organizationId"/>
+        <result property="realName" column="real_name"/>
+        <result property="phone" column="phone"/>
+        <result property="internationalTelCode" column="INTERNATIONAL_TEL_CODE"/>
+        <result property="imageUrl" column="image_url"/>
+        <result property="profilePhoto" column="profile_photo"/>
+        <result property="language" column="language"/>
+        <result property="languageName" column="language_name"/>
+        <result property="timeZone" column="time_zone"/>
+        <result property="lastLoginAt" column="last_login_at"/>
+        <result property="enabled" column="is_enabled"/>
+        <result property="locked" column="is_locked"/>
+        <result property="admin" column="is_admin"/>
+        <result property="userType" column="user_type"/>
+        <result property="ldap" column="is_ldap"/>
+        <result property="lockedUntilAt" column="locked_until_at"/>
+        <result property="lastPasswordUpdatedAt" column="last_password_updated_at"/>
+        <result property="companyName" column="company_name"/>
+        <result property="invitationCode" column="invitation_code"/>
+        <result property="employeeId" column="employee_id"/>
+        <result property="textId" column="text_id"/>
+
+        <result property="birthday" column="birthday"/>
+        <result property="nickname" column="nickname"/>
+        <result property="gender" column="gender"/>
+        <result property="countryId" column="country_id"/>
+        <result property="countryName" column="country_name"/>
+        <result property="regionId" column="region_id"/>
+        <result property="regionName" column="region_name"/>
+        <result property="addressDetail" column="address_detail"/>
+
+        <result property="securityLevelCode" column="security_level_code"/>
+        <result property="startDateActive" column="start_date_active" javaType="java.time.LocalDate"/>
+        <result property="endDateActive" column="end_date_active" javaType="java.time.LocalDate"/>
+        <result property="userSource" column="user_source"/>
+        <result property="phoneCheckFlag" column="phone_check_flag"/>
+        <result property="emailCheckFlag" column="email_check_flag"/>
+        <result property="passwordResetFlag" column="password_reset_flag"/>
+        <result property="defaultRoleId" column="default_role_id"/>
+        <result property="defaultRoleName" column="default_role_name"/>
+        <result property="defaultCompanyId" column="default_company_id"/>
+        <result property="defaultCompanyName" column="default_company_name"/>
+        <result property="lockedDate" column="locked_date"/>
+        <result property="dateTimeFormat" column="date_time_format"/>
+        <result property="dateFormat" column="date_format"/>
+
+        <result property="tenantName" column="tenant_name"/>
+        <result property="tenantNum" column="tenant_num"/>
+        <result property="groupName" column="group_name"/>
+        <result property="groupNum" column="group_num"/>
+        <result property="securityLevelMeaning" column="security_level_meaning"/>
+        <result property="objectVersionNumber" column="object_version_number"/>
+    </resultMap>
+
+    <resultMap id="UserMap" type="org.hzero.oauth.domain.entity.User">
+        <id property="id" column="id"/>
+        <result property="loginName" column="login_name"/>
+        <result property="email" column="email"/>
+        <result property="organizationId" column="organization_id"/>
+        <result property="password" column="hash_password"/>
+        <result property="realName" column="real_name"/>
+        <result property="phone" column="phone"/>
+        <result property="language" column="language"/>
+        <result property="enabled" column="is_enabled"/>
+        <result property="locked" column="is_locked"/>
+        <result property="ldap" column="is_ldap"/>
+        <result property="timeZone" column="time_zone"/>
+        <result property="admin" column="is_admin"/>
+        <result property="userType" column="user_type"/>
+        <result property="imageUrl" column="image_url"/>
+        <result property="lockedUntilAt" column="locked_until_at"/>
+        <result property="lastPasswordUpdatedAt" column="last_password_updated_at"/>
+        <result property="internationalTelCode" column="international_tel_code"/>
+        <result property="objectVersionNumber" column="object_version_number"/>
+
+        <result property="startDateActive" column="start_date_active" javaType="java.time.LocalDate"/>
+        <result property="endDateActive" column="end_date_active" javaType="java.time.LocalDate"/>
+        <result property="phoneCheckFlag" column="phone_check_flag"/>
+        <result property="emailCheckFlag" column="email_check_flag"/>
+        <result property="passwordResetFlag" column="password_reset_flag"/>
+        <result property="secCheckPhoneFlag" column="sec_check_phone_flag"/>
+        <result property="secCheckEmailFlag" column="sec_check_email_flag"/>
+
+        <result property="tenantId" column="tenant_id"/>
+        <result property="tenantName" column="tenant_name"/>
+        <result property="tenantEnabledFlag" column="tenant_enabled_flag"/>
+
+        <collection property="roles" ofType="org.hzero.oauth.domain.vo.Role">
+            <result property="id" column="role_id"/>
+            <result property="tenantId" column="role_tenant_id"/>
+        </collection>
+    </resultMap>
+
+    <!--  用户详细信息查询基础字段  -->
+    <sql id="userDetailsSelectBaseColumn">
+        iu.id,
+        iu.login_name,
+        iu.real_name,
+        iu.organization_id,
+        iu.email,
+        iu.phone,
+        iu.INTERNATIONAL_TEL_CODE,
+        iu.image_url,
+        iu.profile_photo,
+        iu.language,
+        iu.user_type,
+        fl.name language_name,
+        iu.time_zone,
+        iu.last_login_at,
+        iu.last_password_updated_at,
+
+        hui.user_source,
+        hui.user_source,
+        hui.phone_check_flag,
+        hui.email_check_flag,
+        hui.password_reset_flag,
+        hui.birthday,
+        hui.nickname,
+        hui.gender,
+        hui.country_id,
+        hct.country_name,
+        hui.region_id,
+        hrt.region_name,
+        hui.address_detail,
+
+        ht.tenant_name,
+        ht.tenant_num,
+        hg.group_num,
+        hg.group_name
+    </sql>
+
+    <!-- 查询登录用户 -->
+    <select id="selectLoginUser" resultMap="UserMap">
+        <bind name="now" value="@java.time.LocalDate@now()" />
+        select
+          iu.id,
+          iu.login_name,
+          iu.email,
+          iu.organization_id,
+          iu.hash_password,
+          iu.real_name,
+          iu.phone,
+          iu.language,
+          iu.is_enabled,
+          iu.is_locked,
+          iu.is_ldap,
+          iu.time_zone,
+          iu.is_admin,
+          iu.user_type,
+          iu.image_url,
+          iu.locked_until_at,
+          iu.last_password_updated_at,
+          iu.object_version_number,
+
+          hui.end_date_active,
+          hui.phone_check_flag,
+          hui.email_check_flag,
+          hui.password_reset_flag,
+          hui.sec_check_phone_flag,
+          hui.sec_check_email_flag,
+        <!-- 查询租户是否有效 -->
+          ht.tenant_id,
+          ht.tenant_name,
+          ht.enabled_flag tenant_enabled_flag,
+
+          ir.id as role_id,
+          ir.h_tenant_id as role_tenant_id
+        from iam_user iu
+        join hiam_user_info hui on iu.id = hui.user_id
+        left join hpfm_tenant ht on ht.tenant_id = iu.organization_id
+        left join iam_member_role imr on (
+            iu.id = imr.member_id
+            and imr.member_type = 'user'
+            and (imr.start_date_active is null or imr.start_date_active &lt;= #{now})
+            and (imr.end_date_active is null or imr.end_date_active >= #{now})
+        )
+        left join iam_role ir on (
+            ir.id = imr.role_id
+            and ir.is_enabled = 1
+        )
+        <where>
+            and iu.id > 0
+            <if test="id != null">
+                and iu.id = #{id}
+            </if>
+            <if test="loginName != null and loginName != ''">
+                and iu.login_name = #{loginName}
+            </if>
+            <if test="email != null and email != ''">
+                and UPPER(iu.email) = UPPER(#{email})
+            </if>
+            <if test="phone != null and phone != ''">
+                and iu.phone = #{phone}
+            </if>
+            <if test="userType != null and userType != ''">
+                and iu.user_type = #{userType}
+            </if>
+            <if test="internationalTelCode != null and internationalTelCode != ''">
+                and iu.international_tel_code = #{internationalTelCode}
+            </if>
+        </where>
+    </select>
+
+    <!-- 查询当前登录用户简要信息 -->
+    <select id="selectSelf" parameterType="org.hzero.oauth.domain.vo.UserVO" resultMap="UserVO">
+        SELECT
+        <!-- 日期时间格式 -->
+        hui.date_format,
+        hui.time_format,
+        concat(hui.date_format, concat(' ', hui.time_format)) AS date_time_format,
+        <!-- 当前角色信息 -->
+        ir.code current_role_code,
+        ir.name current_role_name,
+        ir.fd_level current_role_level,
+
+        <include refid="userDetailsSelectBaseColumn" />
+        FROM iam_user iu
+        JOIN hiam_user_info hui ON hui.user_id = iu.id
+        JOIN hpfm_tenant ht ON (ht.tenant_id = #{tenantId} and ht.enabled_flag = 1)
+        JOIN hpfm_group hg ON (hg.tenant_id = iu.organization_id and hg.enabled_flag = 1)
+        JOIN iam_role ir ON (ir.id = #{currentRoleId} and ir.is_enabled = 1)
+        JOIN fd_language fl ON fl.code = iu.language
+        LEFT JOIN hpfm_country_tl hct ON hui.country_id = hct.country_id AND hct.lang = iu.language
+        LEFT JOIN hpfm_region_tl hrt ON hui.region_id = hrt.region_id AND hrt.lang = iu.language
+        WHERE iu.id = #{id}
+        AND iu.is_enabled = 1
+        AND iu.is_locked = 0
+    </select>
+
+    <select id="selectRoleDetails" resultMap="RoleDetails">
+        <bind name="now" value="@java.time.LocalDate@now()" />
+        SELECT
+            hui.default_tenant_id,
+            ir.h_tenant_id AS tenant_id,
+            ir.fd_level,
+            it.tenant_num,
+            hta.access_datetime,
+            huc.default_role_id,
+            huc.role_merge_flag,
+            imr.role_id,
+            iu.language user_language
+        FROM
+            iam_member_role imr
+            JOIN hiam_user_info hui ON hui.user_id = imr.member_id
+            JOIN iam_role ir ON ir.id = imr.role_id AND ir.is_enabled = 1
+            JOIN hpfm_tenant it ON it.tenant_id = ir.h_tenant_id AND it.enabled_flag = 1
+            JOIN iam_user iu ON iu.id = imr.member_id
+            LEFT JOIN hiam_tenant_access hta ON hta.user_id = imr.member_id AND hta.tenant_id = it.tenant_id
+            LEFT JOIN hiam_user_config huc ON huc.user_id = imr.member_id AND huc.tenant_id = ir.h_tenant_id
+        WHERE
+            imr.member_id = #{userId}
+            and imr.member_type = 'user'
+            and (
+                imr.start_date_active is null
+                or imr.start_date_active &lt;= #{now}
+            )
+            and (
+                imr.end_date_active is null
+                or imr.end_date_active >= #{now}
+            )
+        ORDER BY access_datetime DESC, tenant_id, role_id
+    </select>
+
+    <!-- 查询Root用户要访问的租户及对应的租户管理员 -->
+    <select id="selectRootUserRoleDetails" resultMap="RoleDetails">
+        <bind name="siteSuperRole" value="@org.hzero.common.HZeroConstant$RoleCode@SITE"/>
+        <bind name="tenantSuperRole" value="@org.hzero.common.HZeroConstant$RoleCode@TENANT"/>
+        SELECT
+            hui.default_tenant_id,
+            ir.h_tenant_id AS tenant_id,
+            ir.fd_level,
+            it.tenant_num,
+            hta.access_datetime,
+            huc.default_role_id,
+            huc.role_merge_flag,
+            ir.id role_id,
+            iu.language user_language
+        FROM
+            iam_role ir
+            JOIN iam_user iu ON iu.id = #{userId}
+            JOIN hiam_user_info hui ON hui.user_id = iu.id
+            JOIN hpfm_tenant it ON it.tenant_id = ir.h_tenant_id AND it.enabled_flag = 1
+            LEFT JOIN hiam_tenant_access hta ON hta.user_id = iu.id AND hta.tenant_id = it.tenant_id
+            LEFT JOIN hiam_user_config huc ON huc.user_id = iu.id AND huc.tenant_id = ir.h_tenant_id
+        WHERE
+            ir.h_tenant_id = #{tenantId}
+            AND ir.is_enabled = 1
+            AND iu.is_enabled = 1
+            AND iu.is_locked = 0
+            AND iu.is_admin = 1
+            AND (
+                ir.code in (#{siteSuperRole}, #{tenantSuperRole})
+                or (
+                    EXISTS (
+                        SELECT 1
+                        FROM
+                            iam_label il
+                            JOIN hiam_label_rel hlr  ON il.id = hlr.label_id
+                        WHERE
+                            hlr.data_type = 'ROLE'
+                            AND hlr.data_id = ir.id
+                            AND il.enabled_flag = 1
+                            AND il.name = 'TENANT_ADMIN'
+                    )
+                    AND NOT EXISTS (
+                        SELECT 1
+                        FROM
+                            iam_label il
+                            JOIN hiam_label_rel hlr  ON il.id = hlr.label_id
+                        WHERE
+                            hlr.data_type = 'ROLE'
+                            AND hlr.data_id = ir.id
+                            AND il.enabled_flag = 1
+                            AND il.name = 'TENANT_ROLE_TPL'
+                    )
+                )
+            )
+        ORDER BY access_datetime DESC, tenant_id, role_id
+    </select>
+
+    <select id="countUserMemberRole" resultType="int">
+        <bind name="now" value="@java.time.LocalDate@now()" />
+        select
+          count(*)
+        from iam_user iu
+        join iam_member_role imr on iu.id = imr.member_id
+        join iam_role ir on ir.id = imr.role_id
+        where iu.id = #{userId}
+        and ir.is_enabled = 1
+        and imr.member_type = 'user'
+        and (
+            imr.start_date_active is null
+            or imr.start_date_active &lt;= #{now}
+        )
+        and (
+            imr.end_date_active is null
+            or imr.end_date_active >= #{now}
+        )
+    </select>
+    
+    <select id="findUserLegalOrganization" resultType="java.lang.Long">
+        <bind name="now" value="@java.time.LocalDate@now()" />
+        SELECT
+          imr.source_id 
+        FROM
+          iam_member_role imr
+        WHERE
+          imr.member_type = 'user' 
+          AND imr.member_id = #{userId}
+          and (
+            imr.start_date_active is null
+            or imr.start_date_active &lt;= #{now}
+            )
+            and (
+            imr.end_date_active is null
+            or imr.end_date_active >= #{now}
+          )
+        GROUP BY
+          imr.source_id
+    </select>
+    <select id="selectUserRole" resultType="java.lang.Long">
+        <bind name="now" value="@java.time.LocalDate@now()" />
+        SELECT
+            imr.role_id
+        FROM
+            iam_member_role imr
+        WHERE
+            imr.member_id = #{userId}
+            AND imr.member_type = 'user'
+            and (
+                imr.start_date_active is null
+                or imr.start_date_active &lt;= #{now}
+                )
+                and (
+                imr.end_date_active is null
+                or imr.end_date_active >= #{now}
+            )
+    </select>
+
+    <select id="selectRoleLabels" resultType="java.lang.String">
+        select
+            il.name
+        from iam_role ir
+        join hiam_label_rel ilr on (
+            ilr.data_type = 'ROLE'
+            and ilr.data_id = ir.id
+        )
+        join iam_label il on il.id = ilr.label_id
+        where ir.is_enabled = 1
+        and il.enabled_flag = 1
+        and ir.id in
+        <foreach collection="roleIds" item="roleId" open="(" separator="," close=")" >
+            #{roleId}
+        </foreach>
+    </select>
+
+</mapper>

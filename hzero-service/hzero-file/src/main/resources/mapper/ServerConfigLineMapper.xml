@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.file.infra.mapper.ServerConfigLineMapper">
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap id="BaseResultMap" type="org.hzero.file.domain.entity.ServerConfigLine">
+        <result column="config_line_id" property="configLineId" jdbcType="DECIMAL"/>
+        <result column="config_id" property="configId" jdbcType="DECIMAL"/>
+        <result column="source_id" property="sourceId" jdbcType="DECIMAL"/>
+        <result column="root_dir" property="rootDir" jdbcType="VARCHAR"/>
+        <result column="enabled_flag" property="enabledFlag" jdbcType="DECIMAL"/>
+        <result column="tenant_id" property="tenantId" jdbcType="DECIMAL"/>
+        <result column="object_version_number" property="objectVersionNumber" jdbcType="DECIMAL"/>
+        <result column="creation_date" property="creationDate" jdbcType="DATE"/>
+        <result column="created_by" property="createdBy" jdbcType="DECIMAL"/>
+        <result column="last_updated_by" property="lastUpdatedBy" jdbcType="DECIMAL"/>
+        <result column="last_update_date" property="lastUpdateDate" jdbcType="DATE"/>
+    </resultMap>
+
+    <select id="listConfigLineWithServer" resultType="org.hzero.file.domain.entity.ServerConfigLine">
+        SELECT
+        	hscl.config_line_id,
+        	hscl.config_id,
+        	hscl.source_id,
+        	hs.server_code source_code,
+        	hs.server_name source_name,
+        	hscl.root_dir,
+        	hscl.enabled_flag,
+        	hscl.tenant_id,
+        	hscl.object_version_number
+        FROM
+        	hfle_server_config_line hscl
+        	JOIN hpfm_server hs ON hs.server_id = hscl.source_id
+        WHERE
+            hscl.config_id = #{configId}
+    </select>
+
+    <select id="getConfigLineWithServer" resultType="org.hzero.file.domain.entity.ServerConfigLine">
+        SELECT
+        	hscl.config_line_id,
+        	hscl.config_id,
+        	hscl.source_id,
+        	hs.server_code source_code,
+        	hs.server_name source_name,
+        	hscl.root_dir,
+        	hscl.enabled_flag,
+        	hscl.tenant_id,
+        	hscl.object_version_number
+        FROM
+        	hfle_server_config_line hscl
+        	JOIN hpfm_server hs ON hs.server_id = hscl.source_id
+        WHERE
+            hscl.config_line_id = #{configLineId}
+    </select>
+
+    <select id="listConfigLineWithCluster" resultType="org.hzero.file.domain.entity.ServerConfigLine">
+        SELECT
+        	hscl.config_line_id,
+        	hscl.config_id,
+        	hscl.source_id,
+        	hsc.cluster_code source_code,
+        	hsc.cluster_name source_name,
+        	hscl.root_dir,
+        	hscl.enabled_flag,
+        	hscl.tenant_id,
+        	hscl.object_version_number
+        FROM
+        	hfle_server_config_line hscl
+        	JOIN hpfm_server_cluster hsc ON hsc.cluster_id = hscl.source_id
+        WHERE
+            hscl.config_id = #{configId}
+    </select>
+
+    <select id="getConfigLineWithCluster" resultType="org.hzero.file.domain.entity.ServerConfigLine">
+        SELECT
+        	hscl.config_line_id,
+        	hscl.config_id,
+        	hscl.source_id,
+        	hsc.cluster_code source_code,
+        	hsc.cluster_name source_name,
+        	hscl.root_dir,
+        	hscl.enabled_flag,
+        	hscl.tenant_id,
+        	hscl.object_version_number
+        FROM
+        	hfle_server_config_line hscl
+        	JOIN hpfm_server_cluster hsc ON hsc.cluster_id = hscl.source_id
+        WHERE
+            hscl.config_line_id = #{configLineId}
+    </select>
+
+	<select id="getServer" resultType="org.hzero.file.domain.vo.ServerVO">
+		SELECT
+			hs.server_id,
+			hs.server_code,
+			hs.protocol_code,
+			hs.ip,
+			hs.port,
+			hs.login_user,
+			hs.login_enc_pwd,
+			hs.enabled_flag,
+			hs.tenant_id
+		FROM
+			hpfm_server hs
+		WHERE
+			hs.server_code = #{serverCode}
+			AND hs.tenant_id = #{tenantId}
+	</select>
+</mapper>

@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.platform.infra.mapper.LovViewHeaderMapper">
+
+    <!-- 可根据自己的需求，是否要使用 -->
+    <resultMap id="BaseResultMap" type="org.hzero.platform.domain.entity.LovViewHeader">
+        <result column="view_header_id" property="viewHeaderId" jdbcType="DECIMAL"/>
+        <result column="view_code" property="viewCode" jdbcType="VARCHAR"/>
+        <result column="view_name" property="viewName" jdbcType="VARCHAR"/>
+        <result column="lov_id" property="lovId" jdbcType="DECIMAL"/>
+        <result column="tenant_id" property="tenantId" jdbcType="DECIMAL"/>
+        <result column="value_field" property="valueField" jdbcType="VARCHAR"/>
+        <result column="display_field" property="displayField" jdbcType="VARCHAR"/>
+        <result column="title" property="title" jdbcType="VARCHAR"/>
+        <result column="width" property="width" jdbcType="DECIMAL"/>
+        <result column="height" property="height" jdbcType="DECIMAL"/>
+        <result column="page_size" property="pageSize" jdbcType="DECIMAL"/>
+        <result column="delay_load_flag" property="delayLoadFlag" jdbcType="DECIMAL"/>
+        <result column="children_field_name" property="childrenFieldName" jdbcType="VARCHAR"/>
+        <result column="enabled_flag" property="enabledFlag" jdbcType="DECIMAL"/>
+        <result column="object_version_number" property="objectVersionNumber" jdbcType="DECIMAL"/>
+        <result column="creation_date" property="creationDate" jdbcType="DATE"/>
+        <result column="created_by" property="createdBy" jdbcType="DECIMAL"/>
+        <result column="last_update_date" property="lastUpdateDate" jdbcType="DATE"/>
+        <result column="last_updated_by" property="lastUpdatedBy" jdbcType="DECIMAL"/>
+        
+        <result column="lov_code" property="lovCode" jdbcType="VARCHAR"/>
+        <result column="lov_name" property="lovName" jdbcType="VARCHAR"/>
+        <result column="tenant_name" property="tenantName" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <resultMap id="lovViewAggregateMap" type="org.hzero.platform.api.dto.LovViewAggregateDTO">
+        <result column="view_code" property="viewCode" jdbcType="VARCHAR"/>
+        <result column="view_name" property="viewName" jdbcType="VARCHAR"/>
+        <result column="lov_code" property="lovCode" jdbcType="VARCHAR"/>
+        <result column="lov_name" property="lovName" jdbcType="VARCHAR"/>
+        <result column="lov_type_code" property="lovTypeCode" jdbcType="VARCHAR"/>
+        <result column="tenant_id" property="tenantId" jdbcType="DECIMAL"/>
+        <result column="value_field" property="valueField" jdbcType="VARCHAR"/>
+        <result column="display_field" property="displayField" jdbcType="VARCHAR"/>
+        <result column="title" property="title" jdbcType="VARCHAR"/>
+        <result column="width" property="width" jdbcType="DECIMAL"/>
+        <result column="height" property="height" jdbcType="DECIMAL"/>
+        <result column="page_size" property="pageSize" jdbcType="DECIMAL"/>
+        <result column="delay_load_flag" property="delayLoadFlag" jdbcType="DECIMAL"/>
+        <result column="children_field_name" property="childrenFieldName" jdbcType="VARCHAR"/>
+        <result column="custom_url" property="queryUrl" jdbcType="VARCHAR"/>
+        <result column="enabled_flag" property="enabledFlag" jdbcType="DECIMAL"/>
+        <collection property="lovViewLines" ofType="org.hzero.platform.domain.entity.LovViewLine">
+            <result column="display" property="display" jdbcType="VARCHAR"/>
+            <result column="order_seq" property="orderSeq" jdbcType="DECIMAL"/>
+            <result column="field_name" property="fieldName" jdbcType="VARCHAR"/>
+            <result column="data_type" property="dataType" jdbcType="VARCHAR"/>
+            <result column="source_code" property="sourceCode" jdbcType="VARCHAR"/>
+            <result column="query_field_flag" property="queryFieldFlag" jdbcType="DECIMAL"/>
+            <result column="table_field_flag" property="tableFieldFlag" jdbcType="DECIMAL"/>
+        </collection>
+    </resultMap>
+    
+    <select id="selectLovViewHeader" parameterType="org.hzero.platform.domain.entity.LovViewHeader" resultMap="BaseResultMap">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()" />
+        SELECT
+            lvh.view_header_id,
+            lvh.view_code,
+            lvht.view_name,
+            lvh.lov_id,
+            l.lov_code,
+            l.lov_name,
+            lvh.tenant_id,
+            httl.tenant_name,
+            lvh.value_field,
+            lvh.display_field,
+            lvht.title,
+            lvh.width,
+            lvh.height,
+            lvh.page_size,
+            lvh.delay_load_flag,
+            lvh.children_field_name,
+            lvh.enabled_flag,
+            lvh.object_version_number,
+            lvh.creation_date,
+            lvh.created_by,
+            lvh.last_update_date,
+            lvh.last_updated_by
+        FROM
+            hpfm_lov_view_header lvh
+        left join hpfm_lov_view_header_tl lvht on lvht.view_header_id = lvh.view_header_id and lvht.lang = #{lang}
+        JOIN hpfm_lov l ON l.lov_id = lvh.lov_id <if test="queryParam.lovCode != null and queryParam.lovCode != ''"><bind name="lovCodeLike" value="'%' + queryParam.lovCode + '%'"/>AND l.lov_code LIKE #{lovCodeLike}</if>
+        JOIN hpfm_tenant ht on ht.tenant_id = lvh.tenant_id
+        LEFT JOIN hpfm_tenant_tl httl ON ht.tenant_id = httl.tenant_id AND httl.lang = #{lang}
+        WHERE
+            1 = 1
+        <if test="queryParam.viewCode != null and queryParam.viewCode != ''">
+            AND lvh.view_code LIKE concat('%', concat(#{queryParam.viewCode,jdbcType=VARCHAR}, '%'))
+        </if>
+        <if test="queryParam.viewName != null and queryParam.viewName != ''">
+            AND lvht.view_name LIKE concat('%', concat(#{queryParam.viewName,jdbcType=VARCHAR}, '%'))
+        </if>
+        <if test="queryParam.lovId != null">
+            AND lvh.lov_id = #{queryParam.lovId,jdbcType=DECIMAL}
+        </if>
+        <if test="queryParam.tenantId != null">
+            AND (lvh.tenant_id = #{queryParam.tenantId,jdbcType=DECIMAL}
+                   <if test="!isSite">
+                      OR lvh.tenant_id = 0
+                   </if>
+            )
+            <if test="queryParam.tenantId != 0">
+                AND lvh.view_header_id NOT IN (
+                    SELECT lvh1.view_header_id FROM hpfm_lov_view_header lvh1
+                    WHERE lvh1.tenant_id = 0
+                    AND EXISTS(
+                        SELECT 1 FROM hpfm_lov_view_header lvh2
+                         WHERE lvh2.view_code = lvh1.view_code
+                          AND lvh2.tenant_id = #{queryParam.tenantId,jdbcType=DECIMAL}
+                    )
+                )
+            </if>
+        </if>
+    </select>
+    
+    <select id="selectLovViewHeaderByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()" />
+        select
+            lvh.view_header_id,
+            lvh.view_code,
+            lvht.view_name,
+            lvh.lov_id,
+            hlt.lov_name,
+            lvh.tenant_id,
+            httl.tenant_name,
+            lvh.value_field,
+            lvh.display_field,
+            lvht.title,
+            lvh.width,
+            lvh.height,
+            lvh.page_size,
+            lvh.delay_load_flag,
+            lvh.children_field_name,
+            lvh.enabled_flag,
+            lvh.object_version_number
+        from hpfm_lov_view_header lvh
+        left join hpfm_lov_view_header_tl lvht on lvht.view_header_id = lvh.view_header_id and lvht.lang = #{lang}
+        join hpfm_lov l on l.lov_id = lvh.lov_id
+        LEFT JOIN hpfm_lov_tl hlt ON hlt.lov_id = l.lov_id AND hlt.lang = #{lang}
+        left join hpfm_tenant ht on ht.tenant_id = lvh.tenant_id
+        LEFT JOIN hpfm_tenant_tl httl ON ht.tenant_id = httl.tenant_id AND httl.lang = #{lang}
+        where
+            1 = 1
+        and lvh.view_header_id = #{viewHeaderId,jdbcType=DECIMAL}
+        <if test="tenantId != null">
+            and (lvh.tenant_id = #{tenantId,jdbcType=DECIMAL} or lvh.tenant_id = 0)
+        </if>
+    </select>
+    
+    <select id="selectViewCodeByLovCode" parameterType="java.lang.String" resultType="java.lang.String">
+        SELECT
+            lvh.view_code
+        FROM
+            hpfm_lov_view_header lvh
+        JOIN hpfm_lov l ON l.lov_id = lvh.lov_id AND l.lov_code = #{lovCode,jdbcType=VARCHAR}
+    </select>
+    
+    <delete id="deleteViewLineByviewHeaderId" parameterType="java.lang.Long">
+        delete from 
+            hpfm_lov_view_line
+        where
+            1 = 1
+        and view_header_id = #{viewHeaderId,jdbcType=DECIMAL}
+    </delete>
+    
+    <select id="selectRepeatCodeCount" parameterType="org.hzero.platform.domain.entity.LovViewHeader" resultType="java.lang.Integer">
+        select
+            count(*)
+        from
+            hpfm_lov_view_header lvh
+        where
+            1 = 1
+        and lvh.view_code = #{viewCode,jdbcType=VARCHAR}
+        and lvh.tenant_id = #{tenantId,jdbcType=DECIMAL}
+        <if test='viewHeaderId != null'>
+            and lvh.view_header_id != #{viewHeaderId,jdbcType=DECIMAL}
+        </if>
+    </select>
+    <select id="selectLovViewAggregate" resultMap="lovViewAggregateMap">
+        SELECT
+             lvh.view_code
+            ,lvht.view_name
+            ,hl.lov_code
+            ,hlt.lov_name
+            ,hl.lov_type_code
+            ,lvh.tenant_id
+            ,lvh.value_field
+            ,lvh.display_field
+            ,lvh.title
+            ,lvh.width
+            ,lvh.height
+            ,lvh.page_size
+            ,lvh.delay_load_flag
+            ,lvh.children_field_name
+            ,hl.custom_url
+            ,lvh.enabled_flag
+            ,hlvlt.display
+            ,hlvl.order_seq
+            ,hlvl.field_name
+            ,hlvl.data_type
+            ,hlvl.source_code
+            ,hlvl.query_field_flag
+            ,hlvl.table_field_flag
+            ,hlvl.enabled_flag
+        FROM hpfm_lov_view_header lvh
+                 JOIN hpfm_lov_view_header_tl lvht ON lvht.view_header_id = lvh.view_header_id AND lvht.lang = #{lang}
+                 JOIN hpfm_lov hl ON hl.lov_id = lvh.lov_id
+                 JOIN hpfm_lov_tl hlt ON hlt.lov_id = hl.lov_id AND hlt.lang = #{lang}
+                 LEFT JOIN hpfm_lov_view_line hlvl ON hlvl.view_header_id = lvh.view_header_id
+                 LEFT JOIN hpfm_lov_view_line_tl hlvlt
+                           ON hlvl.view_line_id = hlvlt.view_line_id AND hlvlt.lang = #{lang}
+        WHERE lvh.view_code = #{viewCode}
+          AND lvh.tenant_id = #{tenantId}
+    </select>
+    <select id="selectLovViewByCode" resultType="org.hzero.platform.domain.entity.LovViewHeader">
+        SELECT lvh.view_header_id,
+               lvh.view_code,
+               lvht.view_name,
+               lvh.tenant_id,
+               lvh.value_field,
+               lvh.display_field,
+               lvh.title,
+               lvh.width,
+               lvh.height,
+               lvh.page_size,
+               lvh.delay_load_flag,
+               lvh.children_field_name,
+               lvh.enabled_flag,
+               lvh.lov_id
+        FROM hpfm_lov_view_header lvh
+                 JOIN hpfm_lov_view_header_tl lvht ON lvht.view_header_id = lvh.view_header_id AND lvht.lang = #{lang}
+        WHERE lvh.view_code = #{viewCode}
+          AND lvh.tenant_id = #{tenantId}
+          AND lvh.enabled_flag = 1
+    </select>
+
+</mapper>

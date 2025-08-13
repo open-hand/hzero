@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.message.infra.mapper.TemplateServerWhMapper">
+
+    <select id="selectTemplateServerWh" resultType="org.hzero.message.domain.entity.TemplateServerWh">
+        SELECT
+            htsw.temp_server_wh_id,
+            htsw.temp_server_id,
+            htsw.temp_server_line_id,
+            htsw.server_code,
+            htsw.tenant_id,
+            htsw.ext_info,
+            hws.server_name,
+            hws.server_type
+        FROM
+            hmsg_template_server_wh htsw
+            JOIN hmsg_webhook_server hws ON hws.server_code = htsw.server_code AND hws.tenant_id = htsw.tenant_id
+        WHERE htsw.temp_server_line_id = #{tempServerLineId}
+    </select>
+</mapper>

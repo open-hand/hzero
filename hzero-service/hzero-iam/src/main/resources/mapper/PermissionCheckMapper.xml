@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.iam.infra.mapper.PermissionCheckMapper">
+    <sql id="baseColumn">
+        hpc.permission_check_id,
+        hpc.handle_status,
+        hpc.permission_code,
+        hpc.permission_type,
+        hpc.api_path,
+        hpc.api_method,
+        hpc.service_name,
+        hpc.check_state,
+        hpc.access_token,
+        hpc.check_message,
+        hpc.object_version_number,
+        hpc.creation_date,
+        hpc.fd_level,
+        hpc.menu_id
+    </sql>
+
+    <select id="selectPermissionCheck" resultType="org.hzero.iam.domain.entity.PermissionCheck"
+            parameterType="org.hzero.iam.domain.entity.PermissionCheck">
+      SELECT im.name menu_name,
+        <include refid="baseColumn"/>
+        FROM hiam_permission_check hpc
+        LEFT JOIN iam_menu im ON im.id = hpc.menu_id
+        <where>
+            <if test="permissionCode != null and permissionCode != ''">
+                <bind name="permissionCodeLike" value="'%'+permissionCode+'%'"/>
+                and hpc.permission_code like #{permissionCodeLike}
+            </if>
+            <if test="handleStatus != null and handleStatus != ''">
+                and hpc.handle_status = #{handleStatus}
+            </if>
+            <if test="checkState != null and checkState != ''">
+                and hpc.check_state = #{checkState}
+            </if>
+            <if test="serviceName != null and serviceName != ''">
+                and hpc.service_name = #{serviceName}
+            </if>
+            <if test="permissionType != null and permissionType != ''">
+                and hpc.permission_type = #{permissionType}
+            </if>
+            <if test="apiPath != null and apiPath != ''">
+                <bind name="apiPathLike" value="'%'+apiPath+'%'"/>
+                and hpc.api_path like #{apiPathLike}
+            </if>
+            <if test="apiMethod != null and apiMethod !=''">
+                and hpc.api_method = #{apiMethod}
+            </if>
+            <if test="menuId != null and menuId !=''">
+                and hpc.menu_id = #{menuId}
+            </if>
+            <if test="fdLevel != null and fdLevel != ''">
+                AND hpc.fd_level = #{fdLevel}
+            </if>
+            <if test="menuName != null and menuName != ''">
+                <bind name="menuNameLike" value="'%'+menuName+'%'"/>
+                AND im.name LIKE #{menuNameLike}
+            </if>
+        </where>
+    </select>
+    <select id="selectPermissionDetail" resultType="org.hzero.iam.domain.entity.PermissionCheck">
+      SELECT hpc.permission_details,
+             hpc.route_details,
+             hpc.user_details,
+             im.name menu_name,
+             <include refid="baseColumn"/>
+        FROM hiam_permission_check hpc
+        LEFT JOIN iam_menu im ON im.id = hpc.menu_id
+       WHERE hpc.permission_check_id = #{permissionCheckId}
+    </select>
+
+    <select id="selectPermissionCheckId" resultType="Long">
+        SELECT hpc.permission_check_id
+          FROM hiam_permission_check hpc
+         WHERE hpc.creation_date &lt;= #{localDate}
+        <if test="checkState != null and checkState != ''">
+           AND hpc.check_state = #{checkState}
+        </if>
+    </select>
+
+    <delete id="batchDeleteById">
+       DELETE from hiam_permission_check
+        WHERE permission_check_id in
+        <foreach collection="permissionCheckIds" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+
+    <select id="selectMenuPermissionSet" resultType="org.hzero.iam.domain.entity.PermissionCheck">
+       SELECT
+          hpc.permission_check_id,
+		  m.id permission_set_id,
+          m.fd_level menu_level,
+          m.type menu_type,
+		  hpc.permission_code,
+		  hpc.permission_type,
+		  hpc.fd_level,
+		  hpc.object_version_number
+		FROM
+		    hiam_permission_check hpc
+		LEFT JOIN iam_menu m ON m.parent_id = hpc.menu_id and m.code like '%default%'
+		WHERE hpc.check_state = 'PERMISSION_MENU_MISMATCH'
+		  AND hpc.handle_status = 'UNTREATED'
+		  AND hpc.permission_code IN
+		 <foreach collection="permissionCodes" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
+</mapper>

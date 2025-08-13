@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.iam.infra.mapper.SecGrpRevokeMapper">
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap id="BaseResultMap" type="org.hzero.iam.domain.entity.SecGrpRevoke">
+        <result column="sec_grp_revoke_id" property="secGrpRevokeId" jdbcType="DECIMAL"/>
+        <result column="sec_grp_id" property="secGrpId" jdbcType="DECIMAL"/>
+        <result column="tenant_id" property="tenantId" jdbcType="DECIMAL"/>
+        <result column="revoke_type" property="revokeType" jdbcType="VARCHAR"/>
+        <result column="authority_type" property="authorityType" jdbcType="VARCHAR"/>
+        <result column="authority_id" property="authorityId" jdbcType="DECIMAL"/>
+        <result column="shield_role_id" property="shieldRoleId" jdbcType="DECIMAL"/>
+        <result column="object_version_number" property="objectVersionNumber" jdbcType="DECIMAL"/>
+        <result column="creation_date" property="creationDate" jdbcType="DATE"/>
+        <result column="created_by" property="createdBy" jdbcType="DECIMAL"/>
+        <result column="last_updated_by" property="lastUpdatedBy" jdbcType="DECIMAL"/>
+        <result column="last_update_date" property="lastUpdateDate" jdbcType="DATE"/>
+    </resultMap>
+
+    <delete id="batchDeleteBySql">
+        DELETE FROM HIAM_SEC_GRP_REVOKE
+        WHERE
+        SEC_GRP_ID = #{secGrpId}
+        AND REVOKE_TYPE = #{revokeType}
+        AND AUTHORITY_TYPE = #{authorityType}
+        AND AUTHORITY_ID IN
+        <foreach collection="authorityIds" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        <if test="roleId != null">
+            AND SHIELD_ROLE_ID = #{roleId}
+        </if>
+    </delete>
+
+    <insert id="batchInsertBySql">
+        <choose>
+            <when test="_databaseId == 'oracle'">
+                INSERT INTO hiam_sec_grp_revoke (sec_grp_revoke_id, sec_grp_id,tenant_id,revoke_type,authority_type, authority_id, created_by, last_updated_by)
+                SELECT hiam_sec_grp_revoke_S.nextval, t.*
+                FROM (
+                <foreach collection="secGrpRevokes" item="item" separator=" union all ">
+                    select #{item.secGrpId}, #{item.tenantId}, #{item.revokeType}, #{item.authorityType}, #{item.authorityId}, #{item.createdBy}, #{item.lastUpdatedBy} FROM dual
+                </foreach>
+                ) t
+            </when>
+            <otherwise>
+                INSERT INTO hiam_sec_grp_revoke (sec_grp_id,tenant_id,revoke_type,authority_type, authority_id, created_by, last_updated_by)
+                VALUES
+                <foreach collection="list" item="item" separator=",">
+                    (#{item.secGrpId}, #{item.tenantId}, #{item.revokeType}, #{item.authorityType}, #{item.authorityId}, #{item.createdBy}, #{item.lastUpdatedBy})
+                </foreach>
+            </otherwise>
+        </choose>
+    </insert>
+
+    <select id="selectShieldedAuthority" resultType="org.hzero.iam.domain.entity.SecGrpRevoke">
+        SELECT
+            hsgr.sec_grp_revoke_id,
+            hsgr.sec_grp_id,
+            hsgr.tenant_id,
+            hsgr.revoke_type,
+            hsgr.authority_type,
+            hsgr.authority_id,
+            hsgr.shield_role_id
+        FROM
+            hiam_sec_grp_revoke hsgr
+        WHERE
+            hsgr.sec_grp_id = #{secGrpId}
+        AND shield_role_id = #{shieldRoleId}
+        AND revoke_type = 'SHIELD'
+        AND authority_type = #{authorityType}
+    </select>
+
+</mapper>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.iam.infra.mapper.TenantCustomPointMapper">
+
+
+    <select id="selectByPointCode" resultType="org.hzero.iam.domain.entity.TenantCustomPoint">
+        select
+            htcp.tenant_custom_point_id,
+            htcp.tenant_id,
+            htcp.custom_point_code,
+            ht.tenant_num
+        from hiam_tenant_custom_point htcp
+        join hpfm_tenant ht on htcp.tenant_id = ht.tenant_id
+        where htcp.custom_point_code = #{customPointCode}
+    </select>
+</mapper>

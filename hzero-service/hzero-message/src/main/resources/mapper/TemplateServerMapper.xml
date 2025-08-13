@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.message.infra.mapper.TemplateServerMapper">
+    <!-- 查询模板列表 -->
+    <select id="selectTemplateServer" resultType="org.hzero.message.domain.entity.TemplateServer">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()" />
+        select
+            hts.temp_server_id,
+            hts.tenant_id,
+            ht.tenant_name,
+            hts.message_code,
+            htst.message_name,
+            hts.enabled_flag,
+            hts.object_version_number
+        from hmsg_template_server hts
+        join hmsg_template_server_tl htst on htst.temp_server_id = hts.temp_server_id and htst.lang = #{lang}
+        join hpfm_tenant_tl ht on ht.tenant_id = hts.tenant_id and ht.lang = #{lang}
+        <where>
+            <if test="tenantId != null">
+                and hts.tenant_id IN (#{tenantId} <if test="includeSiteIfQueryByTenantId">, 0</if>)
+            </if>
+            <if test="messageCode != null and messageCode != ''">
+                <bind name="messageCodeLike" value="'%' + messageCode + '%'"/>
+                AND hts.message_code LIKE #{messageCodeLike}
+            </if>
+            <if test="messageName != null and messageName != ''">
+                <bind name="messageNameLike" value="'%' + messageName + '%'"/>
+                AND htst.message_name LIKE #{messageNameLike}
+            </if>
+        </where>
+    </select>
+    <select id="getTemplateServer" resultType="org.hzero.message.domain.entity.TemplateServer">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()" />
+        select
+            hts.temp_server_id,
+            hts.tenant_id,
+            ht.tenant_name,
+            hts.message_code,
+            htst.message_name,
+            hts.category_code,
+            hts.subcategory_code,
+            hts.receive_config_flag,
+            hts.enabled_flag,
+            hts.object_version_number
+        from hmsg_template_server hts
+        join hmsg_template_server_tl htst on htst.temp_server_id = hts.temp_server_id and htst.lang = #{lang}
+        join hpfm_tenant_tl ht on ht.tenant_id = hts.tenant_id and ht.lang = #{lang}
+        where
+            hts.temp_server_id = #{tempServerId}
+        <if test="tenantId != null">
+            AND hts.tenant_id = #{tenantId}
+        </if>
+    </select>
+</mapper>

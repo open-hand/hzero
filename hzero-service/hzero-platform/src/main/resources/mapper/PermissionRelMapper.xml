@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.platform.infra.mapper.PermissionRelMapper">
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap id="BaseResultMap" type="org.hzero.platform.domain.entity.PermissionRel">
+        <result column="permission_rel_id" property="permissionRelId" jdbcType="DECIMAL"/>
+        <result column="range_id" property="rangeId" jdbcType="DECIMAL"/>
+        <result column="rule_id" property="ruleId" jdbcType="DECIMAL"/>
+        <result column="object_version_number" property="objectVersionNumber" jdbcType="DECIMAL"/>
+        <result column="creation_date" property="creationDate" jdbcType="DATE"/>
+        <result column="created_by" property="createdBy" jdbcType="DECIMAL"/>
+        <result column="last_updated_by" property="lastUpdatedBy" jdbcType="DECIMAL"/>
+        <result column="last_update_date" property="lastUpdateDate" jdbcType="DATE"/>
+    </resultMap>
+
+    <select id="selectPermissionRuleByRangeId" resultType="org.hzero.platform.api.dto.PermissionRelDTO">
+        SELECT
+            hpre.permission_rel_id,
+            hpre.editable_flag,
+            hpre.object_version_number,
+            hpr.rule_id,
+            hpr.rule_code,
+            hpr.rule_type_code,
+            hpr.rule_name,
+            hpr.description,
+            hpr.sql_value,
+            hpr.tenant_id,
+            hpr.enabled_flag
+        FROM
+            hpfm_permission_rule hpr,
+            hpfm_permission_rel hpre
+        WHERE
+            hpr.rule_id = hpre.rule_id
+        AND hpre.range_id = #{rangeId}
+    </select>
+</mapper>

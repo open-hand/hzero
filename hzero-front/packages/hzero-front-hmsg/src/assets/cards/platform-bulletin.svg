@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="38px" height="38px" viewBox="0 0 38 38" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 52.2 (67145) - http://www.bohemiancoding.com/sketch -->
+    <title>platform-bulletin</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <rect id="path-1" x="0" y="0" width="38" height="38"></rect>
+    </defs>
+    <g id="工作台" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="platform-bulletin">
+            <mask id="mask-2" fill="white">
+                <use xlink:href="#path-1"></use>
+            </mask>
+            <use id="Rectangle" fill="#D8D8D8" opacity="0.01" xlink:href="#path-1"></use>
+            <g id="Group-22" mask="url(#mask-2)">
+                <g transform="translate(1.000000, 1.000000)">
+                    <rect id="Rectangle" stroke="#1E3255" stroke-width="2" fill="#29BECE" fill-rule="evenodd" x="6" y="17" width="4" height="4" rx="1"></rect>
+                    <rect id="Rectangle" stroke="#1E3255" stroke-width="2" fill="#29BECE" fill-rule="evenodd" x="15" y="17" width="14" height="4" rx="2"></rect>
+                    <rect id="Rectangle" stroke="#1E3255" stroke-width="2" fill="#29BECE" fill-rule="evenodd" x="15" y="26" width="14" height="4" rx="2"></rect>
+                    <rect id="Rectangle" stroke="#1E3255" stroke-width="2" fill="#29BECE" fill-rule="evenodd" x="6" y="26" width="4" height="4" rx="1"></rect>
+                    <circle id="Oval" stroke="#1E3255" stroke-width="2" fill="#29BECE" fill-rule="evenodd" cx="18" cy="3" r="2"></circle>
+                    <path d="M12.6464466,1.85355339 L12.6464466,1.85355339 C13.1987314,1.85355339 13.6464466,2.30126864 13.6464466,2.85355339 L13.6464466,12.8535534 C13.6464466,13.4058381 13.1987314,13.8535534 12.6464466,13.8535534 L11.6464466,13.8535534 L11.6464466,2.85355339 C11.6464466,2.30126864 12.0941619,1.85355339 12.6464466,1.85355339 Z" id="Rectangle" stroke="none" fill="#1E3255" fill-rule="evenodd" transform="translate(12.646447, 7.853553) rotate(-315.000000) translate(-12.646447, -7.853553) "></path>
+                    <path d="M23.5590589,1.90947287 L23.5590589,1.90947287 C24.1113436,1.90947287 24.5590589,2.35718812 24.5590589,2.90947287 L24.5590589,13.9094729 L23.5590589,13.9094729 C23.0067741,13.9094729 22.5590589,13.4617576 22.5590589,12.9094729 L22.5590589,2.90947287 C22.5590589,2.35718812 23.0067741,1.90947287 23.5590589,1.90947287 Z" id="Rectangle" stroke="none" fill="#1E3255" fill-rule="evenodd" transform="translate(23.559059, 7.909473) rotate(-45.000000) translate(-23.559059, -7.909473) "></path>
+                    <rect id="Rectangle" stroke="#1E3255" stroke-width="2" fill="none" x="1" y="12" width="34" height="23" rx="3"></rect>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.message.infra.mapper.NoticeUserGroupMapper">
+    <select id="listUserGroups" resultType="org.hzero.message.domain.entity.UserGroup">
+		SELECT
+			u.user_group_id,
+			u.group_code,
+			u.group_name,
+			u.tenant_id
+		FROM
+			hiam_user_group u
+		where u.user_group_id not in (select hrtl.receive_target_id from hmsg_receiver_type_line hrtl 
+									  where hrtl.receiver_type_id = #{receiverTypeId,jdbcType=DECIMAL}) 
+		and u.tenant_id = (select hrt.tenant_id from hmsg_receiver_type hrt 
+						   where hrt.receiver_type_id = #{receiverTypeId,jdbcType=DECIMAL}) 
+						   
+		<if test="groupName != null and groupName != ''">
+            <bind name="groupNameLike" value="'%' + groupName + '%'" />
+            AND u.group_name like #{groupNameLike}
+        </if>
+        <if test="groupCode != null and groupCode != ''">
+			<bind name="groupCodeLike" value="'%' + groupCode + '%'" />
+            AND u.group_code like #{groupCodeLike}
+        </if>
+	</select>
+</mapper>

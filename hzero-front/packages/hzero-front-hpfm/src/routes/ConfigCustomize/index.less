@@ -1,0 +1,466 @@
+.left {
+  display: flex;
+  flex-direction: column;
+  background-color: #fff;
+  width: 220px;
+  max-height: 773px;
+  overflow: hidden;
+  margin-bottom: 4px;
+  box-shadow: rgba(0, 0, 0, 0.133) 0 0.6px 1.6px 0, rgba(0, 0, 0, 0.11) 0 0.3px 0.9px 0;
+
+  :global {
+    .left-container {
+      width: 220px;
+      flex: 1;
+      overflow: auto;
+    }
+
+    .ant-tree li .ant-tree-node-content-wrapper.ant-tree-node-selected {
+      background-color: none;
+      color: rgb(67, 113, 239);
+    }
+
+    .ant-spin-nested-loading {
+      height: calc(100% - 42px);
+    }
+
+    .ant-spin-container {
+      display: flex;
+      height: 100%;
+
+      & > * {
+        flex: 1;
+      }
+    }
+  }
+}
+
+.right {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  margin-left: 10px;
+  overflow: hidden;
+  max-height: 773px;
+  margin-bottom: 4px;
+  box-shadow: rgba(0, 0, 0, 0.133) 0 0.6px 1.6px -2px, rgba(0, 0, 0, 0.11) 0 0.3px 0.9px 0;
+
+  :global {
+    .read-row .ant-form-item {
+      margin-bottom: 0;
+    }
+
+    .right-container {
+      overflow: auto;
+    }
+
+    .right-box {
+      background-color: #fff;
+      margin-bottom: 12px;
+      padding: 8px 24px 16px;
+      overflow-y: auto;
+      overflow-x: hidden;
+      box-shadow: rgba(0, 0, 0, 0.133) 0 0.6px 1.6px 0, rgba(0, 0, 0, 0.11) 0 0.3px 0.9px 0;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+
+      .ant-form-item-label {
+        text-align: left;
+      }
+    }
+  }
+}
+
+.footer {
+  position: absolute;
+  background-color: #fff;
+  bottom: 0;
+  height: 48px;
+  margin: 0 -24px;
+  padding: 0 24px;
+  box-shadow: 0 0 0.6px 0 #000;
+  border-top: 1px solid #f5f5f5;
+  width: 383px;
+  display: flex;
+  text-align: right;
+  align-items: center;
+  justify-content: flex-end;
+
+  :global {
+    button {
+      margin-left: 8px;
+    }
+  }
+}
+
+.drawer-form {
+  :global {
+    .ant-drawer-body {
+      padding-bottom: 54px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .ant-form-item {
+      padding-right: 0 !important;
+    }
+
+    .checkbox-form-item {
+      margin-bottom: 18px;
+
+      .ant-form-item {
+        margin-bottom: 4px;
+      }
+    }
+
+    .ant-form-item-label label:before {
+      content: '';
+    }
+
+    label.ant-form-item-required:after {
+      display: inline-block;
+      margin-right: 4px;
+      content: '*';
+      font-family: SimSun, 'Monospaced Number', 'Microsoft YaHei', 'Chinese Quote', -apple-system,
+        BlinkMacSystemFont, 'Segoe UI', Roboto, 'PingFang SC', 'Hiragino Sans GB', 'Helvetica Neue',
+        Helvetica, Arial, sans-serif;
+      line-height: 1;
+      font-size: 12px;
+      color: #f5222d;
+    }
+
+    .ant-form-item-label,
+    .ant-form-item-control {
+      line-height: 25px;
+    }
+
+    .ant-form-item-label:not([class*='ant-col']),
+    .ant-form-item-control-wrapper:not([class*='ant-col']) {
+      float: none !important;
+      width: auto !important;
+    }
+
+    .ant-form-item-label {
+      font-size: 14px;
+      text-align: left;
+      font-weight: 600;
+      white-space: nowrap !important;
+    }
+  }
+}
+
+.title {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 20px;
+  display: flex;
+  align-items: center;
+
+  &:before {
+    content: '';
+    width: 3px;
+    height: 16px;
+    margin-right: 5px;
+    background-color: #1e3255;
+  }
+}
+
+.main-container {
+  background: #f5f5f5;
+  padding: 16px;
+  flex: 1;
+  overflow: hidden;
+}
+
+.wrap-container {
+  height: 100%;
+  display: flex;
+}
+
+.units-list {
+  :global {
+    .ant-row {
+      margin-bottom: 0;
+    }
+
+    .ant-form-item {
+      display: flex;
+
+      &:last-child {
+        margin-bottom: -8px;
+      }
+    }
+
+    .ant-form-item-label {
+      width: 100px !important;
+    }
+
+    .ant-form-item-control-wrapper {
+      flex: 1;
+    }
+
+    .units-container {
+      display: flex;
+      flex-wrap: wrap;
+    }
+
+    .unit-card {
+      display: flex;
+      align-items: center;
+      border: 1px solid #e5e5e5;
+      margin: 4px;
+      height: 35px;
+      cursor: pointer;
+
+      &.active {
+        border: 1px solid #29bece;
+      }
+
+      &.disabled {
+        background-color: rgba(0, 0, 0, 0.11);
+      }
+
+      .content-unit {
+        display: flex;
+        margin-left: 15px;
+        margin-right: 15px;
+        align-items: center;
+      }
+    }
+  }
+}
+
+.blank-area {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid #f5f5f5;
+  background-color: #fff;
+
+  :global {
+    .blank-pic {
+      background: url('./customize_config.svg') center no-repeat;
+      background-size: contain;
+      height: 200px;
+      width: 250px;
+      margin-top: -90px;
+    }
+
+    .blank-desc {
+      font-size: 20px;
+      font-weight: 900;
+    }
+
+    .blank-desc-supply {
+      font-size: 14px;
+    }
+  }
+}
+
+.table-extra {
+  overflow: hidden;
+
+  :global {
+    .operator {
+      float: right;
+      opacity: 1;
+      padding: 4px;
+      height: 30px;
+      align-items: center;
+      display: flex;
+      cursor: pointer;
+    }
+  }
+}
+
+.lov-map-wrap {
+  display: flex;
+  align-items: center;
+  padding: 6px;
+
+  :global {
+    .container {
+      display: flex;
+      align-items: center;
+      padding: 0 6px;
+    }
+
+    i {
+      margin: 0 6px;
+    }
+
+    .delete {
+      font-size: 16px;
+      padding: 4px;
+      margin-left: 8px;
+      cursor: pointer;
+    }
+
+    .ant-form-item {
+      width: 135px;
+      margin: 0 6px;
+    }
+  }
+}
+
+.condition-row {
+  display: flex;
+  align-items: center;
+  margin-left: -4px;
+
+  :global {
+    .conCode,
+    .index {
+      display: block;
+      width: 40px;
+      text-align: center;
+    }
+
+    .ant-form-item {
+      width: 135px;
+      margin-right: 6px;
+      margin-bottom: 0;
+    }
+
+    .delete {
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .lov-input {
+      width: 100%;
+      top: 0 !important;
+      vertical-align: baseline !important;
+    }
+  }
+}
+
+.condition-dropdown {
+  :global {
+    .option-title {
+      font-size: 12px;
+      color: #222;
+    }
+
+    .option-value {
+      font-size: 10px;
+      color: #999;
+    }
+
+    .ant-select-dropdown-menu-item-selected,
+    .ant-select-dropdown-menu-item-selected:hover {
+      font-weight: 400;
+      color: #34a6f8;
+
+      .option-title,
+      .option-value {
+        color: #34a6f8;
+      }
+    }
+  }
+}
+
+.tips {
+  color: #a5a5a5;
+  font-size: 14px;
+}
+
+.plus-container {
+  width: 612px;
+  padding: 8px 0;
+  display: flex;
+  align-items: center;
+  margin: 0 18px;
+  justify-content: center;
+  border: 1px solid #e5e5e5;
+  transition: all 0.1s;
+  cursor: pointer;
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.1);
+  }
+}
+
+.cond-modal-wrapper {
+  :global(.ant-modal-footer) {
+    padding-right: 28px;
+  }
+}
+
+.flex-center-vertical {
+  display: flex;
+  align-items: center;
+}
+
+.fx-alink {
+  :global {
+    a {
+      cursor: pointer;
+      color: #333;
+      margin-right: 8px;
+      font-size: 14px;
+      vertical-align: middle;
+    }
+
+    a.active {
+      color: #29bece;
+    }
+
+    .ant-badge-count {
+      height: 12px !important;
+      line-height: 12px !important;
+      background-color: red !important;
+    }
+  }
+}
+
+.copy-field-modal {
+  :global {
+    .ant-modal-body {
+      padding: 0 !important;
+    }
+  }
+  .modal-content {
+    display: flex;
+    min-height: 500px;
+    &-left {
+      padding: 16px;
+      flex: 1 2;
+    }
+    &-right {
+      padding: 16px;
+      flex: 1 2;
+    }
+    &-center {
+      position: relative;
+      width: 50px;
+      padding: 0 8px;
+      border-left: 1px solid #e8e8e8;
+      border-right: 1px solid #e8e8e8;
+      & > div {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+      }
+      button {
+        display: block;
+        &:first-child {
+          margin-bottom: 4px;
+        }
+      }
+    }
+  }
+}
+
+.input-number-item {
+  :global {
+    .ant-input-number {
+      width: 100%;
+    }
+  }
+}

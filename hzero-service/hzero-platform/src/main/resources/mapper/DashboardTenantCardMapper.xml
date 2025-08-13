@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.platform.infra.mapper.DashboardTenantCardMapper">
+    <delete id="deleteByCardId">
+        DELETE
+        FROM hpfm_dashboard_tenant_card
+        WHERE card_id=#{cardId}
+    </delete>
+
+    <select id="selectAssignCardToTenantsList" resultType="org.hzero.platform.domain.entity.DashboardTenantCard">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        SELECT
+            hdtc.id,
+            httl.tenant_name,
+            ht.tenant_num,
+            ht.creation_date
+        FROM hpfm_dashboard_tenant_card hdtc
+        LEFT JOIN hpfm_tenant ht ON hdtc.tenant_id=ht.tenant_id
+        LEFT JOIN hpfm_tenant_tl httl ON ht.tenant_id = httl.tenant_id AND httl.lang = #{lang}
+        WHERE hdtc.card_id=#{cardId}
+        <if test="tenantName != null and tenantName != ''">
+            <bind name="tenantNameLike" value="'%'+tenantName+'%'" />
+            AND httl.tenant_name LIKE #{tenantNameLike}
+        </if>
+        <if test="beginDate != null">
+            AND ht.creation_date &gt;= #{beginDate}
+        </if>
+        <if test="endDate != null">
+            AND ht.creation_date &lt;= #{endDate}
+        </if>
+    </select>
+</mapper>

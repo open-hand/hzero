@@ -1,0 +1,515 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.iam.infra.mapper.SecGrpDclMapper">
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap id="BaseResultMap" type="org.hzero.iam.domain.entity.SecGrpDcl">
+        <result column="sec_grp_dcl_id" property="secGrpDclId" jdbcType="DECIMAL"/>
+        <result column="sec_grp_id" property="secGrpId" jdbcType="DECIMAL"/>
+        <result column="tenant_id" property="tenantId" jdbcType="DECIMAL"/>
+        <result column="authority_type_code" property="authorityTypeCode" jdbcType="VARCHAR"/>
+        <result column="object_version_number" property="objectVersionNumber" jdbcType="DECIMAL"/>
+        <result column="creation_date" property="creationDate" jdbcType="DATE"/>
+        <result column="created_by" property="createdBy" jdbcType="DECIMAL"/>
+        <result column="last_updated_by" property="lastUpdatedBy" jdbcType="DECIMAL"/>
+        <result column="last_update_date" property="lastUpdateDate" jdbcType="DATE"/>
+    </resultMap>
+
+    <sql id="RevokeCondition">
+        AND NOT EXISTS
+        (
+            SELECT 1
+            FROM hiam_sec_grp_revoke hsgr
+            WHERE
+            (
+                hsgr.revoke_type = 'REVOKE'
+                AND hsgr.authority_id = hsgdl.sec_grp_dcl_line_id
+                AND hsgr.authority_type = 'DCL'
+            )
+            <if test="secGrpSource == 'parent'">
+                -- 不在屏蔽表
+                OR
+                (
+                    hsgr.revoke_type = 'SHIELD'
+                    AND hsgr.authority_id = hsgdl.sec_grp_dcl_line_id
+                    AND hsgr.authority_type = 'DCL'
+                    AND hsgr.shield_role_id = #{roleId}
+                )
+            </if>
+        )
+    </sql>
+
+    <select id="selectSecGrpCompanyDcl" resultType="org.hzero.iam.api.dto.CompanyOuInvorgNodeDTO">
+        SELECT
+        result.*
+        FROM
+        (
+            (
+            SELECT
+                'INV_ORGANIZATION' AS type_code,
+                hc.tenant_id,
+                hc.company_id,
+                hc.company_num,
+                hc.company_name,
+                CASE
+                WHEN temp2.data_id IS NOT NULL THEN 1
+                WHEN temp2.data_id IS NULL THEN 0
+                END as com_checked_flag,
+                hou.ou_id,
+                hou.ou_code,
+                hou.ou_name,
+                CASE
+                WHEN temp1.data_id IS NOT NULL THEN 1
+                WHEN temp1.data_id IS NULL THEN 0
+                END as ou_checked_flag,
+                hio.organization_id,
+                hio.organization_code,
+                hio.organization_name,
+                CASE
+                WHEN temp.data_id IS NOT NULL THEN 1
+                WHEN temp.data_id IS NULL THEN 0
+                END as org_checked_flag
+            FROM
+            hpfm_company hc
+            JOIN hpfm_operation_unit hou ON hc.company_id = hou.company_id
+            JOIN hpfm_inv_organization hio ON hou.ou_id = hio.ou_id
+            LEFT JOIN
+            (
+                SELECT data_id
+                FROM hiam_sec_grp_dcl_line hsgdl
+                JOIN hiam_sec_grp_dcl hsgd ON hsgdl.sec_grp_dcl_id = hsgd.sec_grp_dcl_id AND hsgd.sec_grp_id = #{secGrpId}
+                WHERE hsgd.authority_type_code = 'INV_ORGANIZATION'
+                <include refid="RevokeCondition" />
+            )
+            temp on temp.data_id = hio.organization_id
+            LEFT JOIN
+            (
+                SELECT data_id
+                FROM hiam_sec_grp_dcl_line hsgdl
+                JOIN hiam_sec_grp_dcl hsgd ON hsgdl.sec_grp_dcl_id = hsgd.sec_grp_dcl_id AND hsgd.sec_grp_id = #{secGrpId}
+                WHERE hsgd.authority_type_code = 'OU'
+                <include refid="RevokeCondition" />
+            ) temp1 on temp1.data_id = hou.ou_id
+            LEFT JOIN
+            (
+                SELECT data_id
+                FROM hiam_sec_grp_dcl_line hsgdl
+                JOIN hiam_sec_grp_dcl hsgd ON hsgdl.sec_grp_dcl_id = hsgd.sec_grp_dcl_id AND hsgd.sec_grp_id = #{secGrpId}
+                WHERE hsgd.authority_type_code = 'COMPANY'
+                <include refid="RevokeCondition" />
+            ) temp2 on temp2.data_id = hc.company_id
+            WHERE
+            hc.enabled_flag= 1
+            <if test="dataCode != null and dataCode != ''">
+                <bind name="dataCodeLike" value="'%'+dataCode+'%'"/>
+                and hio.organization_code like #{dataCodeLike}
+            </if>
+            <if test="dataName != null and dataName != ''">
+                <bind name="dataNameLike" value="'%'+dataName+'%'"/>
+                and  hio.organization_name like #{dataNameLike}
+            </if>
+            )
+            UNION
+            (
+                SELECT
+                'OU' AS type_code,
+                hc1.tenant_id,
+                hc1.company_id,
+                hc1.company_num,
+                hc1.company_name,
+                CASE
+                WHEN temp1.data_id IS NOT NULL THEN 1
+                WHEN temp1.data_id IS NULL THEN 0
+                END as com_checked_flag,
+                hou1.ou_id,
+                hou1.ou_code,
+                hou1.ou_name,
+                CASE
+                WHEN temp.data_id IS NOT NULL THEN 1
+                WHEN temp.data_id IS NULL THEN 0
+                END as ou_checked_flag,
+                NULL AS organization_id,
+                NULL AS organization_code,
+                NULL AS organization_name,
+                NULL AS org_checked_flag
+            FROM
+            hpfm_company hc1
+            JOIN hpfm_operation_unit hou1 ON hc1.company_id = hou1.company_id
+            LEFT JOIN
+            (
+                SELECT data_id
+                FROM hiam_sec_grp_dcl_line hsgdl
+                JOIN hiam_sec_grp_dcl hsgd ON hsgdl.sec_grp_dcl_id = hsgd.sec_grp_dcl_id AND hsgd.sec_grp_id = #{secGrpId}
+                WHERE hsgd.authority_type_code = 'OU'
+                <include refid="RevokeCondition" />
+            ) temp on temp.data_id = hou1.ou_id
+            LEFT JOIN
+            (
+                SELECT data_id
+                FROM hiam_sec_grp_dcl_line hsgdl
+                JOIN hiam_sec_grp_dcl hsgd ON hsgdl.sec_grp_dcl_id = hsgd.sec_grp_dcl_id AND hsgd.sec_grp_id = #{secGrpId}
+                WHERE hsgd.authority_type_code = 'COMPANY'
+                <include refid="RevokeCondition" />
+            ) temp1 on temp1.data_id = hc1.company_id
+            WHERE
+            hc1.enabled_flag = 1
+            <if test="dataCode != null and dataCode != ''">
+                <bind name="dataCodeLike" value="'%'+dataCode+'%'"/>
+                and hou1.ou_code like #{dataCodeLike}
+            </if>
+            <if test="dataName != null and dataName != ''">
+                <bind name="dataNameLike" value="'%'+dataName+'%'"/>
+                and  hou1.ou_name like #{dataNameLike}
+            </if>
+            )
+            UNION
+            (
+            SELECT
+                'COMPANY' AS type_code,
+                hc2.tenant_id,
+                hc2.company_id,
+                hc2.company_num,
+                hc2.company_name,
+                CASE
+                WHEN temp.data_id IS NOT NULL THEN 1
+                WHEN temp.data_id IS NULL THEN 0
+                END as com_checked_flag,
+                NULL AS ou_id,
+                NULL AS ou_code,
+                NULL AS ou_name,
+                NULL AS ou_checked_flag,
+                NULL AS organization_id,
+                NULL AS organization_code,
+                NULL AS organization_name,
+                NULL AS org_checked_flag
+            FROM
+            hpfm_company hc2
+            LEFT JOIN
+            (
+                SELECT data_id
+                FROM hiam_sec_grp_dcl_line hsgdl
+                JOIN hiam_sec_grp_dcl hsgd ON hsgdl.sec_grp_dcl_id = hsgd.sec_grp_dcl_id AND hsgd.sec_grp_id = #{secGrpId}
+                WHERE hsgd.authority_type_code = 'COMPANY'
+                <include refid="RevokeCondition" />
+            ) temp on temp.data_id = hc2.company_id
+            WHERE
+            hc2.enabled_flag = 1
+            <if test="dataCode != null and dataCode != ''">
+                <bind name="dataCodeLike" value="'%'+dataCode+'%'"/>
+                and hc2.company_num like #{dataCodeLike}
+            </if>
+        <if test="dataName != null and dataName != ''">
+            <bind name="dataNameLike" value="'%'+dataName+'%'"/>
+            and hc2.company_name like #{dataNameLike}
+        </if>
+        )
+        ) result
+        <!-- 开始根据已经分配的安全组数据权限进行过滤 -->
+        JOIN hiam_sec_grp hsg_out ON hsg_out.sec_grp_id = #{secGrpId} AND result.tenant_id = hsg_out.tenant_id
+        JOIN iam_role ir_out ON ir_out.id = hsg_out.role_id
+        <where>
+            <if test="selfDim != 1 ">
+                and
+                (
+                <!-- 超级管理员跳过权限过滤 -->
+                ir_out. CODE IN (
+                'role/site/default/administrator',
+                'role/organization/default/administrator'
+                )
+                OR (
+                <!-- 获取当前的安全组所属角色，筛选角色已经被分配的安全组数据权限 -->
+                EXISTS (
+                SELECT
+                1
+                FROM
+                hiam_sec_grp_dcl_line hsgdl
+                JOIN hiam_sec_grp hsg ON hsg.sec_grp_id = hsgdl.sec_grp_id AND hsg.enabled_flag = 1
+                JOIN iam_role_permission irp ON irp.type = 'SG' AND irp.permission_id = hsg.sec_grp_id AND
+                (irp.h_create_flag = 'Y' OR irp.h_inherit_flag = 'Y')
+                WHERE
+                irp.role_id = ir_out.id
+                AND (
+                (
+                hsgdl.data_id = result.company_id
+                AND hsgdl.data_code = result.company_num
+                AND hsgdl.data_name = result.company_name
+                AND type_code ='COMPANY'
+                )
+                OR
+                (
+                hsgdl.data_id = result.ou_id
+                AND hsgdl.data_code = result.ou_code
+                AND hsgdl.data_name = result.ou_name
+                AND type_code ='OU'
+                )
+                OR
+                (
+                hsgdl.data_id = result.organization_id
+                AND hsgdl.data_code = result.organization_code
+                AND hsgdl.data_name = result.organization_name
+                AND type_code ='INV_ORGANIZATION'
+                )
+                )
+                )
+                )
+                )
+            </if>
+        </where>
+    </select>
+
+    <select id="selectRoleSecGrpCompanyDcl" resultType="org.hzero.iam.api.dto.CompanyOuInvorgNodeDTO">
+        SELECT
+        result.* ,
+        (
+            CASE WHEN hsgr.authority_id IS NOT NULL
+            THEN 1
+            ELSE 0
+            END
+        ) shield_flag
+        FROM (
+        (
+        SELECT
+            'INV_ORGANIZATION' AS type_code,
+            hc.company_id,
+            hc.company_num,
+            hc.company_name,
+
+            hou.ou_id,
+            hou.ou_code,
+            hou.ou_name,
+
+            hio.organization_id,
+            hio.organization_code,
+            hio.organization_name,
+            temp.sec_grp_dcl_line_id
+        FROM hpfm_company hc
+        JOIN hpfm_operation_unit hou ON hc.company_id = hou.company_id
+        JOIN hpfm_inv_organization hio ON hou.ou_id = hio.ou_id
+        JOIN (
+            SELECT
+            data_id,
+            sec_grp_dcl_line_id
+            FROM hiam_sec_grp_dcl_line hsgdl
+            JOIN hiam_sec_grp_dcl hsgd ON hsgdl.sec_grp_dcl_id = hsgd.sec_grp_dcl_id
+            AND hsgd.sec_grp_id = #{secGrpId}
+            AND hsgd.authority_type_code = 'INV_ORGANIZATION'
+        ) temp on temp.data_id = hio.organization_id
+        WHERE
+        hc.enabled_flag= 1
+        <if test="dataCode != null and dataCode != ''">
+            <bind name="dataCodeLike" value="'%'+dataCode+'%'"/>
+            and hio.organization_code like #{dataCodeLike}
+        </if>
+        <if test="dataName != null and dataName != ''">
+            <bind name="dataNameLike" value="'%'+dataName+'%'"/>
+            and  hio.organization_name like #{dataNameLike}
+        </if>
+        )
+        UNION
+        (
+        SELECT
+            'OU' AS type_code,
+            hc1.company_id,
+            hc1.company_num,
+            hc1.company_name,
+
+            hou1.ou_id,
+            hou1.ou_code,
+            hou1.ou_name,
+
+            NULL AS organization_id,
+            NULL AS organization_code,
+            NULL AS organization_name,
+
+            temp.sec_grp_dcl_line_id
+        FROM hpfm_company hc1
+        JOIN hpfm_operation_unit hou1 ON hc1.company_id = hou1.company_id
+        JOIN
+        (
+            SELECT
+            data_id,
+            sec_grp_dcl_line_id
+            FROM
+            hiam_sec_grp_dcl_line hsgdl
+            JOIN hiam_sec_grp_dcl hsgd ON hsgdl.sec_grp_dcl_id = hsgd.sec_grp_dcl_id
+            AND hsgd.sec_grp_id = #{secGrpId}
+            AND hsgd.authority_type_code = 'OU'
+        ) temp on temp.data_id = hou1.ou_id
+        WHERE
+        hc1.enabled_flag = 1
+        <if test="dataCode != null and dataCode != ''">
+            <bind name="dataCodeLike" value="'%'+dataCode+'%'"/>
+            and hou1.ou_code like #{dataCodeLike}
+        </if>
+        <if test="dataName != null and dataName != ''">
+            <bind name="dataNameLike" value="'%'+dataName+'%'"/>
+            and  hou1.ou_name like #{dataNameLike}
+        </if>
+        )
+
+        UNION
+        (
+            SELECT
+            'COMPANY' AS type_code,
+            hc2.company_id,
+            hc2.company_num,
+            hc2.company_name,
+            NULL AS ou_id,
+            NULL AS ou_code,
+            NULL AS ou_name,
+
+            NULL AS organization_id,
+            NULL AS organization_code,
+            NULL AS organization_name,
+            temp.sec_grp_dcl_line_id
+        FROM
+        hpfm_company hc2
+        JOIN (
+            SELECT
+            data_id,
+            sec_grp_dcl_line_id
+            FROM hiam_sec_grp_dcl_line hsgdl
+            JOIN hiam_sec_grp_dcl hsgd ON hsgdl.sec_grp_dcl_id = hsgd.sec_grp_dcl_id
+            AND hsgd.sec_grp_id = #{secGrpId}
+            AND hsgd.authority_type_code = 'COMPANY'
+        ) temp on temp.data_id = hc2.company_id
+        WHERE
+        hc2.enabled_flag = 1
+        <if test="dataCode != null and dataCode != ''">
+            <bind name="dataCodeLike" value="'%'+dataCode+'%'"/>
+            and hc2.company_num like #{dataCodeLike}
+        </if>
+        <if test="dataName != null and dataName != ''">
+            <bind name="dataNameLike" value="'%'+dataName+'%'"/>
+            and  hc2.company_name like #{dataNameLike}
+        </if>
+        )
+        ) result
+        LEFT JOIN hiam_sec_grp_revoke hsgr ON (
+            hsgr.authority_id = result.sec_grp_dcl_line_id
+            AND hsgr.revoke_type = 'SHIELD'
+            AND hsgr.authority_type = 'DCL'
+            AND hsgr.sec_grp_id = #{secGrpId}
+            AND hsgr.shield_role_id = #{roleId}
+        )
+    </select>
+
+    <select id="selectSecGrpAssignedCompanyDcl" resultType="org.hzero.iam.api.dto.CompanyOuInvorgNodeDTO">
+        SELECT
+            result.*
+        FROM (
+        (
+            SELECT
+                'INV_ORGANIZATION' AS type_code,
+                hc.company_id,
+                hc.company_num,
+                hc.company_name,
+
+                hou.ou_id,
+                hou.ou_code,
+                hou.ou_name,
+
+                hio.organization_id,
+                hio.organization_code,
+                hio.organization_name,
+                temp.sec_grp_dcl_line_id
+            FROM  hpfm_company hc
+            JOIN hpfm_operation_unit hou ON hc.company_id = hou.company_id
+            JOIN hpfm_inv_organization hio ON hou.ou_id = hio.ou_id
+            JOIN
+            (
+                SELECT
+                    data_id,
+                    sec_grp_dcl_line_id
+                FROM hiam_sec_grp_dcl_line hsgdl
+                JOIN hiam_sec_grp_dcl hsgd ON hsgdl.sec_grp_dcl_id = hsgd.sec_grp_dcl_id
+                WHERE hsgd.sec_grp_id = #{secGrpId}
+                AND hsgd.authority_type_code = 'INV_ORGANIZATION'
+                <include refid="RevokeCondition" />
+            ) temp on temp.data_id = hio.organization_id
+            WHERE hc.enabled_flag= 1
+            <if test="dataCode != null and dataCode != ''">
+                <bind name="dataCodeLike" value="'%'+dataCode+'%'"/>
+                and hio.organization_code like #{dataCodeLike}
+            </if>
+            <if test="dataName != null and dataName != ''">
+                <bind name="dataNameLike" value="'%'+dataName+'%'"/>
+                and  hio.organization_name like #{dataNameLike}
+            </if>
+        )
+        UNION
+        (
+            SELECT
+                'OU' AS type_code,
+                hc1.company_id,
+                hc1.company_num,
+                hc1.company_name,
+                hou1.ou_id,
+                hou1.ou_code,
+                hou1.ou_name,
+                NULL AS organization_id,
+                NULL AS organization_code,
+                NULL AS organization_name,
+                temp.sec_grp_dcl_line_id
+            FROM hpfm_company hc1
+            JOIN hpfm_operation_unit hou1 ON hc1.company_id = hou1.company_id
+            JOIN
+            (
+                SELECT
+                    data_id,
+                    sec_grp_dcl_line_id
+                FROM hiam_sec_grp_dcl_line hsgdl
+                JOIN hiam_sec_grp_dcl hsgd ON hsgdl.sec_grp_dcl_id = hsgd.sec_grp_dcl_id
+                WHERE hsgd.sec_grp_id = #{secGrpId}
+                AND hsgd.authority_type_code = 'OU'
+                <include refid="RevokeCondition" />
+            ) temp on temp.data_id = hou1.ou_id
+            WHERE
+            hc1.enabled_flag = 1
+            <if test="dataCode != null and dataCode != ''">
+                <bind name="dataCodeLike" value="'%'+dataCode+'%'"/>
+                and hou1.ou_code like #{dataCodeLike}
+            </if>
+            <if test="dataName != null and dataName != ''">
+                <bind name="dataNameLike" value="'%'+dataName+'%'"/>
+                and  hou1.ou_name like #{dataNameLike}
+            </if>
+        )
+        UNION
+        (
+            SELECT
+            'COMPANY' AS type_code,
+            hc2.company_id,
+            hc2.company_num,
+            hc2.company_name,
+            NULL AS ou_id,
+            NULL AS ou_code,
+            NULL AS ou_name,
+            NULL AS organization_id,
+            NULL AS organization_code,
+            NULL AS organization_name,
+            temp.sec_grp_dcl_line_id
+            FROM hpfm_company hc2
+            JOIN
+            (
+                SELECT
+                    data_id,
+                    sec_grp_dcl_line_id
+                FROM hiam_sec_grp_dcl_line hsgdl
+                JOIN hiam_sec_grp_dcl hsgd ON hsgdl.sec_grp_dcl_id = hsgd.sec_grp_dcl_id
+                WHERE hsgd.sec_grp_id = #{secGrpId}
+                AND hsgd.authority_type_code = 'COMPANY'
+                <include refid="RevokeCondition" />
+            ) temp on temp.data_id = hc2.company_id
+            WHERE hc2.enabled_flag = 1
+            <if test="dataCode != null and dataCode != ''">
+                <bind name="dataCodeLike" value="'%'+dataCode+'%'"/>
+                and hc2.company_num like #{dataCodeLike}
+            </if>
+            <if test="dataName != null and dataName != ''">
+                <bind name="dataNameLike" value="'%'+dataName+'%'"/>
+                and  hc2.company_name like #{dataNameLike}
+            </if>
+        )
+        ) result
+    </select>
+</mapper>

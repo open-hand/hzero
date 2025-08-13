@@ -1,0 +1,369 @@
+@import '../../assets/styles/variables.less';
+@import '../../assets/styles/mixins.less';
+@import '../../assets/styles/utils.less';
+
+// 长度
+@header-height: 48px;
+@menu-width: 220px;
+@menu-collapsed-width: 80px;
+@header-right-width: auto;
+
+// 颜色
+@header-logo-bgc: @hzero-primary-color;
+@header-color: #fff;
+@header-content-bgc: @hzero-primary-color;
+
+@main-menu-active-bgc: @hzero-primary-color-2;
+@main-menu-hover-bgc: @hzero-primary-color-2;
+@main-menu-color: #fff;
+
+// 动画
+@collapsed-transition: width 0.2s linear;
+
+// 字体
+@main-menu-font-size: 14px;
+@sub-menu-font-size: 14px;
+
+// 前缀
+@prefix: hzero;
+@fullscreen: hzero-fullscreen;
+
+:global {
+  // 整体布局 分为 上下 两部分
+  .@{prefix}-layout.@{fullscreen} {
+    .@{prefix}-header {
+      display: none;
+    }
+    .@{prefix}-content {
+      height: 100vh;
+      .@{prefix}-menu {
+        display: none;
+      }
+
+      .@{prefix}-page {
+        > .ant-tabs.ant-tabs-top {
+          > .ant-tabs-bar {
+            display: none;
+          }
+          > .ant-tabs-content {
+            height: 100vh;
+          }
+        }
+      }
+    }
+  }
+  .@{prefix}-layout {
+    height: 100vh;
+    width: 100vw;
+
+    display: flex;
+    flex-direction: column;
+    min-width: 820px;
+
+    .@{prefix}-header {
+      height: @header-height;
+      flex-shrink: 0;
+      color: @header-color;
+
+      display: flex;
+
+      &-left {
+        flex-shrink: 0;
+        flex-grow: 0;
+        width: @menu-width;
+
+        transition: @collapsed-transition;
+
+        .@{prefix}-header-sign {
+          font-size: 12px;
+          color: #fff;
+          background: #ff6680;
+          text-align: center;
+          width: 100%;
+
+          .@{prefix}-header-trail-img-icon {
+            margin-right: 4px;
+          }
+        }
+
+        .@{prefix}-header-logo-sign,
+        .@{prefix}-header-logo {
+          flex-shrink: 0;
+          padding: 0 20px;
+          height: @header-height;
+          text-align: center;
+
+          background-color: @header-logo-bgc;
+
+          > a {
+            // Link
+            height: 48px;
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            margin-left: 8px;
+          }
+
+          .@{prefix}-header-icon {
+            //&-icon {
+            //  width: 20px;
+            //  height: 20px;
+            //  margin-right: 10px;
+            //  font-size: 20px;
+            //}
+
+            &-img {
+              width: 20px;
+              height: 20px;
+              margin-right: 10px;
+            }
+          }
+
+          .@{prefix}-header-title {
+            // FIXME: TOP 不要 title
+            // display: none;
+            font-size: 14px;
+            color: #fff;
+            margin: 0;
+            // mixin
+            .textOverflow();
+          }
+        }
+
+        .@{prefix}-header-logo-sign {
+          > a {
+            height: 30px;
+          }
+        }
+      }
+
+      &-content {
+        //flex-shrink: 1;
+        //flex-grow: 1;
+        width: ~'calc(100vw - @{menu-width})';
+        transition: @collapsed-transition;
+
+        display: flex;
+        background-color: @header-content-bgc;
+
+        .@{prefix}-menu-trigger {
+          cursor: pointer;
+          // IMPROVE: 出发ICON需要超越层级
+          padding: 16px 24px;
+          font-size: 14px;
+          flex-shrink: 0;
+        }
+
+        .@{prefix}-main-menu {
+          flex-grow: 1;
+          overflow: hidden;
+
+          .ant-tabs-bar {
+            margin-bottom: 0;
+            height: @header-height;
+            border: 0;
+
+            .ant-tabs-nav-container {
+              height: @header-height;
+
+              .ant-tabs-tab-arrow-show {
+                color: #fff;
+              }
+
+              .ant-tabs-tab {
+                height: @header-height;
+                line-height: @header-height;
+                font-size: @main-menu-font-size;
+
+                background-color: lighten(@header-content-bgc, 8%);
+                border-width: 0;
+                color: @main-menu-color;
+
+                &.ant-tabs-tab-active {
+                  background-color: @main-menu-active-bgc;
+                }
+
+                &:hover {
+                  background-color: @main-menu-hover-bgc;
+                }
+              }
+            }
+          }
+        }
+      }
+
+      &-right {
+        width: @header-right-width;
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        height: @header-height;
+        padding-right: @hzero-gutter;
+        color: #fff;
+
+        .@{prefix}-search {
+          display: inline-block;
+          color: #fff;
+        }
+      }
+    }
+
+    .@{prefix}-content {
+      flex-grow: 1;
+      height: ~'calc( 100vh - @{header-height} )';
+      display: flex;
+
+      .@{prefix}-menu {
+        .@{prefix}-spin {
+          display: block;
+          text-align: center;
+          position: relative;
+          top: 50%;
+        }
+
+        background-color: @hzero-primary-color;
+        width: @menu-width;
+        flex-shrink: 0;
+        overflow-y: auto;
+        height: 100%;
+        transition: @collapsed-transition;
+
+        .ant-menu-submenu-title,
+        .ant-menu-item {
+          .hzero-font-size(@sub-menu-font-size);
+          padding-top: (40px - 14px - 8px) / 2;
+        }
+
+        > .ant-menu {
+          height: 100%;
+          color: @main-menu-color;
+          background-color: @hzero-primary-color;
+
+          .ant-menu-submenu > .ant-menu {
+            background-color: @hzero-primary-color;
+            color: @main-menu-color;
+          }
+
+          .ant-menu-item-selected {
+            background-image: linear-gradient(
+              to right,
+              @hzero-primary-color,
+              @hzero-primary-color-2
+            );
+            color: @main-menu-color;
+          }
+        }
+      }
+
+      .@{prefix}-page {
+        width: ~'calc(100vw - @{menu-width})';
+
+        // 页面 (路由)
+        flex-grow: 1;
+        flex-shrink: 0;
+        // 布局相关
+        overflow: auto;
+
+        > .ant-tabs.ant-tabs-top {
+          display: flex;
+          flex-direction: column;
+
+          > .ant-tabs-bar {
+            height: 36px;
+            margin: 0;
+
+            > .ant-tabs-nav-container {
+              height: 36px;
+
+              // 未激活的 tab 出现 下划线
+              > .ant-tabs-nav-wrap {
+                > .ant-tabs-nav-scroll {
+                  > .ant-tabs-nav {
+                    > div {
+                      > .ant-tabs-tab {
+                        flex-shrink: 0;
+                        margin: 3px 2px 0 0;
+
+                        &:first-child {
+                          border: 0 none;
+                          margin: 3px 2px 0 3px;
+                          position: relative;
+                          z-index: 10;
+                          color: #fff;
+                          //background-color: @bgc;
+                        }
+
+                        &:last-child {
+                          margin-right: 3px;
+                        }
+
+                        &.ant-tabs-tab-active {
+                          //color: @activeColor;
+                          //background-color: @lightBGC;
+
+                          &:first-child {
+                            color: @hzero-primary-color-2;
+                            //background-color: lighten(@bgc, 5%);
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+          > .ant-tabs-content {
+            flex-shrink: 0;
+            // flex 布局的不确定位置 需要显示指定大小 否则会被子元素撑开
+            height: calc(~'100vh - @{header-height} - 36px');
+
+            > .ant-tabs-tabpane-active {
+              height: 100%;
+              display: flex;
+            }
+          }
+        }
+      }
+    }
+
+    // 下拉框样式
+    .default-language-select {
+      color: #fff;
+      font-size: 14px;
+      margin-right: 12px;
+
+      .ant-select-arrow {
+        // icon
+        color: #fff;
+      }
+    }
+
+    // 左侧菜单收起时布局
+    &.@{prefix}-layout-collapsed {
+      .@{prefix}-header {
+        &-left {
+          width: @menu-collapsed-width;
+
+          .@{prefix}-header-sign-title {
+            display: none;
+          }
+        }
+
+        &-content {
+          width: ~'calc(100vw - @{menu-collapsed-width})';
+        }
+      }
+
+      .@{prefix}-content {
+        .@{prefix}-menu {
+          width: @menu-collapsed-width;
+        }
+
+        .@{prefix}-page {
+          width: ~'calc(100vw - @{menu-collapsed-width})';
+        }
+      }
+    }
+  }
+}

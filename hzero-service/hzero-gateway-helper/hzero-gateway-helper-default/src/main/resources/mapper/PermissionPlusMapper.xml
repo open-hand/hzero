@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.gateway.helper.infra.mapper.PermissionPlusMapper">
+
+    <resultMap id="PermissionMap" type="org.hzero.gateway.helper.entity.PermissionDO">
+        <id column="id" property="id"/>
+        <result column="code" property="code" />
+        <result column="path" property="path" />
+        <result column="method" property="method" />
+        <result column="public_access" property="publicAccess" />
+        <result column="login_access" property="loginAccess" />
+        <result column="sign_access" property="signAccess" />
+        <result column="is_within" property="within" />
+        <result column="fd_level" property="fdLevel" />
+        <result column="tag" property="tag" />
+    </resultMap>
+
+    <resultMap id="RoleMap" type="org.hzero.gateway.helper.domain.vo.RoleVO">
+        <id column="id" property="id"/>
+        <result column="code" property="code" />
+        <result column="name" property="name" />
+        <result column="fd_level" property="level" />
+    </resultMap>
+
+    <!-- 返回的 source_id 代表 成员分配的角色有此API的权限，返回角色的租户 -->
+    <select id="selectSourceIdsByMemberAndRole" resultType="java.lang.Long">
+        <bind name="now" value="@java.time.LocalDate@now()" />
+        SELECT
+            imr.source_id
+        FROM iam_member_role imr
+        JOIN iam_role ir ON (imr.role_id = ir.id and ir.is_enabled = 1)
+        JOIN iam_role_permission irp ON (irp.role_id = ir.id AND irp.type= 'PS')
+        <!-- 限制权限集 -->
+        JOIN iam_menu_permission imp ON imp.menu_id = irp.permission_id
+        JOIN iam_menu im ON (im.id = imp.menu_id and im.type = 'ps' and im.h_enabled_flag = 1)
+        WHERE
+        imr.member_id = #{memberId}
+        AND imr.member_type = #{memberType}
+        AND (
+            imr.start_date_active IS NULL
+            OR imr.start_date_active &lt;= #{now}
+        )
+        AND (
+            imr.end_date_active IS NULL
+            OR imr.end_date_active >= #{now}
+        )
+        AND imp.permission_code = #{permissionCode}
+        <if test="sourceType != null">
+            AND imr.source_type = #{sourceType}
+        </if>
+        <!-- checkCurrentRole=true 时就无法跨租户了 -->
+        <if test="checkCurrentRole">
+            AND ir.id IN
+            <foreach collection="roleIds" open="(" separator="," close=")" item="roleId">
+                #{roleId}
+            </foreach>
+        </if>
+        <!-- 角色权限创建及继承标识判断以及当前登录角色判断 -->
+        AND (irp.h_create_flag = 'Y' OR irp.h_inherit_flag = 'Y')
+
+        UNION ALL
+
+        SELECT
+            imr.source_id
+        FROM iam_member_role imr
+        JOIN iam_role ir ON (imr.role_id = ir.id and ir.is_enabled = 1)
+        JOIN iam_role_permission irp ON (irp.role_id = ir.id AND irp.type= 'SG')
+        <!-- 限制安全组 -->
+        JOIN hiam_sec_grp_acl hsga ON hsga.sec_grp_id = irp.permission_id
+        JOIN hiam_sec_grp hsg ON (hsg.sec_grp_id = hsga.sec_grp_id and hsg.enabled_flag = 1)
+        JOIN iam_menu im ON (im.id = hsga.permission_id and im.type = 'ps' and im.h_enabled_flag = 1)
+        JOIN iam_menu_permission imp ON imp.menu_id = im.id
+        WHERE
+        imr.member_id = #{memberId}
+        AND imr.member_type = #{memberType}
+        AND (
+            imr.start_date_active IS NULL
+            OR imr.start_date_active &lt;= #{now}
+        )
+        AND (
+            imr.end_date_active IS NULL
+            OR imr.end_date_active >= #{now}
+        )
+        AND imp.permission_code = #{permissionCode}
+        AND NOT EXISTS (
+            SELECT 1
+            FROM hiam_sec_grp_revoke hsgr
+            WHERE
+            (
+                hsgr.revoke_type = 'REVOKE'
+                AND hsgr.sec_grp_id = hsg.sec_grp_id
+                AND hsgr.authority_type = 'ACL'
+            )
+            OR
+            (
+                hsgr.revoke_type = 'SHIELD'
+                AND hsgr.authority_id = hsga.sec_grp_acl_id
+                AND hsgr.authority_type = 'ACL'
+                AND hsgr.shield_role_id = ir.id
+            )
+        )
+        <if test="sourceType != null">
+            AND imr.source_type = #{sourceType}
+        </if>
+        <if test="checkCurrentRole">
+            AND ir.id IN
+            <foreach collection="roleIds" open="(" separator="," close=")" item="roleId">
+                #{roleId}
+            </foreach>
+        </if>
+        <!-- 角色权限创建及继承标识判断以及当前登录角色判断 -->
+        AND (irp.h_create_flag = 'Y' OR irp.h_inherit_flag = 'Y')
+    </select>
+
+    <select id="selectPermissionByMethodAndService" resultMap="PermissionMap">
+        SELECT
+        id,code,path,method,public_access,login_access,sign_access,is_within,fd_level,tag
+        FROM
+          iam_permission
+        WHERE
+        service_name = #{service} AND method = #{method}
+    </select>
+
+    <select id="countMenuPermission" resultType="java.lang.Integer">
+        SELECT
+            COUNT(*)
+        FROM IAM_MENU IM
+        JOIN IAM_MENU_PERMISSION IMP ON IM.ID = IMP.MENU_ID
+        WHERE IM.TYPE = 'ps'
+        AND IMP.PERMISSION_CODE = #{permissionCode}
+        AND EXISTS (
+            SELECT 1
+            FROM IAM_MENU
+            WHERE ID = #{menuId}
+            AND (
+                IM.H_LEVEL_PATH LIKE CONCAT(H_LEVEL_PATH, '|%')
+                OR IM.H_LEVEL_PATH = H_LEVEL_PATH
+            )
+        )
+    </select>
+
+    <select id="selectSuperAdminRole" resultMap="RoleMap">
+        <bind name="siteSuperRole" value="@org.hzero.common.HZeroConstant$RoleCode@SITE"/>
+        <bind name="tenantSuperRole" value="@org.hzero.common.HZeroConstant$RoleCode@TENANT"/>
+        select
+            id,
+            code as "code",
+            name as "name",
+            fd_level as fd_level
+        from iam_role
+        where is_enabled = 1
+        and is_built_in = 1
+        and code in (#{siteSuperRole}, #{tenantSuperRole})
+    </select>
+
+    <select id="countAvailableRole" resultType="java.lang.Integer">
+        <bind name="now" value="@java.time.LocalDate@now()" />
+        select
+            count(1)
+        from iam_member_role imr
+        join iam_role ir on imr.role_id = ir.id
+        where ir.is_enabled = 1
+        and imr.role_id = #{roleId}
+        and imr.member_id = #{memberId}
+        and imr.member_type = #{memberType}
+        and (
+            imr.start_date_active is null
+            or imr.start_date_active &lt;= #{now}
+        )
+        and (
+            imr.end_date_active is null
+            or imr.end_date_active >= #{now}
+        )
+    </select>
+
+</mapper>

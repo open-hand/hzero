@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.plugin.platform.hr.infra.mapper.HrSyncLogMapper">
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap id="BaseResultMap" type="org.hzero.plugin.platform.hr.domain.entity.HrSyncLog">
+        <result column="sync_log_id" property="syncLogId" jdbcType="DECIMAL"/>
+        <result column="sync_id" property="syncId" jdbcType="DECIMAL"/>
+        <result column="dept_status_code" property="deptStatusCode" jdbcType="DECIMAL"/>
+        <result column="emp_status_code" property="empStatusCode" jdbcType="DECIMAL"/>
+        <result column="log_content" property="logContent" jdbcType="VARCHAR"/>
+        <result column="tenant_id" property="tenantId" jdbcType="DECIMAL"/>
+        <result column="OBJECT_VERSION_NUMBER" property="objectVersionNumber" jdbcType="DECIMAL"/>
+        <result column="CREATED_BY" property="createdBy" jdbcType="DECIMAL"/>
+        <result column="CREATION_DATE" property="creationDate" jdbcType="DATE"/>
+        <result column="LAST_UPDATED_BY" property="lastUpdatedBy" jdbcType="DECIMAL"/>
+        <result column="LAST_UPDATE_DATE" property="lastUpdateDate" jdbcType="DATE"/>
+    </resultMap>
+    
+    
+    <select id="queryAllEmployees" resultType="org.hzero.plugin.platform.hr.api.dto.SyncEmployeeDTO">
+        SELECT he.employee_num, he.name ,he.email,he.mobile ,hea.unit_id,hp.position_name,he.gender
+        from hpfm_employee he
+         join hpfm_employee_assign hea on hea.employee_id = he.employee_id
+         join hpfm_unit hu on hu.unit_id=hea.unit_id
+         join hpfm_position hp on hp.position_id = hea.position_id
+        where he.tenant_id=#{tenantId} and hu.enabled_flag=1 and hp.enabled_flag=1 and he.enabled_flag=1
+    </select>
+    
+    <update id="updateLog" parameterType="org.hzero.plugin.platform.hr.domain.entity.HrSyncLog">
+        <bind name="audit" value="@io.choerodon.mybatis.helper.AuditHelper@audit()" />
+        UPDATE
+            hpfm_hr_sync_log
+        SET
+            dept_status_code = #{deptStatusCode},
+            emp_status_code = #{empStatusCode},
+            log_content = #{logContent},
+            object_version_number = (object_version_number + 1),
+            last_update_date = #{audit.now}
+        WHERE
+            sync_log_id = #{syncLogId}
+    </update>
+    
+    <select id="selectHrSyncLog" resultType="org.hzero.plugin.platform.hr.domain.entity.HrSyncLog">
+        SELECT
+            hhsl.sync_log_id,
+            hhsl.sync_id,
+            hhsl.dept_status_code,
+            hhsl.emp_status_code,
+            hhsl.tenant_id,
+            hhsl.OBJECT_VERSION_NUMBER,
+            hhsl.CREATION_DATE,
+            hhsl.LAST_UPDATE_DATE,
+            hhsl.sync_direction,
+            hhs.sync_type_code 
+        FROM
+            hpfm_hr_sync_log hhsl
+            LEFT JOIN hpfm_hr_sync hhs ON hhsl.sync_id = hhs.sync_id
+        where
+            hhsl.sync_id = #{syncId}
+            <if test="startDate != null">
+                and hhsl.CREATION_DATE &gt;= #{startDate}
+            </if>
+            <if test="endDate != null">
+                and hhsl.CREATION_DATE &lt;= #{endDate}
+            </if>
+    </select>
+
+</mapper>

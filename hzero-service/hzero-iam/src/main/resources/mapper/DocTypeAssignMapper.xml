@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.iam.infra.mapper.DocTypeAssignMapper">
+    <!-- 可根据自己的需求，是否要使用 -->
+    <resultMap id="BaseResultMap" type="org.hzero.iam.domain.entity.DocTypeAssign">
+        <result column="assign_id" property="assignId" jdbcType="DECIMAL"/>
+        <result column="doc_type_id" property="docTypeId" jdbcType="DECIMAL"/>
+        <result column="assign_value_id" property="assignValueId" jdbcType="DECIMAL"/>
+        <result column="tenant_num" property="tenantNum" jdbcType="VARCHAR"/>
+        <result column="tenant_name" property="tenantName" jdbcType="VARCHAR"/>
+        <result column="object_version_number" property="objectVersionNumber" jdbcType="DECIMAL"/>
+        <result column="creation_date" property="creationDate" jdbcType="DATE"/>
+        <result column="created_by" property="createdBy" jdbcType="DECIMAL"/>
+        <result column="last_updated_by" property="lastUpdatedBy" jdbcType="DECIMAL"/>
+        <result column="last_update_date" property="lastUpdateDate" jdbcType="DATE"/>
+    </resultMap>
+
+    <delete id="deleteByDocTypeId" parameterType="java.lang.Long">
+        delete from hiam_doc_type_assign where doc_type_id = #{docTypeId,jdbcType=BIGINT}
+    </delete>
+
+    <select id="selectByDocTypeId" parameterType="java.lang.Long" resultType="org.hzero.iam.domain.entity.DocTypeAssign">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        select
+              dta.assign_id,
+              dta.doc_type_id,
+              dta.assign_value_id,
+              ht.tenant_num,
+              httl.tenant_name,
+              dta.object_version_number
+        from hiam_doc_type_assign dta
+        left join hpfm_tenant ht on dta.assign_value_id = ht.tenant_id
+        LEFT JOIN hpfm_tenant_tl httl ON ht.tenant_id = httl.tenant_id AND httl.lang = #{lang}
+         where doc_type_id = #{docTypeId,jdbcType=DECIMAL}
+    </select>
+    <select id="listAssign" resultType="org.hzero.iam.domain.entity.DocTypeAssign">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        SELECT
+            hdta.assign_id,
+            hdta.doc_type_id,
+            hdta.assign_value_id,
+            hdta.object_version_number,
+            ht.tenant_num,
+            httl.tenant_name
+        FROM hiam_doc_type_assign hdta
+        JOIN hpfm_tenant ht ON ht.tenant_id = hdta.assign_value_id
+        LEFT JOIN hpfm_tenant_tl httl ON ht.tenant_id = httl.tenant_id AND httl.lang = #{lang}
+        WHERE hdta.doc_type_id = #{docTypeId}
+        <if test="tenantId != null">
+            AND EXISTS(SELECT 1 FROM hiam_doc_type hdt WHERE hdt.tenant_id = #{tenantId} AND hdt.doc_type_id = #{docTypeId})
+        </if>
+        ORDER BY tenant_num
+    </select>
+    <select id="getAssignTenantIdsByDocIds" resultType="java.lang.Long">
+        SELECT
+          assign_value_id
+        FROM hiam_doc_type_assign
+        WHERE doc_type_id IN
+         <foreach collection="tenantDocIds" index="index" item="item" separator="," open="(" close=")">
+             #{item}
+         </foreach>
+    </select>
+</mapper>

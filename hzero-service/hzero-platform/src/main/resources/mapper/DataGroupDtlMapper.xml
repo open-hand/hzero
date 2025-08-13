@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.platform.infra.mapper.DataGroupDtlMapper">
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap id="BaseResultMap" type="org.hzero.platform.domain.entity.DataGroupDtl">
+        <result column="group_dtl_id" property="groupDtlId" jdbcType="DECIMAL"/>
+        <result column="group_line_id" property="groupLineId" jdbcType="DECIMAL"/>
+        <result column="group_id" property="groupId" jdbcType="DECIMAL"/>
+        <result column="tenant_id" property="tenantId" jdbcType="DECIMAL"/>
+        <result column="dtl_value_id" property="dtlValueId" jdbcType="DECIMAL"/>
+        <result column="object_version_number" property="objectVersionNumber" jdbcType="DECIMAL"/>
+        <result column="creation_date" property="creationDate" jdbcType="DATE"/>
+        <result column="created_by" property="createdBy" jdbcType="DECIMAL"/>
+        <result column="last_updated_by" property="lastUpdatedBy" jdbcType="DECIMAL"/>
+        <result column="last_update_date" property="lastUpdateDate" jdbcType="DATE"/>
+    </resultMap>
+
+    <select id="listDataGroupDtl" resultType="org.hzero.platform.domain.entity.DataGroupDtl">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()" />
+        select
+        hdgd.group_dtl_id,
+        hdgd.group_line_id,
+        hdgd.group_id,
+        hdgd.tenant_id,
+        hdgd.dtl_value_id,
+        hdgd.object_version_number,
+        hlv.value as dimensionCode,
+        hlvt.meaning as dimensionName
+        from
+        hpfm_data_group_dtl hdgd
+        join hpfm_lov_value hlv on hdgd.dtl_value_id = hlv.lov_value_id
+        join hpfm_lov_value_tl hlvt on hlv.lov_value_id = hlvt.lov_value_id and hlvt.lang=#{lang}
+        where
+        1=1
+        <if test="tenantId!=null">
+            and hdgd.tenant_id = #{tenantId}
+        </if>
+        <if test="groupLineId!=null">
+            and hdgd.group_line_id = #{groupLineId}
+        </if>
+    </select>
+</mapper>

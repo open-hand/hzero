@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.message.infra.mapper.MessageTemplateMapper">
+    <update id="updateSelf">
+        <bind name="audit" value="@io.choerodon.mybatis.helper.AuditHelper@audit()" />
+        update
+            hmsg_message_template
+        set
+            object_version_number = object_version_number + 1,
+            created_by = #{audit.user},
+            creation_date = #{audit.now}
+        where
+            template_id = #{id}
+    </update>
+
+    <select id="selectMessageTemplate" resultType="org.hzero.message.domain.entity.MessageTemplate">
+        <bind name="tenantLang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()" />
+        select
+            hmt.template_id,
+            hmt.template_code,
+            hmt.template_name,
+            hmt.lang,
+            hmt.template_title,
+            hmt.external_code,
+            hmt.enabled_flag,
+            hmt.tenant_id,
+            hmt.object_version_number,
+        ht.tenant_name,
+        hmt.editor_type
+        from hmsg_message_template hmt, hpfm_tenant_tl ht
+        where hmt.tenant_id = ht.tenant_id
+        and ht.lang = #{tenantLang}
+        <if test="tenantId != null">
+            and hmt.tenant_id in (#{tenantId}<if test="includeSiteIfQueryByTenantId">, 0</if>)
+        </if>
+        <if test="templateCode != null and templateCode != ''">
+            <bind name="templateCode" value="'%' + templateCode + '%'"/>
+            and hmt.template_code like #{templateCode}
+        </if>
+        <if test="templateName != null and templateName != ''">
+            <bind name="templateName" value="'%' + templateName + '%'"/>
+            and hmt.template_name like #{templateName}
+        </if>
+        <if test="enabledFlag != null">
+            and hmt.enabled_flag = #{enabledFlag}
+        </if>
+        <if test="lang != null and lang != ''">
+            and hmt.lang = #{lang}
+        </if>
+    </select>
+    <select id="selectMessageTemplateByPrimaryKey" resultType="org.hzero.message.domain.entity.MessageTemplate">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()" />
+        select
+            hmt.template_id,
+            hmt.template_code,
+            hmt.template_name,
+            hmt.lang,
+            hmt.template_title,
+            hmt.template_content,
+            hmt.message_category_code,
+            hmt.message_subcategory_code,
+            hmt.external_code,
+            hmt.enabled_flag,
+            hmt.sql_value,
+            hmt.enabled_flag,
+            hmt.tenant_id,
+            hmt.object_version_number,
+        ht.tenant_name,
+        hmt.editor_type
+        from hmsg_message_template hmt, hpfm_tenant_tl ht
+        where hmt.tenant_id = ht.tenant_id
+        and ht.lang = #{lang}
+        and hmt.template_id = #{templateId}
+        <if test="tenantId != null">
+            AND hmt.tenant_id = #{tenantId}
+        </if>
+    </select>
+    <select id="listMessageTemplateLang" resultType="java.lang.String">
+        select
+            lang
+        from hmsg_message_template
+          where tenant_id IN (0, #{tenantId})
+          and template_code IN
+        <foreach collection="templateCodeList" open="(" close=")" separator="," item="templateCode">
+            #{templateCode}
+        </foreach>
+    </select>
+
+    <select id="selectByCode" resultType="org.hzero.message.domain.entity.MessageTemplate">
+        SELECT
+            hmt.template_id,
+            hmt.template_code,
+            hmt.template_name,
+            hmt.tenant_id,
+            hmt.lang
+        FROM
+            hmsg_message_template hmt
+        WHERE hmt.template_code = #{templateCode}
+        AND hmt.tenant_id = #{tenantId}
+    </select>
+</mapper>

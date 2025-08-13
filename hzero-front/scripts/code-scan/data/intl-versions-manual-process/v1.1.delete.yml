@@ -1,0 +1,56 @@
+hdemo:
+  identification:
+    model.identification.creationDate: 识别时间
+    model.identification.error: 识别失败
+    model.identification.field: 字段
+    model.identification.generate: 生成订单
+    model.identification.identification: 识别
+    model.identification.identificationId: 识别ID
+    model.identification.identifyDateFrom: 识别时间从
+    model.identification.identifyDateTo: 识别时间至
+    model.identification.imgUrl: 识别图片
+    model.identification.loginName: 识别人
+    model.identification.value: 值
+    view.message.modal.create: 新建
+    view.message.modal.result: 结果
+    view.message.title.list: 发票识别
+  order:
+    model.order.alipayQR: 支付宝二维码
+    model.order.createDateFrom: 订单时间从
+    model.order.createDateTo: 订单时间至
+    model.order.creationDate: 订单时间
+    model.order.customerName: 客户名称
+    model.order.notifyPhone: 通知手机号
+    model.order.orderAmount: 订单金额
+    model.order.orderNumber: 订单编号
+    model.order.payAmount: 支付金额
+    model.order.payDate: 支付时间
+    model.order.payDateFrom: 支付时间从
+    model.order.payDateTo: 支付时间至
+    model.order.status: 支付状态
+    model.order.unionpayQR: 银联二维码
+    model.order.wechatQR: 微信二维码
+    view.message.modal.pay: 支付渠道
+    view.message.title.list: 订单处理
+hdip:
+  practice:
+    order.header.code: 订单编号
+hoce:
+  commonOcr:
+    model.commonOcr.key: 值
+hpfn:
+  config:
+    model.config.menuLayout: 菜单布局
+    model.config.menuLayoutTheme: 菜单布局主题
+hssp:
+  screen:
+    button.create: 新增
+test:
+  undefined:
+    Test.TTTT: test
+zc-001:
+  undefined:
+    zc-001: zh_CN
+enitty:
+  group:
+    name: 集团名称

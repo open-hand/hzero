@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.platform.infra.mapper.ProfileValueMapper">
+    <select id="selectAllProfileAndProfileValue" resultType="org.hzero.platform.domain.vo.ProfileValueVO">
+        SELECT
+            hp.profile_id,
+            hp.profile_name,
+            hp.profile_level,
+            hp.tenant_id,
+            hp.description,
+            hpv.profile_value_id,
+            hpv.value,
+            hpv.level_code,
+            hpv.level_value
+        FROM
+            hpfm_profile hp,
+            hpfm_profile_value hpv
+        WHERE
+            hp.profile_id = hpv.profile_id
+    </select>
+
+    <select id="selectProfileValue" parameterType="java.lang.Long"
+            resultType="org.hzero.platform.api.dto.ProfileValueDTO">
+        SELECT
+            hpv.profile_id,
+            hpv.profile_value_id,
+            hpv.VALUE,
+            hpv.level_code,
+            hpv.level_value,
+            hpv.object_version_number,
+            (
+                CASE hpv.level_code
+                WHEN 'USER' THEN
+                    (
+                        SELECT
+                            login_name
+                        FROM
+                            iam_user
+                        WHERE
+                            hpv.level_value = id
+                    )
+                WHEN 'ROLE' THEN
+                    (
+                        SELECT
+                            NAME
+                        FROM
+                            iam_role
+                        WHERE
+                            hpv.level_value = id
+                    )
+                ELSE
+                    hpv.level_value
+                END
+            ) level_value_description
+        FROM
+            hpfm_profile_value hpv
+        WHERE hpv.profile_id = #{profileId}
+    </select>
+</mapper>

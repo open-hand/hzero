@@ -1,0 +1,204 @@
+.wrapper {
+  padding: 16px;
+  height: 710px;
+
+  .head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .title {
+      display: flex;
+      align-items: center;
+
+      .text {
+        margin-right: 8px;
+        font-weight: bold;
+        font-size: 15px;
+        color: #404040;
+      }
+    }
+
+    .operation {
+      display: flex;
+      align-items: center;
+
+      .refresh {
+        i {
+          font-size: 14px;
+          font-weight: 600;
+          margin-left: 16px;
+          cursor: pointer;
+          vertical-align: middle;
+        }
+
+        i:hover {
+          color: #29bdcd;
+        }
+      }
+
+      .all-read {
+        margin-left: 16px;
+        width: 16px;
+        height: 16px;
+        display: inline-block;
+        background-image: url('../../../../../assets/market/allread.svg');
+        cursor: pointer;
+
+        &:hover {
+          background-image: url('../../../../../assets/market/allread-hover.svg');
+        }
+      }
+    }
+  }
+
+  .content {
+    height: 100%;
+    position: relative;
+    margin-top: 14px;
+
+    .message {
+      position: relative;
+      height: 100%;
+
+      > .card:not(:nth-last-child(2)) {
+        border-bottom: 1px solid #e5e5e5;
+      }
+
+      .card {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-bottom: 12px;
+
+        .content {
+          display: flex;
+          flex: 1;
+          flex-direction: column;
+          overflow: hidden;
+          cursor: pointer;
+
+          .text {
+            display: flex;
+            align-items: center;
+            font-size: 13px;
+            color: #1e2a3a;
+            overflow: hidden;
+
+            .dot {
+              width: 10px;
+              position: relative;
+              margin-left: 5px;
+              box-sizing: border-box;
+              padding-bottom: 2px;
+
+              .dot-top {
+                position: absolute;
+                top: 3px;
+                left: 10px;
+              }
+            }
+
+            .title {
+              margin-left: 8px;
+              white-space: nowrap;
+              text-overflow: ellipsis;
+            }
+          }
+
+          .time {
+            font-size: 10px;
+            color: #8a909a;
+            margin-top: 8px;
+            margin-left: 18px;
+          }
+        }
+
+        .close {
+          width: 16px;
+          color: #999;
+          flex: 0 0 16px;
+          margin-left: 12px;
+
+          & > span {
+            transition: all 0.3s;
+            visibility: hidden;
+            opacity: 0;
+          }
+
+          i {
+            margin-top: 12px;
+            font-size: 14px;
+            cursor: pointer;
+          }
+        }
+
+        &:hover {
+          .close > span {
+            transition: all 0.8s;
+            opacity: 1;
+            visibility: visible;
+          }
+        }
+      }
+
+      .empty {
+        height: 100%;
+      }
+
+      :global {
+        .ant-pagination {
+          margin-top: 20px;
+          float: right;
+        }
+      }
+    }
+
+    .empty {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      font-size: 13px;
+      color: #bcc2cb;
+    }
+  }
+}
+
+.work-order-content {
+  min-height: 200px;
+}
+
+.row {
+  display: flex;
+
+  .col {
+    padding: 10px 0;
+
+    p {
+      margin-bottom: 0;
+      font-size: 14px;
+    }
+  }
+
+  .left-col {
+    font-size: 14px;
+    color: #4a4a4a;
+    text-align: right;
+    white-space: nowrap;
+  }
+
+  .right-col {
+    font-size: 14px;
+    max-height: 300px;
+    overflow-y: auto;
+    color: #333;
+  }
+}
+
+.richtextContainer {
+  & > div:first-child {
+    padding: 0;
+  }
+}

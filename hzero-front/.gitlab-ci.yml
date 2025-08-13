@@ -1,0 +1,96 @@
+image: registry.cn-hangzhou.aliyuncs.com/choerodon-tools/cifront:0.7.0
+
+stages:
+  #  - node_dep_install
+  - node_build
+  - docker_build
+
+#node_dep_install:
+#  stage: node_dep_install
+#  script:
+#    - node_module
+
+node_build:
+  image: registry.cn-hangzhou.aliyuncs.com/hzero-cli/cifront:0.0.1
+  stage: node_build
+  script:
+    - node_module
+    - node_build
+  only:
+    - v1.5.x
+
+docker_build:
+  image: registry.cn-hangzhou.aliyuncs.com/choerodon-tools/cibase:0.7.0
+  stage: docker_build
+  script:
+    - docker_build
+    - rm -rf /cache/${CI_PROJECT_NAME}-${CI_PROJECT_ID}-${CI_COMMIT_REF_NAME}-${CI_COMMIT_SHA}
+    - chart_build
+  only:
+    - v1.5.x
+
+.auto_devops: &auto_devops |
+  http_status_code=`curl -o .auto_devops.sh -s -m 10 --connect-timeout 10 -w %{http_code} "${CHOERODON_URL}/devops/ci?token=${Token}&type=front"`
+  if [ "$http_status_code" != "200" ]; then
+    cat .auto_devops.sh
+    exit 1
+  fi
+  source .auto_devops.sh
+  export TEMP_DIR=/cache/${CI_PROJECT_NAME}-${CI_PROJECT_ID}-${CI_COMMIT_REF_NAME}-front
+  echo "gitlab-ci -- 缓存目录: $TEMP_DIR"
+  function node_module(){
+      export YARN_LOCK_CHANGE_LOG=""
+      if [ -f "$TEMP_DIR/.last_build_parent_git_head" ]; then
+        export LAST_BUILD_PARENT_GIT_HEAD=`cat $TEMP_DIR/.last_build_parent_git_head` # 获取上一次 build 父项目时的 提交代码版本
+        export CURRENT_GIT_HEAD=`git log -1 --pretty=format:"%H"` # 获取当前提交代码版本
+        export YARN_LOCK_CHANGE_LOG=`git diff $LAST_BUILD_PARENT_GIT_HEAD $CURRENT_GIT_HEAD  --shortstat -- yarn.lock` # 对比两次提交版本中的 yarn.lock 是否变化
+        if [[ -n "$YARN_LOCK_CHANGE_LOG" ]] ;then # 如果 yarn.lock 发生变化, 需要更新缓存。
+          echo -e "gitlab-ci -- yarn.lock 发生变化, 需要清除之前编译时留下来的缓存。\n\t $YARN_LOCK_CHANGE_LOG"
+          export CLEAR_TEMP_DIR=true
+        fi
+      else
+        export CLEAR_TEMP_DIR=true
+      fi
+      if  [[ $CLEAR_TEMP_DIR =~ "true" ]] ;then
+        echo "gitlab-ci -- 开始清除之前编译缓存。"
+        rm -rf $TEMP_DIR
+      fi
+      echo "gitlab-ci -- 开始安装依赖"
+      if [ -f "$TEMP_DIR/node_modules.tar.gz" ]; then
+        tar -zxf $TEMP_DIR/node_modules.tar.gz
+        chmod -R 777 node_modules
+        yarn
+      else
+        yarn
+        rm -rf $TEMP_DIR
+        mkdir -p $TEMP_DIR
+        echo `git log -1 --pretty=format:"%H"` > $TEMP_DIR/.last_build_parent_git_head  # 保存当前 build 父项目时的 提交代码版本
+      fi
+      echo "gitlab-ci -- 结束安装依赖"
+  }
+
+  function node_build(){
+      if [ -f "$TEMP_DIR/dist.tar.gz" ]; then
+        tar -zxf $TEMP_DIR/dist.tar.gz
+      fi
+      chmod -R 777 node_modules
+      yarn build:production
+      # 缓存文件
+      mkdir -p $TEMP_DIR
+      tar -zcf $TEMP_DIR/dist.tar.gz ./dist
+      tar -zcf $TEMP_DIR/node_modules.tar.gz ./node_modules
+  }
+
+  function docker_build(){
+      # cp -r /cache/${CI_PROJECT_NAME}-${CI_PROJECT_ID}-${CI_COMMIT_REF_NAME}-${CI_COMMIT_SHA}/* ${1:-"."}
+      tar -zxf $TEMP_DIR/dist.tar.gz
+      docker login -u ${DOCKER_USER} -p ${DOCKER_PWD} ${DOCKER_REGISTRY}
+      docker build --pull -t ${DOCKER_REGISTRY}/${GROUP_NAME}/${PROJECT_NAME}:${CI_COMMIT_TAG} ${1:-"."}
+      docker push ${DOCKER_REGISTRY}/${GROUP_NAME}/${PROJECT_NAME}:${CI_COMMIT_TAG}
+      echo "${DOCKER_REGISTRY}/${GROUP_NAME}/${PROJECT_NAME}:${CI_COMMIT_TAG}"
+  }
+
+before_script:
+  - *auto_devops
+
+

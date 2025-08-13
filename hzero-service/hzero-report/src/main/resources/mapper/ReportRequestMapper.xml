@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.report.infra.mapper.ReportRequestMapper">
+    <!-- 可根据自己的需求，是否要使用 -->
+    <resultMap id="BaseResultMap" type="org.hzero.report.domain.entity.ReportRequest">
+        <result column="request_id" property="requestId" jdbcType="DECIMAL"/>
+        <result column="report_id" property="reportId" jdbcType="DECIMAL"/>
+        <result column="report_code" property="reportCode" jdbcType="VARCHAR"/>
+        <result column="report_name" property="reportName" jdbcType="VARCHAR"/>
+        <result column="request_param" property="requestParam" jdbcType="VARCHAR"/>
+        <result column="start_date" property="startDate" jdbcType="TIMESTAMP"/>
+        <result column="end_date" property="endDate" jdbcType="TIMESTAMP"/>
+        <result column="file_url" property="fileUrl" jdbcType="VARCHAR"/>
+        <result column="request_status" property="requestStatus" jdbcType="VARCHAR"/>
+        <result column="request_message" property="requestMessage" jdbcType="VARCHAR"/>
+        <result column="tenant_id" property="tenantId" jdbcType="DECIMAL"/>
+        <result column="tenant_name" property="tenantName" jdbcType="VARCHAR"/>
+        <result column="conc_request_id" property="concRequestId" jdbcType="DECIMAL"/>
+        <result column="requester" property="requester" jdbcType="VARCHAR"/>
+        <result column="object_version_number" property="objectVersionNumber" jdbcType="DECIMAL"/>
+        <result column="creation_date" property="creationDate" jdbcType="DATE"/>
+        <result column="created_by" property="createdBy" jdbcType="DECIMAL"/>
+        <result column="last_updated_by" property="lastUpdatedBy" jdbcType="DECIMAL"/>
+        <result column="last_update_date" property="lastUpdateDate" jdbcType="DATE"/>
+    </resultMap>
+
+    <!-- 查询报表请求列表 -->
+    <select id="selectReportRequests" parameterType="org.hzero.report.domain.entity.ReportRequest"
+            resultType="org.hzero.report.domain.entity.ReportRequest">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()" />
+        SELECT
+            hrr.request_id,
+            ht.tenant_name,
+            hr.report_code,
+            hrt.report_name,
+            hrr.request_status,
+            hrr.start_date,
+            hrr.end_date,
+            hrr.file_url,
+            iu.real_name requester
+        FROM hrpt_report_request hrr
+        JOIN hrpt_report hr ON hrr.report_id = hr.report_id
+        LEFT JOIN hrpt_report_tl hrt ON hrt.report_id = hr.report_id AND hrt.lang = #{lang}
+        LEFT JOIN hpfm_tenant_tl ht ON hrr.tenant_id = ht.tenant_id AND ht.lang = #{lang}
+        LEFT JOIN iam_user iu ON hrr.created_by = iu.id
+        WHERE
+            EXISTS (
+        SELECT
+            1
+        FROM
+            hrpt_report_permission hrp
+        WHERE
+            hr.report_id = hrp.report_id
+            AND hrp.tenant_id = #{tenantId}
+            AND ( hrp.role_id IN
+            <foreach collection="roleIds" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            OR hrp.role_id = -1)
+            AND (
+            ( hrp.start_date &lt;= hrr.start_date AND hrp.end_date &gt;= hrr.start_date )
+            OR ( hrp.start_date &lt;= hrr.start_date AND hrp.end_date IS NULL )
+            OR ( hrp.start_date IS NULL AND hrp.end_date &gt;= hrr.start_date )
+            OR ( hrp.start_date IS NULL AND hrp.end_date IS NULL )
+            )
+            <if test="reportRequest.tenantId != null">
+                AND hrr.tenant_id = #{reportRequest.tenantId}
+            </if>
+            <if test="reportRequest.createdBy != null">
+                AND hrr.created_by = #{reportRequest.createdBy}
+            </if>
+            <if test="reportRequest.reportName != null and reportRequest.reportName != ''">
+                <bind name="reportNameLike" value="'%' + reportRequest.reportName + '%'"/>
+                AND hrt.report_name LIKE #{reportNameLike}
+            </if>
+            <if test="reportRequest.requestStatus != null and reportRequest.requestStatus != ''">
+                AND hrr.request_status = #{reportRequest.requestStatus}
+            </if>
+            <if test="reportRequest.startDate != null">
+                AND hrr.start_date &gt;= #{reportRequest.startDate}
+            </if>
+            <if test="reportRequest.endDate != null">
+                AND hrr.end_date &lt;= #{reportRequest.endDate}
+            </if>
+        )
+    </select>
+
+    <!-- 查询报表请求明细 -->
+    <select id="selectReportRequest" resultMap="BaseResultMap">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()" />
+	    SELECT
+	        hrr.request_id,
+		    ht.tenant_name,
+		    hr.report_code,
+		    hrt.report_name,
+		    hrr.request_status,
+		    hrr.start_date,
+		    hrr.end_date,
+		    hrr.request_param,
+		    hrr.request_message,
+		    hrr.file_url,
+		    iu.real_name requester
+		FROM hrpt_report_request hrr
+		JOIN hrpt_report hr ON hrr.report_id = hr.report_id
+        LEFT JOIN hrpt_report_tl hrt ON hrt.report_id = hr.report_id AND hrt.lang = #{lang}
+		LEFT JOIN hpfm_tenant_tl ht ON hrr.tenant_id = ht.tenant_id AND ht.lang = #{lang}
+		LEFT JOIN iam_user iu ON hrr.created_by = iu.id
+        WHERE
+            hrr.request_id = #{requestId}
+    </select>
+
+</mapper>

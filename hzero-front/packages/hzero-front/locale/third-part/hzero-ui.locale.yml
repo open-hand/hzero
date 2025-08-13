@@ -1,0 +1,95 @@
+hzero:
+  hzeroUI:
+    Calendar.lang.backToToday: 返回今天
+    Calendar.lang.clear: 清除
+    Calendar.lang.dateFormat: YYYY年M月D日
+    Calendar.lang.dateSelect: 选择日期
+    Calendar.lang.dateTimeFormat: YYYY年M月D日 HH时mm分ss秒
+    Calendar.lang.dayFormat: D日
+    Calendar.lang.decadeSelect: 选择年代
+    Calendar.lang.month: 月
+    Calendar.lang.monthSelect: 选择月份
+    Calendar.lang.nextCentury: 下一世纪
+    Calendar.lang.nextDecade: 下一年代
+    Calendar.lang.nextMonth: 下个月 (翻页下键)
+    Calendar.lang.nextYear: 下一年 (Control键加右方向键)
+    Calendar.lang.now: 此刻
+    Calendar.lang.ok: 确定
+    Calendar.lang.placeholder: 请选择日期
+    Calendar.lang.previousCentury: 上一世纪
+    Calendar.lang.previousDecade: 上一年代
+    Calendar.lang.previousMonth: 上个月 (翻页上键)
+    Calendar.lang.previousYear: 上一年 (Control键加左方向键)
+    Calendar.lang.rangePlaceholder.0: 开始日期
+    Calendar.lang.rangePlaceholder.1: 结束日期
+    Calendar.lang.timeSelect: 选择时间
+    Calendar.lang.today: 今天
+    Calendar.lang.weekSelect: 选择周
+    Calendar.lang.year: 年
+    Calendar.lang.yearFormat: YYYY年
+    Calendar.lang.yearSelect: 选择年份
+    Calendar.timePickerLocale.placeholder: 请选择时间
+    DatePicker.lang.backToToday: 返回今天
+    DatePicker.lang.clear: 清除
+    DatePicker.lang.dateFormat: YYYY年M月D日
+    DatePicker.lang.dateSelect: 选择日期
+    DatePicker.lang.dateTimeFormat: YYYY年M月D日 HH时mm分ss秒
+    DatePicker.lang.dayFormat: D日
+    DatePicker.lang.decadeSelect: 选择年代
+    DatePicker.lang.month: 月
+    DatePicker.lang.monthSelect: 选择月份
+    DatePicker.lang.nextCentury: 下一世纪
+    DatePicker.lang.nextDecade: 下一年代
+    DatePicker.lang.nextMonth: 下个月 (翻页下键)
+    DatePicker.lang.nextYear: 下一年 (Control键加右方向键)
+    DatePicker.lang.now: 此刻
+    DatePicker.lang.ok: 确定
+    DatePicker.lang.placeholder: 请选择日期
+    DatePicker.lang.previousCentury: 上一世纪
+    DatePicker.lang.previousDecade: 上一年代
+    DatePicker.lang.previousMonth: 上个月 (翻页上键)
+    DatePicker.lang.previousYear: 上一年 (Control键加左方向键)
+    DatePicker.lang.rangePlaceholder.0: 开始日期
+    DatePicker.lang.rangePlaceholder.1: 结束日期
+    DatePicker.lang.timeSelect: 选择时间
+    DatePicker.lang.today: 今天
+    DatePicker.lang.weekSelect: 选择周
+    DatePicker.lang.year: 年
+    DatePicker.lang.yearFormat: YYYY年
+    DatePicker.lang.yearSelect: 选择年份
+    DatePicker.timePickerLocale.placeholder: 请选择时间
+    Modal.cancelText: 取消
+    Modal.justOkText: 知道了
+    Modal.okText: 确定
+    Pagination.first_page: 首页
+    Pagination.items_per_page: 条/页
+    Pagination.jump_to: 跳至
+    Pagination.jump_to_confirm: 确定
+    Pagination.label_items_per_page: 每页行数
+    Pagination.last_page: 末页
+    Pagination.next_3: 向后 3 页
+    Pagination.next_5: 向后 5 页
+    Pagination.next_page: 下一页
+    Pagination.page: 页
+    Pagination.prev_3: 向前 3 页
+    Pagination.prev_5: 向前 5 页
+    Pagination.prev_page: 上一页
+    Popconfirm.cancelText: 取消
+    Popconfirm.okText: 确定
+    Select.notFoundContent: 无匹配结果
+    Table.emptyText: 暂无数据
+    Table.filterConfirm: 确定
+    Table.filterReset: 重置
+    Table.filterTitle: 筛选
+    Table.selectAll: 全选当页
+    Table.selectInvert: 反选当页
+    TimePicker.placeholder: 请选择时间
+    Transfer.itemUnit: 项
+    Transfer.itemsUnit: 项
+    Transfer.notFoundContent: 无匹配结果
+    Transfer.searchPlaceholder: 请输入搜索内容
+    Upload.previewFile: 预览文件
+    Upload.removeFile: 删除文件
+    Upload.uploadError: 上传错误
+    Upload.uploading: 文件上传中
+    locale: zh-cn

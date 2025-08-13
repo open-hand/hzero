@@ -1,0 +1,130 @@
+@searchColor: #a5adbb;
+@searchBGC: #4b5b77;
+
+@searchHistoryColor: #dfe2e7;
+@searchHistoryBGC: #616f88;
+
+@searchHeight: 28px;
+
+.search {
+  position: relative;
+
+  .icon {
+    position: absolute;
+    height: 12px;
+    width: 12px;
+    top: 14px;
+    left: 30px;
+    background-image: url('../../../assets/search.svg');
+    background-size: 12px;
+    background-repeat: no-repeat;
+    z-index: 1;
+  }
+
+  .input {
+    background-color: @searchBGC;
+    border-radius: 2px;
+    height: @searchHeight;
+    margin: 7px 20px;
+    width: 180px;
+    cursor: text;
+    font-size: 12px;
+    //FIXME:没有这个字体
+    //font-family:PingFangSC-Regular;
+    > div {
+      background-color: transparent;
+      border: 0 none;
+      height: @searchHeight;
+      padding-left: 22px; //由icon覆盖的区域
+      > div {
+        height: @searchHeight;
+        line-height: @searchHeight;
+
+        > :global(.ant-select-selection__placeholder) {
+          margin-top: -14px; // ant 的垂直居中
+          height: @searchHeight;
+          line-height: @searchHeight;
+          // opacity: 0.5;
+          color: @searchColor;
+        }
+      }
+    }
+
+    &:hover {
+      background-color: #425370;
+    }
+  }
+
+  .history {
+    max-height: 80px;
+    overflow: hidden;
+
+    &-title {
+      padding: 0 20px;
+      line-height: 22px;
+      margin: 2px;
+      color: @searchColor;
+      font-size: 12px;
+    }
+
+    .btn-clear {
+      border: 0;
+    }
+
+    &-content {
+      //搜索历史
+      display: flex;
+      flex-wrap: wrap;
+      padding: 0 20px;
+      list-style: none;
+      justify-items: start;
+      margin: 0;
+
+      > div {
+        // Tag
+        border: 0;
+        flex-shrink: 0;
+        line-height: 22px;
+        margin: 2px;
+        border-radius: 2px;
+        background-color: @searchHistoryBGC;
+        color: @searchHistoryColor;
+        font-size: 12px;
+        position: relative;
+
+        &:hover {
+          > i {
+            display: inline-block;
+          }
+        }
+
+        > i {
+          position: absolute;
+          border-radius: 50%;
+          display: none;
+          top: 5px;
+          right: 3px;
+          background-color: #eee;
+          color: #333;
+        }
+      }
+    }
+  }
+}
+
+.search.focus {
+  background-color: transparent;
+
+  //.icon {
+  //}
+
+  .input {
+    background-color: #fff;
+    color: #333;
+    opacity: 1;
+  }
+}
+
+.collapsed {
+  display: none;
+}

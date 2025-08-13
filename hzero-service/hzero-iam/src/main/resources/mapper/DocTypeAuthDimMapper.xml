@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.iam.infra.mapper.DocTypeAuthDimMapper">
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap id="BaseResultMap" type="org.hzero.iam.domain.entity.DocTypeAuthDim">
+        <result column="auth_dim_id" property="authDimId" jdbcType="DECIMAL"/>
+        <result column="doc_type_id" property="docTypeId" jdbcType="DECIMAL"/>
+        <result column="auth_type_code" property="authTypeCode" jdbcType="VARCHAR"/>
+        <result column="source_match_table" property="sourceMatchTable" jdbcType="VARCHAR"/>
+        <result column="source_match_field" property="sourceMatchField" jdbcType="VARCHAR"/>
+        <result column="object_version_number" property="objectVersionNumber" jdbcType="DECIMAL"/>
+        <result column="creation_date" property="creationDate" jdbcType="DATE"/>
+        <result column="created_by" property="createdBy" jdbcType="DECIMAL"/>
+        <result column="last_updated_by" property="lastUpdatedBy" jdbcType="DECIMAL"/>
+        <result column="last_update_date" property="lastUpdateDate" jdbcType="DATE"/>
+    </resultMap>
+
+    <select id="listAuthDim" parameterType="java.lang.Long" resultType="org.hzero.iam.domain.entity.DocTypeAuthDim">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        SELECT
+            hdtad.auth_dim_id,
+            hdtad.doc_type_id,
+            hdtad.auth_type_code,
+            hdtad.rule_type,
+            hdtad.source_match_table,
+            hdtad.source_match_field,
+            hdtad.object_version_number,
+            hdtdt.dimension_name,
+            hdtd.dimension_type
+         FROM hiam_doc_type_auth_dim hdtad
+         JOIN hiam_doc_type_dimension hdtd ON (hdtad.auth_type_code = hdtd.dimension_code AND hdtd.enabled_flag = 1)
+         LEFT JOIN hiam_doc_type_dimension_tl hdtdt ON hdtd.dimension_id = hdtdt.dimension_id AND hdtdt.lang = #{lang}
+        WHERE hdtad.doc_type_id = #{docTypeId,jdbcType=BIGINT}
+        <if test="tenantId != null">
+            AND EXISTS(SELECT 1 FROM hiam_doc_type hdt WHERE hdt.tenant_id = #{tenantId} AND hdt.doc_type_id = #{docTypeId})
+        </if>
+    </select>
+</mapper>

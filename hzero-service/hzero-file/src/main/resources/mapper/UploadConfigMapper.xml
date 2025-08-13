@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.file.infra.mapper.UploadConfigMapper">
+
+    <select id="listUploadConfig" resultType="org.hzero.file.domain.entity.UploadConfig">
+        SELECT
+            upload_config_id,
+            tenant_id,
+            bucket_name,
+            directory,
+            content_type,
+            storage_unit,
+            storage_size,
+            file_format,
+            object_version_number
+        FROM
+            hfle_upload_config
+        WHERE
+            tenant_id = #{tenantId}
+    </select>
+
+    <select id="selectByTenantId" resultType="org.hzero.file.domain.entity.UploadConfig">
+        SELECT
+            upload_config_id,
+            tenant_id,
+            bucket_name,
+            directory,
+            content_type,
+            storage_unit,
+            storage_size,
+            file_format,
+            object_version_number
+        FROM
+            hfle_upload_config
+        WHERE
+            tenant_id = #{tenantId}
+        AND bucket_name = #{bucketName}
+        AND directory = #{directory}
+    </select>
+</mapper>

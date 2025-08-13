@@ -1,0 +1,579 @@
+@import '../../assets/styles/variables.less';
+@import '../../assets/styles/mixins.less';
+@import '../DefaultLayout/mixins.less';
+
+/**
+ * can place any where, but must not too deep
+ */
+.side-layout-header-search(
+  @hzeroSideLayoutPrefix: hzero-side-layout,
+  @hzeroSideLayoutColor: #ccc,
+  @hzeroSideLayoutSearchBgc: #425370,
+  @hzeroSideLayoutSearchActiveBgc: #fff,
+  @hzeroSideLayoutSearchHeight: 28px,
+  @hzeroSideLayoutSearchHistoryMaxHeight: 80px,
+  @hzeroSideLayoutSearchActiveColor: #333,
+  @hzeroSideLayoutSearchHistoryColor: #dfe2e7,
+  @hzeroSideLayoutSearchHistoryBGC: #616f88,
+  @hzeroSideLayoutSearchColor: #a5adbb
+) {
+  .@{hzeroSideLayoutPrefix}-side-search {
+    position: relative;
+
+    .@{hzeroSideLayoutPrefix}-side-search {
+      /* 层级变多一层, 覆盖原有样式 */
+
+      &-icon {
+        position: absolute;
+        height: 12px;
+        width: 12px;
+        top: 14px;
+        left: 30px;
+        background-image: url('../../assets/search.svg');
+        background-size: 12px;
+        background-repeat: no-repeat;
+        z-index: 1;
+      }
+
+      &-input {
+        background-color: @hzeroSideLayoutSearchBgc;
+        border-radius: 2px;
+        height: @hzeroSideLayoutSearchHeight;
+        margin: 7px 20px;
+        width: 180px;
+        cursor: text;
+        font-size: 12px;
+
+        > div {
+          background-color: transparent;
+          border: 0 none;
+          height: @hzeroSideLayoutSearchHeight;
+          padding-left: 22px; //由icon覆盖的区域
+          > div {
+            height: @hzeroSideLayoutSearchHeight;
+            line-height: @hzeroSideLayoutSearchHeight;
+
+            > :global(.ant-select-selection__placeholder) {
+              margin-top: -14px; // ant 的垂直居中
+              height: @hzeroSideLayoutSearchHeight;
+              line-height: @hzeroSideLayoutSearchHeight;
+              color: @hzeroSideLayoutColor;
+            }
+          }
+        }
+      }
+
+      &-history {
+        max-height: @hzeroSideLayoutSearchHistoryMaxHeight;
+        overflow: hidden;
+
+        &-title {
+          padding: 0 20px;
+          line-height: 22px;
+          margin: 2px;
+          color: @hzeroSideLayoutSearchColor;
+          font-size: 12px;
+        }
+
+        &-btn-clear {
+          border: 0;
+        }
+
+        &-content {
+          //搜索历史
+          display: flex;
+          flex-wrap: wrap;
+          padding: 0 20px;
+          list-style: none;
+          justify-items: start;
+          margin: 0;
+
+          > .ant-tag {
+            border: 0;
+            flex-shrink: 0;
+            line-height: 22px;
+            margin: 2px;
+            border-radius: 2px;
+            background-color: @hzeroSideLayoutSearchHistoryBGC;
+            color: @hzeroSideLayoutSearchHistoryColor;
+            font-size: 12px;
+            position: relative;
+
+            &:hover {
+              > i {
+                display: inline-block;
+              }
+            }
+
+            > .anticon-cross {
+              position: absolute;
+              border-radius: 50%;
+              display: none;
+              top: 5px;
+              right: 3px;
+              background-color: #eee;
+              color: #333;
+            }
+          }
+        }
+      }
+    }
+
+    &-focus {
+      background-color: transparent;
+
+      .@{hzeroSideLayoutPrefix}-side-search {
+        &-input {
+          background-color: @hzeroSideLayoutSearchActiveBgc;
+          color: @hzeroSideLayoutSearchActiveColor;
+          opacity: 1;
+        }
+      }
+    }
+  }
+}
+
+/**
+ * need place out, because it's document is divided
+ */
+.side-layout-header-search-global(
+  @hzeroSideLayoutPrefix: hzero-side-layout,
+  @hzeroSideLayoutActiveBgc:  @hzero-primary-color-2,
+  @hzeroSideLayoutActiveColor: #fff,
+  @hzeroSideLayoutSearchBgc: #425370
+) {
+  .@{hzeroSideLayoutPrefix}-side-search {
+    &-popover {
+      // 收起时 的搜索
+      .ant-popover-arrow {
+        display: none;
+      }
+
+      .ant-popover-inner {
+        margin-left: 12px;
+
+        &-content {
+          padding: 0;
+        }
+      }
+
+      .@{hzeroSideLayoutPrefix}-side-search {
+        background-color: @hzeroSideLayoutSearchBgc;
+
+        .@{hzeroSideLayoutPrefix}-side-search {
+          &-input {
+            background-color: @hzeroSideLayoutSearchBgc;
+            border-radius: 4px;
+            color: @hzeroSideLayoutActiveColor;
+            margin: 0;
+          }
+
+          &-icon {
+            position: absolute;
+            height: 12px;
+            width: 12px;
+            top: 8px;
+            left: 16px;
+            background-image: url('../../assets/search.svg');
+            background-size: 12px;
+            background-repeat: no-repeat;
+            z-index: 1;
+          }
+
+          &-focus {
+            //background-color:  @hzeroSideLayoutSearchBgc;
+
+            .@{hzeroSideLayoutPrefix}-side-search {
+              &-input {
+                opacity: 1;
+              }
+            }
+          }
+        }
+      }
+    }
+
+    &-select-wrap {
+      border-radius: 4px;
+
+      .ant-select-dropdown-menu {
+        &-item {
+          background-color: @hzeroSideLayoutSearchBgc;
+          color: @hzeroSideLayoutActiveColor;
+
+          &-active {
+            background-image: linear-gradient(
+              to right,
+              @hzeroSideLayoutSearchBgc,
+              @hzeroSideLayoutActiveBgc
+            );
+
+            &:hover {
+              background-image: linear-gradient(
+                to right,
+                @hzeroSideLayoutSearchBgc,
+                @hzeroSideLayoutActiveBgc
+              );
+            }
+          }
+
+          &:hover {
+            background-color: @hzeroSideLayoutSearchBgc;
+          }
+        }
+      }
+    }
+  }
+}
+
+/**
+ * need place parent collapsed or not
+ */
+.side-layout-header-search-collapsed
+  (
+  @hzeroSideLayoutPrefix: hzero-side-layout,
+  @hzeroSideLayoutSearchBgc: #425370
+) {
+  .@{hzeroSideLayoutPrefix}-side-search {
+    &-icon {
+      display: block;
+      position: absolute;
+      top: 16px;
+      left: 16px;
+      width: 32px;
+      height: 32px;
+      background-size: 14px;
+      background-position: center;
+      background-color: @hzeroSideLayoutSearchBgc;
+      background-repeat: no-repeat;
+      background-image: url('../../assets/search.svg');
+      border-radius: 4px;
+      cursor: pointer;
+    }
+  }
+}
+
+.side-layout(
+  @hzeroSideLayoutPrefix: hzero-side-layout,
+  @hzeroSideLayoutMenuWidth: 220px,
+  @hzeroSideLayoutMenuZIndex: 1300,
+  @hzeroSideLayoutMenuMaskZIndex: 1200,
+  @hzeroSideLayoutCollapsedWidth: 64px,
+  @hzeroSideLayoutMenuItemHeight: 42px,
+  @hzeroSideLayoutMenuItemFontSize: 14px,
+  @hzeroSideLayoutMenuItemContentHeight: 38px,
+  @hzeroSideLayoutMenuContentPadding:  @hzero-gutter-sm,
+  @hzeroSideLayoutMenuItemGutter:  @hzero-gutter-lg,
+  @hzeroSideLayoutMenuArrowSize: 8px,
+  @hzeroSideLayoutBgc:  @hzero-primary-color,
+  @hzeroSideLayoutActiveBgc:  @hzero-primary-color-2,
+  @hzeroSideLayoutColor: #ccc,
+  @hzeroSideLayoutActiveColor: #fff,
+  @hzeroSideLayoutCascaderMenuTop: 36px,
+  @hzeroSideLayoutCascaderMenuBottom: 0,
+  @hzeroSideLayoutSearchBgc: #425370,
+  @hzeroSideLayoutSearchActiveBgc: #fff,
+  @hzeroSideLayoutSearchHeight: 28px,
+  @hzeroSideLayoutSearchHistoryMaxHeight: 80px,
+  @hzeroSideLayoutSearchColor: #a5adbb,
+  @hzeroSideLayoutSearchActiveColor: #333,
+  @hzeroSideLayoutSearchHistoryColor: #dfe2e7,
+  @hzeroSideLayoutSearchHistoryBGC: #616f88,
+  @hzeroSideLayoutMenuTabGutter:  @hzero-gutter-md
+) {
+  .default-layout(@hzeroSideLayoutPrefix);
+
+  .@{hzeroSideLayoutPrefix}-nav-menu {
+    &-collapsed {
+      width: @hzeroSideLayoutCollapsedWidth;
+    }
+  }
+
+  .@{hzeroSideLayoutPrefix}-menu {
+    width: @hzeroSideLayoutMenuWidth;
+
+    &-spin {
+      display: block;
+      text-align: center;
+      position: relative;
+      top: 50%;
+    }
+
+    &-main {
+      height: @hzeroSideLayoutMenuItemHeight;
+      padding-top: (@hzeroSideLayoutMenuItemHeight - @hzeroSideLayoutMenuItemContentHeight) / 2;
+
+      &-content {
+        height: @hzeroSideLayoutMenuItemContentHeight;
+        line-height: @hzeroSideLayoutMenuItemContentHeight -
+          (@hzeroSideLayoutMenuContentPadding * 2);
+        position: relative;
+        padding: @hzeroSideLayoutMenuContentPadding @hzeroSideLayoutMenuItemGutter;
+        color: @hzeroSideLayoutColor;
+        display: flex;
+
+        &-title {
+          display: inline-block;
+          .text-over-flow();
+          .hzero-font-size(@hzeroSideLayoutMenuItemFontSize);
+        }
+
+        &::after {
+          display: inline-block;
+          content: ' ';
+          height: @hzeroSideLayoutMenuArrowSize;
+          width: @hzeroSideLayoutMenuArrowSize;
+          border-width: 1px 1px 0 0;
+          border-color: #c7c7cc;
+          border-style: solid;
+          transform: matrix(0.71, 0.71, -0.71, 0.71, 0, 0);
+          position: absolute;
+          top: (@hzeroSideLayoutMenuItemHeight - (@hzeroSideLayoutMenuArrowSize * 2 * 3 / 4)) / 2;
+          right: @hzeroSideLayoutMenuItemGutter;
+        }
+
+        &-icon {
+          display: inline-block;
+          width: 20px;
+          height: 12px;
+          padding-right: 8px;
+          /* 上对齐(和 title 高度不一致) */
+          vertical-align: top;
+        }
+      }
+
+      // 额外的效果
+
+      &-current /* 当前打开的菜单 */,
+      &-active /* 当前交互的菜单 */ {
+        .@{hzeroSideLayoutPrefix}-menu-main-content {
+          background-image: linear-gradient(
+            to right,
+            @hzeroSideLayoutBgc,
+            @hzeroSideLayoutActiveBgc
+          );
+          color: @hzeroSideLayoutActiveColor;
+
+          .@{hzeroSideLayoutPrefix}-menu-main-content {
+            color: @hzeroSideLayoutActiveColor;
+          }
+
+          &::after {
+            border-color: @hzeroSideLayoutActiveColor;
+          }
+        }
+      }
+
+      &-current {
+        .@{hzeroSideLayoutPrefix}-menu-main-content {
+          &::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 0;
+            border-left: 5px solid @hzero-primary-color-2;
+          }
+        }
+      }
+    }
+
+    &-side-casacader {
+      position: absolute;
+      background-color: @hzeroSideLayoutBgc;
+      background-image: none !important;
+      left: @hzeroSideLayoutMenuWidth;
+      width: @hzeroSideLayoutMenuWidth;
+      top: @hzeroSideLayoutCascaderMenuTop;
+      bottom: @hzeroSideLayoutCascaderMenuBottom;
+      display: none;
+      box-shadow: 2px 0 6px 0 lighten(#000, 30%);
+      z-index: @hzeroSideLayoutMenuZIndex;
+      overflow-y: auto;
+
+      &-content-wrap {
+        height: @hzeroSideLayoutMenuItemHeight;
+        padding-top: (@hzeroSideLayoutMenuItemHeight - @hzeroSideLayoutMenuItemContentHeight) / 2;
+      }
+
+      &-content {
+        height: @hzeroSideLayoutMenuItemContentHeight;
+        line-height: @hzeroSideLayoutMenuItemContentHeight -
+          (@hzeroSideLayoutMenuContentPadding * 2);
+        position: relative;
+        padding: @hzeroSideLayoutMenuContentPadding @hzeroSideLayoutMenuItemGutter;
+        color: @hzeroSideLayoutColor;
+        .text-over-flow();
+        .hzero-font-size(@hzeroSideLayoutMenuItemFontSize);
+
+        &-dir /* 目录 */ {
+          &::after {
+            display: inline-block;
+            content: ' ';
+            height: @hzeroSideLayoutMenuArrowSize;
+            width: @hzeroSideLayoutMenuArrowSize;
+            border-width: 1px 1px 0 0;
+            border-color: @hzeroSideLayoutColor;
+            border-style: solid;
+            transform: matrix(0.71, 0.71, -0.71, 0.71, 0, 0);
+            position: absolute;
+            top: (@hzeroSideLayoutMenuItemHeight - @hzeroSideLayoutMenuArrowSize) / 2;
+            right: @hzeroSideLayoutMenuItemGutter;
+          }
+        }
+
+        &-menu {
+          cursor: pointer;
+        }
+
+        &-active,
+        &-current {
+          background-image: linear-gradient(
+            to right,
+            @hzeroSideLayoutBgc,
+            @hzeroSideLayoutActiveBgc
+          );
+          color: @hzeroSideLayoutActiveColor;
+
+          &.@{hzeroSideLayoutPrefix}-side-casacader-content-dir {
+            &::after {
+              border-color: @hzeroSideLayoutActiveColor;
+            }
+          }
+        }
+      }
+
+      &-mask {
+        &-left-top,
+        &-right {
+          background-color: rgba(@hzeroSideLayoutBgc, 0.3);
+        }
+
+        &-left-top {
+          z-index: @hzeroSideLayoutMenuMaskZIndex;
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: @hzeroSideLayoutMenuWidth;
+          height: @hzeroSideLayoutCascaderMenuTop;
+        }
+
+        &-right {
+          z-index: @hzeroSideLayoutMenuMaskZIndex;
+          position: fixed;
+          top: 0;
+          right: 0;
+          bottom: 0;
+          left: @hzeroSideLayoutMenuWidth;
+        }
+      }
+
+      &-active {
+        display: block;
+      }
+    }
+  }
+  .side-layout-header-search(
+    @hzeroSideLayoutPrefix,
+    @hzeroSideLayoutColor,
+    @hzeroSideLayoutSearchBgc,
+    @hzeroSideLayoutSearchActiveBgc,
+    @hzeroSideLayoutSearchHeight,
+    @hzeroSideLayoutSearchHistoryMaxHeight,
+    @hzeroSideLayoutSearchActiveColor,
+    @hzeroSideLayoutSearchHistoryColor,
+    @hzeroSideLayoutSearchHistoryBGC,
+    @hzeroSideLayoutSearchColor
+  );
+  .@{hzeroSideLayoutPrefix}-container-collapsed {
+    .@{hzeroSideLayoutPrefix}-menu {
+      width: @hzeroSideLayoutCollapsedWidth;
+
+      &-main-content {
+        padding-left: 16px;
+
+        &-title {
+          display: none;
+        }
+      }
+    }
+
+    .side-layout-header-search-collapsed(@hzeroSideLayoutPrefix, @hzeroSideLayoutSearchBgc);
+
+    .@{hzeroSideLayoutPrefix}-header-container {
+      .@{hzeroSideLayoutPrefix}-header-left {
+        .@{hzeroSideLayoutPrefix}-header-sign {
+          width: @hzeroSideLayoutCollapsedWidth;
+
+          .@{hzeroSideLayoutPrefix}-header-trail-img-icon {
+            margin-right: 4px;
+          }
+
+          .@{hzeroSideLayoutPrefix}-header-sign-title {
+            display: none;
+          }
+        }
+        .@{hzeroSideLayoutPrefix}-header-logo-sign,
+        .@{hzeroSideLayoutPrefix}-header-log {
+          margin-left: @hzeroSideLayoutMenuItemGutter;
+        }
+      }
+    }
+  }
+
+  .side-layout-header-search-global(
+    @hzeroSideLayoutPrefix,
+    @hzeroSideLayoutActiveBgc,
+    @hzeroSideLayoutActiveColor,
+    @hzeroSideLayoutSearchBgc
+  );
+
+  /* 覆盖 MenuTabs, Trigger Icon */
+  .@{hzeroSideLayoutPrefix}-container {
+    .@{hzeroSideLayoutPrefix}-body {
+      .@{hzeroSideLayoutPrefix}-collapsed-trigger {
+        top: -34px;
+        color: @hzeroSideLayoutActiveColor;
+      }
+
+      .@{hzeroSideLayoutPrefix}-content-container {
+        > .ant-tabs.ant-tabs-top {
+          > .ant-tabs-bar {
+            padding-left: 0;
+
+            > .ant-tabs-nav-container {
+              > .ant-tabs-nav-wrap {
+                > .ant-tabs-nav-scroll {
+                  > .ant-tabs-nav {
+                    > div {
+                      > .ant-tabs-tab {
+                        border-radius: 4px 4px 0 0;
+                        margin: 3px 2px 0 0;
+                        padding-left: @hzeroSideLayoutMenuTabGutter;
+                        padding-right: @hzeroSideLayoutMenuTabGutter;
+
+                        &:first-child {
+                          margin: 3px 2px 0 3px;
+                        }
+
+                        &:last-child {
+                          margin-right: 3px;
+                        }
+
+                        &::before,
+                        &::after /* 去除梯形 */ {
+                          display: none;
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

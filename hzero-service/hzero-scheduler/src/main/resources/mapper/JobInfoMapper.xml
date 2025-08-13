@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.scheduler.infra.mapper.JobInfoMapper">
+    <!-- 可根据自己的需求，是否要使用 -->
+    <resultMap id="BaseResultMap" type="org.hzero.scheduler.domain.entity.JobInfo">
+        <result column="job_id" property="jobId" jdbcType="DECIMAL"/>
+        <result column="executor_id" property="executorId" jdbcType="DECIMAL"/>
+        <result column="job_code" property="jobCode" jdbcType="VARCHAR"/>
+        <result column="job_cron" property="jobCron" jdbcType="VARCHAR"/>
+        <result column="description" property="description" jdbcType="VARCHAR"/>
+        <result column="alarm_email" property="alarmEmail" jdbcType="VARCHAR"/>
+        <result column="executor_strategy" property="executorStrategy" jdbcType="VARCHAR"/>
+        <result column="job_param" property="jobParam" jdbcType="VARCHAR"/>
+        <result column="fail_strategy" property="failStrategy" jdbcType="VARCHAR"/>
+        <result column="glue_type" property="glueType" jdbcType="VARCHAR"/>
+        <result column="start_date" property="startDate" jdbcType="DATE"/>
+        <result column="end_date" property="endDate" jdbcType="DATE"/>
+        <result column="tenant_id" property="tenantId" jdbcType="DECIMAL"/>
+        <result column="parent_id" property="parentId" jdbcType="DECIMAL"/>
+        <result column="object_version_number" property="objectVersionNumber" jdbcType="DECIMAL"/>
+        <result column="created_by" property="createdBy" jdbcType="DECIMAL"/>
+        <result column="creation_date" property="creationDate" jdbcType="DATE"/>
+        <result column="last_updated_by" property="lastUpdatedBy" jdbcType="DECIMAL"/>
+        <result column="last_update_date" property="lastUpdateDate" jdbcType="DATE"/>
+    </resultMap>
+
+    <select id="listJobInfo" parameterType="org.hzero.scheduler.api.dto.JobInfoQueryDTO" resultType="org.hzero.scheduler.domain.entity.JobInfo">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()" />
+        SELECT
+            hji.job_id,
+            hji.job_id task_id,
+            he.executor_code,
+            het.executor_name,
+            hji.job_code,
+            hji.job_cron,
+            hji.description,
+            hji.glue_type,
+            hji.job_handler,
+            hji.cycle_flag,
+            hji.tenant_id,
+            ht.tenant_name,
+            hji.parent_id,
+            qt.TRIGGER_STATE job_status,
+            hji.object_version_number,
+            (case when hcr.job_id is null then 'JOB' else 'REQUEST' end) source_flag
+        FROM
+            hsdr_job_info hji
+        JOIN hsdr_executor he ON he.executor_id = hji.executor_id
+        LEFT JOIN hsdr_executor_tl het ON het.executor_id = he.executor_id AND het.lang = #{lang}
+        JOIN hpfm_tenant_tl ht ON ht.tenant_id = hji.tenant_id AND ht.lang = #{lang}
+        LEFT JOIN qrtz_triggers qt ON qt.TRIGGER_NAME =  CONCAT('',hji.job_id) AND qt.TRIGGER_GROUP = CONCAT('',hji.tenant_id)
+        LEFT JOIN hsdr_conc_request hcr ON hji.job_id = hcr.job_id
+        WHERE 1 = 1
+        <if test="jobId != null">
+            AND hji.job_id = #{jobId}
+        </if>
+        <if test="taskId != null">
+            AND hji.job_id = #{taskId}
+        </if>
+        <if test="executorCode != null and executorCode != ''">
+            <bind name="executorCodeLike" value="'%' + executorCode + '%'"/>
+            AND he.executor_code LIKE #{executorCodeLike}
+        </if>
+        <if test="executorName != null and executorName != ''">
+            <bind name="executorNameLike" value="'%' + executorName + '%'"/>
+            AND het.executor_name LIKE #{executorNameLike}
+        </if>
+        <if test="tenantId != null">
+            AND hji.tenant_id = #{tenantId}
+        </if>
+        <if test="glueType != null and glueType != ''">
+            AND hji.glue_type = #{glueType}
+        </if>
+        <if test="jobCode != null and jobCode != ''">
+            <bind name="jobCodeLike" value="'%' + jobCode + '%'"/>
+            AND hji.job_code LIKE #{jobCodeLike}
+        </if>
+        <if test="jobHandler != null and jobHandler != ''">
+            <bind name="jobHandlerLike" value="'%' + jobHandler + '%'"/>
+            AND hji.job_handler LIKE #{jobHandlerLike}
+        </if>
+        <if test="description != null and description != ''">
+            <bind name="descriptionLike" value="'%' + description + '%'"/>
+            AND hji.description LIKE #{descriptionLike}
+        </if>
+        AND ( 1 = 1
+        <if test="triggerStatus != null">
+            AND qt.TRIGGER_STATE IN
+            <foreach collection="triggerStatus" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="includeNull == true">
+            OR qt.TRIGGER_STATE IS null
+        </if>
+        <if test="sourceFlag == 'JOB'">
+            AND hcr.job_id IS NULL
+        </if>
+        <if test="sourceFlag == 'REQUEST'">
+            AND hcr.job_id IS NOT NULL
+        </if>
+        )
+    </select>
+
+    <select id="detailJobInfo" resultType="org.hzero.scheduler.domain.entity.JobInfo">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()" />
+        SELECT
+            hji.job_id,
+            hji.executor_id,
+			het.executor_name,
+            hji.job_code,
+            hji.job_cron,
+            hji.description,
+            hji.job_param,
+            hji.alarm_email,
+            hji.executor_strategy,
+            hji.fail_strategy,
+            hji.strategy_param,
+            hji.glue_type,
+            hji.job_handler,
+            hji.cycle_flag,
+            hji.start_date,
+            hji.end_date,
+            hji.tenant_id,
+            ht.tenant_name,
+            hji.parent_id,
+            hji.serial,
+            hji.init_flag,
+            hji.object_version_number
+        FROM
+            hsdr_job_info hji
+        JOIN hpfm_tenant_tl ht ON ht.tenant_id = hji.tenant_id AND ht.lang = #{lang}
+        JOIN hsdr_executor he ON he.executor_id = hji.executor_id
+        LEFT JOIN hsdr_executor_tl het ON het.executor_id = he.executor_id AND het.lang = #{lang}
+        WHERE hji.job_id = #{jobId}
+        <if test="tenantId != null">
+            AND hji.tenant_id = #{tenantId}
+        </if>
+    </select>
+</mapper>

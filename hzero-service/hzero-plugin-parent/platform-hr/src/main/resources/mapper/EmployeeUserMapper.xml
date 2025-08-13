@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.plugin.platform.hr.infra.mapper.EmployeeUserMapper">
+
+    <select id="selectEmployeeUserDTO" resultType="org.hzero.plugin.platform.hr.api.dto.EmployeeUserDTO">
+        SELECT
+            heu.employee_user_id,
+            heu.tenant_id,
+            heu.employee_id,
+            heu.user_id,
+            heu.object_version_number,
+            he.name employeeName,
+            he.employee_num,
+            iu.login_name,
+            iu.real_name,
+            iu.organization_id
+        FROM
+            hpfm_employee_user heu
+            LEFT JOIN hpfm_employee he ON heu.employee_id = he.employee_id
+            LEFT JOIN iam_user iu ON heu.user_id = iu.id
+        <where>
+            heu.tenant_id = #{tenantId}
+            <if test="employeeId != null ">
+                AND heu.employee_id = #{employeeId}
+            </if>
+        </where>
+    </select>
+    <select id="selectByPrimaryKeys" resultType="org.hzero.plugin.platform.hr.api.dto.EmployeeUserDTO">
+        select
+            heu.employee_user_id,
+            heu.tenant_id,
+            heu.employee_id,
+            heu.user_id,
+            he.employee_num
+        from
+            hpfm_employee_user heu
+            join hpfm_employee he on he.employee_id = heu.employee_id
+        where
+            heu.employee_user_id in
+        <foreach collection="ids" open="(" close=")" separator="," item="id">
+            #{id}
+        </foreach>
+    </select>
+    <select id="getEmployee" resultType="org.hzero.plugin.platform.hr.api.dto.EmployeeUserDTO">
+        select
+            heu.employee_user_id,
+            heu.tenant_id,
+            heu.employee_id,
+            heu.user_id,
+            he.employee_num,
+            he.name employee_name,
+            he.enabled_flag,
+            he.name_en,
+            he.email,
+            he.mobile,
+            he.gender,
+            he.cid,
+            he.quick_index,
+            he.phoneticize,
+            he.status
+        from
+            hpfm_employee_user heu
+                join hpfm_employee he on he.employee_id = heu.employee_id
+                <if test="enabledFlag != null">
+                    and he.enabled_flag = #{enabledFlag}
+                </if>
+        where
+            heu.tenant_id = #{tenantId}
+            and heu.user_id = #{userId}
+    </select>
+    <select id="listEmployee" resultType="org.hzero.plugin.platform.hr.api.dto.EmployeeUserDTO">
+        select
+            heu.employee_user_id,
+            heu.tenant_id,
+            heu.employee_id,
+            heu.user_id,
+            he.employee_num
+        from
+            hpfm_employee_user heu
+                join hpfm_employee he on he.employee_id = heu.employee_id
+        where
+            heu.tenant_id = #{tenantId}
+          and heu.user_id IN
+        <foreach collection="userIdList" open="(" close=")" separator="," item="userId">
+            #{userId}
+        </foreach>
+    </select>
+    <select id="selectEmpUsersByEmpNum" resultType="org.hzero.plugin.platform.hr.api.dto.EmployeeUserDTO">
+        SELECT
+            heu.user_id,
+            iu.real_name,
+            iu.email,
+            iu.phone,
+            iu.international_tel_code,
+            iu.language,
+            iu.organization_id
+        FROM
+        hpfm_employee_user heu
+        LEFT JOIN hpfm_employee he ON heu.employee_id = he.employee_id
+        LEFT JOIN iam_user iu ON heu.user_id = iu.id
+        WHERE
+            heu.tenant_id = #{tenantId}
+            AND he.employee_num IN
+            <foreach collection="employeeNums" index="index" open="(" close=")" separator="," item="item">
+                #{item}
+            </foreach>
+    </select>
+
+    <!-- 通过用户登录名查询用户信息 -->
+    <select id="selectUsersByLoginName" resultType="org.hzero.plugin.platform.hr.api.dto.UserDTO">
+        SELECT
+            iu.id,
+            iu.login_name,
+            iu.organization_id
+        FROM iam_user iu
+        WHERE iu.user_type = 'P'
+        AND iu.id > 0
+        AND iu.is_locked = 0
+        AND iu.is_enabled = 1
+        AND EXISTS (
+            SELECT 'x'
+            FROM iam_role ir
+            JOIN iam_member_role imr ON imr.role_id = ir.id
+            WHERE ir.is_enabled = 1
+            AND ir.h_tenant_id = #{organizationId}
+            AND imr.member_type = 'user'
+            AND imr.member_id = iu.id
+        )
+        AND NOT EXISTS (
+            SELECT 'x'
+            FROM hpfm_employee_user heu
+            WHERE heu.tenant_id = #{organizationId}
+            AND heu.user_id = iu.id
+        )
+        AND iu.login_name IN
+        <foreach item="loginName" index="index" collection="loginNames" open="(" separator="," close=")">
+            #{loginName}
+        </foreach>
+        AND iu.organization_id = #{organizationId}
+    </select>
+
+    <select id="selectOpenUserIdsByUserIds" resultType="java.lang.String">
+        SELECT
+            hhse.userid
+        FROM
+            hpfm_hr_sync_employee hhse
+        WHERE
+            EXISTS (
+            SELECT
+                1
+            FROM
+                hpfm_hr_sync_dept_employee hhsde,
+                hpfm_hr_sync_dept hhsd,
+                hpfm_employee he,
+                hpfm_employee_user heu,
+                iam_user iu
+            WHERE
+                hhsde.sync_employee_id = hhse.sync_employee_id
+                AND hhsd.sync_dept_id = hhsde.sync_dept_id
+                AND he.employee_num = hhse.employee_num
+                AND he.tenant_id = hhse.tenant_id
+                AND heu.employee_id = he.employee_id
+                AND iu.id = heu.user_id
+                AND iu.is_enabled = 1
+                AND iu.id IN
+                <foreach collection="ids" item="userId" separator="," open="(" close=")">
+                    #{userId}
+                </foreach>
+                AND he.enabled_flag = 1
+                AND hhse.sync_type_code = #{thirdPlatformType}
+            )
+    </select>
+</mapper>

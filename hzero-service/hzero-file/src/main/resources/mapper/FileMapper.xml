@@ -1,0 +1,283 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.file.infra.mapper.FileMapper">
+    <!-- 可根据自己的需求，是否要使用 -->
+    <resultMap id="BaseResultMap" type="org.hzero.file.domain.entity.File">
+        <result column="file_id" property="fileId" jdbcType="DECIMAL"/>
+        <result column="attachment_uuid" property="attachmentUuid" jdbcType="VARCHAR"/>
+        <result column="file_url" property="fileUrl" jdbcType="VARCHAR"/>
+        <result column="file_type" property="fileType" jdbcType="VARCHAR"/>
+        <result column="file_name" property="fileName" jdbcType="VARCHAR"/>
+        <result column="file_size" property="fileSize" jdbcType="DECIMAL"/>
+        <result column="bucket_name" property="bucketName" jdbcType="VARCHAR"/>
+        <result column="directory" property="directory" jdbcType="VARCHAR"/>
+        <result column="file_key" property="fileKey" jdbcType="VARCHAR"/>
+        <result column="tenant_id" property="tenantId" jdbcType="DECIMAL"/>
+        <result column="md5" property="md5" jdbcType="VARCHAR"/>
+        <result column="object_version_number" property="objectVersionNumber" jdbcType="DECIMAL"/>
+        <result column="creation_date" property="creationDate" jdbcType="DATE"/>
+        <result column="created_by" property="createdBy" jdbcType="DECIMAL"/>
+        <result column="last_updated_by" property="lastUpdatedBy" jdbcType="DECIMAL"/>
+        <result column="last_update_date" property="lastUpdateDate" jdbcType="DATE"/>
+    </resultMap>
+
+    <select id="listFile" resultType="org.hzero.file.domain.entity.File">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()" />
+        SELECT
+        hf.file_id,
+        hf.file_url,
+        hf.tenant_id,
+        hf.bucket_name,
+        hf.directory,
+        hf.attachment_uuid,
+        hf.file_key,
+        hf.file_type,
+        hf.file_name,
+        hf.file_size,
+        ht.tenant_name,
+        hf.creation_date,
+        hf.last_update_date,
+        hf.object_version_number,
+        iu.real_name,
+        hf.source_type,
+        hf.server_code,
+        hf.storage_code
+        FROM
+        hfle_file hf
+        LEFT JOIN hpfm_tenant_tl ht ON hf.tenant_id = ht.tenant_id AND ht.lang = #{lang}
+        LEFT JOIN iam_user iu ON hf.created_by = iu.id
+        WHERE 1 = 1
+        <if test="tenantId != null">
+            AND hf.tenant_id = #{tenantId}
+        </if>
+        <if test="bucketName != null and bucketName != ''">
+            <bind name="bucketNameLike" value="'%'+bucketName+'%'"/>
+            AND hf.bucket_name LIKE #{bucketNameLike}
+        </if>
+        <if test="directory != null and directory != ''">
+            <bind name="directoryLike" value="'%'+directory+'%'"/>
+            AND hf.directory LIKE #{directoryLike}
+        </if>
+        <if test="fileType != null and fileType != ''">
+            <bind name="fileTypeLike" value="'%'+fileType+'%'"/>
+            AND hf.file_type LIKE #{fileTypeLike}
+        </if>
+        <if test="fileFormat != null and fileFormat != ''">
+            <bind name="fileFormatLike" value="'%'+fileFormat"/>
+            AND hf.file_name LIKE #{fileFormatLike}
+        </if>
+        <if test="attachmentUUID != null and attachmentUUID != ''">
+            AND hf.attachment_uuid = #{attachmentUUID}
+        </if>
+        <if test="fileName != null and fileName != ''">
+            <bind name="fileNameLike" value="'%'+fileName+'%'"/>
+            AND hf.file_name LIKE #{fileNameLike}
+        </if>
+        <if test="fileMinSize != null">
+            AND hf.file_size &gt;= #{fileMinSize}
+        </if>
+        <if test="fileMaxSize != null">
+            AND hf.file_size &lt;= #{fileMaxSize}
+        </if>
+        <if test="realName != null and realName != ''">
+            <bind name="realNameLike" value="'%'+realName+'%'"/>
+            AND iu.real_name LIKE #{realNameLike}
+        </if>
+        <if test="fromCreateDate != null">
+            AND hf.creation_date &gt;= #{fromCreateDate}
+        </if>
+        <if test="toCreateDate != null">
+            AND hf.creation_date &lt;= #{toCreateDate}
+        </if>
+        <if test="sourceType != null and sourceType != ''">
+            AND hf.source_type = #{sourceType}
+        </if>
+        <if test="serverCode != null and serverCode != ''">
+            <bind name="serverCodeLike" value="'%'+serverCode+'%'"/>
+            AND hf.server_code LIKE #{serverCodeLike}
+        </if>
+    </select>
+
+    <select id="selectFileByAttachmentUUID" resultType="org.hzero.file.api.dto.FileDTO">
+        SELECT
+            hf.file_name,
+            hf.file_size,
+            hf.file_type,
+            hf.file_url,
+            hf.bucket_name,
+            hf.directory,
+            hf.created_by,
+            iu.login_name,
+            iu.real_name,
+            hf.creation_date
+        FROM
+            hfle_file hf
+        LEFT JOIN iam_user iu ON iu.id = hf.created_by
+        WHERE 1 = 1
+        <if test="bucketName != null and bucketName != ''">
+            AND hf.bucket_name = #{bucketName}
+        </if>
+        AND hf.attachment_uuid IN
+        <foreach collection="attachmentUUIDs" item="item" index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
+    <select id="selectFileUrlByAttachmentUUID" resultType="java.lang.String">
+        SELECT
+        hf.file_url
+        FROM
+        hfle_file hf
+        WHERE hf.tenant_id = #{tenantId}
+        <if test="bucketName != null and bucketName != ''">
+            AND hf.bucket_name = #{bucketName}
+        </if>
+        AND hf.attachment_uuid = #{attachmentUUID}
+    </select>
+
+    <select id="selectFileWithUrls" resultType="org.hzero.file.api.dto.FileDTO">
+        SELECT
+        hf.file_id,
+        hf.file_name,
+        hf.file_size,
+        hf.file_type,
+        hf.file_url,
+        hf.bucket_name,
+        hf.directory,
+        hf.creation_date
+        FROM
+        hfle_file hf
+        WHERE 1 = 1
+        <if test="bucketName != null and bucketName != ''">
+            AND hf.bucket_name = #{bucketName}
+        </if>
+        AND hf.file_url IN
+        <foreach collection="urls" item="item" index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
+    <select id="selectFileByUrls" resultType="org.hzero.file.api.dto.FileDTO">
+        SELECT
+        hf.file_id,
+        hf.file_name,
+        hf.file_size,
+        hf.file_type,
+        hf.file_url,
+        hf.bucket_name,
+        hf.directory,
+        hf.creation_date
+        FROM
+        hfle_file hf
+        WHERE
+            hf.tenant_id = #{tenantId}
+        <if test="attachmentUUID != null and attachmentUUID != ''">
+            AND hf.attachment_uuid = #{attachmentUUID}
+        </if>
+        <if test="bucketName != null and bucketName != ''">
+            AND hf.bucket_name = #{bucketName}
+        </if>
+        AND hf.file_url IN
+        <foreach collection="urls" item="item" index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
+    <select id="selectFileByUrlAndLock" resultMap="BaseResultMap">
+        SELECT
+        hf.file_name,
+        hf.file_id,
+        hf.attachment_uuid,
+        hf.file_url,
+        hf.file_type,
+        hf.file_name,
+        hf.file_size,
+        hf.bucket_name,
+        hf.directory,
+        hf.file_key,
+        hf.tenant_id,
+        hf.object_version_number
+        FROM
+        hfle_file hf
+        WHERE hf.tenant_id = #{tenantId}
+        <if test="bucketName != null and bucketName != ''">
+            AND hf.bucket_name = #{bucketName}
+        </if>
+        AND hf.file_url = #{fileUrl}
+    </select>
+
+    <select id="selectFileCountByAttachmentUUID" resultType="java.lang.Integer">
+        SELECT
+        COUNT(*)
+        FROM
+        hfle_file hf
+        WHERE 1 = 1
+        <if test="bucketName != null and bucketName != ''">
+            AND hf.bucket_name = #{bucketName}
+        </if>
+        AND hf.attachment_uuid = #{attachmentUUID}
+    </select>
+
+    <select id="selectFileCountByAttachmentUuidAndLock" resultType="java.lang.Integer">
+        SELECT
+        COUNT(*)
+        FROM
+        hfle_file hf
+        WHERE hf.tenant_id = #{tenantId}
+        <if test="bucketName != null and bucketName != ''">
+            AND hf.bucket_name = #{bucketName}
+        </if>
+        AND hf.attachment_uuid = #{attachmentUUID}
+    </select>
+
+    <select id="selectFileSizeByUrl" resultType="java.lang.Long">
+        SELECT
+        SUM(hf.file_size) file_size
+        FROM
+        hfle_file hf
+        WHERE hf.tenant_id = #{tenantId}
+        <if test="bucketName != null and bucketName != ''">
+            AND hf.bucket_name = #{bucketName}
+        </if>
+        <if test="attachmentUUID != null and attachmentUUID != ''">
+            AND hf.attachment_uuid = #{attachmentUUID}
+        </if>
+        AND hf.file_url = #{url}
+    </select>
+
+    <delete id="deleteFileByUrls">
+        DELETE
+        FROM
+        hfle_file
+        WHERE tenant_id = #{tenantId}
+        <if test="bucketName != null and bucketName != ''">
+            AND bucket_name = #{bucketName}
+        </if>
+        AND attachment_uuid = #{attachmentUUID}
+        AND file_url IN
+        <foreach collection="urls" item="item" index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+
+    <delete id="deleteFileByAttachmentUUID">
+        DELETE
+        FROM
+        hfle_file
+        WHERE attachment_uuid = #{attachmentUUID}
+        AND tenant_id = #{tenantId}
+        <if test="bucketName != null and bucketName != ''">
+            AND bucket_name = #{bucketName}
+        </if>
+    </delete>
+
+    <select id="sumFileSizeByTenantId" resultMap="BaseResultMap">
+        SELECT
+            SUM(hf.file_size) file_size,
+            hf.tenant_id
+        FROM
+        	hfle_file hf
+        GROUP BY hf.tenant_id
+    </select>
+
+</mapper>

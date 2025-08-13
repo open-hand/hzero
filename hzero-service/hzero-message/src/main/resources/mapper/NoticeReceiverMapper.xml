@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.hzero.message.infra.mapper.NoticeReceiverMapper">
+
+ 	<select id="listReceiveRecordPage" resultType="org.hzero.message.domain.entity.NoticeReceiver">
+ 		SELECT
+			hnrtmp.receiver_type_code,
+			hnrtmp.receiver_source_id,
+			hnrtmp.tenant_id,
+			case
+     			when hnrtmp.receiver_type_code = 'UNIT' then hu.unit_name
+		 		when hnrtmp.receiver_type_code = 'USER_GROUP' then hug.group_name
+		 		when hnrtmp.receiver_type_code = 'USER' then iu.real_name
+		 		when hnrtmp.receiver_type_code = 'TENANT' then ht.tenant_name
+		 		when hnrtmp.receiver_type_code = 'ROLE' then ir.name
+  			end  receiver_source_name
+		FROM (SELECT
+				hnr.receiver_type_code,
+				hnr.receiver_source_id,
+				hnr.tenant_id
+			FROM hmsg_notice_receiver hnr 
+			WHERE hnr.published_id IN
+        		<foreach collection="publishedIds" item="publishedId" open="(" close=")" separator=",">
+           			 #{publishedId}
+        		</foreach>
+			GROUP BY hnr.receiver_type_code,
+					 hnr.receiver_source_id,
+					 hnr.tenant_id
+			) 	hnrtmp
+			LEFT JOIN hiam_user_group hug ON hnrtmp.receiver_type_code = 'USER_GROUP' and hnrtmp.receiver_source_id = hug.user_group_id
+			LEFT JOIN hpfm_unit hu ON hnrtmp.receiver_type_code = 'UNIT' and hnrtmp.receiver_source_id = hu.unit_id
+			LEFT JOIN iam_user iu ON hnrtmp.receiver_type_code = 'USER' and hnrtmp.receiver_source_id = iu.id
+			LEFT JOIN hpfm_tenant ht ON hnrtmp.receiver_type_code = 'TENANT' and hnrtmp.receiver_source_id = ht.tenant_id
+			LEFT JOIN iam_role ir ON hnrtmp.receiver_type_code = 'ROLE' and hnrtmp.receiver_source_id = ir.id
+    </select>
+    
+    <select id="listReceiveRecord" resultType="org.hzero.message.domain.entity.NoticeReceiver">
+        SELECT
+        	hnr.receiver_id,
+        	hnr.published_id,
+			hnr.receiver_type_code,
+			hnr.receiver_source_id,
+			hnr.tenant_id,
+			case
+       			when hnr.receiver_type_code = 'UNIT' then hu.unit_name
+       			when hnr.receiver_type_code = 'USER_GROUP' then hug.group_name
+			 	when hnr.receiver_type_code = 'USER' then iu.real_name
+			 	when hnr.receiver_type_code = 'TENANT' then ht.tenant_name
+			 	when hnrtmp.receiver_type_code = 'ROLE' then ir.name
+      		end  receiver_source_name 
+		FROM
+			hmsg_notice_receiver hnr
+			LEFT JOIN hiam_user_group hug ON hnr.receiver_type_code = 'USER_GROUP' and hnr.receiver_source_id = hug.user_group_id
+			LEFT JOIN hpfm_unit hu ON hnr.receiver_type_code = 'UNIT' and hnr.receiver_source_id = hu.unit_id
+			LEFT JOIN iam_user iu ON hnr.receiver_type_code = 'USER' and hnr.receiver_source_id = iu.id
+			LEFT JOIN hpfm_tenant ht ON hnr.receiver_type_code = 'TENANT' and hnr.receiver_source_id = ht.tenant_id
+			LEFT JOIN iam_role ir ON hnrtmp.receiver_type_code = 'ROLE' and hnrtmp.receiver_source_id = ir.id
+        WHERE hnr.published_id = #{publishedId}
+    </select>
+</mapper>

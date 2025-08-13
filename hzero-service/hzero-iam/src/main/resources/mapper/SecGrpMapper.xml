@@ -1,0 +1,411 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.iam.infra.mapper.SecGrpMapper">
+    <!-- 可根据自己的需求，是否要使用 -->
+    <resultMap id="BaseResultMap" type="org.hzero.iam.domain.entity.SecGrp">
+        <result column="sec_grp_id" property="secGrpId" jdbcType="DECIMAL"/>
+        <result column="sec_grp_code" property="secGrpCode" jdbcType="VARCHAR"/>
+        <result column="sec_grp_name" property="secGrpName" jdbcType="VARCHAR"/>
+        <result column="tenant_id" property="tenantId" jdbcType="DECIMAL"/>
+        <result column="sec_grp_level" property="secGrpLevel" jdbcType="VARCHAR"/>
+        <result column="enabled_flag" property="enabledFlag" jdbcType="DECIMAL"/>
+        <result column="remark" property="remark" jdbcType="VARCHAR"/>
+        <result column="object_version_number" property="objectVersionNumber" jdbcType="DECIMAL"/>
+        <result column="creation_date" property="creationDate" jdbcType="DATE"/>
+        <result column="created_by" property="createdBy" jdbcType="DECIMAL"/>
+        <result column="last_updated_by" property="lastUpdatedBy" jdbcType="DECIMAL"/>
+        <result column="last_update_date" property="lastUpdateDate" jdbcType="DATE"/>
+    </resultMap>
+    <resultMap id="RoleMap" type="org.hzero.iam.domain.entity.Role">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="code" property="code"/>
+        <result column="description" property="description"/>
+        <result column="fd_level" property="level"/>
+        <result column="h_tenant_id" property="tenantId"/>
+        <result column="h_inherit_role_id" property="inheritRoleId"/>
+        <result column="h_parent_role_id" property="parentRoleId"/>
+        <result column="h_parent_role_assign_level" property="parentRoleAssignLevel"/>
+        <result column="h_parent_role_assign_level_val" property="parentRoleAssignLevelValue"/>
+        <result column="h_level_path" property="levelPath"/>
+        <result column="h_inherit_level_path" property="inheritLevelPath"/>
+        <result column="object_version_number" property="objectVersionNumber"/>
+        <result column="tenant_num" property="tenantNum"/>
+        <result column="created_by_tenant_id" property="createdByTenantId"/>
+        <result column="created_by_tenant_num" property="createdByTenantNum"/>
+    </resultMap>
+
+    <sql id="BaseColumn">
+        hsg.sec_grp_id,
+        hsg.sec_grp_code,
+        (case when hsg_tl.sec_grp_name is not null then hsg_tl.sec_grp_name else hsg.sec_grp_name end) sec_grp_name,
+        hsg.tenant_id,
+        hsg.sec_grp_level,
+        hsg.role_id,
+        hsg.enabled_flag,
+        (case when hsg_tl.remark is not null then hsg_tl.remark else hsg.remark end) remark,
+        hsg.draft_flag,
+        hsg.object_version_number
+    </sql>
+
+    <!--  查询安全组详细  -->
+    <select id="selectDetail" resultType="org.hzero.iam.domain.entity.SecGrp">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        SELECT
+            irt.name AS create_role_name,
+            httl.tenant_name,
+            <if test="currentRoleId != null">
+                case
+                    when hsg.role_id = #{currentRoleId} then 'self'
+                    when ir.h_parent_role_id = #{currentRoleId} then 'children'
+                    when irp.id is not null then 'parent'
+                    else null
+                end as sec_grp_source,
+            </if>
+            <include refid="BaseColumn" />
+        FROM hiam_sec_grp hsg
+        JOIN iam_role ir ON hsg.role_id =  ir.id
+        LEFT JOIN iam_role_tl irt ON irt.id = ir.id and irt.lang = #{lang}
+        LEFT JOIN hiam_sec_grp_tl hsg_tl ON hsg.sec_grp_id = hsg_tl.sec_grp_id and hsg_tl.lang = #{lang}
+        LEFT JOIN hpfm_tenant_tl httl ON hsg.tenant_id = httl.tenant_id AND httl.lang = #{lang}
+        LEFT JOIN iam_role_permission irp ON (
+            irp.permission_id = hsg.sec_grp_id AND irp.role_id = hsg.role_id AND irp.type = 'SG'
+        )
+        WHERE hsg.sec_grp_id = #{secGrpId}
+    </select>
+
+    <!-- 查询当前角色创建的安全组 -->
+    <select id="selectRoleCreatedSecGrp" resultType="org.hzero.iam.domain.entity.SecGrp">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        SELECT
+            httl.tenant_name,
+            irt.name AS create_role_name,
+            'self'AS sec_grp_source,
+            <include refid="BaseColumn" />
+        FROM hiam_sec_grp hsg
+        LEFT JOIN iam_role_tl irt ON hsg.role_id =  irt.id and irt.lang = #{lang}
+        LEFT JOIN hiam_sec_grp_tl hsg_tl ON hsg.sec_grp_id = hsg_tl.sec_grp_id and hsg_tl.lang = #{lang}
+        LEFT JOIN hpfm_tenant_tl httl ON hsg.tenant_id = httl.tenant_id and httl.lang = #{lang}
+        WHERE hsg.draft_flag = 0
+        AND hsg.role_id = #{currentRoleId}
+        <if test="tenantId != null">
+            and hsg.tenant_id = #{tenantId}
+        </if>
+        <if test="secGrpCode != null and secGrpCode != ''">
+            <bind name="secGrpCodeLike" value="'%' + secGrpCode + '%'"/>
+            and hsg.sec_grp_code like #{secGrpCodeLike}
+        </if>
+        <if test="secGrpName != null and secGrpName != ''">
+            <bind name="secGrpNameLike" value="'%' + secGrpName + '%'"/>
+            and hsg.sec_grp_name like #{secGrpNameLike}
+        </if>
+    </select>
+
+    <!-- 查询子角色创建的安全组 -->
+    <select id="selectChildCreatedSecGrp" resultType="org.hzero.iam.domain.entity.SecGrp">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        SELECT
+            httl.tenant_name,
+            irt.name AS create_role_name,
+            'children'AS sec_grp_source,
+            <include refid="BaseColumn" />
+        FROM hiam_sec_grp hsg
+        JOIN iam_role ir on ir.id = hsg.role_id and ir.fd_level = hsg.sec_grp_level
+        LEFT JOIN iam_role_tl irt ON ir.id = irt.id and irt.lang = #{lang}
+        LEFT JOIN hiam_sec_grp_tl hsg_tl ON hsg.sec_grp_id = hsg_tl.sec_grp_id and hsg_tl.lang = #{lang}
+        LEFT JOIN hpfm_tenant_tl httl ON hsg.tenant_id = httl.tenant_id and httl.lang = #{lang}
+        WHERE hsg.draft_flag = 0
+        AND EXISTS (
+        SELECT 1
+        FROM iam_role ir_in
+        where ir_in.id = #{currentRoleId}
+        and ir.h_level_path like concat(ir_in.h_level_path, '|%')
+        )
+        <if test="tenantId != null">
+            and hsg.tenant_id = #{tenantId}
+        </if>
+        <if test="secGrpCode != null and secGrpCode != ''">
+            <bind name="secGrpCodeLike" value="'%' + secGrpCode + '%'"/>
+            and hsg.sec_grp_code like #{secGrpCodeLike}
+        </if>
+        <if test="secGrpName != null and secGrpName != ''">
+            <bind name="secGrpNameLike" value="'%' + secGrpName + '%'"/>
+            and hsg.sec_grp_name like #{secGrpNameLike}
+        </if>
+    </select>
+
+    <!-- 查询角色已分配的安全组 -->
+    <select id="selectRoleAssignedSecGrp" resultType="org.hzero.iam.domain.entity.SecGrp">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        SELECT
+            httl.tenant_name,
+            irt.name AS create_role_name,
+            'parent'AS sec_grp_source,
+            <include refid="BaseColumn" />
+        FROM hiam_sec_grp hsg
+        JOIN iam_role_permission irp ON (
+            irp.permission_id = hsg.sec_grp_id
+            AND irp.type = 'SG'
+            AND irp.role_id = #{currentRoleId}
+            AND (irp.h_create_flag = 'Y' OR irp.h_inherit_flag = 'Y')
+        )
+        LEFT JOIN iam_role_tl irt ON (hsg.role_id = irt.id and irt.lang = #{lang})
+        LEFT JOIN hiam_sec_grp_tl hsg_tl ON (hsg.sec_grp_id = hsg_tl.sec_grp_id and hsg_tl.lang = #{lang})
+        LEFT JOIN hpfm_tenant_tl httl ON hsg.tenant_id = httl.tenant_id and httl.lang = #{lang}
+        WHERE hsg.draft_flag = 0
+        AND hsg.enabled_flag = 1
+        <if test="secGrpCode!=null and secGrpCode!=''">
+            <bind name="secGrpCodeLike" value="'%'+ secGrpCode +'%'" />
+            AND hsg.sec_grp_code LIKE #{secGrpCodeLike}
+        </if>
+        <if test="secGrpName!=null and secGrpName!=''">
+            <bind name="secGrpNameLike" value="'%'+ secGrpName +'%'" />
+            AND hsg.sec_grp_name LIKE #{secGrpNameLike}
+        </if>
+    </select>
+
+    <!-- 查询角色可分配的安全组 -->
+    <select id="selectRoleAssignableSecGrp" resultType="org.hzero.iam.domain.entity.SecGrp">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+		SELECT
+            irt.name AS create_role_name,
+            <include refid="BaseColumn" />
+        FROM hiam_sec_grp hsg
+        LEFT JOIN iam_role_tl irt ON (hsg.role_id = irt.id and irt.lang = #{lang})
+        LEFT JOIN hiam_sec_grp_tl hsg_tl ON hsg.sec_grp_id = hsg_tl.sec_grp_id and hsg_tl.lang = #{lang}
+        WHERE hsg.enabled_flag = 1
+        AND hsg.draft_flag = 0
+        AND hsg.sec_grp_level = #{query.secGrpLevel}
+        <!-- 当前角色自建的安全组以及当前角色被分配的安全组 -->
+        AND (
+            hsg.role_id = #{query.currentRoleId}
+            OR
+            EXISTS (
+                SELECT 1
+                FROM iam_role_permission irp
+                WHERE irp.permission_id = hsg.sec_grp_id
+                AND irp.type = 'SG'
+                AND irp.role_id = #{query.currentRoleId}
+                AND (irp.h_create_flag = 'Y' OR irp.h_inherit_flag = 'Y')
+            )
+        )
+        <!-- 筛选过滤待分配角色已经分配了的安全组 -->
+        <if test="query.excludeAssigned">
+            AND NOT EXISTS (
+                SELECT 1
+                FROM iam_role_permission irp
+                WHERE irp.type = 'SG'
+                AND irp.permission_id = hsg.sec_grp_id
+                AND irp.role_id = #{roleId}
+                AND (irp.h_create_flag = 'Y' OR irp.h_inherit_flag = 'Y')
+            )
+        </if>
+        <if test="query.secGrpCode != null and query.secGrpCode != ''">
+            <bind name="secGrpCodeLike" value="'%'+ query.secGrpCode +'%'" />
+            and hsg.sec_grp_code like #{secGrpCodeLike}
+        </if>
+        <if test="query.secGrpName != null and query.secGrpName != ''">
+            <bind name="secGrpNameLike" value="'%'+ query.secGrpName +'%'" />
+            and hsg.sec_grp_name like #{secGrpNameLike}
+        </if>
+        <if test="query.secGrpIds != null and query.secGrpIds.size() > 0">
+            AND hsg.sec_grp_id IN
+            <foreach collection="query.secGrpIds" item="item" separator="," open="(" close=")">
+               #{item}
+            </foreach>
+        </if>
+    </select>
+
+    <!-- 查询安全组已分配的角色 -->
+    <select id="selectSecGrpAssignedRole" resultType="org.hzero.iam.api.dto.RoleSecGrpDTO">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        SELECT
+            ir.id,
+            ir.code as code,
+            ir.name as name,
+            ir.h_tenant_id AS tenant_id,
+            htt.tenant_name,
+            ir.h_parent_role_id AS parent_role_id,
+            ir_parent.NAME AS parent_role_name,
+            ir.h_tenant_id AS tenantId
+        FROM iam_role ir
+        JOIN iam_role_permission irp ON (
+            irp.role_id = ir.id
+            AND irp.type = 'SG'
+            AND (irp.h_create_flag = 'Y' OR irp.h_inherit_flag = 'Y')
+        )
+        JOIN hiam_sec_grp hsg ON hsg.sec_grp_id = irp.permission_id
+        LEFT JOIN iam_role ir_parent ON ir.h_parent_role_id = ir_parent.id
+        JOIN hpfm_tenant_tl htt ON htt.tenant_id = ir.h_tenant_id AND htt.lang = #{lang}
+        WHERE hsg.sec_grp_id = #{secGrpId}
+        <if test="query.name!=null and query.name!=''">
+            <bind name="roleNameLike" value="'%'+ query.name +'%'" />
+            and ir.name like #{roleNameLike}
+        </if>
+    </select>
+
+    <select id="selectBuildBySelfGrpInRoleTree" resultType="org.hzero.iam.domain.entity.SecGrp">
+        SELECT
+        hsg.sec_grp_id,
+        hsg.sec_grp_code,
+        hsg.tenant_id,
+        hsg.sec_grp_level,
+        hsg.enabled_flag,
+        hsg.role_id,
+        hsg.remark
+        FROM  hiam_sec_grp hsg
+        JOIN iam_role ir_out ON hsg.role_id = ir_out.id
+        WHERE
+         hsg.enabled_flag = 1
+         AND  hsg.draft_flag = 0
+        AND EXISTS(
+            SELECT
+            1
+            FROM iam_role ir
+            WHERE ir.id = #{revokeSgChildRoleId}
+            AND (ir_out.h_level_path LIKE CONCAT(ir.h_level_path,"|%") OR ir_out.h_level_path = ir.h_level_path)
+        )
+
+    </select>
+
+    <!--  查询有权限操作的安全组  -->
+    <select id="selectAuthorizedSecGrp" resultType="org.hzero.iam.domain.entity.SecGrp" >
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        SELECT
+            httl.tenant_name,
+            irt.name AS create_role_name,
+            (CASE WHEN hsg.role_id = #{query.currentRoleId} THEN 'self' ELSE 'parent' END) sec_grp_source,
+            <include refid="BaseColumn" />
+        FROM hiam_sec_grp hsg
+        JOIN iam_role ir ON hsg.role_id =  ir.id
+        LEFT JOIN iam_role_tl irt ON irt.id = ir.id and irt.lang = #{lang}
+        LEFT JOIN hiam_sec_grp_tl hsg_tl ON hsg.sec_grp_id = hsg_tl.sec_grp_id and hsg_tl.lang = #{lang}
+        LEFT JOIN hpfm_tenant_tl httl ON hsg.tenant_id = httl.tenant_id and httl.lang = #{lang}
+        WHERE hsg.draft_flag = 0
+        AND (
+            hsg.role_id =  #{query.currentRoleId}
+            OR EXISTS (
+        SELECT 1 FROM iam_role_permission irp
+        WHERE irp.permission_id = hsg.sec_grp_id
+        AND irp.type = 'SG' AND irp.role_id = #{query.currentRoleId}
+        AND (irp.h_create_flag = 'Y' OR irp.h_inherit_flag = 'Y')
+        AND hsg.enabled_flag = 1
+        )
+        )
+        <if test="query.enabledFlag != null">
+            AND hsg.enabled_flag = 1
+        </if>
+        <if test="query.secGrpLevel != null and query.secGrpLevel != ''">
+            AND hsg.sec_grp_level = #{query.secGrpLevel}
+        </if>
+        <if test="secGrpIds != null and secGrpIds.size() > 0">
+            AND hsg.sec_grp_id IN
+            <foreach item="item" collection="secGrpIds" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="query.secGrpCode != null and query.secGrpCode != ''">
+            <bind name="secGrpCodeLike" value="'%'+ query.secGrpCode +'%'"/>
+            and hsg.sec_grp_code like #{secGrpCodeLike}
+        </if>
+        <if test="query.secGrpName != null and query.secGrpName != ''">
+            <bind name="secGrpNameLike" value="'%'+ query.secGrpName +'%'"/>
+            and hsg.sec_grp_name like #{secGrpNameLike}
+        </if>
+    </select>
+
+    <!-- 查询用户已分配的安全组 -->
+    <select id="selectUserAssignedSecGrp" resultType="org.hzero.iam.domain.entity.SecGrp">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        select
+            irt.name AS create_role_name,
+            <include refid="BaseColumn" />
+        from hiam_sec_grp hsg
+        join hiam_sec_grp_assign hsga on (
+            hsg.sec_grp_id = hsga.sec_grp_id
+            and hsga.assign_dimension = 'USER'
+            and hsga.dimension_value = #{userId}
+        )
+        left join iam_role_tl irt on (hsg.role_id = irt.id and irt.lang = #{lang})
+        left join hiam_sec_grp_tl hsg_tl on (hsg_tl.sec_grp_id = hsg.sec_grp_id and hsg_tl.lang = #{lang})
+        where hsg.draft_flag = 0
+        and hsg.enabled_flag = 1
+        <if test="query.secGrpCode != null and query.secGrpCode != ''">
+            <bind name="secGrpCodeLike" value="'%'+ query.secGrpCode +'%'"/>
+            and hsg.sec_grp_code like #{secGrpCodeLike}
+        </if>
+        <if test="query.secGrpName != null and query.secGrpName != ''">
+            <bind name="secGrpNameLike" value="'%'+ query.secGrpName +'%'"/>
+            and hsg.sec_grp_name like #{secGrpNameLike}
+        </if>
+    </select>
+
+    <!-- 查询用户可分配的安全组 -->
+    <select id="listUserAssignableSecGrp" resultType="org.hzero.iam.domain.entity.SecGrp">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        SELECT
+            irt.name AS create_role_name,
+            <include refid="BaseColumn" />
+        FROM  hiam_sec_grp hsg
+        LEFT JOIN iam_role_tl irt on (hsg.role_id = irt.id and irt.lang = #{lang})
+        LEFT JOIN hiam_sec_grp_tl hsg_tl on (hsg_tl.sec_grp_id = hsg.sec_grp_id and hsg_tl.lang = #{lang})
+        WHERE (
+            hsg.role_id = #{query.currentRoleId}
+            OR EXISTS (
+                SELECT 1
+                FROM iam_role_permission irp
+                WHERE irp.permission_id = hsg.sec_grp_id
+                AND irp.type = 'SG'
+                AND irp.role_id = #{query.currentRoleId}
+                AND (irp.h_create_flag = 'Y' OR irp.h_inherit_flag = 'Y')
+            )
+        )
+        <if test="query.excludeAssigned">
+            AND NOT EXISTS (
+                SELECT 1
+                FROM hiam_sec_grp_assign sga
+                WHERE sga.sec_grp_id = hsg.sec_grp_id
+                AND sga.dimension_value = #{userId}
+                AND sga.assign_dimension = 'USER'
+            )
+        </if>
+        <if test="query.secGrpCode != null and query.secGrpCode != ''">
+            <bind name="secGrpCodeLike" value="'%'+ query.secGrpCode +'%'"/>
+            and hsg.sec_grp_code like #{secGrpCodeLike}
+        </if>
+        <if test="query.secGrpName != null and query.secGrpName != ''">
+            <bind name="secGrpNameLike" value="'%'+ query.secGrpName +'%'"/>
+            and hsg.sec_grp_name like #{secGrpNameLike}
+        </if>
+        <if test="query.secGrpIds != null and query.secGrpIds.size() > 0">
+            and hsg.sec_grp_id in
+            <foreach collection="query.secGrpIds" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+    </select>
+    <select id="listRoleIdAssignedSecGrp" resultType="java.lang.Long">
+        select
+            irp.role_id
+        from hiam_sec_grp sg
+        join iam_role_permission irp on (sg.sec_grp_id = irp.permission_id and irp.type = 'SG')
+        where sg.sec_grp_id = #{secGrpId}
+    </select>
+    <select id="listSecGrpAssign" resultType="org.hzero.iam.domain.entity.SecGrpAssign">
+        select
+           sga.user_sec_grp_id,
+           sga.assign_dimension,
+           sga.dimension_value,
+           sga.sec_grp_id,
+           sga.tenant_id
+        from hiam_sec_grp_assign sga
+        join hiam_sec_grp sg on (
+        sga.sec_grp_id = sg.sec_grp_id
+        and sga.assign_dimension = 'USER'
+        and sg.enabled_flag = 1
+        and sg.draft_flag = 0
+         )
+        where sga.sec_grp_id = #{secGrpId}
+    </select>
+
+</mapper>

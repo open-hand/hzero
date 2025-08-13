@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.iam.infra.mapper.OpenAppMapper">
+    <select id="listLoginWayByEnabled" resultType="org.hzero.boot.oauth.domain.entity.BaseOpenApp">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        SELECT
+            hop.app_code,
+            hopt.app_name,
+            hop.app_image,
+            hop.app_id,
+            hop.sub_app_id,
+            hop.app_key,
+            hop.order_seq,
+            hop.channel,
+            hop.scope
+        FROM hiam_open_app hop
+        LEFT JOIN hiam_open_app_tl hopt ON hopt.open_app_id = hop.open_app_id AND hopt.lang = #{lang}
+        WHERE
+            hop.enabled_flag = 1
+        ORDER BY hop.order_seq ASC
+    </select>
+    <select id="selectOpenAppList" resultType="org.hzero.iam.domain.entity.OpenApp">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        SELECT
+            hop.open_app_id,
+            hop.app_code,
+            hopt.app_name,
+            hop.app_image,
+            hop.sub_app_id,
+            hop.app_id,
+            hop.channel,
+            hop.scope,
+            hop.enabled_flag,
+            hop.order_seq
+        FROM hiam_open_app hop
+        LEFT JOIN hiam_open_app_tl hopt ON hopt.open_app_id = hop.open_app_id AND hopt.lang = #{lang}
+        <where>
+            <if test="appCode != null and appCode != ''">
+                and hop.app_code = #{appCode}
+            </if>
+            <if test="appName != null and appName != ''">
+              <bind name="appNameLike" value="'%'+appName+'%'" />
+                and hopt.app_name like #{appNameLike}
+            </if>
+            <if test="channel != null and channel != ''">
+                and hop.channel = #{channel}
+            </if>
+            <if test="organizationId != null">
+                and hop.organization_id = #{organizationId}
+            </if>
+        </where>
+    </select>
+    <select id="selectOpenAppDetails" resultType="org.hzero.iam.domain.entity.OpenApp">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        select
+            hop.open_app_id,
+            hop.app_code,
+            hopt.app_name,
+            hop.app_image,
+            hop.sub_app_id,
+            hop.app_id,
+            hop.order_seq,
+            hop.channel,
+            hop.scope,
+            hop.object_version_number
+         from hiam_open_app hop
+         LEFT JOIN hiam_open_app_tl hopt ON hopt.open_app_id = hop.open_app_id AND hopt.lang = #{lang}
+        where hop.open_app_id = #{openAppId}
+
+    </select>
+</mapper>

@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.iam.infra.mapper.RoleAuthorityMapper">
+    <!-- 可根据自己的需求，是否要使用 -->
+    <resultMap id="BaseResultMap" type="org.hzero.iam.domain.entity.RoleAuthority">
+        <result column="role_auth_id" property="roleAuthId" jdbcType="DECIMAL"/>
+        <result column="role_id" property="roleId" jdbcType="DECIMAL"/>
+        <result column="auth_doc_type_id" property="authDocTypeId" jdbcType="DECIMAL"/>
+        <result column="auth_scope_code" property="authScopeCode" jdbcType="VARCHAR"/>
+        <result column="msg_flag" property="msgFlag" jdbcType="DECIMAL"/>
+        <result column="object_version_number" property="objectVersionNumber" jdbcType="DECIMAL"/>
+        <result column="creation_date" property="creationDate" jdbcType="DATE"/>
+        <result column="created_by" property="createdBy" jdbcType="DECIMAL"/>
+        <result column="last_updated_by" property="lastUpdatedBy" jdbcType="DECIMAL"/>
+        <result column="last_update_date" property="lastUpdateDate" jdbcType="DATE"/>
+    </resultMap>
+
+    <resultMap id="RoleAuthorityDTOMap" type="org.hzero.iam.api.dto.RoleAuthorityDTO">
+        <result column="order_seq" property="orderSeq" jdbcType="DECIMAL"/>
+        <result column="doc_type_name" property="docTypeName" jdbcType="VARCHAR"/>
+        <result column="role_auth_id" property="roleAuthId" jdbcType="DECIMAL"/>
+        <result column="role_id" property="roleId" jdbcType="DECIMAL"/>
+        <result column="auth_doc_type_id" property="authDocTypeId" jdbcType="DECIMAL"/>
+        <result column="auth_scope_code" property="authScopeCode" jdbcType="VARCHAR"/>
+        <result column="auth_control_type" property="authControlType" jdbcType="VARCHAR"/>
+        <result column="msg_flag" property="msgFlag" jdbcType="DECIMAL"/>
+        <result column="object_version_number" property="objectVersionNumber" jdbcType="DECIMAL"/>
+        <result column="doc_enabled_flag" property="docEnabledFlag" jdbcType="DECIMAL"/>
+        <collection property="roleAuthorityLines" ofType="org.hzero.iam.domain.entity.RoleAuthorityLine">
+            <result column="role_auth_line_id" property="roleAuthLineId" jdbcType="DECIMAL"/>
+            <result column="role_auth_id" property="roleAuthId" jdbcType="DECIMAL"/>
+            <result column="role_id" property="roleId" jdbcType="DECIMAL"/>
+            <result column="auth_type_code" property="authTypeCode" jdbcType="VARCHAR"/>
+            <result column="auth_dim_id" property="authDimId" jdbcType="DECIMAL"/>
+            <result column="source_match_field" property="sourceMatchField" jdbcType="VARCHAR"/>
+            <result column="doc_type_id" property="docTypeId" jdbcType="DECIMAL"/>
+            <result column="enabled_flag" property="enabledFlag" jdbcType="DECIMAL"/>
+        </collection>
+    </resultMap>
+    <delete id="batchDeleteByRoleAuthorityId">
+        DELETE FROM  hiam_role_authority
+        WHERE role_auth_id IN
+        <foreach collection="roleAuthIds" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+
+    <select id="listRoleAuthorityPage" resultType="org.hzero.iam.api.dto.RoleAuthorityDTO">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        SELECT hdt.doc_type_id auth_doc_type_id,
+        hdtt.doc_type_name,
+        hdt.order_seq,
+        hdt.auth_control_type,
+        CASE WHEN hra.role_auth_id IS NOT NULL THEN 1 ELSE 0 END as doc_enabled_flag,
+        hra.role_auth_id,
+        hra.role_id,
+        t.auth_scope_code,
+        hra.msg_flag,
+        hra.object_version_number
+        FROM hiam_doc_type hdt
+        LEFT JOIN hiam_doc_type_tl hdtt ON hdtt.doc_type_id = hdt.doc_type_id AND hdtt.lang = #{lang}
+        INNER JOIN
+        <choose>
+            <when test="_databaseId == 'oracle'">
+                (
+                SELECT 'USER' auth_scope_code FROM dual
+                UNION
+                SELECT 'BIZ' auth_scope_code FROM dual
+                )
+            </when>
+            <otherwise>
+                (
+                SELECT 'USER' auth_scope_code
+                UNION
+                SELECT 'BIZ' auth_scope_code
+                )
+            </otherwise>
+        </choose>
+        t ON 1=1
+        LEFT JOIN hiam_role_authority hra ON hra.auth_doc_type_id = hdt.doc_type_id AND hra.role_id = #{roleId}
+        AND t.auth_scope_code = hra.auth_scope_code
+        AND hra.data_source LIKE '%DEFAULT%'
+        WHERE (hdt.level_code = 'GLOBAL'
+        OR EXISTS (SELECT 1
+        FROM hiam_doc_type_assign hdta
+        WHERE hdta.assign_value_id = #{tenantId}
+        AND hdta.doc_type_id = hdt.doc_type_id
+        ))
+        AND hdt.enabled_flag = 1
+        <if test="docTypeName != null and docTypeName != ''">
+            <bind name="docTypeNameLike" value="'%' + docTypeName + '%'"/>
+            AND hdt.doc_type_name LIKE #{docTypeNameLike}
+        </if>
+        ORDER BY order_seq
+    </select>
+    <select id="listDocTypeDim" resultType="org.hzero.iam.domain.entity.RoleAuthorityLine">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        SELECT hdtad.auth_dim_id,
+        hdtad.doc_type_id,
+        hdtad.source_match_field,
+        hdtad.auth_type_code,
+        hral.role_auth_line_id,
+        CASE WHEN (role_auth_line_id IS NOT NULL) THEN 1 ELSE 0 END as enabled_flag,
+        hdtd.dimension_type,
+        hdtdt.dimension_name auth_type_meaning,
+        hral.role_id
+        FROM hiam_doc_type_auth_dim hdtad
+        INNER JOIN hiam_doc_type_dimension hdtd ON (hdtad.auth_type_code = hdtd.dimension_code AND hdtd.enabled_flag = 1)
+        LEFT JOIN hiam_doc_type_dimension_tl hdtdt ON hdtd.dimension_id = hdtdt.dimension_id AND hdtdt.lang = #{lang}
+        LEFT JOIN hiam_role_authority hra ON hra.auth_doc_type_id = hdtad.doc_type_id AND hra.role_id = #{roleId}
+        AND hdtd.dimension_type = hra.auth_scope_code
+        AND hra.data_source LIKE '%DEFAULT%'
+        LEFT JOIN hiam_role_authority_line hral ON hral.role_auth_id = hra.role_auth_id AND hral.auth_type_code =
+        hdtad.auth_type_code
+        AND hral.data_source LIKE '%DEFAULT%'
+        WHERE hdtad.doc_type_id IN
+        <foreach collection="docTypeIds" item="docTypeId" separator="," open="(" close=")">
+            #{docTypeId}
+        </foreach>
+    </select>
+    <select id="listRoleAssign" resultType="java.lang.String">
+        SELECT hral.auth_type_code
+          FROM hiam_role_authority hra
+	      JOIN hiam_role_authority_line hral ON hral.role_auth_id = hra.role_auth_id
+	      AND hra.data_source LIKE '%DEFAULT%'
+	      AND hral.data_source LIKE '%DEFAULT%'
+	      JOIN iam_role ir ON ir.id = hra.role_id AND ir.h_tenant_id = #{tenantId}
+	      JOIN hiam_doc_type hdt ON hdt.doc_type_id = hra.auth_doc_type_id AND hdt.enabled_flag = 1
+	      JOIN hiam_doc_type_auth_dim hdtad ON hdtad.doc_type_id = hra.auth_doc_type_id AND hdtad.auth_type_code = hral.auth_type_code
+         WHERE hra.role_id = #{roleId}
+          AND hra.auth_scope_code = 'BIZ'
+    </select>
+    <select id="listUserAssign" resultType="java.lang.String">
+        SELECT hral.auth_type_code
+          FROM hiam_role_authority hra
+	      JOIN hiam_role_authority_line hral ON hral.role_auth_id = hra.role_auth_id
+	      JOIN iam_member_role imr ON imr.role_id = hra.role_id AND imr.member_type = 'user' AND imr.member_id = #{userId}
+	      JOIN iam_role ir ON ir.id = hra.role_id AND ir.h_tenant_id = #{tenantId}
+	      JOIN hiam_doc_type hdt ON hdt.doc_type_id = hra.auth_doc_type_id AND hdt.enabled_flag = 1
+	      JOIN hiam_doc_type_auth_dim hdtad ON hdtad.doc_type_id = hra.auth_doc_type_id AND hdtad.auth_type_code = hral.auth_type_code
+	     WHERE hra.auth_scope_code = 'BIZ'
+    </select>
+
+    <select id="listDocTypeAssignedRole" resultType="org.hzero.iam.api.dto.RoleAuthorityDTO">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        SELECT
+        hra.role_id,
+        ir.code as role_code,
+        ir_tl.name as role_name,
+        ir_parent_tl.name as parent_role_name,
+        htl.tenant_name,
+        hra.auth_doc_type_id,
+        hra.auth_scope_code,
+        hra.role_auth_id,
+        hra.object_version_number,
+        CASE WHEN hra.role_auth_id IS NOT NULL THEN 1 ELSE 0 END as doc_enabled_flag,
+        hdtt.doc_type_name
+        FROM
+        iam_role ir
+        <!-- 限制角色存在于角色授权表 -->
+        join hiam_role_authority hra on (ir.id = hra.role_id)
+        <!-- 限制授权信息关联着单据信息 -->
+        join hiam_doc_type hdt on(hra.auth_doc_type_id = hdt.doc_type_id)
+        LEFT JOIN hiam_doc_type_tl hdtt ON hdtt.doc_type_id = hdt.doc_type_id AND hdtt.lang = #{lang}
+        <!-- 辅助表用于展示其他需要翻译的字段 -->
+        left join hpfm_tenant ht on (ht.tenant_id = ir.h_tenant_id)
+        left join hpfm_tenant_tl htl on(ht.tenant_id = htl.tenant_id and htl.lang = #{lang})
+        left join iam_role ir_parent on(ir.h_parent_role_id = ir_parent.id)
+        left join iam_role_tl ir_tl on(ir_tl.id = ir.id and ir_tl.lang=#{lang})
+        left join iam_role_tl ir_parent_tl on(ir_parent_tl.id = ir_parent.id and ir_parent_tl.lang=#{lang})
+        where
+        1=1
+        <!-- 限制启用 -->
+        and hdt.enabled_flag = 1
+        <!-- 限制角色 -->
+        and (ir.h_tenant_id = #{roleAuthorityDTO.organizationId} or ir.created_by_tenant_id =
+        #{roleAuthorityDTO.organizationId}
+        OR
+        EXISTS (
+        SELECT
+        1
+        FROM
+        iam_menu im
+        JOIN iam_role_permission irp ON (
+        im.id = irp.permission_id
+        AND im.type = 'ps'
+        AND im.h_enabled_flag = 1
+        AND im.CODE LIKE '%role.ps.create'
+        AND irp.type = 'PS'
+        AND ( irp.h_create_flag = 'Y' OR irp.h_inherit_flag = 'Y' )
+        )
+        JOIN iam_member_role imr_admin ON imr_admin.role_id = irp.role_id
+        JOIN iam_role ir_admin ON (
+        ( ir_admin.id = imr_admin.role_id AND ir_admin.is_enabled = 1 )
+        OR ( ir_admin.h_parent_role_assign_level = imr_admin.h_assign_level AND ir_admin.h_parent_role_assign_level_val
+        = imr_admin.h_assign_level_value AND imr_admin.h_assign_level = 'org' )
+        )
+        WHERE
+        imr_admin.member_id = #{roleAuthorityDTO.userId}
+        AND imr_admin.member_type = 'user'
+        AND ir.h_level_path LIKE CONCAT( ir_admin.h_level_path, '|%' )
+        )
+        )
+        <if test="roleAuthorityDTO.authDocTypeId!=null">
+            and hdt.doc_type_id = #{roleAuthorityDTO.authDocTypeId}
+        </if>
+        <if test="roleAuthorityDTO.roleCode!=null and roleAuthorityDTO.roleCode!=''">
+            <bind name="roleCodeLike" value="'%' + roleAuthorityDTO.roleCode + '%'"></bind>
+            and ir.code like #{roleCodeLike}
+        </if>
+    </select>
+    <select id="selectCompareDimensions" resultType="String">
+        SELECT hral.auth_type_code
+          FROM hiam_role_authority hra
+	      JOIN hiam_role_authority_line hral ON hral.role_auth_id = hra.role_auth_id
+	      AND hra.data_source LIKE '%DEFAULT%'
+	      AND hral.data_source LIKE '%DEFAULT%'
+	      JOIN iam_role ir ON ir.id = hra.role_id
+	      JOIN hiam_doc_type hdt ON hdt.doc_type_id = hra.auth_doc_type_id AND hdt.enabled_flag = 1
+	      JOIN hiam_doc_type_auth_dim hdtad ON hdtad.doc_type_id = hra.auth_doc_type_id AND hdtad.auth_type_code = hral.auth_type_code
+         WHERE hra.role_id = #{roleId}
+         and exists (
+            SELECT 1
+              FROM hiam_role_authority_line hral1
+            WHERE hral1.role_id = #{copyRoleId} and hral1.auth_type_code = hral.auth_type_code
+        )
+    </select>
+    <select id="selectByDocIds" resultType="org.hzero.iam.domain.entity.RoleAuthority">
+        SELECT
+          hra.role_auth_id
+        FROM hiam_role_authority hra
+        WHERE NOT EXISTS (
+              SELECT 1
+              FROM hiam_role_authority_line hral
+              WHERE hra.role_auth_id = hral.role_auth_id
+              AND hra.role_id = hral.role_id
+        )
+        <if test="docIds.size() > 0">
+            AND hra.auth_doc_type_id IN
+            <foreach collection="docIds" open="(" close=")" separator="," item="item" index="index">
+                #{item}
+            </foreach>
+        </if>
+    </select>
+    <select id="selectDocRoleAuth" resultType="org.hzero.iam.domain.entity.RoleAuthority">
+        SELECT
+            hra.role_auth_id,
+            hra.role_id,
+            hra.auth_doc_type_id,
+            hra.auth_scope_code
+        FROM
+        hiam_role_authority hra
+        JOIN hiam_doc_type hdt ON hdt.doc_type_id = hra.auth_doc_type_id
+        JOIN hiam_doc_type_auth_dim hdtad ON hdtad.doc_type_id = hdt.doc_type_id
+        JOIN hiam_doc_type_dimension hdtd ON hdtd.dimension_code = hdtad.auth_type_code
+    </select>
+</mapper>

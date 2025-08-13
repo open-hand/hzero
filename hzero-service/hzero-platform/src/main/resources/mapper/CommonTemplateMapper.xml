@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.platform.infra.mapper.CommonTemplateMapper">
+    <!-- 可根据自己的需求，是否要使用 -->
+    <resultMap id="BaseResultMap" type="org.hzero.platform.domain.entity.CommonTemplate">
+        <result column="template_id" property="templateId" jdbcType="DECIMAL"/>
+        <result column="template_code" property="templateCode" jdbcType="VARCHAR"/>
+        <result column="template_name" property="templateName" jdbcType="VARCHAR"/>
+        <result column="template_category_code" property="templateCategoryCode" jdbcType="VARCHAR"/>
+        <result column="template_content" property="templateContent" jdbcType="VARCHAR"/>
+        <result column="lang" property="lang" jdbcType="VARCHAR"/>
+        <result column="tenant_id" property="tenantId" jdbcType="DECIMAL"/>
+        <result column="enabled_flag" property="enabledFlag" jdbcType="DECIMAL"/>
+        <result column="object_version_number" property="objectVersionNumber" jdbcType="DECIMAL"/>
+        <result column="creation_date" property="creationDate" jdbcType="TIMESTAMP"/>
+        <result column="created_by" property="createdBy" jdbcType="DECIMAL"/>
+        <result column="last_updated_by" property="lastUpdatedBy" jdbcType="DECIMAL"/>
+        <result column="last_update_date" property="lastUpdateDate" jdbcType="DATE"/>
+    </resultMap>
+
+    <resultMap id="DtoResultMap" type="org.hzero.platform.api.dto.commontemplate.CommonTemplateDTO">
+        <result column="template_id" property="templateId" jdbcType="DECIMAL"/>
+        <result column="template_code" property="templateCode" jdbcType="VARCHAR"/>
+        <result column="template_name" property="templateName" jdbcType="VARCHAR"/>
+        <result column="template_category_code" property="templateCategoryCode" jdbcType="VARCHAR"/>
+        <result column="template_content" property="templateContent" jdbcType="VARCHAR"/>
+        <result column="lang" property="lang" jdbcType="VARCHAR"/>
+        <result column="tenant_id" property="tenantId" jdbcType="DECIMAL"/>
+        <result column="enabled_flag" property="enabledFlag" jdbcType="DECIMAL"/>
+        <result column="creation_date" property="creationDate" jdbcType="TIMESTAMP"/>
+        <result column="tenant_name" property="tenantName" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <sql id="BaseColumns">
+        hct.template_id,
+        hct.template_code,
+        hct.template_name,
+        hct.template_category_code,
+        hct.template_content,
+        hct.lang,
+        hct.tenant_id,
+        hct.enabled_flag
+    </sql>
+
+    <sql id="DtoColumns">
+        <include refid="org.hzero.platform.infra.mapper.CommonTemplateMapper.BaseColumns"/>,
+        hct.creation_date,
+        htl.tenant_name
+    </sql>
+
+    <select id="list" resultMap="org.hzero.platform.infra.mapper.CommonTemplateMapper.DtoResultMap">
+        <bind name="currentLang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+
+        SELECT
+        <include refid="org.hzero.platform.infra.mapper.CommonTemplateMapper.DtoColumns"/>
+        FROM hpfm_common_template hct
+        LEFT JOIN hpfm_tenant_tl htl
+        ON hct.tenant_id = htl.tenant_id
+        AND htl.lang = #{currentLang}
+        <where>
+            <if test="@org.apache.commons.lang3.StringUtils@isNotBlank(templateCode)">
+                <bind name="templateCodeLike" value="'%' + templateCode + '%'"/>
+                AND hct.template_code LIKE #{templateCodeLike}
+            </if>
+            <if test="@org.apache.commons.lang3.StringUtils@isNotBlank(templateName)">
+                <bind name="templateNameLike" value="'%' + templateName + '%'"/>
+                AND hct.template_name LIKE #{templateNameLike}
+            </if>
+            <if test="@org.apache.commons.lang3.StringUtils@isNotBlank(templateCategoryCode)">
+                AND hct.template_category_code = #{templateCategoryCode}
+            </if>
+            <if test="@org.apache.commons.lang3.StringUtils@isNotBlank(lang)">
+                AND hct.lang = #{lang}
+            </if>
+            <if test="@java.util.Objects@nonNull(enabledFlag)">
+                AND hct.enabled_flag = #{enabledFlag}
+            </if>
+            <if test="@java.util.Objects@nonNull(tenantId)">
+                AND hct.tenant_id = #{tenantId}
+            </if>
+        </where>
+        ORDER BY hct.creation_date DESC
+    </select>
+
+    <select id="detail" resultMap="org.hzero.platform.infra.mapper.CommonTemplateMapper.DtoResultMap">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+
+        SELECT
+        <include refid="org.hzero.platform.infra.mapper.CommonTemplateMapper.DtoColumns"/>
+        FROM hpfm_common_template hct
+        LEFT JOIN hpfm_tenant_tl htl
+        ON hct.tenant_id = htl.tenant_id
+        AND htl.lang = #{lang}
+        <where>
+            <if test="@java.util.Objects@nonNull(organizationId)">
+                AND hct.tenant_id = #{organizationId}
+            </if>
+            AND hct.template_id = #{templateId}
+        </where>
+    </select>
+</mapper>

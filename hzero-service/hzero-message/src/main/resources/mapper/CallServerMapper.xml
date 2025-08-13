@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.message.infra.mapper.CallServerMapper">
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap id="BaseResultMap" type="org.hzero.message.domain.entity.CallServer">
+        <result column="server_id" property="serverId" jdbcType="DECIMAL"/>
+        <result column="server_code" property="serverCode" jdbcType="VARCHAR"/>
+        <result column="server_name" property="serverName" jdbcType="VARCHAR"/>
+        <result column="server_type_code" property="serverTypeCode" jdbcType="VARCHAR"/>
+        <result column="access_key" property="accessKey" jdbcType="VARCHAR"/>
+        <result column="access_secret" property="accessSecret" jdbcType="VARCHAR"/>
+        <result column="ext_param" property="extParam" jdbcType="VARCHAR"/>
+        <result column="tenant_id" property="tenantId" jdbcType="DECIMAL"/>
+        <result column="enabled_flag" property="enabledFlag" jdbcType="DECIMAL"/>
+        <result column="object_version_number" property="objectVersionNumber" jdbcType="DECIMAL"/>
+        <result column="creation_date" property="creationDate" jdbcType="DATE"/>
+        <result column="created_by" property="createdBy" jdbcType="DECIMAL"/>
+        <result column="last_updated_by" property="lastUpdatedBy" jdbcType="DECIMAL"/>
+        <result column="last_update_date" property="lastUpdateDate" jdbcType="DATE"/>
+    </resultMap>
+
+    <select id="listCallServer" resultType="org.hzero.message.domain.entity.CallServer">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()" />
+        SELECT
+            hcs.server_id,
+            hcs.server_code,
+            hcst.server_name,
+            hcs.server_type_code,
+            hcs.tenant_id,
+            ht.tenant_name,
+            hcs.enabled_flag,
+            hcs.object_version_number
+        FROM
+            hmsg_call_server hcs
+        JOIN hmsg_call_server_tl hcst ON hcst.server_id = hcs.server_id AND hcst.lang = #{lang}
+        JOIN hpfm_tenant_tl ht ON ht.tenant_id = hcs.tenant_id AND ht.lang = #{lang}
+        WHERE 1 = 1
+        <if test="tenantId != null">
+            AND hcs.tenant_id in (#{tenantId}<if test="includeSiteIfQueryByTenantId">, 0</if>)
+        </if>
+        <if test="enabledFlag != null">
+            AND hcs.enabled_flag = #{enabledFlag}
+        </if>
+        <if test="serverTypeCode != null and serverTypeCode != ''">
+            AND hcs.server_type_code = #{serverTypeCode}
+        </if>
+        <if test="serverCode != null and serverCode != ''">
+            <bind name="serverCodeLike" value="'%' + serverCode + '%'"/>
+            AND hcs.server_code LIKE #{serverCodeLike}
+        </if>
+        <if test="serverName != null and serverName != ''">
+            <bind name="serverNameLike" value="'%' + serverName + '%'"/>
+            AND hcst.server_name LIKE #{serverNameLike}
+        </if>
+    </select>
+
+    <select id="detailCallServer" resultType="org.hzero.message.domain.entity.CallServer">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()" />
+        SELECT
+        	hcs.server_id,
+        	hcs.server_code,
+            hcst.server_name,
+        	hcs.server_type_code,
+        	hcs.access_key,
+        	hcs.ext_param,
+        	hcs.tenant_id,
+            ht.tenant_name,
+        	hcs.enabled_flag,
+        	hcs.object_version_number
+        FROM
+        	hmsg_call_server hcs
+        JOIN hmsg_call_server_tl hcst ON hcst.server_id = hcs.server_id AND hcst.lang = #{lang}
+        JOIN hpfm_tenant_tl ht ON ht.tenant_id = hcs.tenant_id AND ht.lang = #{lang}
+        WHERE hcs.server_id = #{serverId}
+        <if test="tenantId != null">
+            AND hcs.tenant_id = #{tenantId}
+        </if>
+    </select>
+
+    <select id="selectByCode" resultType="org.hzero.message.domain.entity.CallServer">
+        SELECT
+            hcs.server_id,
+            hcs.server_code,
+            hcs.server_name,
+            hcs.enabled_flag,
+            hcs.tenant_id,
+            hcs.object_version_number
+        FROM
+            hmsg_call_server hcs
+        WHERE
+            hcs.tenant_id = #{tenantId}
+        AND hcs.server_code = #{serverCode}
+    </select>
+</mapper>

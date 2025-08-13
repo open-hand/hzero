@@ -1,0 +1,61 @@
+.pass-force-modify {
+    height: 100vh;
+    background: #f4f5f7;
+    overflow: hidden;
+}
+
+.row-flex {
+    display: flex;
+    flex-flow: row wrap;
+}
+
+.row-flex-center {
+    justify-content: center;
+}
+
+.pass-force-modify-image {
+    width: 65.2439vh;
+    height: 50vh;
+    margin-top: 14vh;
+}
+
+.pass-force-modify-text {
+    margin: 20px 0 40px;
+    color: black;
+}
+
+.pass-force-modify-button {
+    width: 200px;
+    color: white;
+    background-color: rgb(63, 81, 181);
+    display: inline-block;
+    padding: 6px 12px;
+    margin-bottom: 0;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.42857143;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    -ms-touch-action: manipulation;
+    touch-action: manipulation;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    background-image: none;
+    border: 1px solid transparent;
+    border-radius: 4px;
+}
+
+.footer {
+    position: absolute;
+    bottom: 10px;
+    padding: 24px 50px;
+    width: 100%;
+    color: #555;
+    font-size: 12px;
+    text-align: center;
+    background-color: #f0f2f5;
+}

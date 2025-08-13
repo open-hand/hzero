@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.hzero.message.infra.mapper.NoticePublishedMapper">
+    
+    <select id="listNoticePublished" resultType="org.hzero.message.domain.entity.NoticePublished">
+	    select hnp.published_id,
+	        hnp.notice_id,
+	        hnp.notice_body,
+	        hnp.attachment_uuid,
+	        hnp.notice_category_code,
+	        hnp.notice_type_code,
+	        hnp.published_status_code,
+	        hnp.published_version,
+	        hnp.published_by,
+	        hnp.published_date,
+	        hnp.tenant_id,
+	        hnp.object_version_number,
+	        iu.real_name publisher_name
+	    from hmsg_notice_published hnp
+	    left join iam_user iu on hnp.published_by = iu.id
+	    where hnp.notice_id = #{noticeId}
+		<if test="tenantId != null">
+            AND hnp.tenant_id = #{tenantId}
+        </if>
+	</select>
+
+</mapper>

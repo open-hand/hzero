@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.imported.infra.mapper.TemplateLineMapper">
+
+    <delete id="deleteByHeaderId">
+        DELETE
+        FROM
+            himp_template_line
+        WHERE
+            target_id IN (SELECT id FROM himp_template_target WHERE header_id = #{templateId})
+    </delete>
+    <delete id="deleteByTargetId">
+        DELETE
+        FROM
+            himp_template_line
+        WHERE
+            target_id = #{targetId}
+    </delete>
+    <select id="listTemplateLine" resultType="org.hzero.imported.domain.entity.TemplateLine">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        SELECT
+            htl.id,
+            htl.target_id,
+            htl.column_index,
+            (
+            case when htlt.column_name is null then htl.column_name
+            else htlt.column_name
+            end
+            ) column_name,
+            htl.column_code,
+            htl.column_type,
+            htl.length,
+            htl.format_mask,
+            htl.enabled_flag,
+            htl.nullable_flag,
+            htl.validate_flag,
+            htl.change_data_flag,
+            htl.sample_data,
+            htl.description,
+            htl.max_value,
+            htl.min_value,
+            htl.validate_set,
+            htl.regular_expression,
+            htl.tenant_id
+        FROM
+            himp_template_line htl
+            JOIN himp_template_target htt ON htt.id = htl.target_id
+            LEFT JOIN himp_template_line_tl htlt ON htl.id = htlt.id AND htlt.lang = #{lang}
+            WHERE htt.header_id = #{templateHeaderId}
+    </select>
+    <select id="getColumnNameTl" resultType="org.hzero.imported.domain.entity.TemplateLineTl">
+        select
+            htlt.id,
+            htlt.lang,
+            htlt.column_name
+        from himp_template_line_tl htlt
+        where htlt.id = #{templateLineId}
+    </select>
+    <select id="listTemplateLineByTargetId" resultType="org.hzero.imported.domain.entity.TemplateLine">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        SELECT
+        htl.id,
+        htl.target_id,
+        htl.column_index,
+        htlt.column_name,
+        htl.column_code,
+        htl.column_type,
+        htl.length,
+        htl.format_mask,
+        htl.enabled_flag,
+        htl.nullable_flag,
+        htl.validate_flag,
+        htl.change_data_flag,
+        htl.sample_data,
+        htl.description,
+        htl.max_value,
+        htl.min_value,
+        htl.validate_set,
+        htl.regular_expression,
+        htl.tenant_id
+        FROM
+        himp_template_line htl
+        JOIN himp_template_target htt ON htt.id = htl.target_id
+        LEFT JOIN himp_template_line_tl htlt ON htl.id = htlt.id AND htlt.lang = #{lang}
+        where htt.id = #{targetId}
+        <if test="columnCode != null and columnCode != ''">
+            <bind name="columnCodeLike" value="'%'+columnCode+'%'"/>
+            AND htl.column_code LIKE #{columnCodeLike}
+        </if>
+        <if test="columnName != null and columnName != ''">
+            <bind name="columnNameLike" value="'%'+columnName+'%'"/>
+            AND htlt.column_name LIKE #{columnNameLike}
+        </if>
+    </select>
+    <select id="getTemplateLine" resultType="org.hzero.imported.domain.entity.TemplateLine">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        SELECT
+        htl.id,
+        htl.target_id,
+        htl.column_index,
+        (
+        case when htlt.column_name is null then htl.column_name
+        else htlt.column_name
+        end
+        ) column_name,
+        htl.column_code,
+        htl.column_type,
+        htl.length,
+        htl.format_mask,
+        htl.enabled_flag,
+        htl.nullable_flag,
+        htl.validate_flag,
+        htl.change_data_flag,
+        htl.sample_data,
+        htl.description,
+        htl.max_value,
+        htl.min_value,
+        htl.validate_set,
+        htl.regular_expression,
+        htl.tenant_id,
+        htl.object_version_number
+        FROM
+        himp_template_line htl
+        LEFT JOIN himp_template_line_tl htlt ON htl.id = htlt.id AND htlt.lang = #{lang}
+        where htl.id = #{templateLineId}
+    </select>
+</mapper>

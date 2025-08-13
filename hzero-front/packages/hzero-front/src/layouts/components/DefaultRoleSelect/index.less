@@ -1,0 +1,64 @@
+.select-role-wrap {
+  > ul {
+    max-height: 100vh;
+    overflow-y: auto;
+    outline: none;
+    position: relative;
+    list-style-type: none;
+    padding: 4px 0;
+    margin: 0;
+    text-align: left;
+    background-color: #fff;
+    border-radius: 2px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    background-clip: padding-box;
+    li > .select-role-item-divider {
+      font-size: 14px;
+      color: #666;
+    }
+    li:not(:last-child) {
+      .select-role-item-divider {
+        &::after {
+          content: ' ';
+          display: block;
+          height: 1px;
+          width: 128px;
+          border-bottom: 1px solid #f1f1f1;
+        }
+      }
+    }
+  }
+  .select-role {
+    cursor: pointer;
+    width: 93%;
+    color: #666;
+    font-size: 14px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    word-break: break-all;
+    white-space: nowrap;
+    vertical-align: middle;
+    &-item {
+      height: 100%;
+      font-size: 14px;
+      color: #666;
+      &:hover {
+        background-color: #f0fffe;
+      }
+    }
+  }
+  &:hover {
+    background-color: #f0fffe;
+  }
+}
+
+:global {
+  .default-role-select-dropdown {
+    // 可选择角色 最多展示 10个
+    max-height: 320px;
+    overflow-y: auto;
+    .ant-menu-submenu-arrow {
+      transform: rotate(180deg);
+    }
+  }
+}

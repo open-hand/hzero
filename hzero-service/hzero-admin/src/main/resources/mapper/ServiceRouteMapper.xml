@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.admin.infra.mapper.ServiceRouteMapper">
+
+    <select id="selectProductRoutes" resultType="org.hzero.admin.domain.entity.ServiceRoute">
+        SELECT
+            hsr.service_id,
+            hsr.service_code,
+            hs.service_name,
+            hsr.name,
+            hsr.path,
+            hsr.url,
+            hsr.strip_prefix,
+            hsr.sensitive_headers
+        FROM hadm_service_route hsr
+        JOIN hadm_service hs ON hsr.service_id = hs.service_id
+        <where>
+            <if test="serviceCode != null and serviceCode !=''">
+                <bind name="serviceCodeLike" value="'%'+serviceCode+'%'"/>
+                AND hsr.service_code LIKE #{serviceCodeLike}
+            </if>
+            <if test="serviceName != null and serviceName != ''">
+                <bind name="serviceNameLike" value="'%'+serviceName+'%'"/>
+                AND hs.service_name LIKE #{serviceNameLike}
+            </if>
+            <if test="name != null and name !=''">
+                <bind name="nameLike" value="'%'+name+'%'"/>
+                AND hsr.name LIKE #{nameLike}
+            </if>
+            <if test="path != null and path !=''">
+                <bind name="pathLike" value="'%'+path+'%'"/>
+                AND hsr.path LIKE #{pathLike}
+            </if>
+        </where>
+        ORDER BY hsr.creation_date DESC
+    </select>
+
+    <select id="selectDefaultRoutes" resultType="org.hzero.admin.domain.entity.ServiceRoute">
+        SELECT
+            hsr.service_route_id,
+            hsr.service_id,
+            hsr.service_code,
+            hs.service_name,
+            hsr.name,
+            hsr.path,
+            hsr.url,
+            hsr.strip_prefix,
+            hsr.sensitive_headers,
+            hsr.object_version_number,
+            hsr.extend_config_map
+        FROM hadm_service_route hsr
+        JOIN hadm_service hs ON hsr.service_id = hs.service_id
+        WHERE 1 = 1
+        <if test="serviceCode != null and serviceCode !=''">
+            <bind name="serviceCodeLike" value="'%'+serviceCode+'%'"/>
+            AND hsr.service_code LIKE #{serviceCodeLike}
+        </if>
+        <if test="serviceName != null and serviceName != ''">
+            <bind name="serviceNameLike" value="'%'+serviceName+'%'"/>
+            AND hs.service_name LIKE #{serviceNameLike}
+        </if>
+        <if test="name != null and name !=''">
+            <bind name="name" value="'%'+name+'%'"/>
+            AND hsr.name LIKE #{name}
+        </if>
+        <if test="path != null and path !=''">
+            <bind name="path" value="'%'+path+'%'"/>
+            AND hsr.path LIKE #{path}
+        </if>
+        <if test="url != null and url !=''">
+            <bind name="url" value="'%'+url+'%'"/>
+            AND hsr.url LIKE #{url}
+        </if>
+        ORDER BY hsr.creation_date DESC
+    </select>
+    <select id="selectRouteDetails" resultType="org.hzero.admin.domain.entity.ServiceRoute">
+        SELECT
+            hsr.service_route_id,
+            hsr.service_id,
+            hsr.service_code,
+            hs.service_name,
+            hsr.name,
+            hsr.path,
+            hsr.url,
+            hsr.strip_prefix,
+            hsr.sensitive_headers,
+            hsr.object_version_number
+        FROM hadm_service_route hsr
+        JOIN hadm_service hs ON hsr.service_id = hs.service_id
+        WHERE hsr.service_route_id=#{serviceRouteId}
+    </select>
+</mapper>
