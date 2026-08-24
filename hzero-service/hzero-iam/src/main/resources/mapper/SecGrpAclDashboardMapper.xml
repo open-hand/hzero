@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.iam.infra.mapper.SecGrpAclDashboardMapper">
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap id="BaseResultMap" type="org.hzero.iam.domain.entity.SecGrpAclDashboard">
+        <result column="sec_grp_acl_dashboard_id" property="secGrpAclDashboardId" jdbcType="DECIMAL"/>
+        <result column="sec_grp_id" property="secGrpId" jdbcType="DECIMAL"/>
+        <result column="tenant_id" property="tenantId" jdbcType="DECIMAL"/>
+        <result column="card_id" property="cardId" jdbcType="DECIMAL"/>
+        <result column="x" property="x" jdbcType="DECIMAL"/>
+        <result column="y" property="y" jdbcType="DECIMAL"/>
+        <result column="default_display_flag" property="defaultDisplayFlag" jdbcType="DECIMAL"/>
+        <result column="remark" property="remark" jdbcType="VARCHAR"/>
+        <result column="object_version_number" property="objectVersionNumber" jdbcType="DECIMAL"/>
+        <result column="creation_date" property="creationDate" jdbcType="DATE"/>
+        <result column="created_by" property="createdBy" jdbcType="DECIMAL"/>
+        <result column="last_updated_by" property="lastUpdatedBy" jdbcType="DECIMAL"/>
+        <result column="last_update_date" property="lastUpdateDate" jdbcType="DATE"/>
+    </resultMap>
+
+    <select id="selectSecGrpDashboard" resultType="org.hzero.iam.domain.entity.SecGrpAclDashboard">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        SELECT
+            hsgad.sec_grp_acl_dashboard_id,
+            hsgad.sec_grp_id,
+            hsgad.tenant_id,
+            hsgad.card_id,
+            hsgad.x,
+            hsgad.y,
+            hsgad.default_display_flag,
+            hsgad.remark,
+            hsgad.object_version_number,
+            (CASE WHEN hdct.name IS NOT NULL THEN hdct.name ELSE hdc.name END) name,
+            hdc.code as code,
+            hdc.catalog_type,
+            hdc.h,
+            hdc.w
+        FROM hiam_sec_grp_acl_dashboard hsgad
+        JOIN hpfm_dashboard_card hdc ON hsgad.card_id = hdc.id AND hdc.enabled_flag = 1
+        LEFT JOIN hpfm_dashboard_card_tl hdct ON hdc.id = hdct.id AND hdct.lang = #{lang}
+        WHERE hsgad.sec_grp_id = #{secGrpId}
+        <if test="tenantId != null">
+            AND (hsgad.tenant_id = #{tenantId} or hsgad.tenant_id = 0)
+        </if>
+        <if test="code != null and code != ''">
+            <bind name="codeLike" value="'%'+code+'%'"/>
+            AND hdc.code LIKE #{codeLike}
+        </if>
+        <if test="name != null and name != ''">
+            <bind name="nameLike" value="'%'+name+'%'"/>
+            AND hdc.name LIKE #{nameLike}
+        </if>
+    </select>
+
+    <select id="selectSecGrpAclDashboardByGrpIds" resultType="org.hzero.iam.domain.entity.SecGrpAclDashboard">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        SELECT
+        hsgad.sec_grp_acl_dashboard_id,
+        hsgad.sec_grp_id,
+        hsgad.tenant_id,
+        hsgad.card_id,
+        hsgad.x,
+        hsgad.y,
+        hsgad.default_display_flag,
+        hsgad.remark,
+        hsgad.object_version_number,
+        hsgad.creation_date,
+
+        (
+        CASE WHEN hdct.name IS NOT NULL
+        THEN hdct.name
+        ELSE hdc.name
+        END
+        )name,
+
+        hdc.code as code,
+        hdc.catalog_type,
+        hdc.h,
+        hdc.w
+
+        FROM hiam_sec_grp_acl_dashboard hsgad
+        JOIN hpfm_dashboard_card hdc ON hsgad.card_id=hdc.id
+        LEFT JOIN hpfm_dashboard_card_tl hdct ON hdc.id=hdct.id AND hdct.lang=#{lang}
+        WHERE
+        hsgad.sec_grp_id IN
+        <foreach  item="item" collection="secGrpIds" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+
+    </select>
+
+    <select id="selectSecGrpAssignableDashboard" resultType="org.hzero.iam.domain.entity.SecGrpAclDashboard">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        SELECT
+            hdc.id card_id,
+            hdc.code as code,
+            hdct.name as name,
+            hdc.fd_level as "level",
+            hdc.catalog_type,
+            hdc.w,
+            hdc.h
+        FROM hpfm_dashboard_card hdc
+        LEFT JOIN hpfm_dashboard_card_tl hdct ON hdc.id = hdct.id AND hdct.lang=#{lang}
+        LEFT JOIN hpfm_dashboard_tenant_card hdtc ON hdc.id = hdtc.card_id
+        WHERE (hdc.fd_level='SITE' OR hdtc.tenant_id = #{tenantId})
+        AND hdc.enabled_flag = 1
+        AND NOT EXISTS (
+            SELECT 1 FROM hiam_sec_grp_acl_dashboard hsgad WHERE hsgad.card_id = hdc.id AND hsgad.sec_grp_id = #{secGrpId}
+        )
+        <if test="code != null and code != ''">
+            <bind name="codeLike" value="'%'+code+'%'"/>
+            AND hdc.code LIKE #{codeLike}
+        </if>
+        <if test="name != null and name != ''">
+            <bind name="nameLike" value="'%'+name+'%'"/>
+            AND hdc.name LIKE #{nameLike}
+        </if>
+        ORDER BY hdc.code ASC
+    </select>
+</mapper>

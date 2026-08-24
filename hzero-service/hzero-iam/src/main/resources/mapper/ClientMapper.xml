@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.iam.infra.mapper.ClientMapper">
+
+    <select id="listClient" resultType="org.hzero.iam.domain.entity.Client">
+		<bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        SELECT
+        	oc.id,
+        	oc.name as name,
+        	oc.organization_id,
+        	httl.tenant_name,
+        	oc.authorized_grant_types,
+        	oc.object_version_number,
+        	oc.enabled_flag
+        FROM
+        	oauth_client oc
+        JOIN hpfm_tenant ht ON ht.tenant_id = oc.organization_id
+		LEFT JOIN hpfm_tenant_tl httl ON ht.tenant_id = httl.tenant_id AND httl.lang = #{lang}
+        WHERE
+            1 = 1
+        <if test="organizationId != null">
+            AND oc.organization_id = #{organizationId}
+        </if>
+        <if test="name != null and name != ''">
+            <bind name="nameLike" value="'%' + name + '%'"/>
+            AND oc.name LIKE #{nameLike}
+        </if>
+		<if test="enabledFlag != null">
+			AND oc.enabled_flag = #{enabledFlag}
+		</if>
+    </select>
+
+	<select id="detailClient" resultType="org.hzero.iam.domain.entity.Client">
+		<bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+		SELECT
+			oc.id,
+			oc.name as name,
+			oc.organization_id,
+			httl.tenant_name,
+			oc.resource_ids,
+			oc.secret,
+			oc.scope,
+			oc.authorized_grant_types,
+			oc.web_server_redirect_uri,
+			oc.access_token_validity,
+			oc.refresh_token_validity,
+			oc.additional_information,
+			oc.auto_approve,
+			oc.object_version_number,
+			oc.enabled_flag,
+			oc.access_roles,
+			oc.pwd_replay_flag,
+			oc.time_zone,
+			oc.api_encrypt_flag,
+			oc.api_replay_flag
+		FROM
+			oauth_client oc
+		JOIN hpfm_tenant ht ON ht.tenant_id = oc.organization_id
+		LEFT JOIN hpfm_tenant_tl httl ON ht.tenant_id = httl.tenant_id AND httl.lang = #{lang}
+		WHERE oc.id = #{clientId}
+		<if test="organizationId != null">
+			AND oc.organization_id = #{organizationId}
+		</if>
+	</select>
+
+	<select id="listClientSimple" resultType="org.hzero.iam.domain.entity.Client">
+		<bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+		<bind name="now" value="@java.time.LocalDate@now()" />
+		SELECT
+		oc.id,
+		oc.name as name,
+		oc.organization_id,
+		ht.tenant_num,
+		httl.tenant_name
+		FROM oauth_client oc
+		JOIN hpfm_tenant ht ON ht.tenant_id = oc.organization_id
+		LEFT JOIN hpfm_tenant_tl httl ON ht.tenant_id = httl.tenant_id AND httl.lang = #{lang}
+		WHERE
+		    oc.enabled_flag = 1
+		AND NOT EXISTS (
+			SELECT 1 FROM iam_member_role imr
+			WHERE imr.role_id = #{roleId} AND imr.member_id = oc.id AND imr.member_type = 'client'
+			AND (
+			imr.start_date_active IS NULL
+			OR imr.start_date_active &lt;= #{now}
+			)
+			AND (
+			imr.end_date_active IS NULL OR
+			imr.end_date_active &gt;= #{now}
+			)
+		)
+		AND (
+		<!-- 当前租户的模糊匹配 -->
+		(
+		oc.organization_id = #{organizationId}
+		<if test="name != null and name != ''">
+			<bind name="nameLike" value="'%' + name + '%'" />
+			AND oc.name LIKE #{nameLike}
+		</if>
+		)
+		<if test="name != null and name != ''">
+			OR
+			<!-- 非当前租户的需要全匹配 -->
+			(
+			oc.organization_id != #{organizationId}
+			AND oc.name = #{name}
+			)
+		</if>
+		)
+	</select>
+
+	<!--  查询角色关联的客户端  -->
+	<select id="selectRoleClients" resultType="org.hzero.iam.domain.entity.Client">
+		<bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+		SELECT
+			oc.id,
+			oc.name as name,
+			oc.organization_id,
+			ht.tenant_num,
+			httl.tenant_name,
+			imr.id member_role_id,
+			imr.h_assign_level assign_level,
+			imr.h_assign_level_value assign_level_value,
+			(
+				CASE
+				WHEN imr.h_assign_level IN ( 'site', 'organization' ) THEN
+				(
+					SELECT
+						httl.tenant_name
+					FROM
+						hpfm_tenant ht
+					LEFT JOIN hpfm_tenant_tl httl ON ht.tenant_id = httl.tenant_id AND httl.lang = #{lang}
+					WHERE
+						ht.tenant_id = imr.h_assign_level_value )
+					WHEN imr.h_assign_level = 'org' THEN
+				(
+					SELECT
+						hut.unit_name
+					FROM
+						hpfm_unit hu
+					JOIN
+						hpfm_unit_tl hut ON hut.unit_id = hu.unit_id AND hut.lang = #{lang}
+					WHERE
+						hu.unit_id = imr.h_assign_level_value
+				) ELSE NULL
+				END
+			) assign_level_value_meaning,
+			imr.start_date_active,
+			imr.end_date_active
+		FROM
+			iam_member_role imr
+		JOIN oauth_client oc ON oc.id = imr.member_id
+		JOIN hpfm_tenant ht ON ht.tenant_id = oc.organization_id
+		LEFT JOIN hpfm_tenant_tl httl ON ht.tenant_id = httl.tenant_id AND httl.lang = #{lang}
+		WHERE
+			imr.role_id = #{roleId}
+		<if test="name != null and name != ''">
+			<bind name="nameLike" value="'%' + name + '%'" />
+			AND oc.name LIKE #{nameLike}
+		</if>
+		AND imr.member_type = 'client'
+		ORDER BY oc.organization_id,oc.id ASC
+	</select>
+</mapper>

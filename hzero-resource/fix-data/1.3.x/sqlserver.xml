@@ -1,0 +1,821 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<services>
+    <service name="hzero-platform">
+        <data>
+            UPDATE hbt SET hbt.tenant_id = hb.tenant_id
+            FROM hpfm_bank hb, hpfm_bank_tl hbt
+            WHERE hb.bank_id = hbt.bank_id;
+
+            UPDATE hchd SET hchd.tenant_id = hc.tenant_id
+            FROM hpfm_calendar hc, hpfm_calendar_hldy_detail hchd
+            WHERE hc.calendar_id = hchd.calendar_id;
+
+            UPDATE hcht SET hcht.tenant_id = hch.tenant_id
+            FROM hpfm_calendar_holiday hch, hpfm_calendar_holiday_tl hcht
+            WHERE hch.holiday_id = hcht.holiday_id;
+
+            UPDATE hioe SET hioe.tenant_id = hio.tenant_id
+            FROM hpfm_inv_organization hio, hpfm_inv_organization_es hioe
+            WHERE hio.organization_id = hioe.organization_id;
+
+            UPDATE hie SET hie.tenant_id = hi.tenant_id
+            FROM hpfm_inventory hi, hpfm_inventory_es hie
+            WHERE hi.inventory_id = hie.inventory_id;
+
+            UPDATE hlt SET hlt.tenant_id = hl.tenant_id
+            FROM hpfm_lov hl, hpfm_lov_tl hlt
+            WHERE hl.lov_id = hlt.lov_id;
+
+            UPDATE hlvt SET hlvt.tenant_id = hlv.tenant_id
+            FROM hpfm_lov_value hlv, hpfm_lov_value_tl hlvt
+            WHERE hlv.lov_value_id = hlvt.lov_value_id;
+
+            UPDATE houe SET houe.tenant_id = hou.tenant_id
+            FROM hpfm_operation_unit hou, hpfm_operation_unit_es houe
+            WHERE hou.ou_id = houe.ou_id;
+
+            UPDATE hpst SET hpst.tenant_id = hps.tenant_id
+            FROM hpfm_period_set hps, hpfm_period_set_tl hpst
+            WHERE hps.period_set_id = hpst.period_set_id;
+
+            UPDATE hpt SET hpt.tenant_id = hp.tenant_id
+            FROM hpfm_position hp, hpfm_position_tl hpt
+            WHERE hp.position_id = hpt.position_id;
+
+            UPDATE hpae SET hpae.tenant_id = hpa.tenant_id
+            FROM hpfm_purchase_agent hpa, hpfm_pur_agent_es hpae
+            WHERE hpa.purchase_agent_id = hpae.pur_agent_id;
+
+            UPDATE hpoe SET hpoe.tenant_id = hpo.tenant_id
+            FROM hpfm_purchase_organization hpo, hpfm_pur_organization_es hpoe
+            WHERE hpo.purchase_org_id = hpoe.purchase_org_id;
+
+            UPDATE hpau SET hpau.tenant_id = hpa.tenant_id
+            FROM hpfm_purchase_agent hpa, hpfm_purchase_agent_user hpau
+            WHERE hpa.purchase_agent_id = hpau.purchase_agent_id;
+
+            UPDATE hrt SET hrt.tenant_id = hr.tenant_id
+            FROM hpfm_region hr, hpfm_region_tl hrt
+            WHERE hr.region_id = hrt.region_id;
+
+            UPDATE hstv SET hstv.tenant_id = hst.tenant_id
+            FROM hpfm_static_text hst, hpfm_static_text_value hstv
+            WHERE hst.text_id = hstv.text_id;
+
+            UPDATE htt SET htt.tenant_id = ht.tenant_id
+            FROM hpfm_tax ht, hpfm_tax_tl htt
+            WHERE ht.tax_id = htt.tax_id;
+
+            UPDATE hut SET hut.tenant_id = hu.tenant_id
+            FROM hpfm_unit hu, hpfm_unit_tl hut
+            WHERE hu.unit_id = hut.unit_id;
+
+            UPDATE hut SET hut.tenant_id = hu.tenant_id
+            FROM hpfm_uom hu, hpfm_uom_tl hut
+            WHERE hu.uom_id = hut.uom_id;
+
+            UPDATE hutt SET hutt.tenant_id = hut.tenant_id
+            FROM hpfm_uom_type hut, hpfm_uom_type_tl hutt
+            WHERE hut.uom_type_id = hutt.uom_type_id;
+
+            UPDATE hdht SET hdht.tenant_id = hdh.tenant_id
+            FROM hpfm_data_hierarchy hdh, hpfm_data_hierarchy_tl hdht
+            WHERE hdh.data_hierarchy_id = hdht.data_hierarchy_id;
+
+            UPDATE hertt SET hertt.tenant_id = hert.tenant_id
+            FROM hpfm_exchange_rate_type hert, hpfm_exchange_rate_type_tl hertt
+            WHERE hert.rate_type_id = hertt.rate_type_id;
+
+            UPDATE hict SET hict.tenant_id = hic.tenant_id
+            FROM hpfm_industry_category hic, hpfm_industry_category_tl hict
+            WHERE hic.category_id = hict.category_id;
+
+            UPDATE hit SET hit.tenant_id = hi.tenant_id
+            FROM hpfm_industry hi, hpfm_industry_tl hit
+            WHERE hi.industry_id = hit.industry_id;
+
+            UPDATE hile SET hile.tenant_id = hl.tenant_id
+            FROM hpfm_location hl, hpfm_inv_location_es hile
+            WHERE hl.location_id = hile.location_id;
+
+            UPDATE hit SET hit.tenant_id = hi.tenant_id
+            FROM hpfm_lov_view_header hi, hpfm_lov_view_header_tl hit
+            WHERE hi.view_header_id = hit.view_header_id;
+
+            UPDATE hile SET hile.tenant_id = hl.tenant_id
+            FROM hpfm_lov_view_line hl, hpfm_lov_view_line_tl hile
+            WHERE hl.view_line_id = hile.view_line_id;
+
+            UPDATE hdta SET hdta.tenant_id = hdt.tenant_id
+            FROM hiam_doc_type_assign hdta, hiam_doc_type hdt
+            WHERE hdt.doc_type_id = hdta.doc_type_id;
+
+            UPDATE hdtad SET hdtad.tenant_id = hdt.tenant_id
+            FROM hiam_doc_type_auth_dim hdtad, hiam_doc_type hdt
+            WHERE hdt.doc_type_id = hdtad.doc_type_id;
+
+            UPDATE hdtp SET hdtp.tenant_id = hdtad.tenant_id
+            FROM hiam_doc_type_permission hdtp, hiam_doc_type_auth_dim hdtad
+            WHERE hdtp.auth_dim_id = hdtad.auth_dim_id;
+
+            UPDATE hra SET hra.tenant_id = hdt.tenant_id
+            FROM hiam_role_authority hra, hiam_doc_type hdt
+            WHERE hdt.doc_type_id = hra.auth_doc_type_id;
+
+            UPDATE hral SET hral.tenant_id = hra.tenant_id
+            FROM hiam_role_authority_line hral, hiam_role_authority hra
+            WHERE hral.role_auth_id = hra.role_auth_id;
+
+            UPDATE hsgt SET hsgt.tenant_id = hsg.tenant_id
+            FROM hiam_sec_grp_tl hsgt, hiam_sec_grp hsg
+            WHERE hsg.sec_grp_id = hsgt.sec_grp_id;
+
+            UPDATE huoa SET huoa.tenant_id = iu.organization_id
+            FROM hiam_user_open_account huoa, iam_user iu
+            WHERE iu.login_name = huoa.username;
+
+            UPDATE huoa SET huoa.tenant_id = iu.organization_id
+            FROM hiam_user_open_account huoa, iam_user iu
+            WHERE iu.login_name = huoa.username;
+
+            UPDATE hcrd SET hcrd.tenant_id = hcr.tenant_id
+            FROM hpfm_code_rule_dist hcrd, hpfm_code_rule hcr
+            WHERE hcr.rule_id = hcrd.rule_id;
+
+            UPDATE hcrd SET hcrd.tenant_id = hcrd1.tenant_id
+            FROM hpfm_code_rule_detail hcrd, hpfm_code_rule_dist hcrd1
+            WHERE hcrd.rule_dist_id = hcrd1.rule_dist_id;
+
+            UPDATE hcrv SET hcrv.tenant_id = hcrd.tenant_id
+            FROM hpfm_code_rule_value hcrv, hpfm_code_rule_detail hcrd
+            WHERE hcrd.rule_detail_id = hcrv.rule_detail_id;
+
+            UPDATE hct SET hct.tenant_id = hc.tenant_id
+            FROM hpfm_country_tl hct, hpfm_country hc
+            WHERE hct.country_id = hc.country_id;
+
+            UPDATE hct SET hct.tenant_id = hc.tenant_id
+            FROM hpfm_currency_tl hct, hpfm_currency hc
+            WHERE hct.currency_id = hc.currency_id;
+
+            UPDATE hdcc SET hdcc.tenant_id = hdc.tenant_id
+            FROM hpfm_dashboard_card_clause hdcc, hpfm_dashboard_card hdc
+            WHERE hdcc.card_id = hdc.id;
+
+            UPDATE hdct SET hdct.tenant_id = hdc.tenant_id
+            FROM hpfm_dashboard_card_tl hdct, hpfm_dashboard_card hdc
+            WHERE hdc.id = hdct.id;
+
+            UPDATE hdct SET hdct.tenant_id = hdc.tenant_id
+            FROM hpfm_dashboard_clause_tl hdct, hpfm_dashboard_clause hdc
+            WHERE hdct.clause_id = hdc.clause_id;
+
+            UPDATE hdrc SET hdrc.tenant_id = hdc.tenant_id
+            FROM hpfm_dashboard_role_card hdrc, hpfm_dashboard_card hdc
+            WHERE hdc.id = hdrc.card_id;
+
+            UPDATE her SET her.tenant_id = he.tenant_id
+            FROM hpfm_event_rule her, hpfm_event he
+            WHERE her.event_id = he.event_id;
+
+            UPDATE hfht SET hfht.tenant_id = hfh.tenant_id
+            FROM hpfm_form_header_tl hfht, hpfm_form_header hfh
+            WHERE hfht.form_header_id = hfh.form_header_id;
+
+            UPDATE hflt SET hflt.tenant_id = hfl.tenant_id
+            FROM hpfm_form_line_tl hflt, hpfm_form_line hfl
+            WHERE hflt.form_line_id = hfl.form_line_id;
+
+            UPDATE hpr SET hpr.tenant_id = hpr1.tenant_id
+            FROM hpfm_permission_rel hpr, hpfm_permission_rule hpr1
+            WHERE hpr.rule_id = hpr1.rule_id;
+
+            UPDATE hpv SET hpr.tenant_id = hp.tenant_id
+            FROM hpfm_profile_value hpv, hpfm_profile hp
+            WHERE hp.profile_id = hpv.profile_id;
+            UPDATE imp SET imp.tenant_id = im.h_tenant_id
+            FROM iam_menu_permission imp, iam_menu im
+            WHERE im.id = imp.menu_id;
+
+            UPDATE imt SET imt.h_tenant_id = im.h_tenant_id
+            FROM iam_menu_tl imt, iam_menu im
+            WHERE im.id = imt.id;
+
+            UPDATE irp SET irp.tenant_id = ir.h_tenant_id
+            FROM iam_role_permission irp, iam_role ir
+            WHERE ir.id = irp.role_id;
+
+            UPDATE irt SET irt.h_tenant_id = ir.h_tenant_id
+            FROM iam_role_tl irt, iam_role ir
+            WHERE ir.id = irt.id;
+
+            UPDATE olh SET olh.tenant_id = ol.organization_id
+            FROM oauth_ldap_history olh, oauth_ldap ol
+            WHERE olh.ldap_id = ol.id;
+
+            UPDATE oleu SET oleu.tenant_id = olh.tenant_id
+            FROM oauth_ldap_error_user oleu, oauth_ldap_history olh
+            WHERE oleu.LDAP_HISTORY_ID = olh.id;
+
+            UPDATE oph SET oph.tenant_id = iu.organization_id
+            FROM oauth_password_history oph, iam_user iu
+            WHERE iu.id = oph.user_id;
+
+            UPDATE hd SET hd.db_type = 'MYSQL'
+            FROM hpfm_datasource hd
+            WHERE hd.db_type = 'MySql';
+
+            UPDATE hd SET hd.db_type = 'SQLSERVER'
+            FROM hpfm_datasource hd
+            WHERE hd.db_type = 'SqlServer';
+
+            UPDATE hd SET hd.db_type = 'ORACLE'
+            FROM hpfm_datasource hd
+            WHERE hd.db_type = 'Oracle';
+
+            UPDATE hd SET hd.db_type = 'TIDB'
+            FROM hpfm_datasource hd
+            WHERE hd.db_type = 'TiDB';
+
+            INSERT INTO hpfm_rule_script_tl ( rule_script_id, lang, script_description, tenant_id ) SELECT
+            rule_script_id,
+            lang,
+            script_description,
+            tenant_id
+            FROM
+            ( SELECT rule_script_id, 'zh_CN' AS lang, script_description, tenant_id FROM hpfm_rule_script UNION SELECT rule_script_id, 'en_US', script_description, tenant_id FROM hpfm_rule_script ) t
+            WHERE NOT EXISTS ( SELECT 1 FROM hpfm_rule_script_tl WHERE rule_script_id = t.rule_script_id and lang = t.lang);
+
+            INSERT INTO hiam_user_group_tl ( user_group_id, lang, group_name, tenant_id ) SELECT
+            user_group_id,
+            lang,
+            group_name,
+            tenant_id
+            FROM
+            ( SELECT user_group_id, 'zh_CN' AS lang, group_name, tenant_id FROM hiam_user_group UNION SELECT user_group_id, 'en_US', group_name, tenant_id FROM hiam_user_group ) t
+            WHERE NOT EXISTS ( SELECT 1 FROM hiam_user_group_tl WHERE user_group_id = t.user_group_id and lang = t.lang);
+
+            INSERT INTO hpfm_permission_rule_tl ( rule_id, lang, rule_name, tenant_id ) SELECT
+            rule_id,
+            lang,
+            rule_name,
+            tenant_id
+            FROM
+            ( SELECT rule_id, 'zh_CN' AS lang, rule_name, tenant_id FROM hpfm_permission_rule UNION SELECT rule_id, 'en_US', rule_name, tenant_id FROM hpfm_permission_rule ) t
+            WHERE NOT EXISTS ( SELECT 1 FROM hpfm_permission_rule_tl WHERE rule_id = t.rule_id and lang = t.lang);
+
+            INSERT INTO hpfm_profile_tl ( profile_id, lang, description, tenant_id ) SELECT
+            profile_id,
+            lang,
+            description,
+            tenant_id
+            FROM
+            ( SELECT profile_id, 'zh_CN' AS lang, description, tenant_id FROM hpfm_profile UNION SELECT profile_id, 'en_US', description, tenant_id FROM hpfm_profile ) t
+            WHERE NOT EXISTS ( SELECT 1 FROM hpfm_profile_tl WHERE profile_id = t.profile_id and lang = t.lang);
+
+            INSERT INTO hpfm_api_cusz_tl ( customize_id, lang, customize_name, tenant_id ) SELECT
+            customize_id,
+            lang,
+            customize_name,
+            tenant_id
+            FROM
+            ( SELECT customize_id, 'zh_CN' AS lang, customize_name, tenant_id FROM hpfm_api_cusz UNION SELECT customize_id, 'en_US', customize_name, tenant_id FROM hpfm_api_cusz ) t
+            WHERE NOT EXISTS ( SELECT 1 FROM hpfm_api_cusz_tl WHERE customize_id = t.customize_id and lang = t.lang);
+
+            INSERT INTO hpfm_config_tl ( config_id, lang, config_value, tenant_id ) (
+            SELECT
+            hc.config_id,
+            'zh_CN',
+            hc.config_value,
+            hc.tenant_id
+            FROM
+            hpfm_config hc
+            WHERE NOT EXISTS ( SELECT 1 FROM hpfm_config_tl hct WHERE hct.config_id = hc.config_id AND hct.lang = 'zh_CN' )
+            );
+
+            INSERT INTO hpfm_config_tl ( config_id, lang, config_value, tenant_id ) (
+            SELECT
+            hc.config_id,
+            'en_US',
+            hc.config_value,
+            hc.tenant_id
+            FROM
+            hpfm_config hc
+            WHERE NOT EXISTS ( SELECT 1 FROM hpfm_config_tl hct WHERE hct.config_id = hc.config_id AND hct.lang = 'en_US' )
+            );
+
+            INSERT INTO hiam_doc_type_tl ( doc_type_id, lang, doc_type_name, tenant_id ) (
+            SELECT
+            hc.doc_type_id,
+            'zh_CN',
+            hc.doc_type_name,
+            hc.tenant_id
+            FROM
+            hiam_doc_type hc
+            WHERE NOT EXISTS ( SELECT 1 FROM hiam_doc_type_tl hct WHERE hct.doc_type_id = hc.doc_type_id AND hct.lang = 'zh_CN' )
+            );
+
+            INSERT INTO hiam_doc_type_tl ( doc_type_id, lang, doc_type_name, tenant_id ) (
+            SELECT
+            hc.doc_type_id,
+            'en_US',
+            hc.doc_type_name,
+            hc.tenant_id
+            FROM
+            hiam_doc_type hc
+            WHERE NOT EXISTS ( SELECT 1 FROM hiam_doc_type_tl hct WHERE hct.doc_type_id = hc.doc_type_id AND hct.lang = 'en_US' )
+            );
+
+            INSERT INTO hiam_doc_type_dimension_tl ( dimension_id, lang, dimension_name, tenant_id ) (
+            SELECT
+            hc.dimension_id,
+            'zh_CN',
+            hc.dimension_name,
+            hc.tenant_id
+            FROM
+            hiam_doc_type_dimension hc
+            WHERE NOT EXISTS ( SELECT 1 FROM hiam_doc_type_dimension_tl hct WHERE hct.dimension_id = hc.dimension_id AND hct.lang = 'zh_CN' )
+            );
+
+            INSERT INTO hiam_doc_type_dimension_tl ( dimension_id, lang, dimension_name, tenant_id ) (
+            SELECT
+            hc.dimension_id,
+            'en_US',
+            hc.dimension_name,
+            hc.tenant_id
+            FROM
+            hiam_doc_type_dimension hc
+            WHERE NOT EXISTS ( SELECT 1 FROM hiam_doc_type_dimension_tl hct WHERE hct.dimension_id = hc.dimension_id AND hct.lang = 'en_US' )
+            );
+
+            INSERT INTO hiam_open_app_tl ( open_app_id, lang, app_name, organization_id ) (
+            SELECT
+            hc.open_app_id,
+            'zh_CN',
+            hc.app_name,
+            hc.organization_id
+            FROM
+            hiam_open_app hc
+            WHERE NOT EXISTS ( SELECT 1 FROM hiam_open_app_tl hct WHERE hct.open_app_id = hc.open_app_id AND hct.lang = 'zh_CN' )
+            );
+
+            INSERT INTO hiam_open_app_tl ( open_app_id, lang, app_name, organization_id ) (
+            SELECT
+            hc.open_app_id,
+            'en_US',
+            hc.app_name,
+            hc.organization_id
+            FROM
+            hiam_open_app hc
+            WHERE NOT EXISTS ( SELECT 1 FROM hiam_open_app_tl hct WHERE hct.open_app_id = hc.open_app_id AND hct.lang = 'en_US' )
+            );
+
+            INSERT INTO hpfm_datasource_driver_tl ( driver_id, lang, driver_name, tenant_id ) (
+            SELECT
+            hc.driver_id,
+            'zh_CN',
+            hc.driver_name,
+            hc.tenant_id
+            FROM
+            hpfm_datasource_driver hc
+            WHERE NOT EXISTS ( SELECT 1 FROM hpfm_datasource_driver_tl hct WHERE hct.driver_id = hc.driver_id AND hct.lang = 'zh_CN' )
+            );
+
+            INSERT INTO hpfm_datasource_driver_tl ( driver_id, lang, driver_name, tenant_id ) (
+            SELECT
+            hc.driver_id,
+            'en_US',
+            hc.driver_name,
+            hc.tenant_id
+            FROM
+            hpfm_datasource_driver hc
+            WHERE NOT EXISTS ( SELECT 1 FROM hpfm_datasource_driver_tl hct WHERE hct.driver_id = hc.driver_id AND hct.lang = 'en_US' )
+            );
+
+            INSERT INTO hpfm_datasource_tl ( datasource_id, lang, description, tenant_id ) (
+            SELECT
+            hc.datasource_id,
+            'zh_CN',
+            hc.description,
+            hc.tenant_id
+            FROM
+            hpfm_datasource hc
+            WHERE NOT EXISTS ( SELECT 1 FROM hpfm_datasource_tl hct WHERE hct.datasource_id = hc.datasource_id AND hct.lang = 'zh_CN' )
+            );
+
+            INSERT INTO hpfm_datasource_tl ( datasource_id, lang, description, tenant_id ) (
+            SELECT
+            hc.datasource_id,
+            'en_US',
+            hc.description,
+            hc.tenant_id
+            FROM
+            hpfm_datasource hc
+            WHERE NOT EXISTS ( SELECT 1 FROM hpfm_datasource_tl hct WHERE hct.datasource_id = hc.datasource_id AND hct.lang = 'en_US' )
+            );
+
+            INSERT INTO hpfm_gantt_tl ( gantt_id, lang, gantt_name, tenant_id ) (
+            SELECT
+            hc.gantt_id,
+            'zh_CN',
+            hc.gantt_name,
+            hc.tenant_id
+            FROM
+            hpfm_gantt hc
+            WHERE NOT EXISTS ( SELECT 1 FROM hpfm_gantt_tl hct WHERE hct.gantt_id = hc.gantt_id AND hct.lang = 'zh_CN' )
+            );
+
+            INSERT INTO hpfm_gantt_tl ( gantt_id, lang, gantt_name, tenant_id ) (
+            SELECT
+            hc.gantt_id,
+            'en_US',
+            hc.gantt_name,
+            hc.tenant_id
+            FROM
+            hpfm_gantt hc
+            WHERE NOT EXISTS ( SELECT 1 FROM hpfm_gantt_tl hct WHERE hct.gantt_id = hc.gantt_id AND hct.lang = 'en_US' )
+            );
+
+            INSERT INTO hpfm_gantt_tl ( gantt_id, lang, gantt_name, tenant_id ) (
+            SELECT
+            hc.gantt_id,
+            'en_US',
+            hc.gantt_name,
+            hc.tenant_id
+            FROM
+            hpfm_gantt hc
+            WHERE NOT EXISTS ( SELECT 1 FROM hpfm_gantt_tl hct WHERE hct.gantt_id = hc.gantt_id AND hct.lang = 'en_US' )
+            );
+
+            INSERT INTO hpfm_event_tl ( event_id, lang, event_description, tenant_id ) (
+            SELECT
+            he.event_id,
+            'zh_CN',
+            he.event_description,
+            he.tenant_id
+            FROM
+            hpfm_event he
+            WHERE NOT EXISTS ( SELECT 1 FROM hpfm_event_tl het WHERE het.event_id = he.event_id AND het.lang = 'zh_CN' )
+            );
+
+            INSERT INTO hpfm_event_tl ( event_id, lang, event_description, tenant_id ) (
+            SELECT
+            he.event_id,
+            'en_US',
+            he.event_description,
+            he.tenant_id
+            FROM
+            hpfm_event he
+            WHERE NOT EXISTS ( SELECT 1 FROM hpfm_event_tl het WHERE het.event_id = he.event_id AND het.lang = 'en_US' )
+            );
+
+            INSERT INTO hpfm_template_tl ( template_id, lang, template_name, tenant_id ) (
+            SELECT
+            ht.template_id,
+            'zh_CN',
+            ht.template_name,
+            ht.tenant_id
+            FROM
+            hpfm_template ht
+            WHERE NOT EXISTS ( SELECT 1 FROM hpfm_template_tl htt WHERE htt.template_id = ht.template_id AND htt.lang = 'zh_CN' )
+            );
+
+            INSERT INTO hpfm_template_tl ( template_id, lang, template_name, tenant_id ) (
+            SELECT
+            ht.template_id,
+            'en_US',
+            ht.template_name,
+            ht.tenant_id
+            FROM
+            hpfm_template ht
+            WHERE NOT EXISTS ( SELECT 1 FROM hpfm_template_tl htt WHERE htt.template_id = ht.template_id AND htt.lang = 'en_US' )
+            );
+
+            INSERT INTO hpfm_code_rule_tl ( rule_id, lang, rule_name, tenant_id ) SELECT
+            rule_id,
+            lang,
+            rule_name,
+            tenant_id
+            FROM
+            ( SELECT rule_id, 'zh_CN' AS lang, rule_name, tenant_id FROM hpfm_code_rule UNION SELECT rule_id, 'en_US', rule_name, tenant_id FROM hpfm_code_rule ) t
+            WHERE NOT EXISTS ( SELECT 1 FROM hpfm_code_rule_tl WHERE rule_id = t.rule_id and lang = t.lang);
+
+            UPDATE hbt SET hbt.tenant_id = hb.tenant_id
+            FROM smdm_cost_center hb, smdm_cost_center_tl hbt
+            WHERE hb.cost_id = hbt.cost_id;
+
+            INSERT INTO hiam_domain_assign ( domain_id, tenant_id, company_id ) (
+            SELECT
+            hd.domain_id,
+            hd.tenant_id,
+            hd.company_id
+            FROM
+            hiam_domain hd
+            WHERE
+            NOT EXISTS ( SELECT 1 FROM hiam_domain_assign hda WHERE hda.domain_id = hd.domain_id AND hda.tenant_id = hd.tenant_id )
+            )
+        </data>
+    </service>
+    <service name="hzero-file">
+        <data>
+            UPDATE hfel SET hfel.tenant_id = hf.tenant_id
+            FROM hfle_file_edit_log hfel, hfle_file hf
+            WHERE hfel.file_id = hf.file_id;
+        </data>
+    </service>
+    <service name="hzero-nlp">
+        <data>
+            INSERT INTO hnlp_template_tl ( TEMPLATE_ID, LANG, TEMPLATE_NAME, TENANT_ID ) SELECT
+            TEMPLATE_ID,
+            LANG,
+            TEMPLATE_NAME,
+            TENANT_ID
+            FROM
+            ( SELECT TEMPLATE_ID, 'zh_CN' AS LANG, TEMPLATE_NAME, TENANT_ID FROM hnlp_template UNION SELECT TEMPLATE_ID, 'en_US', TEMPLATE_NAME, TENANT_ID FROM hnlp_template ) t
+            WHERE NOT EXISTS ( SELECT 1 FROM hnlp_template_tl WHERE TEMPLATE_ID = t.TEMPLATE_ID and LANG = t.LANG)
+        </data>
+    </service>
+    <service name="hzero-report">
+        <data>
+            INSERT INTO hrpt_template_tl ( template_id, lang, template_name, tenant_id ) (
+            SELECT
+            hc.template_id,
+            'zh_CN',
+            hc.template_name,
+            hc.tenant_id
+            FROM
+            hrpt_template hc
+            WHERE NOT EXISTS ( SELECT 1 FROM hrpt_template_tl hct WHERE hct.template_id = hc.template_id AND hct.lang = 'zh_CN' )
+            );
+
+            INSERT INTO hrpt_template_tl ( template_id, lang, template_name, tenant_id ) (
+            SELECT
+            hc.template_id,
+            'en_US',
+            hc.template_name,
+            hc.tenant_id
+            FROM
+            hrpt_template hc
+            WHERE NOT EXISTS ( SELECT 1 FROM hrpt_template_tl hct WHERE hct.template_id = hc.template_id AND hct.lang = 'en_US' )
+            );
+
+            INSERT INTO hrpt_report_tl ( report_id, lang, report_name, tenant_id ) (
+            SELECT
+            hc.report_id,
+            'zh_CN',
+            hc.report_name,
+            hc.tenant_id
+            FROM
+            hrpt_report hc
+            WHERE NOT EXISTS ( SELECT 1 FROM hrpt_report_tl hct WHERE hct.report_id = hc.report_id AND hct.lang = 'zh_CN' )
+            );
+
+            INSERT INTO hrpt_report_tl ( report_id, lang, report_name, tenant_id ) (
+            SELECT
+            hc.report_id,
+            'en_US',
+            hc.report_name,
+            hc.tenant_id
+            FROM
+            hrpt_report hc
+            WHERE NOT EXISTS ( SELECT 1 FROM hrpt_report_tl hct WHERE hct.report_id = hc.report_id AND hct.lang = 'en_US' )
+            );
+
+            INSERT INTO hrpt_label_template_tl ( label_template_id, lang, template_name, tenant_id ) SELECT
+            label_template_id,
+            lang,
+            template_name,
+            tenant_id
+            FROM
+            ( SELECT label_template_id, 'zh_CN' AS lang, template_name, tenant_id FROM hrpt_label_template UNION SELECT label_template_id, 'en_US', template_name, tenant_id FROM hrpt_label_template ) t
+            WHERE
+            NOT EXISTS ( SELECT 1 FROM hrpt_label_template_tl WHERE label_template_id = t.label_template_id AND lang = t.lang );
+        </data>
+    </service>
+    <service name="hzero-message">
+        <data>
+            UPDATE hef SET hef.tenant_id = hes.tenant_id
+            FROM hmsg_email_filter hef, hmsg_email_server hes
+            WHERE hes.server_id = hef.server_id;
+
+            UPDATE hrct SET hrct.tenant_id = hrc.tenant_id
+            FROM hmsg_receive_config_tl hrct, hmsg_receive_config hrc
+            WHERE hrct.receive_id = hrc.receive_id;
+
+            UPDATE hta SET hta.tenant_id = hmt.tenant_id
+            FROM hmsg_template_arg hta, hmsg_message_template hmt
+            WHERE hta.template_id = hmt.template_id;
+
+            UPDATE htat SET htat.tenant_id = hta.tenant_id
+            FROM hmsg_template_arg hta, hmsg_template_arg_tl htat
+            WHERE hta.arg_id = htat.arg_id;
+
+            UPDATE htsl SET htsl.tenant_id = hts.tenant_id
+            FROM hmsg_template_server_line htsl, hmsg_template_server hts
+            WHERE hts.temp_server_id = htsl.temp_server_id;
+
+            INSERT INTO hmsg_email_server_tl ( server_id, lang, server_name, tenant_id ) SELECT
+            server_id,
+            lang,
+            server_name,
+            tenant_id
+            FROM
+            ( SELECT server_id, 'zh_CN' AS lang, server_name, tenant_id FROM hmsg_email_server UNION SELECT server_id, 'en_US', server_name, tenant_id FROM hmsg_email_server ) t
+            WHERE NOT EXISTS ( SELECT 1 FROM hmsg_email_server_tl WHERE server_id = t.server_id and lang = t.lang);
+
+            INSERT INTO hmsg_sms_server_tl ( server_id, lang, server_name, tenant_id ) SELECT
+            server_id,
+            lang,
+            server_name,
+            tenant_id
+            FROM
+            ( SELECT server_id, 'zh_CN' AS lang, server_name, tenant_id FROM hmsg_sms_server UNION SELECT server_id, 'en_US', server_name, tenant_id FROM hmsg_sms_server ) t
+            WHERE NOT EXISTS ( SELECT 1 FROM hmsg_sms_server_tl WHERE server_id = t.server_id and lang = t.lang);
+
+            INSERT INTO hmsg_wechat_official_tl ( server_id, lang, server_name, tenant_id ) SELECT
+            server_id,
+            lang,
+            server_name,
+            tenant_id
+            FROM
+            ( SELECT server_id, 'zh_CN' AS lang, server_name, tenant_id FROM hmsg_wechat_official UNION SELECT server_id, 'en_US', server_name, tenant_id FROM hmsg_wechat_official ) t
+            WHERE NOT EXISTS ( SELECT 1 FROM hmsg_wechat_official_tl WHERE server_id = t.server_id and lang = t.lang);
+
+            INSERT INTO hmsg_wechat_enterprise_tl ( server_id, lang, server_name, tenant_id ) SELECT
+            server_id,
+            lang,
+            server_name,
+            tenant_id
+            FROM
+            ( SELECT server_id, 'zh_CN' AS lang, server_name, tenant_id FROM hmsg_wechat_enterprise UNION SELECT server_id, 'en_US', server_name, tenant_id FROM hmsg_wechat_enterprise ) t
+            WHERE NOT EXISTS ( SELECT 1 FROM hmsg_wechat_enterprise_tl WHERE server_id = t.server_id and lang = t.lang);
+
+            INSERT INTO hmsg_dingtalk_server_tl ( server_id, lang, server_name, tenant_id ) SELECT
+            server_id,
+            lang,
+            server_name,
+            tenant_id
+            FROM
+            ( SELECT server_id, 'zh_CN' AS lang, server_name, tenant_id FROM hmsg_dingtalk_server UNION SELECT server_id, 'en_US', server_name, tenant_id FROM hmsg_dingtalk_server ) t
+            WHERE NOT EXISTS ( SELECT 1 FROM hmsg_dingtalk_server_tl WHERE server_id = t.server_id and lang = t.lang);
+
+            INSERT INTO hmsg_webhook_server_tl ( server_id, lang, server_name, tenant_id ) SELECT
+            server_id,
+            lang,
+            server_name,
+            tenant_id
+            FROM
+            ( SELECT server_id, 'zh_CN' AS lang, server_name, tenant_id FROM hmsg_webhook_server UNION SELECT server_id, 'en_US', server_name, tenant_id FROM hmsg_webhook_server ) t
+            WHERE NOT EXISTS ( SELECT 1 FROM hmsg_webhook_server_tl WHERE server_id = t.server_id and lang = t.lang);
+
+            INSERT INTO hmsg_call_server_tl ( server_id, lang, server_name, tenant_id ) SELECT
+            server_id,
+            lang,
+            server_name,
+            tenant_id
+            FROM
+            ( SELECT server_id, 'zh_CN' AS lang, server_name, tenant_id FROM hmsg_call_server UNION SELECT server_id, 'en_US', server_name, tenant_id FROM hmsg_call_server ) t
+            WHERE NOT EXISTS ( SELECT 1 FROM hmsg_call_server_tl WHERE server_id = t.server_id and lang = t.lang);
+
+            INSERT INTO hmsg_template_server_tl ( temp_server_id, lang, message_name, tenant_id ) SELECT
+            temp_server_id,
+            lang,
+            message_name,
+            tenant_id
+            FROM
+            ( SELECT temp_server_id, 'zh_CN' AS lang, message_name, tenant_id FROM hmsg_template_server UNION SELECT temp_server_id, 'en_US', message_name, tenant_id FROM hmsg_template_server ) t
+            WHERE NOT EXISTS ( SELECT 1 FROM hmsg_template_server_tl WHERE temp_server_id = t.temp_server_id and lang = t.lang);
+        </data>
+    </service>
+    <service name="hzero-scheduler">
+        <data>
+            UPDATE hec SET hec.tenant_id = he.tenant_id
+            FROM hsdr_executor_config hec, hsdr_executor he
+            WHERE hec.executor_id = he.executor_id;
+
+            INSERT INTO hsdr_conc_executable_tl ( executable_id, lang, executable_name, tenant_id ) (
+            SELECT
+            hc.executable_id,
+            'zh_CN',
+            hc.executable_name,
+            hc.tenant_id
+            FROM
+            hsdr_conc_executable hc
+            WHERE NOT EXISTS ( SELECT 1 FROM hsdr_conc_executable_tl hct WHERE hct.executable_id = hc.executable_id AND hct.lang = 'zh_CN' )
+            );
+
+            INSERT INTO hsdr_conc_executable_tl ( executable_id, lang, executable_name, tenant_id ) (
+            SELECT
+            hc.executable_id,
+            'en_US',
+            hc.executable_name,
+            hc.tenant_id
+            FROM
+            hsdr_conc_executable hc
+            WHERE NOT EXISTS ( SELECT 1 FROM hsdr_conc_executable_tl hct WHERE hct.executable_id = hc.executable_id AND hct.lang = 'en_US' )
+            );
+
+            INSERT INTO hsdr_concurrent_tl ( concurrent_id, lang, conc_name, tenant_id ) (
+            SELECT
+            hc.concurrent_id,
+            'zh_CN',
+            hc.conc_name,
+            hc.tenant_id
+            FROM
+            hsdr_concurrent hc
+            WHERE NOT EXISTS ( SELECT 1 FROM hsdr_concurrent_tl hct WHERE hct.concurrent_id = hc.concurrent_id AND hct.lang = 'zh_CN' )
+            );
+
+            INSERT INTO hsdr_concurrent_tl ( concurrent_id, lang, conc_name, tenant_id ) (
+            SELECT
+            hc.concurrent_id,
+            'en_US',
+            hc.conc_name,
+            hc.tenant_id
+            FROM
+            hsdr_concurrent hc
+            WHERE NOT EXISTS ( SELECT 1 FROM hsdr_concurrent_tl hct WHERE hct.concurrent_id = hc.concurrent_id AND hct.lang = 'en_US' )
+            );
+
+            INSERT INTO hsdr_executor_tl ( executor_id, lang, executor_name, tenant_id ) (
+            SELECT
+            hc.executor_id,
+            'zh_CN',
+            hc.executor_name,
+            hc.tenant_id
+            FROM
+            hsdr_executor hc
+            WHERE NOT EXISTS ( SELECT 1 FROM hsdr_executor_tl hct WHERE hct.executor_id = hc.executor_id AND hct.lang = 'zh_CN' )
+            );
+
+            INSERT INTO hsdr_executor_tl ( executor_id, lang, executor_name, tenant_id ) (
+            SELECT
+            hc.executor_id,
+            'en_US',
+            hc.executor_name,
+            hc.tenant_id
+            FROM
+            hsdr_executor hc
+            WHERE NOT EXISTS ( SELECT 1 FROM hsdr_executor_tl hct WHERE hct.executor_id = hc.executor_id AND hct.lang = 'en_US' )
+            );
+        </data>
+    </service>
+    <service name="hzero-import">
+        <data>
+            UPDATE htt SET htt.tenant_id = hth.tenant_id
+            FROM himp_template_target htt, himp_template_header hth
+            WHERE hth.id = htt.header_id;
+
+            INSERT INTO himp_template_target_tl ( id, lang, sheet_name, tenant_id ) (
+            SELECT
+            hc.id,
+            'zh_CN',
+            hc.sheet_name,
+            hc.tenant_id
+            FROM
+            himp_template_target hc
+            WHERE NOT EXISTS ( SELECT 1 FROM himp_template_target_tl hct WHERE hct.id = hc.id AND hct.lang = 'zh_CN' )
+            );
+
+            INSERT INTO himp_template_target_tl ( id, lang, sheet_name, tenant_id ) (
+            SELECT
+            hc.id,
+            'en_US',
+            hc.sheet_name,
+            hc.tenant_id
+            FROM
+            himp_template_target hc
+            WHERE NOT EXISTS ( SELECT 1 FROM himp_template_target_tl hct WHERE hct.id = hc.id AND hct.lang = 'en_US' )
+            );
+
+            INSERT INTO himp_template_header_tl ( id, lang, template_name, tenant_id ) (
+            SELECT
+            hc.id,
+            'zh_CN',
+            hc.template_name,
+            hc.tenant_id
+            FROM
+            himp_template_header hc
+            WHERE NOT EXISTS ( SELECT 1 FROM himp_template_header_tl hct WHERE hct.id = hc.id AND hct.lang = 'zh_CN' )
+            );
+
+            INSERT INTO himp_template_header_tl ( id, lang, template_name, tenant_id ) (
+            SELECT
+            hc.id,
+            'en_US',
+            hc.template_name,
+            hc.tenant_id
+            FROM
+            himp_template_header hc
+            WHERE NOT EXISTS ( SELECT 1 FROM himp_template_header_tl hct WHERE hct.id = hc.id AND hct.lang = 'en_US' )
+            );
+        </data>
+    </service>
+    <service name="hzero-monitor">
+        <data>
+            UPDATE haoll SET haoll.tenant_id = haol.tenant_id
+            FROM hmnt_audit_op_log_line haoll, hmnt_audit_op_log haol
+            WHERE haol.log_id = haoll.log_id;
+        </data>
+    </service>
+</services>

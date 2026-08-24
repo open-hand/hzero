@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.scheduler.infra.mapper.ExecutableMapper">
+
+    <select id="listExecutables" resultType="org.hzero.scheduler.domain.entity.Executable">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()" />
+        SELECT
+            hce.executable_id,
+            hce.executable_code,
+            hcet.executable_name,
+            hce.executable_desc,
+            hce.executor_id,
+            het.executor_name,
+            hce.executor_strategy,
+            hce.fail_strategy,
+            hce.exe_type_code,
+            hce.job_handler,
+            hce.enabled_flag,
+            hce.tenant_id,
+            ht.tenant_name,
+            hce.object_version_number
+        FROM
+            hsdr_conc_executable hce
+        JOIN hsdr_executor he ON he.executor_id = hce.executor_id
+        LEFT JOIN hsdr_conc_executable_tl hcet ON hce.executable_id = hcet.executable_id AND hcet.lang = #{lang}
+        LEFT JOIN hsdr_executor_tl het ON het.executor_id = he.executor_id AND het.lang = #{lang}
+        JOIN hpfm_tenant_tl ht ON ht.tenant_id = hce.tenant_id AND ht.lang = #{lang}
+        WHERE
+            1 = 1
+        <if test="tenantId != null">
+            AND hce.tenant_id = #{tenantId}
+        </if>
+        <if test="executorId != null">
+            AND hce.executor_id = #{executorId}
+        </if>
+        <if test="executableName != null and executableName != ''">
+            <bind name="executableNameLike" value="'%' + executableName + '%'"/>
+            AND hcet.executable_name LIKE #{executableNameLike}
+        </if>
+        <if test="executableDesc != null and executableDesc != ''">
+            <bind name="executableDescLike" value="'%' + executableDesc + '%'"/>
+            AND hce.executable_desc LIKE #{executableDescLike}
+        </if>
+    </select>
+
+    <select id="selectExecutableById" resultType="org.hzero.scheduler.domain.entity.Executable">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()" />
+        SELECT
+            hce.executable_id,
+            hce.executable_code,
+            hcet.executable_name,
+            hce.executable_desc,
+            hce.executor_id,
+            het.executor_name,
+            hce.executor_strategy,
+            hce.fail_strategy,
+            hce.strategy_param,
+            hce.exe_type_code,
+            hce.job_handler,
+            hce.enabled_flag,
+            hce.tenant_id,
+            ht.tenant_name,
+            hce.object_version_number
+        FROM hsdr_conc_executable hce
+        JOIN hsdr_executor he ON he.executor_id = hce.executor_id
+        LEFT JOIN hpfm_tenant_tl ht ON ht.tenant_id = hce.tenant_id AND ht.lang = #{lang}
+        LEFT JOIN hsdr_executor_tl het ON het.executor_id = he.executor_id AND het.lang = #{lang}
+        LEFT JOIN hsdr_conc_executable_tl hcet ON hce.executable_id = hcet.executable_id AND hcet.lang = #{lang}
+        WHERE hce.executable_id = #{executableId}
+        <if test="tenantId != null">
+            AND hce.tenant_id = #{tenantId}
+        </if>
+    </select>
+</mapper>

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta http-equiv="Expires" content="0"/>
+    <meta http-equiv="Pragma" content="no-cache"/>
+    <meta http-equiv="Cache-control" content="no-cache"/>
+    <meta http-equiv="Cache" content="no-cache"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+
+    <!-- favicon -->
+    <link rel="shortcut icon" th:href="@{static/slide/img/favicon.png}" type="image/x-icon"/>
+
+    <!-- title -->
+    <title th:if="${systemTitle}" th:text="${systemTitle}"></title>
+    <title th:unless="${systemTitle}" th:text="${systemTitle} ? ${systemTitle} : 'HZERO'"></title>
+
+    <!-- css -->
+    <link th:href="@{static/slide/css/login-mobile.css}" rel="stylesheet"/>
+
+    <script th:src="@{static/slide/js/jquery.min.js}"></script>
+    <script th:src="@{static/slide/js/mobile.js}"></script>
+</head>
+<body class="login">
+<div class="logoleft">
+    <div id="content">
+        <div style="display: flex;justify-content: center">
+          <img th:src="@{static/slide/img/logo.png}" style="height: 48px;"/>
+        </div>
+
+        <div style="display: flex;justify-content: center;margin-top: 1.25rem;">
+            <span style="font-size: 1.25rem;color: rgba(0,0,0,0.65);" th:if="${loginButton}" th:text="${loginButton}"></span>
+        </div>
+        <form class="form-vertical login-form" action="login" method="post" autocomplete="off">
+            <div class="control-group">
+                <label class="control-label" th:if="${account}" th:text="${account}"></label>
+                <div class="controls">
+                    <div th:class="${usernameNotFound}? 'input-icon left inputError' : 'input-icon left inputNormal'">
+                        <input id="username" class="m-wrap " autocomplete="off" type="text" name="username"
+                               th:value="${param.username != null ? param.username[0] : ''}"
+                               th:placeholder="${userNamePlaceholder}"/>
+                    </div>
+                </div>
+
+            </div>
+
+
+            <div class="control-group" style="margin-top: 1.375rem">
+                <label class="control-label " th:if="${passwordPlaceholder}" th:text="${passwordPlaceholder}"></label>
+                <div class="controls">
+                    <div th:class="${passwordWrong}? 'input-icon left inputError' : 'input-icon left inputNormal'">
+                        <input class="m-wrap " id="password" type="password" autocomplete="off"
+                               th:placeholder="${passwordMessage}"/>
+                        <script type="text/javascript">
+                            $('#password').on('focus', function () {
+                                $(this).attr('type', 'password');
+                            });
+                        </script>
+                    </div>
+                </div>
+            </div>
+            <div th:text="${loginErrorMsg}" class="alert alert-error"></div>
+            <!-- 是否开启验证码-->
+            <div style="margin-top: 1.375rem" th:if="${isNeedCaptcha}" class="control-group">
+                <label class="control-label " th:if="${captchaPlaceholder}" th:text="${captchaPlaceholder}">
+                </label>
+                <div class="controls">
+                    <div class="input-icon left">
+                        <i class="fa fa-refresh" title="${captchaRefresh}"
+                           style="cursor: pointer; color: #999; float: right; position: static !important; border: 1px solid #ccc; height: 32px; line-height: 32px; padding: 0px 6px; margin: 0px; margin-left: 5px;"
+                           onclick="changeImg()"></i>
+                        <img id="imgObj" src="public/captcha"
+                             style="border: 1px solid #ccc;float: right;width: 40%;height: 2rem;"
+                             onclick="changeImg()"/>
+                        <input th:placeholder="${captchaMessage}" class="m-wrap " type="text" style="width: 40%" name="captcha"/>
+                    </div>
+                </div>
+            </div>
+            <!--<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />-->
+            <input id="md5_password" type="hidden" name="password"/>
+            <div class="form-actions">
+                <button type="submit" class="btn" th:if="${loginButton}" th:text="${loginButton}"></button>
+            </div>
+
+            <div style="clear:both"></div>
+        </form>
+
+    </div>
+</div>
+
+<div style="position:absolute;z-index:999;bottom:1.875rem;color: rgba(0,0,0,0.43);font-size: 0.75rem;width: 100%;text-align: center;">
+  Copyright © The HZERO Author®.All rights reserved.
+</div>
+</body>
+</html>

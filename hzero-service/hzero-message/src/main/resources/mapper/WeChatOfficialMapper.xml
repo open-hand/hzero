@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.message.infra.mapper.WeChatOfficialMapper">
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap id="BaseResultMap" type="org.hzero.message.domain.entity.WechatOfficial">
+        <result column="server_id" property="serverId" jdbcType="DECIMAL"/>
+        <result column="server_code" property="serverCode" jdbcType="VARCHAR"/>
+        <result column="server_name" property="serverName" jdbcType="VARCHAR"/>
+        <result column="auth_type" property="authType" jdbcType="VARCHAR"/>
+        <result column="appid" property="appid" jdbcType="VARCHAR"/>
+        <result column="secret" property="secret" jdbcType="VARCHAR"/>
+        <result column="auth_address" property="authAddress" jdbcType="VARCHAR"/>
+        <result column="tenant_id" property="tenantId" jdbcType="DECIMAL"/>
+        <result column="enabled_flag" property="enabledFlag" jdbcType="DECIMAL"/>
+        <result column="object_version_number" property="objectVersionNumber" jdbcType="DECIMAL"/>
+        <result column="creation_date" property="creationDate" jdbcType="DATE"/>
+        <result column="created_by" property="createdBy" jdbcType="DECIMAL"/>
+        <result column="last_updated_by" property="lastUpdatedBy" jdbcType="DECIMAL"/>
+        <result column="last_update_date" property="lastUpdateDate" jdbcType="DATE"/>
+    </resultMap>
+
+    <select id="listWeChatOfficial" resultType="org.hzero.message.domain.entity.WechatOfficial">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()" />
+        SELECT
+        	hwo.server_id,
+        	hwo.server_code,
+            hwot.server_name,
+        	hwo.auth_type,
+        	hwo.appid,
+        	hwo.tenant_id,
+        	ht.tenant_name,
+        	hwo.enabled_flag,
+        	hwo.object_version_number
+        FROM
+            hmsg_wechat_official hwo
+        JOIN hmsg_wechat_official_tl hwot ON hwot.server_id = hwo.server_id AND hwot.lang = #{lang}
+        JOIN hpfm_tenant_tl ht ON ht.tenant_id = hwo.tenant_id AND ht.lang = #{lang}
+        WHERE 1 = 1
+        <if test="tenantId != null">
+            AND hwo.tenant_id in (#{tenantId}<if test="includeSiteIfQueryByTenantId">, 0</if>)
+        </if>
+        <if test="enabledFlag != null">
+            AND hwo.enabled_flag = #{enabledFlag}
+        </if>
+        <if test="authType != null and authType != ''">
+            AND hwo.auth_type = #{authType}
+        </if>
+        <if test="serverCode != null and serverCode != ''">
+            <bind name="serverCodeLike" value="'%' + serverCode + '%'"/>
+            AND hwo.server_code LIKE #{serverCodeLike}
+        </if>
+        <if test="serverName != null and serverName != ''">
+            <bind name="serverNameLike" value="'%' + serverName + '%'"/>
+            AND hwot.server_name LIKE #{serverNameLike}
+        </if>
+    </select>
+
+    <select id="getOfficialById" resultType="org.hzero.message.domain.entity.WechatOfficial">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()" />
+        SELECT
+            hwo.server_id,
+            hwo.server_code,
+            hwot.server_name,
+            hwo.auth_type,
+            hwo.appid,
+            hwo.auth_address,
+            hwo.tenant_id,
+            ht.tenant_name,
+            hwo.enabled_flag,
+            hwo.object_version_number
+        FROM
+            hmsg_wechat_official hwo
+        JOIN hmsg_wechat_official_tl hwot ON hwot.server_id = hwo.server_id AND hwot.lang = #{lang}
+        JOIN hpfm_tenant_tl ht ON ht.tenant_id = hwo.tenant_id AND ht.lang = #{lang}
+        WHERE hwo.server_id = #{serverId}
+        <if test="tenantId != null">
+            AND hwo.tenant_id = #{tenantId}
+        </if>
+    </select>
+
+    <select id="selectByCode" resultType="org.hzero.message.domain.entity.WechatOfficial">
+        SELECT
+            hwo.server_id,
+            hwo.server_code,
+            hwo.server_name,
+            hwo.enabled_flag,
+            hwo.tenant_id,
+            hwo.object_version_number
+        FROM
+            hmsg_wechat_official hwo
+        WHERE
+            hwo.tenant_id = #{tenantId}
+        AND hwo.server_code = #{serverCode}
+    </select>
+</mapper>

@@ -1,0 +1,170 @@
+# hzero-国际化
+
+hmsg.email:
+  button.filter: 设置黑白名单
+  model.email.filterStrategy: 安全策略
+  model.email.host: 邮件服务器
+  model.email.name: 邮箱
+  model.email.password: 密码
+  model.email.passwordEncrypted: 密码
+  model.email.port: 端口
+  model.email.propertyCode: 属性编码
+  model.email.propertyValue: 属性值
+  model.email.protocol: 协议
+  model.email.sender: 发送人
+  model.email.serverCode: 账户代码
+  model.email.serverName: 账户名称
+  model.email.tenantName: 租户
+  model.email.tryTimes: 重试次数
+  model.email.userName: 用户名
+  model.email.userName.filterType: 邮箱账户或邮箱服务器
+  model.email.userName.type: 用户名为邮箱格式
+  view.message.title: 邮箱账户
+  view.message.title.filter: 编辑黑白名单
+  view.message.title.modal.create: 新建邮箱账户
+  view.message.title.modal.edit: 编辑邮箱账户
+  view.message.title.modal.server.create: 新建服务器配置项
+  view.message.title.modal.server.edit: 编辑服务器配置项
+hmsg.form:
+  js.model.form.js.serverCode: 账户代码
+  js.model.form.js.serverName: 账户名称
+  js.model.form.js.tenantName: 租户
+hmsg.messageQuery:
+  model.messageQuery.content: 内容
+  model.messageQuery.endDate: 发送时间至
+  model.messageQuery.error: 错误
+  model.messageQuery.messageTypeCode: 类型
+  model.messageQuery.receiver: 接收人
+  model.messageQuery.receiverAddress: 收件人地址
+  model.messageQuery.sendDate: 发送时间
+  model.messageQuery.serverCode: 账号代码
+  model.messageQuery.startDate: 发送时间从
+  model.messageQuery.subject: 主题
+  model.messageQuery.trxStatusCode: 状态
+  view.button.resend: 重试
+  view.button.save: 确定
+  view.message.title: 消息查询
+  view.messageQuery.view: 查看
+hmsg.messageTemplate:
+  model.template.externalCode: 外部编码
+  model.template.sqlValue: SQL
+  model.template.subcategoryCode: 消息子类型
+  model.template.templateCode: 消息模板代码
+  model.template.templateContent: 消息模板内容
+  model.template.templateName: 消息模板名称
+  model.template.templateTitle: 消息模板标题
+  view.message.title.detail: 消息模板明细
+  view.message.title.list: 消息模板
+hmsg.notice:
+  button.revoke: 撤销
+  model.notice.containsDeletedDataFlag: 显示已删除
+  model.notice.lang: 语言
+  model.notice.noticeCategoryCode: 公告类别
+  model.notice.noticeContent: 公告内容
+  model.notice.publishedByUser: 发布人
+  model.notice.publishedDate: 发布时间
+  model.notice.receiverType: 发布类别
+  model.notice.receiverTypeCode: 发布对象类别
+  model.notice.receiverTypeCode.All: 全部公告
+  model.notice.receiverTypeMeaning: 公告类型
+  model.notice.statusCode: 公告状态
+  model.notice.title: 公告标题
+  model.publish.publishedDate: 发布时间
+  model.publish.publishedStatus: 发布状态
+  model.publish.publisherName: 发布人
+  model.receive.receiverSource: 接收方名称
+  model.receive.receiverType: 类型
+  view.message.alert.noticeContentRequired: 请输入公告内容
+  view.message.title.detail: 公告明细
+  view.message.title.list: 公告管理
+  view.title.publishedHistory: 公告发布记录
+  view.title.receiveCreate: 新增接收配置
+  view.title.receiveHistory: 公告接收记录
+  view.validation.titleNotContainEmoji: 标题不能含有表情符号
+hmsg.portalTemplate:
+  model.portalTemplate.templateAvatar: 模板缩略图
+  model.portalTemplate.templateCode: 模板代码
+  model.portalTemplate.templateName: 模板名称
+  model.portalTemplate.templatePath: 模板路径
+  view.message.title: 模板维护
+hmsg.receiveConfig:
+  model.receiveConfig.receiveCode: 接收配置编码
+  model.receiveConfig.receiveName: 接收配置名称
+  model.receiveConfig.receiveType: 默认接收方式
+  option.createChildren: 新建下级配置
+  view.message.title: 消息接收配置
+hmsg.receiverType:
+  model.receiverType.receiver: 接收者
+  model.receiverType.typeCode: 接收组编码
+  model.receiverType.typeMode: 接收组模式
+  model.receiverType.typeName: 描述
+  model.receiverType.unitCode: 组织编码
+  model.receiverType.unitName: 组织名称
+  model.receiverType.userGroupCode: 用户组编码
+  model.receiverType.userGroupName: 用户组名称
+  model.recieverType.apiUrl: URL
+  model.recieverType.routeName: 服务
+  view.message.option: 接收组维护
+  view.message.title: 接收组维护
+  view.title.unitAdd: 新增组织
+  view.title.userGroupAdd: 新增用户组
+hmsg.reportRequest:
+  model.reportRequest.reportName: 报表名称
+hmsg.sendConfig:
+  model.sendConfig.lang: 语言
+  model.sendConfig.messageCode: 消息代码
+  model.sendConfig.messageName: 消息名称
+  model.sendConfig.recipient: 接收人
+  model.sendConfig.recipientType: 类型
+  model.sendConfig.serverId: 账户代码
+  model.sendConfig.serverName: 账户名称
+  model.sendConfig.templateCode: 模板代码
+  model.sendConfig.templateId: 模板代码
+  model.sendConfig.templateName: 模板名称
+  model.sendConfig.tenantId: 租户
+  model.sendConfig.typeCode: 消息类型
+  model.sendConfig.typeMeaning: 启用服务
+  view.button.addRecipient: 添加接收人
+  view.button.addTemplate: 添加模板
+  view.message.drawer.add: 添加账户
+  view.message.drawer.edit: 编辑账户
+  view.message.failed: 失败
+  view.message.success: 成功
+  view.message.title: 发送配置
+  view.message.title.add: 消息发送配置 - 添加
+  view.message.title.edit: 消息发送配置 - 编辑
+  view.title.template: 模板
+  view.title.testSend: 测试发送
+hmsg.smsConfig:
+  model.smsConfig.AccessKey: AccessKey
+  model.smsConfig.EndPoint: EndPoint
+  model.smsConfig.accessKeySecret: AccessKeySecret
+  model.smsConfig.serverCode: 账户代码
+  model.smsConfig.serverName: 账户名称
+  model.smsConfig.serverTypeCode: 服务类型
+  model.smsConfig.signName: 短信签名
+  model.smsConfig.tenant: 租户
+  view.message.create: 新建短信账户
+  view.message.edit: 编辑短信账户
+  view.message.title: 短信账户
+hmsg.userMessage:
+  model.userMessage.creationDate: 提交时间
+  model.userMessage.messageTypeCode: 类型
+  model.userMessage.subject: 标题内容
+  view.message.title: 站内消息
+  view.message.title.detail: 消息详情
+  view.option.allMessage: 全部消息
+  view.option.allRead: 全部已读
+  view.option.readMessage: 已读消息
+  view.option.signRead: 标记已读
+  view.option.unReadMessage: 未读消息
+  view.title.message: 消息
+  view.title.notice: 通知
+  view.title.announce: 公告
+hmsg.userReceiveConfig:
+  model.userReceiveConfig.type: 消息类型
+  view.title.subMain.config: 用户消息接收设置
+hmsg.cards:
+  message.platformAnnounce: 平台公告
+  message.stationMessages: 站内消息
+  message.messageCenter: 消息中心

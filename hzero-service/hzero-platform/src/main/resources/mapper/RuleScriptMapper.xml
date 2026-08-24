@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.platform.infra.mapper.RuleScriptMapper">
+
+    <select id="listRuleScript" parameterType="org.hzero.platform.domain.entity.RuleScript" resultType="org.hzero.platform.domain.entity.RuleScript">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        SELECT
+            hrs.rule_script_id,
+            httl.tenant_name,
+            hrs.server_name,
+            hrs.script_code,
+            hrst.script_description,
+            hrs.script_type_code,
+            hrs.enabled_flag,
+            hrs.category,
+            hrs.object_version_number
+        FROM
+            hpfm_rule_script hrs
+        left join hpfm_rule_script_tl hrst on hrst.rule_script_id = hrs.rule_script_id
+        and hrst.lang = #{lang}
+        join hpfm_tenant ht on ht.tenant_id = hrs.tenant_id
+        LEFT JOIN hpfm_tenant_tl httl ON ht.tenant_id = httl.tenant_id AND httl.lang = #{lang}
+        WHERE
+            1=1
+        <if test="tenantId != null">
+            AND hrs.tenant_id = #{tenantId}
+        </if>
+        <if test="serverName != null and serverName != ''">
+            AND hrs.server_name = #{serverName}
+        </if>
+        <if test="scriptCode != null and scriptCode != ''">
+            <bind name="scriptCodeLike" value="'%' + scriptCode + '%'"/>
+            AND hrs.script_code LIKE #{scriptCodeLike}
+        </if>
+        <if test="scriptDescription != null and scriptDescription != ''">
+            <bind name="scriptDescriptionLike" value="'%' + scriptDescription + '%'"/>
+            AND hrst.script_description LIKE #{scriptDescriptionLike}
+        </if>
+        <if test="scriptTypeCode != null and scriptTypeCode != ''">
+            AND hrs.script_type_code = #{scriptTypeCode}
+        </if>
+        <if test="enabledFlag != null">
+            AND hrs.enabled_flag = #{enabledFlag}
+        </if>
+        <if test="category != null and category != ''">
+            AND hrs.category = #{category}
+        </if>
+    </select>
+
+    <select id="selectRuleScriptById" resultType="org.hzero.platform.domain.entity.RuleScript">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        SELECT
+            hrs.rule_script_id,
+            httl.tenant_name,
+            hrs.server_name,
+            hrs.script_code,
+            hrst.script_description,
+            hrs.script_type_code,
+            hrs.script_content,
+            hrs.tenant_id,
+            hrs.enabled_flag,
+            hrs.category,
+            hrs.object_version_number
+        FROM
+            hpfm_rule_script hrs
+        left join hpfm_rule_script_tl hrst on hrst.rule_script_id = hrs.rule_script_id
+        and hrst.lang = #{lang}
+        join hpfm_tenant ht on ht.tenant_id = hrs.tenant_id
+        LEFT JOIN hpfm_tenant_tl httl ON ht.tenant_id = httl.tenant_id AND httl.lang = #{lang}
+        WHERE
+            1=1
+        AND hrs.rule_script_id = #{ruleScriptId}
+        <if test="tenantId != null">
+            AND hrs.tenant_id = #{tenantId}
+        </if>
+    </select>
+
+    <select id="selectRuleScriptByCode" resultType="org.hzero.platform.domain.entity.RuleScript">
+        SELECT
+            hrs.rule_script_id,
+            hrs.server_name,
+            hrs.script_code,
+            hrs.script_description,
+            hrs.script_type_code,
+            hrs.script_content,
+            hrs.tenant_id,
+            hrs.enabled_flag,
+            hrs.category,
+            hrs.object_version_number
+        FROM
+            hpfm_rule_script hrs
+        WHERE
+            hrs.script_code = #{scriptCode}
+        AND hrs.tenant_id = #{tenantId}
+    </select>
+</mapper>

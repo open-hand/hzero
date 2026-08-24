@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.iam.infra.mapper.DomainMapper">
+
+    <resultMap id="DomainDTO" type="org.hzero.iam.api.dto.DomainDTO">
+        <id column="domain_id" property="domainId"/>
+        <result column="domain_url" property="domainUrl"/>
+        <result column="sso_type_code" property="ssoTypeCode"/>
+        <result column="sso_server_url" property="ssoServerUrl"/>
+        <result column="sso_login_url" property="ssoLoginUrl"/>
+        <result column="sso_logout_url" property="ssoLogoutUrl"/>
+        <result column="client_host_url" property="clientHostUrl"/>
+        <result column="sso_client_id" property="ssoClientId"/>
+        <result column="sso_client_pwd" property="ssoClientPwd"/>
+        <result column="sso_user_info" property="ssoUserInfo"/>
+        <result column="saml_meta_url" property="samlMetaUrl"/>
+        <result column="login_name_field" property="loginNameField"/>
+        <collection property="tenants" resultMap="DomainAssignCache"/>
+    </resultMap>
+    <resultMap id="DomainAssignCache" type="org.hzero.iam.domain.vo.DomainAssignCacheVO">
+        <id column="tenant_id" property="tenantId"/>
+        <id column="company_id" property="companyId"/>
+    </resultMap>
+
+    <select id="selectByOptions" resultType="org.hzero.iam.domain.entity.Domain">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        SELECT
+            hd.domain_id,
+            hd.tenant_id,
+            hd.company_id,
+            hd.domain_url,
+            hd.sso_type_code,
+            hd.sso_server_url,
+            hd.sso_login_url,
+            hd.sso_logout_url,
+            hd.sso_client_id,
+            hd.sso_client_pwd,
+            hd.sso_user_info,
+            hd.saml_meta_url,
+            hd.client_host_url,
+            hd.login_name_field,
+            hd.object_version_number
+        FROM
+            hiam_domain hd
+        <where>
+            <if test="tenantId != null">
+                AND (hd.tenant_id = #{tenantId}
+                    OR EXISTS (
+                        SELECT 1 FROM hiam_domain_assign hda
+                        where hda.domain_id = hd.domain_id
+                        AND hda.tenant_id = #{tenantId}
+                ))
+            </if>
+            <if test="domainUrl != null and domainUrl != ''">
+                <bind name="domainUrlLike" value="'%' + domainUrl + '%'"/>
+                AND hd.domain_url LIKE #{domainUrlLike}
+            </if>
+        </where>
+    </select>
+    
+    <select id="selectByDomainId" resultType="org.hzero.iam.domain.entity.Domain">
+        SELECT
+            hd.domain_id,
+            hd.domain_url,
+            hd.sso_type_code,
+            hd.sso_server_url,
+            hd.sso_login_url,
+            hd.sso_logout_url,
+            hd.sso_client_id,
+            hd.sso_client_pwd,
+            hd.sso_user_info,
+            hd.saml_meta_url,
+            hd.client_host_url,
+            hd.login_name_field,
+            hd.object_version_number
+       FROM
+            hiam_domain hd
+        WHERE hd.domain_id = #{domainId}
+    </select>
+    <select id="getAllDomain" resultMap="DomainDTO">
+        SELECT
+            hd.domain_id,
+            hd.domain_url,
+            hd.sso_type_code,
+            hd.sso_server_url,
+            hd.sso_login_url,
+            hd.sso_logout_url,
+            hd.sso_client_id,
+            hd.sso_client_pwd,
+            hd.sso_user_info,
+            hd.saml_meta_url,
+            hd.client_host_url,
+            hd.login_name_field,
+            hda.tenant_id,
+            hda.company_id
+        FROM hiam_domain hd
+        JOIN hiam_domain_assign hda ON hda.domain_id = hd.domain_id
+    </select>
+</mapper>

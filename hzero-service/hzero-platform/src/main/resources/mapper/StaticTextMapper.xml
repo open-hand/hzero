@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.platform.infra.mapper.StaticTextMapper">
+
+    <resultMap id="BaseResultMap" type="org.hzero.platform.domain.vo.StaticTextVO">
+        <id column="text_id" property="textId"/>
+        <result column="text_code" property="textCode" />
+        <result column="title" property="title" />
+        <result column="description" property="description" />
+        <result column="parent_id" property="parentId" />
+        <result column="start_date" property="startDate" />
+        <result column="end_date" property="endDate" />
+        <result column="object_version_number" property="objectVersionNumber" />
+
+        <result column="paramTextCode" property="paramTextCode" />
+        <result column="paramTitle" property="paramTitle" />
+
+        <collection property="children"
+                    ofType="org.hzero.platform.domain.vo.StaticTextVO"
+                    column="{parentId=text_id, textCode=paramTextCode, title=paramTitle, tenantId = tenant_id,companyId = company_id}"
+                    select="selectStaticText" />
+    </resultMap>
+
+    <resultMap id="BaseResultMapByCode" type="org.hzero.platform.domain.vo.StaticTextVO">
+        <id column="text_id" property="textId"/>
+        <result column="text_code" property="textCode" />
+        <result column="title" property="title" />
+        <result column="description" property="description" />
+        <result column="parent_id" property="parentId" />
+        <result column="end_date" property="endDate" />
+        <result column="now" property="now" />
+
+        <collection property="children"
+                    ofType="org.hzero.platform.domain.vo.StaticTextVO"
+                    column="{parentId=text_id, now=now, tenantId = tenant_id,companyId = company_id,lang = lang}"
+                    select="selectStaticTextByCode" />
+    </resultMap>
+
+    <resultMap id="AllChildMap" type="org.hzero.platform.domain.vo.StaticTextVO">
+        <id column="text_id" property="textId"/>
+
+        <collection property="children"
+                    ofType="org.hzero.platform.domain.vo.StaticTextVO"
+                    column="{parentId=text_id}"
+                    select="selectAllChildTextId" />
+    </resultMap>
+
+    <resultMap id="SelfAndParent" type="org.hzero.platform.domain.vo.StaticTextVO">
+        <id column="text_id" property="textId"/>
+        <result column="text_code" property="textCode" />
+        <result column="parent_id" property="parentId" />
+
+        <collection property="parent"
+                    ofType="org.hzero.platform.domain.vo.StaticTextVO"
+                    column="{textId=parent_id}"
+                    select="selectSelfAndParent" />
+    </resultMap>
+
+    <!-- 带参数查询 -->
+    <select id="selectStaticText" parameterType="org.hzero.platform.domain.vo.StaticTextVO" resultMap="BaseResultMap">
+        SELECT
+          hst.tenant_id,
+          hst.company_id,
+          hst.text_id,
+          hst.text_code,
+          hst.title,
+          hst.description,
+          hst.parent_id,
+          hst.start_date,
+          hst.end_date,
+          #{textCode} AS param_text_code,
+          #{title} AS param_title
+        FROM hpfm_static_text hst
+        <where>
+            <if test="tenantId != null">
+                AND hst.tenant_id = #{tenantId}
+            </if>
+            <if test="textCode != null and textCode != ''">
+                <bind name="cokeLike" value="'%' + textCode + '%'"/>
+                AND hst.text_code LIKE #{cokeLike}
+            </if>
+            <if test="title != null and title != '' ">
+                <bind name="titleLike" value="'%' + title + '%'"/>
+                AND hst.title LIKE #{titleLike}
+            </if>
+            <if test="parentId != null ">
+                AND hst.parent_id = #{parentId}
+            </if>
+            <if test="companyId != null">
+                AND hst.company_id = #{companyId}
+            </if>
+        </where>
+    </select>
+
+    <!-- 根据Code查询有效的文本-->
+    <select id="selectStaticTextByCode" parameterType="org.hzero.platform.domain.vo.StaticTextVO" resultMap="BaseResultMapByCode">
+        SELECT
+            hst.tenant_id,
+            hst.company_id,
+            hst.text_id,
+            hst.text_code,
+            hstv.title,
+            hstv.description,
+            hst.parent_id,
+            hst.end_date,
+            #{now} AS now,
+            #{lang} as lang
+        FROM hpfm_static_text hst
+        LEFT JOIN hpfm_static_text_value hstv ON hstv.text_id = hst.text_id AND hstv.lang = #{lang}
+        WHERE hst.tenant_id = #{tenantId}
+            <if test="textCode != null ">
+                AND hst.text_code = #{textCode}
+            </if>
+            <if test="parentId != null ">
+                AND hst.parent_id = #{parentId}
+            </if>
+            <if test="companyId != null">
+                AND hst.company_id = #{companyId}
+            </if>
+            AND hst.start_date &lt;= #{now}
+            AND (hst.end_date IS NULL OR hst.end_date > #{now})
+
+    </select>
+
+    <!-- 查询详情 -->
+    <select id="selectStaticTextDetails" resultType="org.hzero.platform.domain.vo.StaticTextVO">
+        SELECT
+          hst.tenant_id,
+          hst.company_id,
+          hst.text_id,
+          hst.text_code,
+          hstv.title,
+          hstv.description,
+          hst.parent_id,
+          hst.start_date,
+          hst.end_date,
+          hst.object_version_number,
+          hstv.lang,
+          hstv.text,
+          httl.tenant_name,
+          hc.company_name
+        FROM hpfm_static_text hst
+        LEFT JOIN hpfm_static_text_value hstv ON hstv.text_id = hst.text_id AND hstv.lang = #{lang}
+        LEFT JOIN hpfm_tenant ht ON hst.tenant_id = ht.tenant_id
+        LEFT JOIN hpfm_tenant_tl httl ON httl.tenant_id = ht.tenant_id and httl.lang = #{lang}
+        LEFT JOIN hpfm_company hc ON hst.company_id = hc.company_id
+        WHERE hst.text_id = #{textId}
+    </select>
+
+    <!-- 查询子ID -->
+    <select id="selectAllChildTextId" resultMap="AllChildMap">
+        SELECT
+          hst.text_id
+        FROM hpfm_static_text hst
+        WHERE hst.parent_id = #{parentId}
+    </select>
+
+    <!-- 从当前节点往上查询父级节点 -->
+    <select id="selectSelfAndParent" parameterType="org.hzero.platform.domain.vo.StaticTextVO" resultMap="SelfAndParent">
+        SELECT
+          hst.text_id,
+          hst.text_code,
+          hst.parent_id
+        FROM hpfm_static_text hst
+        <where>
+            <if test="textId != null">
+                AND hst.text_id = #{textId}
+            </if>
+        </where>
+    </select>
+
+    <select id="selectAllStaticText" resultType="org.hzero.platform.domain.vo.StaticTextVO">
+        SELECT
+        hst.text_id,
+        hst.parent_id,
+        hst.parent_ids
+        FROM hpfm_static_text hst
+        <where>
+            <if test="tenantId != null">
+                AND (hst.tenant_id = #{tenantId} OR hst.tenant_id = 0)
+            </if>
+            <if test="textCode != null and textCode != ''">
+                <bind name="cokeLike" value="'%' + textCode + '%'"/>
+                AND hst.text_code LIKE #{cokeLike}
+            </if>
+            <if test="title != null and title != '' ">
+                <bind name="titleLike" value="'%' + title + '%'"/>
+                AND hst.title LIKE #{titleLike}
+            </if>
+            <if test="companyId != null">
+                AND hst.company_id = #{companyId}
+            </if>
+        </where>
+    </select>
+
+    <select id="selectStaticTextByIds" resultType="org.hzero.platform.domain.vo.StaticTextVO">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        SELECT
+            hst.tenant_id,
+            hst.company_id,
+            hst.text_id,
+            hst.text_code,
+            hstv.title,
+            hstv.description,
+            hst.parent_id,
+            hst.start_date,
+            hst.end_date,
+            httl.tenant_name,
+            hc.company_name
+        FROM
+            hpfm_static_text hst
+        LEFT JOIN hpfm_tenant ht ON hst.tenant_id = ht.tenant_id
+        LEFT JOIN hpfm_tenant_tl httl ON httl.tenant_id = ht.tenant_id and httl.lang = #{lang}
+        LEFT JOIN hpfm_company hc ON hst.company_id = hc.company_id
+        LEFT JOIN hpfm_static_text_value hstv ON hst.text_id = hstv.text_id AND hstv.lang = #{lang}
+        WHERE hst.text_id IN
+        <foreach collection="idList" item="item" index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        ORDER BY hst.text_id
+    </select>
+</mapper>

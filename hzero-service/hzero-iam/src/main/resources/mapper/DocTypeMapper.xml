@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.iam.infra.mapper.DocTypeMapper">
+    <!-- 可根据自己的需求，是否要使用 -->
+    <resultMap id="DocType" type="org.hzero.iam.domain.entity.DocType">
+        <result column="doc_type_id" property="docTypeId" jdbcType="DECIMAL"/>
+        <result column="doc_type_code" property="docTypeCode" jdbcType="VARCHAR"/>
+        <result column="doc_type_name" property="docTypeName" jdbcType="VARCHAR"/>
+        <result column="description" property="description" jdbcType="VARCHAR"/>
+        <result column="source_service_name" property="sourceServiceName" jdbcType="VARCHAR"/>
+        <result column="source_data_entity" property="sourceDataEntity" jdbcType="VARCHAR"/>
+        <result column="level_code" property="levelCode" jdbcType="VARCHAR"/>
+        <result column="auth_scope_code" property="authScopeCode" jdbcType="VARCHAR"/>
+        <result column="auth_control_type" property="authControlType" jdbcType="VARCHAR"/>
+        <result column="order_seq" property="orderSeq" jdbcType="DECIMAL"/>
+        <result column="enabled_flag" property="enabledFlag" jdbcType="DECIMAL"/>
+        <result column="tenant_id" property="tenantId" jdbcType="DECIMAL"/>
+        <result column="object_version_number" property="objectVersionNumber" jdbcType="DECIMAL"/>
+        <result column="creation_date" property="creationDate" jdbcType="TIMESTAMP"/>
+        <result column="created_by" property="createdBy" jdbcType="DECIMAL"/>
+        <result column="last_updated_by" property="lastUpdatedBy" jdbcType="DECIMAL"/>
+        <result column="last_update_date" property="lastUpdateDate" jdbcType="TIMESTAMP"/>
+        <collection property="docTypeAssigns" ofType="org.hzero.iam.domain.entity.DocTypeAssign">
+            <id column="assign_id" property="assignId" jdbcType="BIGINT" />
+            <result column="assign_value_id" property="assignValueId" jdbcType="BIGINT" />
+            <result column="tenant_name" property="tenantName" jdbcType="VARCHAR" />
+            <result column="tenant_num" property="tenantNum" jdbcType="VARCHAR" />
+        </collection>
+        <collection property="docTypePermissions" ofType="org.hzero.iam.domain.entity.DocTypePermission">
+            <id column="doc_type_permission_id" property="docTypePermissionId" jdbcType="BIGINT" />
+            <result column="p_auth_dim_id" property="authDimId" jdbcType="BIGINT"/>
+            <result column="range_id" property="rangeId" jdbcType="BIGINT" />
+            <result column="rule_id" property="ruleId" jdbcType="BIGINT" />
+            <result column="rule_code" property="ruleCode" jdbcType="VARCHAR" />
+            <result column="rule_name" property="ruleName" jdbcType="VARCHAR" />
+            <result column="doc_tenant_name" property="tenantName" jdbcType="VARCHAR" />
+        </collection>
+        <collection property="docTypeAuthDims" ofType="org.hzero.iam.domain.entity.DocTypeAuthDim">
+            <id column="auth_dim_id" property="authDimId" jdbcType="BIGINT"/>
+            <result column="auth_type_code" property="authTypeCode" jdbcType="VARCHAR"/>
+            <result column="rule_type" property="ruleType" jdbcType="VARCHAR"/>
+            <result column="source_match_table" property="sourceMatchTable" jdbcType="VARCHAR"/>
+            <result column="source_match_field" property="sourceMatchField" jdbcType="VARCHAR"/>
+            <result column="dimension_type" property="dimensionType" jdbcType="VARCHAR"/>
+        </collection>
+        <collection property="docTypeSqlidList" ofType="org.hzero.iam.domain.entity.DocTypeSqlid">
+            <id column="doc_type_sqlid_id" property="docTypeSqlidId"/>
+            <result column="sqlid" property="sqlid"/>
+            <result column="sqlid_ovn" property="objectVersionNumber"/>
+        </collection>
+    </resultMap>
+    <select id="pageDocType" resultMap="DocType">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        SELECT
+            hdt.doc_type_id,
+            hdt.doc_type_code,
+            hdtt.doc_type_name,
+            hdt.description,
+            hdt.source_service_name,
+            hdt.source_data_entity,
+            hdt.level_code,
+            hdt.auth_scope_code,
+            hdt.order_seq,
+            hdt.enabled_flag,
+            hdt.object_version_number
+        FROM hiam_doc_type hdt
+        LEFT JOIN hiam_doc_type_tl hdtt ON hdtt.doc_type_id = hdt.doc_type_id AND hdtt.lang = #{lang}
+        <where>
+            <if test="docTypeCode != null and docTypeCode != ''">
+                <bind name="docTypeCodeLike" value="'%' + docTypeCode + '%'"/>
+                AND hdt.doc_type_code LIKE #{docTypeCodeLike}
+            </if>
+            <if test="docTypeName != null and docTypeName != ''">
+                <bind name="docTypeNameLike" value="'%' + docTypeName + '%'"/>
+                AND hdtt.doc_type_name LIKE #{docTypeNameLike}
+            </if>
+        </where>
+    </select>
+
+    <select id="queryDocType" resultMap="DocType">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        SELECT
+            hdt.doc_type_id,
+            hdt.doc_type_code,
+            hdtt.doc_type_name,
+            hdt.description,
+            hdt.source_service_name,
+            hdt.auth_control_type,
+            hdt.source_data_entity,
+            hdt.level_code,
+            hdt.auth_scope_code,
+            hdt.order_seq,
+            hpr.rule_id,
+            hpr.rule_code,
+            hpr.rule_name,
+            hdt.enabled_flag,
+            hdt.object_version_number,
+            htlp.tenant_name doc_tenant_name,
+            hdts.doc_type_sqlid_id,
+            hdts.sqlid,
+            hdts.object_version_number sqlid_ovn
+        <if test="includeAssign">
+            ,
+            hdta.assign_id,
+            hdta.assign_value_id,
+            httl.tenant_name,
+            ht.tenant_num
+        </if>
+        FROM hiam_doc_type hdt
+        LEFT JOIN hiam_doc_type_tl hdtt ON hdtt.doc_type_id = hdt.doc_type_id AND hdtt.lang = #{lang}
+        LEFT JOIN hiam_doc_type_sqlid hdts ON hdts.doc_type_id = hdt.doc_type_id
+        LEFT JOIN hiam_doc_type_auth_dim hdtad ON hdtad.doc_type_id = hdt.doc_type_id
+        LEFT JOIN hiam_doc_type_permission hdtp ON hdtp.auth_dim_id = hdtad.auth_dim_id
+        LEFT JOIN hpfm_permission_rule hpr ON hpr.rule_id = hdtp.rule_id
+        <if test="includeAssign">
+        LEFT JOIN hiam_doc_type_assign hdta ON hdta.doc_type_id = hdt.doc_type_id
+        LEFT JOIN hpfm_tenant ht ON ht.tenant_id = hdta.assign_value_id
+        LEFT JOIN hpfm_tenant_tl httl ON ht.tenant_id = httl.tenant_id AND httl.lang = #{lang}
+        </if>
+        LEFT JOIN hpfm_tenant htp ON hpr.tenant_id = htp.tenant_id
+        LEFT JOIN hpfm_tenant_tl htlp ON htp.tenant_id = htlp.tenant_id AND htlp.lang = #{lang}
+        WHERE hdt.doc_type_id = #{docTypeId}
+        <if test="tenantId != null">
+            AND hdt.tenant_id = #{tenantId}
+        </if>
+        ORDER BY ht.tenant_num, sqlid
+    </select>
+    <select id="queryDocTypeWithDimension" resultMap="DocType">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        SELECT
+            hdt.doc_type_id,
+            hdt.doc_type_code,
+            hdtt.doc_type_name,
+            hdt.description,
+            hdt.source_service_name,
+            hdt.source_data_entity,
+            hdt.level_code,
+            hdt.auth_scope_code,
+            hdt.auth_control_type,
+            hdt.order_seq,
+            hdt.enabled_flag,
+            hdts.doc_type_sqlid_id,
+            hdts.sqlid,
+            hdts.object_version_number sqlid_ovn,
+            hdtad.auth_dim_id,
+            hdtad.auth_type_code,
+            hdtad.rule_type,
+            hdtad.source_match_table,
+            hdtad.source_match_field,
+            hdta.assign_id,
+            hdta.assign_value_id,
+            hdtp.doc_type_permission_id,
+            hdtp.auth_dim_id p_auth_dim_id,
+            hdtp.rule_id,
+            hdtp.range_id,
+            hdtd.dimension_type
+        FROM
+            hiam_doc_type hdt
+            LEFT JOIN hiam_doc_type_tl hdtt ON hdtt.doc_type_id = hdt.doc_type_id AND hdtt.lang = #{lang}
+            LEFT JOIN hiam_doc_type_sqlid hdts ON hdts.doc_type_id = hdt.doc_type_id
+            LEFT JOIN hiam_doc_type_auth_dim hdtad ON hdtad.doc_type_id = hdt.doc_type_id
+            LEFT JOIN hiam_doc_type_assign hdta ON hdta.doc_type_id = hdt.doc_type_id
+            LEFT JOIN hiam_doc_type_permission hdtp ON hdtp.auth_dim_id = hdtad.auth_dim_id
+            LEFT JOIN hiam_doc_type_dimension hdtd ON hdtd.dimension_code = hdtad.auth_type_code
+        <where>
+            <if test="tenantId != null">
+            AND hdt.tenant_id = 0
+            </if>
+            AND hdt.doc_type_id IN
+            <foreach collection="docTypeIds" item="docTypeId" open="(" close=")" separator=",">
+                #{docTypeId}
+            </foreach>
+        </where>
+    </select>
+</mapper>

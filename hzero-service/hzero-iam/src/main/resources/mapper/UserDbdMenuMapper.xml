@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.iam.infra.mapper.UserDbdMenuMapper">
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap id="BaseResultMap" type="org.hzero.iam.domain.entity.UserDbdMenu">
+        <result column="dbd_menu_id" property="dbdMenuId" jdbcType="DECIMAL"/>
+        <result column="tenant_id" property="tenantId" jdbcType="DECIMAL"/>
+        <result column="user_id" property="userId" jdbcType="DECIMAL"/>
+        <result column="role_id" property="roleId" jdbcType="DECIMAL"/>
+        <result column="menu_id" property="menuId" jdbcType="DECIMAL"/>
+        <result column="object_version_number" property="objectVersionNumber" jdbcType="DECIMAL"/>
+        <result column="creation_date" property="creationDate" jdbcType="DATE"/>
+        <result column="created_by" property="createdBy" jdbcType="DECIMAL"/>
+        <result column="last_updated_by" property="lastUpdatedBy" jdbcType="DECIMAL"/>
+        <result column="last_update_date" property="lastUpdateDate" jdbcType="DATE"/>
+    </resultMap>
+    
+    <select id="queryMenu" resultType="org.hzero.iam.domain.entity.UserDbdMenu">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+      SELECT
+             hudm.dbd_menu_id,
+             hudm.tenant_id,
+             hudm.user_id,
+             hudm.role_id,
+             hudm.menu_id,
+             imt.name as title,
+             im.route as menu_route
+        FROM hiam_user_dbd_menu hudm
+        JOIN iam_menu im ON im.id = hudm.menu_id AND im.h_enabled_flag = 1
+        JOIN iam_menu_tl imt ON imt.id = im.id
+        WHERE hudm.tenant_id = #{tenantId} AND hudm.user_id = #{userId}
+              AND hudm.role_id = #{roleId}
+              AND imt.lang = #{lang}
+    </select>
+    
+    <delete id="deleteDbdMenu">
+       DELETE FROM hiam_user_dbd_menu 
+        WHERE tenant_id = #{tenantId}
+          AND user_id = #{userId}
+          AND role_id = #{roleId}
+    </delete>
+   
+</mapper>

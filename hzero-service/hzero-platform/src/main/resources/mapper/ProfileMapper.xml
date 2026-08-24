@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.platform.infra.mapper.ProfileMapper">
+
+    <select id="selectProfile" parameterType="org.hzero.platform.domain.entity.Profile"
+            resultType="org.hzero.platform.api.dto.ProfileDTO">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        SELECT
+        hp.profile_id,
+        hp.profile_name,
+        hpt.description,
+        hp.profile_level,
+        hp.tenant_id,
+        httl.tenant_name,
+        hp.object_version_number,
+        hlvt.meaning
+        FROM
+        hpfm_profile hp
+        left join hpfm_profile_tl hpt on hpt.profile_id = hp.profile_id
+        and hpt.lang = #{lang}
+        join hpfm_lov_value hlv on hp.profile_level = hlv.value and hlv.lov_code = 'HPFM.LEVEL'
+        left join hpfm_lov_value_tl hlvt on hlv.lov_value_id = hlvt.lov_value_id AND hlvt.lang = #{lang}
+        join hpfm_tenant ht on ht.tenant_id = hp.tenant_id
+        LEFT JOIN hpfm_tenant_tl httl ON ht.tenant_id = httl.tenant_id AND httl.lang = #{lang}
+        WHERE
+        1=1
+        <if test="tenantId != null">
+            AND hp.tenant_id IN (0, #{tenantId})
+        </if>
+        <if test="profileId != null">
+            AND hp.profile_id = #{profileId}
+        </if>
+    </select>
+
+    <select id="selectProfileLike" resultType="org.hzero.platform.api.dto.ProfileDTO">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        SELECT
+        hp.profile_id,
+        hp.profile_name,
+        hpt.description,
+        hp.profile_level,
+        hp.tenant_id,
+        hp.object_version_number,
+        httl.tenant_name
+        FROM
+        hpfm_profile hp
+        left join hpfm_profile_tl hpt on hpt.profile_id = hp.profile_id
+        and hpt.lang = #{lang}
+        join hpfm_tenant ht on ht.tenant_id = hp.tenant_id
+        LEFT JOIN hpfm_tenant_tl httl ON ht.tenant_id = httl.tenant_id AND httl.lang = #{lang}
+        WHERE
+        1=1
+        <if test="profileId != null">
+            AND hp.profile_id = #{profileId}
+        </if>
+        <if test="profileName != null">
+            <bind name="nameLike" value="'%' + profileName + '%'"/>
+            AND hp.profile_name LIKE #{nameLike}
+        </if>
+        <if test="description != null">
+            <bind name="descriptionLike" value="'%' + description + '%'"/>
+            AND hpt.description LIKE #{descriptionLike}
+        </if>
+        <if test="profileLevel != null">
+            AND hp.profile_level = #{profileLevel}
+        </if>
+        <if test="tenantId != null">
+            AND hp.tenant_id = #{tenantId}
+        </if>
+    </select>
+
+    <select id="selectTenantProfileLike" resultType="org.hzero.platform.api.dto.ProfileDTO">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        SELECT
+        hp.profile_id,
+        hp.profile_name,
+        hpt.description,
+        hp.profile_level,
+        hp.tenant_id,
+        hp.object_version_number,
+        httl.tenant_name
+        FROM
+        hpfm_profile hp
+        left join hpfm_profile_tl hpt on hpt.profile_id = hp.profile_id
+        and hpt.lang = #{lang}
+        join hpfm_tenant ht on ht.tenant_id = hp.tenant_id
+        LEFT JOIN hpfm_tenant_tl httl ON ht.tenant_id = httl.tenant_id AND httl.lang = #{lang}
+        WHERE
+        1=1
+        AND hp.tenant_id IN (0, #{tenantId})
+        <if test="profileLevel != null and profileLevel != ''">
+            AND hp.profile_level = #{profileLevel}
+        </if>
+        <if test="profileId != null">
+            AND hp.profile_id = #{profileId}
+        </if>
+        <if test="profileName != null">
+            <bind name="nameLike" value="'%' + profileName + '%'"/>
+            AND hp.profile_name LIKE #{nameLike}
+        </if>
+        <if test="description != null">
+            <bind name="descriptionLike" value="'%' + description + '%'"/>
+            AND hpt.description LIKE #{descriptionLike}
+        </if>
+    </select>
+    <select id="selectProfileValueByOptions" resultType="java.lang.String">
+        SELECT
+          hpv.value
+        FROM hpfm_profile hp
+        JOIN hpfm_profile_value hpv ON hp.profile_id = hpv.profile_id
+        WHERE hp.profile_name=#{profileName}
+          AND hp.tenant_id = #{tenantId}
+          AND hpv.level_code=#{levelCode}
+          AND hpv.level_value=#{levelValue}
+    </select>
+</mapper>

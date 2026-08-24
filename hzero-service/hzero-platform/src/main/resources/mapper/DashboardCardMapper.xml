@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.platform.infra.mapper.DashboardCardMapper">
+
+    <select id="selectDashboardCard" resultType="org.hzero.platform.domain.entity.DashboardCard">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        SELECT
+            hdc.id,
+            hdc.code,
+            hdc.card_params,
+            hdct.name,
+            hdc.fd_level "level",
+            hdc.catalog_type,
+            hdct.description,
+            hdc.w,
+            hdc.h,
+            hdc.enabled_flag,
+            hdc.logo,
+            hdc.object_version_number
+        FROM hpfm_dashboard_card hdc
+        LEFT JOIN hpfm_dashboard_card_tl hdct ON hdc.id=hdct.id AND hdct.lang=#{lang}
+        <where>
+            <if test="tenantId != null">
+                AND hdc.tenant_id = #{tenantId}
+            </if>
+            <if test="name != null and name != ''">
+                <bind name="nameLike" value="'%'+name+'%'"/>
+                AND hdct.name LIKE #{nameLike}
+            </if>
+            <if test="level != null and level != ''">
+                AND hdc.fd_level = #{level}
+            </if>
+            <if test="code != null and code != ''">
+                <bind name="codeLike" value="'%'+code+'%'" />
+                AND hdc.code LIKE #{codeLike}
+            </if>
+        </where>
+    </select>
+    <select id="selectDashboardCardDetails" resultType="org.hzero.platform.domain.entity.DashboardCard">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        SELECT
+            hdc.id,
+            hdc.code,
+            hdc.card_params,
+            hdct.name,
+            hdc.fd_level "level",
+            hdc.catalog_type,
+            hdct.description,
+            hdc.w,
+            hdc.h,
+            hdc.enabled_flag,
+            hdc.logo,
+            hdc.object_version_number
+        FROM hpfm_dashboard_card hdc
+        LEFT JOIN hpfm_dashboard_card_tl hdct ON hdc.id=hdct.id AND hdct.lang=#{lang}
+        WHERE hdc.id=#{dashboardCardId}
+    </select>
+
+    <select id="selectSiteAssignableDashboardCard" resultType="org.hzero.platform.domain.entity.DashboardCard">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        SELECT
+            hdc.code,
+            hdc.card_params,
+            hdct.name,
+            hdc.catalog_type,
+            hdc.fd_level "level",
+            hdc.w,
+            hdc.h,
+            hdc.id,
+            hdc.logo
+        FROM hpfm_dashboard_card hdc
+        LEFT JOIN hpfm_dashboard_tenant_card hdtc ON hdc.id=hdtc.card_id
+        LEFT JOIN hpfm_dashboard_card_tl hdct ON hdc.id=hdct.id AND hdct.lang=#{lang}
+        WHERE (hdc.fd_level='SITE' AND hdc.tenant_id=#{tenantId} OR hdtc.tenant_id=#{tenantId})
+        AND hdc.enabled_flag=1
+        <if test="name != null and name != ''">
+            <bind name="nameLike" value="'%'+name+'%'"/>
+            AND hdct.name LIKE #{nameLike}
+        </if>
+        <if test="code != null and code != ''">
+            <bind name="codeLike" value="'%'+code+'%'" />
+            AND hdc.code LIKE #{codeLike}
+        </if>
+        <if test="excludeCardIds != null and excludeCardIds.size() > 0">
+            AND hdc.id NOT IN
+            <foreach collection="excludeCardIds" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+    </select>
+    <select id="selectOrgAssignableDashboardCard" resultType="org.hzero.platform.domain.entity.DashboardCard">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        SELECT DISTINCT
+            hdc.code,
+            hdc.card_params,
+            hdct.name,
+            hdc.catalog_type,
+            hdc.fd_level "level",
+            hdc.w,
+            hdc.h,
+            hdc.id,
+            hdc.logo
+        FROM hpfm_dashboard_card hdc
+        LEFT JOIN hpfm_dashboard_card_tl hdct ON hdc.id=hdct.id AND hdct.lang=#{lang}
+        JOIN hpfm_dashboard_tenant_card hdtc ON hdc.id=hdtc.card_id
+        JOIN hpfm_dbd_clause_assign hdca ON (hdca.tenant_id = hdtc.tenant_id AND hdca.clause_id = #{clauseId})
+        WHERE hdc.enabled_flag=1
+        <if test="name != null and name != ''">
+            <bind name="nameLike" value="'%'+name+'%'"/>
+            AND hdct.name LIKE #{nameLike}
+        </if>
+        <if test="code != null and code != ''">
+            <bind name="codeLike" value="'%'+code+'%'" />
+            AND hdc.code LIKE #{codeLike}
+        </if>
+        <if test="excludeCardIds != null and excludeCardIds.size() > 0">
+            AND hdc.id NOT IN
+            <foreach collection="excludeCardIds" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        UNION ALL
+        SELECT
+                hdc.code,
+                hdc.card_params,
+                hdct.name,
+                hdc.catalog_type,
+                hdc.fd_level "level",
+                hdc.w,
+                hdc.h,
+                hdc.id,
+                hdc.logo
+        FROM hpfm_dashboard_card hdc
+        LEFT JOIN hpfm_dashboard_card_tl hdct ON hdc.id=hdct.id AND hdct.lang=#{lang}
+        WHERE hdc.enabled_flag = 1
+        AND hdc.fd_level = 'SITE'
+        <if test="name != null and name != ''">
+            <bind name="nameLike" value="'%'+name+'%'"/>
+            AND hdct.name LIKE #{nameLike}
+        </if>
+        <if test="code != null and code != ''">
+            <bind name="codeLike" value="'%'+code+'%'" />
+            AND hdc.code LIKE #{codeLike}
+        </if>
+        <if test="excludeCardIds != null and excludeCardIds.size() > 0">
+            AND hdc.id NOT IN
+            <foreach collection="excludeCardIds" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+    </select>
+</mapper>

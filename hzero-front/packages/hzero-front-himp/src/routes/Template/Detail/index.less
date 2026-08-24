@@ -1,0 +1,45 @@
+.template-form {
+  :global {
+    .ql-toolbar {
+      height: 11%;
+    }
+    .ql-container {
+      height: 88%;
+    }
+    .ql-toolbar.ql-snow {
+      line-height: 100%;
+    }
+    .ql-snow .ql-picker-label::before,
+    .ql-snow .ql-color-picker .ql-picker-label svg,
+    .ql-snow .ql-icon-picker .ql-picker-label svg {
+      vertical-align: top;
+    }
+  }
+  .tempTableNameBody {
+    :global {
+      .ant-input:focus {
+        border-color: #d9d9d9 !important;
+        outline: none;
+        -webkit-box-shadow: none;
+        box-shadow: none;
+      }
+      .ant-input:hover {
+        border-color: #d9d9d9 !important;
+      }
+    }
+    .tempTableName {
+      border-top: none !important;
+      border-right: none !important;
+      border-left: none !important;
+    }
+  }
+}
+.template-column-input {
+  :global {
+    .ant-input-number,
+    .ant-calendar-picker,
+    .ant-form-item {
+      width: 100%;
+    }
+  }
+}

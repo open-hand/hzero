@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.message.infra.mapper.TemplateServerLineMapper">
+    <select id="selectTemplateServerLine" resultType="org.hzero.message.domain.entity.TemplateServerLine">
+        SELECT
+            htsl.temp_server_line_id,
+            htsl.temp_server_id,
+            htsl.type_code,
+            htsl.template_code,
+            htsl.remark,
+            htsl.object_version_number,
+            htsl.server_code,
+            htsl.try_times,
+            htsl.enabled_flag
+        FROM
+            hmsg_template_server_line htsl
+        WHERE
+            htsl.temp_server_id = #{tempServerId}
+        ORDER BY
+            htsl.temp_server_line_id DESC
+    </select>
+
+    <select id="enabledTemplateServerLine" resultType="org.hzero.message.domain.entity.TemplateServerLine">
+        SELECT
+            htsl.temp_server_line_id,
+            htsl.temp_server_id,
+            htsl.type_code,
+            htsl.template_code,
+            htsl.remark,
+            htsl.object_version_number,
+            htsl.server_code,
+            htsl.try_times,
+            htsl.enabled_flag
+        FROM
+            hmsg_template_server_line htsl
+        WHERE
+            htsl.temp_server_id = #{tempServerId}
+            AND htsl.enabled_flag = 1
+        ORDER BY
+            htsl.temp_server_line_id DESC
+    </select>
+
+    <select id="getTemplateServerLine" resultType="org.hzero.message.domain.entity.TemplateServerLine">
+        select
+            htsl.temp_server_line_id,
+            htsl.temp_server_id,
+            htsl.server_id,
+            he.server_code,
+            htsl.try_times,
+            htsl.enabled_flag
+        from hmsg_template_server_line htsl
+        join hmsg_template_server hts on hts.temp_server_id = htsl.temp_server_id and hts.tenant_id = #{tenantId} and hts.message_code = #{messageCode}
+        left join <if test="typeCode == 'EMAIL'"> hmsg_email_server </if> <if test="typeCode == 'SMS'"> hmsg_sms_server </if> he on he.server_id = htsl.server_id
+        where
+            htsl.type_code = #{typeCode}
+    </select>
+</mapper>

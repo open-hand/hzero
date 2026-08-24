@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.platform.infra.mapper.DashboardRoleCardMapper">
+    <select id="selectRoleCardList" resultType="org.hzero.platform.domain.entity.DashboardRoleCard">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        SELECT
+        hdrc.id,
+        hdrc.card_id,
+        hdrc.role_id,
+        hdrc.default_display_flag,
+        hdrc.object_version_number,
+        hdct.name,
+        hdc.code,
+        hdc.catalog_type,
+        hdc.h,
+        hdc.w,
+        hdrc.x,
+        hdrc.y
+        FROM hpfm_dashboard_role_card hdrc
+        JOIN hpfm_dashboard_card hdc ON hdrc.card_id=hdc.id
+        LEFT JOIN hpfm_dashboard_card_tl hdct ON hdc.id=hdct.id AND hdct.lang=#{lang}
+        WHERE hdrc.role_id=#{roleId}
+    </select>
+    <select id="selectRoleAssignCardList" resultType="org.hzero.platform.domain.entity.DashboardRoleCard">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        <bind name="enabledFlag" value="1"/>
+
+        SELECT
+        hpdc.id card_id,
+        hpdc.code,
+        hdct.name,
+        hpdc.fd_level "level",
+        hpdc.catalog_type,
+        hpdc.w,
+        hpdc.h
+        FROM hpfm_dashboard_card hpdc
+        LEFT JOIN hpfm_dashboard_card_tl hdct ON hpdc.id=hdct.id AND hdct.lang=#{lang}
+        LEFT JOIN hpfm_dashboard_tenant_card hdtc ON hpdc.id=hdtc.card_id
+        WHERE (hpdc.fd_level='SITE' OR hdtc.tenant_id=#{tenantId})
+        AND hpdc.enabled_flag=#{enabledFlag}
+        AND NOT EXISTS(
+        SELECT 1 FROM hpfm_dashboard_role_card hdrc WHERE hdrc.card_id = hpdc.id AND hdrc.role_id = #{roleId}
+        )
+        <if test="code != null and code != ''">
+            <bind name="codeLike" value="'%'+code+'%'"/>
+            AND hpdc.code LIKE #{codeLike}
+        </if>
+        <if test="name != null and name != ''">
+            <bind name="nameLike" value="'%'+name+'%'"/>
+            AND hpdc.name LIKE #{nameLike}
+        </if>
+        ORDER BY hpdc.code ASC
+    </select>
+    <select id="selectSuperRoleIds" resultType="java.lang.Long">
+        SELECT
+          ir.id role_id
+        FROM iam_role ir
+        WHERE ir.code IN ('role/site/default/administrator', 'role/organization/default/administrator')
+    </select>
+    <sql id="roleCardField">
+        hdct.name,
+        hdc.code,
+        hdc.card_params,
+        hdc.catalog_type,
+        hdc.h,
+        hdc.w,
+        hdrc.x,
+        hdrc.y,
+        hdrc.card_id,
+        hdrc.default_display_flag,
+        hdrc.role_id
+    </sql>
+    <sql id="roleCardFieldSG">
+        hdct.name,
+        hdc.code,
+        hdc.card_params,
+        hdc.catalog_type,
+        hdc.h,
+        hdc.w,
+        hsgad.x,
+        hsgad.y,
+        hsgad.card_id,
+        hsgad.default_display_flag,
+        irp.role_id
+    </sql>
+    <select id="selectParentInitRoleCard" resultType="org.hzero.platform.domain.entity.DashboardRoleCard">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+
+        (SELECT
+        <include refid="roleCardField"/>
+        FROM hpfm_dashboard_role_card hdrc
+        JOIN hpfm_dashboard_card hdc ON hdrc.card_id=hdc.id
+        LEFT JOIN hpfm_dashboard_card_tl hdct ON hdc.id=hdct.id AND hdct.lang=#{lang}
+        WHERE hdrc.role_id IN
+        <foreach collection="parentRoleList" item="item" open="(" close=")" separator="," index="index">
+            #{item}
+        </foreach>
+        AND hdrc.default_display_flag = 1)
+        UNION
+        (
+        SELECT
+        <include refid="roleCardFieldSG"/>
+        FROM iam_role_permission irp
+        INNER JOIN hiam_sec_grp hsg
+        ON irp.type = 'SG' AND irp.permission_id = hsg.sec_grp_id
+        AND irp.role_id IN
+        <foreach collection="parentRoleList" item="item" open="(" close=")" separator="," index="index">
+            #{item}
+        </foreach>
+        INNER JOIN hiam_sec_grp_acl_dashboard hsgad
+        ON hsgad.default_display_flag = 1 AND hsg.sec_grp_id = hsgad.sec_grp_id
+        INNER JOIN hpfm_dashboard_card hdc
+        ON hsgad.card_id = hdc.id
+        LEFT JOIN hpfm_dashboard_card_tl hdct ON hdc.id = hdct.id AND hdct.lang = #{lang}
+        )
+    </select>
+    <select id="selectCurrentRoleCards" resultType="org.hzero.platform.domain.entity.DashboardRoleCard">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+
+        (SELECT
+        <include refid="roleCardField"/>
+        FROM hpfm_dashboard_role_card hdrc
+        JOIN hpfm_dashboard_card hdc ON hdrc.card_id=hdc.id
+        LEFT JOIN hpfm_dashboard_card_tl hdct ON hdc.id=hdct.id AND hdct.lang=#{lang}
+        WHERE hdrc.role_id IN
+        <foreach collection="roleIds" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+        AND hdrc.default_display_flag = 1)
+        UNION
+        (
+        SELECT
+        <include refid="roleCardFieldSG"/>
+        FROM iam_role_permission irp
+        INNER JOIN hiam_sec_grp hsg
+        ON irp.type = 'SG' AND irp.permission_id = hsg.sec_grp_id
+        AND irp.role_id IN
+        <foreach collection="roleIds" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+        INNER JOIN hiam_sec_grp_acl_dashboard hsgad
+        ON hsgad.default_display_flag = 1 AND hsg.sec_grp_id = hsgad.sec_grp_id
+        INNER JOIN hpfm_dashboard_card hdc
+        ON hsgad.card_id = hdc.id
+        LEFT JOIN hpfm_dashboard_card_tl hdct ON hdc.id = hdct.id AND hdct.lang = #{lang}
+        )
+    </select>
+    <select id="selectRoleTenant" resultType="java.lang.Long">
+        SELECT h_tenant_id
+        FROM iam_role
+        WHERE id = #{roleId}
+    </select>
+    <select id="selectSubRoleIds" resultType="java.lang.Long">
+        SELECT
+            ir.id
+        FROM
+            iam_role ir
+        WHERE
+            ir.id = #{roleId}
+            OR ir.h_level_path LIKE concat( ( SELECT h_level_path FROM iam_role WHERE id = #{roleId} ), '|%' )
+            AND ir.id NOT IN (
+                SELECT hdrc1.role_id
+                FROM hpfm_dashboard_role_card hdrc
+                JOIN hpfm_dashboard_role_card hdrc1 ON hdrc1.card_id = hdrc.card_id
+                WHERE hdrc.role_id = #{roleId}
+                AND hdrc.card_id = #{cardId})
+    </select>
+
+</mapper>

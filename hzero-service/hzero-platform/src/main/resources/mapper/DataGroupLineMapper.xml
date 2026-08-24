@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.platform.infra.mapper.DataGroupLineMapper">
+	<!-- 可根据自己的需求，是否要使用 -->
+    <select id="listDataGroupLine" resultType="org.hzero.platform.domain.entity.DataGroupLine">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()" />
+        SELECT
+        hdgl.group_line_id,
+        hdgl.group_id,
+        hdgl.tenant_id,
+        hdgl.line_value_id,
+        httl.tenant_name,
+        hdgl.object_version_number,
+        hl.lov_code as dimension_code,
+        hlt.lov_name as dimension_name
+        from
+        hpfm_data_group_line hdgl
+        join hpfm_tenant ht on ht.tenant_id = hdgl.tenant_id
+        LEFT JOIN hpfm_tenant_tl httl ON ht.tenant_id = httl.tenant_id AND httl.lang = #{lang}
+        join hpfm_lov hl on hl.lov_id = hdgl.line_value_id
+        join hpfm_lov_tl hlt on hl.lov_id = hlt.lov_id and hlt.lang=#{lang}
+        where
+        1=1
+        <if test="tenantId!=null">
+            and hdgl.tenant_id = #{tenantId}
+        </if>
+        <if test="groupId!=null">
+            and hdgl.group_id = #{groupId}
+        </if>
+    </select>
+</mapper>

@@ -1,0 +1,439 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.iam.infra.mapper.PermissionMapper">
+
+    <sql id="BaseColumn">
+        ip.id,
+        ip.code as code,
+        ip.path as path,
+        ip.fd_level,
+        ip.fd_level as "level",
+        ip.method as method,
+        case when ipt.description is null then ip.description else ipt.description end as description,
+        ip.action,
+        ip.fd_resource,
+        ip.fd_resource as "resource",
+        ip.public_access,
+        ip.login_access,
+        ip.sign_access,
+        ip.service_name,
+        ip.is_within,
+        ip.is_within as "within",
+        ip.tag,
+        ip.object_version_number
+    </sql>
+
+    <sql id="whereSql">
+        <if test="code != null and code != '' ">
+            <bind name="codeLike" value="'%' + code + '%'"/>
+            and ip.code like #{codeLike}
+        </if>
+        <if test="path != null and path != '' ">
+            <bind name="pathLike" value="'%' + path + '%'"/>
+            and ip.path like #{pathLike}
+        </if>
+        <if test="fdLevel != null and fdLevel != '' ">
+            and ip.fd_level = #{fdLevel}
+        </if>
+        <if test="method != null and method != '' ">
+            and ip.method = #{method}
+        </if>
+        <if test="serviceName != null and serviceName != '' ">
+            and ip.service_name = #{serviceName}
+        </if>
+        <if test="tag != null and tag != '' ">
+            <bind name="tagLike" value="tag + '%'"/>
+            and ip.tag like #{tagLike}
+        </if>
+        <if test="publicAccess != null">
+            and ip.public_access = #{publicAccess}
+        </if>
+        <if test="loginAccess != null">
+            and ip.login_access = #{loginAccess}
+        </if>
+        <if test="signAccess != null">
+            and ip.sign_access = #{signAccess}
+        </if>
+        <if test="isWithin != null">
+            and ip.is_within = #{isWithin}
+        </if>
+    </sql>
+
+    <select id="selectPermissions" parameterType="string" resultType="org.hzero.iam.domain.vo.PermissionVO">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        SELECT
+            ip.id,
+            ip.code as code,
+            ip.path as path,
+            ip.method as method,
+            ip.fd_level,
+            case when ipt.description is null then ip.description else ipt.description end as description,,
+            ip.action,
+            ip.fd_resource,
+            ip.service_name
+        FROM iam_permission ip
+        LEFT JOIN iam_permission_tl ipt on ip.id = ipt.id and ipt.lang = #{lang}
+        <where>
+            <if test="condition != null and condition != ''">
+                <bind name="conditionLike" value="'%' + condition + '%'"/>
+                AND (ip.code LIKE #{conditionLike} OR ip.path LIKE #{conditionLike})
+            </if>
+            <if test="level != null and level != ''">
+                AND ip.fd_level = #{level}
+            </if>
+        </where>
+    </select>
+
+    <!-- 查询可分配的lov -->
+    <select id="selectLovByCodes" resultType="org.hzero.iam.domain.vo.Lov">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        select
+        hl.lov_id,
+        hl.lov_code,
+        hl.lov_type_code,
+        hl.tenant_id,
+        hl.route_name,
+        hl.custom_url
+        from hpfm_lov hl
+        where (hl.tenant_id = 0 or hl.tenant_id = #{tenantId})
+        and hl.lov_code in
+        <foreach collection="codes" item="code" open="(" separator="," close=")">
+            #{code}
+        </foreach>
+    </select>
+
+    <select id="selectSimpleByService" resultType="org.hzero.iam.domain.entity.Permission">
+      <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+      select
+        <include refid="BaseColumn" />
+      from iam_permission ip
+      LEFT JOIN iam_permission_tl ipt on ip.id = ipt.id and ipt.lang = #{lang}
+      where ip.service_name = #{serviceName}
+    </select>
+
+    <select id="queryPermissionByCode" resultType="org.hzero.iam.domain.vo.PermissionVO">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        SELECT
+            ip.code as code,
+            ip.path as path,
+            ip.method as method,
+            case when ipt.description is null then ip.description else ipt.description end as description,
+            ip.service_name
+        FROM iam_permission ip
+        LEFT JOIN iam_permission_tl ipt on ip.id = ipt.id and ipt.lang = #{lang}
+        WHERE
+            ip.CODE = #{permissionCode}
+        AND ip.fd_level = #{level}
+    </select>
+
+    <select id="listApi" resultType="org.hzero.iam.api.dto.PermissionFieldResponse">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        <bind name="now" value="@java.time.LocalDate@now()" />
+        SELECT
+        ip.id,
+        ip.code as code,
+        ip.path as path,
+        ip.method as method,
+        ip.fd_level,
+        case when ipt.description is null then ip.description else ipt.description end as description,
+        ip.service_name,
+        ap.allocated_count
+        FROM iam_permission ip
+        LEFT JOIN iam_permission_tl ipt on ip.id = ipt.id and ipt.lang = #{lang}
+        LEFT JOIN (SELECT hf.permission_id,
+                          COUNT(0) allocated_count
+                     FROM hiam_field hf
+                     JOIN hiam_field_permission hfp ON hf.field_id = hfp.field_id
+                     <choose>
+                          <when test="roleId != null"> AND hfp.permission_dimension = 'ROLE' AND hfp.dimension_value = #{roleId}</when>
+                          <when test="userId != null"> AND hfp.permission_dimension = 'USER' AND hfp.dimension_value = #{userId}</when>
+                          <otherwise>AND 1 = 2</otherwise>
+                     </choose>
+                          GROUP BY hf.permission_id) ap ON ap.permission_id = ip.id
+        WHERE
+        ip.is_within = 0
+        <if test="serviceName != null and serviceName != ''">
+            AND ip.service_name = #{serviceName}
+        </if>
+        <if test="method != null and method != ''">
+            AND ip.method = #{method}
+        </if>
+        <if test="path != null and path != ''">
+            <bind name="pathLike" value="'%' + path + '%'"/>
+            AND ip.path LIKE #{pathLike}
+        </if>
+        <if test="description != null and description != ''">
+            <bind name="descriptionLike" value="'%' + description + '%'"/>
+            AND ip.description LIKE #{descriptionLike}
+        </if>
+        <if test="!includeAll">
+            AND EXISTS(SELECT 1 FROM hiam_field hf WHERE hf.permission_id = ip.id)
+        </if>
+        <if test="roleId != null">
+            AND (ip.login_access = 1 OR ip.public_access = 1 OR EXISTS(SELECT 1 FROM iam_menu_permission imp
+            JOIN iam_menu im ON im.id = imp.menu_id AND im.type = 'ps'
+            JOIN iam_role_permission irp ON irp.permission_id = im.id AND irp.role_id = #{roleId} AND (irp.h_create_flag
+            = 'Y' OR irp.h_inherit_flag = 'Y') AND irp.type = 'PS'
+            WHERE imp.permission_code = ip.code AND im.fd_level = ip.fd_level))
+        </if>
+        <if test="roleId == null and userId != null">
+            AND (ip.login_access = 1 OR ip.public_access = 1 OR EXISTS(SELECT 1 FROM iam_menu_permission imp
+            JOIN iam_menu im ON im.id = imp.menu_id AND im.type = 'ps'
+            JOIN iam_role_permission irp ON irp.permission_id = im.id AND irp.role_id = #{roleId} AND (irp.h_create_flag
+            = 'Y' OR irp.h_inherit_flag = 'Y') AND irp.type = 'PS'
+            JOIN iam_member_role imr ON imr.role_id = irp.role_id AND imr.member_type = 'user' AND imr.member_id =
+            #{userId}
+            WHERE imp.permission_code = ip.code AND im.fd_level = ip.fd_level
+            AND (imr.start_date_active IS NULL OR imr.start_date_active &lt;= #{now})
+            AND (imr.end_date_active IS NULL OR imr.end_date_active &gt;= #{now} )))
+        </if>
+    </select>
+
+    <select id="listApiInSecGrps" resultType="org.hzero.iam.domain.entity.Permission">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        SELECT
+        ip.id,
+        ip.code as code,
+        ip.path as path,
+        ip.method as method,
+        ip.fd_level,
+        case when ipt.description is null then ip.description else ipt.description end as description,
+        ip.service_name
+        FROM
+        iam_permission ip
+        LEFT JOIN iam_permission_tl ipt on ip.id = ipt.id and ipt.lang = #{lang}
+        WHERE
+        ip.is_within = 0
+        <if test="serviceName != null and serviceName != ''">
+            AND ip.service_name = #{serviceName}
+        </if>
+        <if test="method != null and method != ''">
+            AND ip.method = #{method}
+        </if>
+        <if test="path != null and path != ''">
+            <bind name="pathLike" value="'%' + path + '%'"/>
+            AND ip.path LIKE #{pathLike}
+        </if>
+        <if test="description != null and description != ''">
+            <bind name="descriptionLike" value="'%' + description + '%'"/>
+            AND ip.description LIKE #{descriptionLike}
+        </if>
+        <if test="!includeAll">
+            AND EXISTS(SELECT 1 FROM hiam_field hf WHERE hf.permission_id = ip.id)
+        </if>
+        AND (
+            ip.login_access = 1
+            OR ip.public_access = 1
+            OR EXISTS (
+                SELECT
+                  1
+                FROM
+                  iam_menu_permission imp
+                JOIN iam_menu im ON im.id = imp.menu_id AND im.type = 'ps'
+                JOIN hiam_sec_grp_acl hsga ON im.id = hsga.permission_id
+                AND hsga.sec_grp_id IN
+                <foreach collection="secGrpIds" item="secGrpId" open="(" separator="," close=")">
+                    #{secGrpId}
+                </foreach>
+                JOIN hiam_sec_grp hsg ON hsga.sec_grp_id = hsg.sec_grp_id AND hsg.enabled_flag = 1
+                WHERE
+                imp.permission_code = ip.code
+                AND im.fd_level = ip.fd_level
+            )
+        )
+    </select>
+
+    <!--查询租户Api权限-->
+    <select id="selectTenantApis" resultType="org.hzero.iam.domain.vo.PermissionVO"
+            parameterType="org.hzero.iam.domain.vo.PermissionVO">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        <bind name="apiLabelDataType" value="@org.hzero.iam.domain.entity.Permission@LABEL_DATA_TYPE"/>
+        SELECT DISTINCT
+        htp.tenant_id,
+        htt.tenant_name,
+        <include refid="BaseColumn" />
+        FROM iam_permission ip
+        <if test="@org.apache.commons.collections4.CollectionUtils@isNotEmpty(labels)">
+            INNER JOIN hiam_label_rel hlr ON hlr.data_type = #{apiLabelDataType} AND hlr.data_id = ip.id
+            INNER JOIN iam_label il ON hlr.label_id = il.id AND il.name IN
+            <foreach collection="labels" open="(" separator="," close=")" item="label">
+                #{label}
+            </foreach>
+        </if>
+        LEFT JOIN iam_permission_tl ipt ON (ip.id = ipt.id AND ipt.lang = #{lang})
+        JOIN hiam_tenant_permission htp ON htp.permission_id = ip.id
+        JOIN hpfm_tenant_tl htt ON (htt.tenant_id = htp.tenant_id  AND htt.lang = #{lang})
+        WHERE ip.fd_level = 'organization'
+        <if test="@org.apache.commons.collections4.CollectionUtils@isNotEmpty(labels)">
+            <bind name="labelsSize" value="labels.size()"/>
+            AND (SELECT COUNT(1)
+            FROM hiam_label_rel hlr
+            INNER JOIN iam_label il ON hlr.label_id = il.id
+            WHERE hlr.data_type = #{apiLabelDataType}
+            AND hlr.data_id = ip.id
+            AND il.name IN
+            <foreach collection="labels" open="(" separator="," close=")" item="label">
+                #{label}
+            </foreach>
+            ) = #{labelsSize}
+        </if>
+        <if test="tenantId != null">
+            and htp.tenant_id = #{tenantId}
+        </if>
+        <include refid="whereSql" />
+    </select>
+
+    <!--  查询所有API  -->
+    <select id="selectApis" parameterType="org.hzero.iam.domain.vo.PermissionVO"
+            resultType="org.hzero.iam.domain.vo.PermissionVO">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        <bind name="apiLabelDataType" value="@org.hzero.iam.domain.entity.Permission@LABEL_DATA_TYPE"/>
+
+        SELECT DISTINCT
+        <include refid="BaseColumn" />
+        FROM iam_permission ip
+        <if test="@org.apache.commons.collections4.CollectionUtils@isNotEmpty(labels)">
+            INNER JOIN hiam_label_rel hlr ON hlr.data_type = #{apiLabelDataType} AND hlr.data_id = ip.id
+            INNER JOIN iam_label il ON hlr.label_id = il.id AND il.name IN
+            <foreach collection="labels" open="(" separator="," close=")" item="label">
+                #{label}
+            </foreach>
+        </if>
+        LEFT JOIN iam_permission_tl ipt ON ( ip.id = ipt.id AND ipt.lang = #{lang})
+        where 1=1
+        <if test="@org.apache.commons.collections4.CollectionUtils@isNotEmpty(labels)">
+            <bind name="labelsSize" value="labels.size()"/>
+            AND (SELECT COUNT(1)
+            FROM hiam_label_rel hlr
+            INNER JOIN iam_label il ON hlr.label_id = il.id
+            WHERE hlr.data_type = #{apiLabelDataType}
+            AND hlr.data_id = ip.id
+            AND il.name IN
+            <foreach collection="labels" open="(" separator="," close=")" item="label">
+                #{label}
+            </foreach>
+            ) = #{labelsSize}
+        </if>
+        <include refid="whereSql" />
+        ORDER BY ip.code
+    </select>
+
+    <select id="selectTenantAssignableApis" resultType="org.hzero.iam.domain.vo.PermissionVO"
+            parameterType="org.hzero.iam.domain.vo.PermissionVO">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        SELECT
+            <include refid="BaseColumn" />
+        FROM iam_permission ip
+        LEFT JOIN iam_permission_tl ipt ON (ip.id = ipt.id AND ipt.lang = #{lang})
+        WHERE ip.is_within = 0
+        and ip.public_access = 0
+        and ip.login_access = 0
+        and ip.sign_access = 0
+        and ip.fd_level = 'organization'
+        and not exists (
+            select 1 from hiam_tenant_permission htp where ip.id = htp.permission_id
+        )
+        <if test="code != null and code != '' ">
+            <bind name="codeLike" value="'%' + code + '%'"/>
+            and ip.code like #{codeLike}
+        </if>
+        <if test="path != null and path != '' ">
+            <bind name="pathLike" value="'%' + path + '%'"/>
+            and ip.path like #{pathLike}
+        </if>
+        <if test="method != null and method != '' ">
+            and ip.method = #{method}
+        </if>
+        <if test="serviceName != null and serviceName != '' ">
+            and ip.service_name = #{serviceName}
+        </if>
+        ORDER BY ip.code
+    </select>
+
+    <!-- 查询安全组能配置的字段权限API -->
+    <select id="listSecGrpAssignableApi" resultType="org.hzero.iam.domain.entity.Permission">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        SELECT
+            ip.id,
+            ip.code as code,
+            ip.path as path,
+            ip.method as method,
+            ip.fd_level,
+            case when ipt.description is null then ip.description else ipt.description end as description,
+            ip.service_name,
+            (select count(*) from hiam_sec_grp_acl_field where sec_grp_id = #{secGrpId} and permission_id = ip.id) field_count
+        FROM iam_permission ip
+        LEFT JOIN iam_permission_tl ipt on ip.id = ipt.id and ipt.lang = #{lang}
+        WHERE
+        ip.is_within = 0
+        <if test="serviceName != null and serviceName != ''">
+            AND ip.service_name = #{serviceName}
+        </if>
+        <if test="method != null and method != ''">
+            AND ip.method = #{method}
+        </if>
+        <if test="path != null and path != ''">
+            <bind name="pathLike" value="'%' + path + '%'"/>
+            AND ip.path LIKE #{pathLike}
+        </if>
+        <if test="description != null and description != ''">
+            <bind name="descriptionLike" value="'%' + description + '%'"/>
+            AND ip.description LIKE #{descriptionLike}
+        </if>
+        AND ip.id IN (
+            SELECT permission_id FROM hiam_field
+        )
+        AND (
+            ip.login_access = 1
+            OR ip.public_access = 1
+            OR EXISTS (
+                SELECT 1
+                FROM iam_menu_permission imp
+                JOIN iam_menu im ON im.id = imp.menu_id AND im.type = 'ps'
+                JOIN hiam_sec_grp_acl hsga ON im.id = hsga.permission_id
+                WHERE imp.permission_code = ip.code AND im.fd_level = ip.fd_level
+            )
+        )
+    </select>
+
+    <!-- 查询安全组能已配置的字段权限API -->
+    <select id="listSecGrpAssignedApi" resultType="org.hzero.iam.domain.entity.Permission">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        SELECT
+            ip.id,
+            ip.code as code,
+            ip.path as path,
+            ip.method as method,
+            ip.fd_level,
+            case when ipt.description is null then ip.description else ipt.description end as description,
+            ip.service_name,
+            (select count(*) from hiam_sec_grp_acl_field where sec_grp_id = #{secGrpId} and permission_id = ip.id) field_count
+        FROM iam_permission ip
+        LEFT JOIN iam_permission_tl ipt on ip.id = ipt.id and ipt.lang = #{lang}
+        WHERE
+        ip.is_within = 0
+        <if test="serviceName != null and serviceName != ''">
+            AND ip.service_name = #{serviceName}
+        </if>
+        <if test="method != null and method != ''">
+            AND ip.method = #{method}
+        </if>
+        <if test="path != null and path != ''">
+            <bind name="pathLike" value="'%' + path + '%'"/>
+            AND ip.path LIKE #{pathLike}
+        </if>
+        <if test="description != null and description != ''">
+            <bind name="descriptionLike" value="'%' + description + '%'"/>
+            AND ip.description LIKE #{descriptionLike}
+        </if>
+        AND ip.id IN (
+            SELECT permission_id FROM hiam_field
+        )
+        AND EXISTS (
+            SELECT 1
+            FROM hiam_sec_grp_acl_field hsgaf
+            WHERE hsgaf.permission_id = ip.id
+            AND hsgaf.sec_grp_id = #{secGrpId}
+        )
+    </select>
+</mapper>

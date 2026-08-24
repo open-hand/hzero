@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.admin.infra.mapper.ServiceMapper">
+
+    <select id="selectDefaultServices" resultType="org.hzero.admin.domain.entity.HService">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        SELECT
+            hs.service_id,
+            hs.service_code,
+            hs.service_name,
+            hs.service_logo
+        FROM
+            hadm_service hs
+        LEFT JOIN hadm_service_tl hst ON hs.service_id = hst.service_id and hst.lang = #{lang}
+        WHERE 1 = 1
+        <if test="serviceCode != null and serviceCode !=''">
+            <bind name="serviceCodeLike" value="'%'+serviceCode+'%'"/>
+            AND hs.service_code LIKE #{serviceCodeLike}
+        </if>
+        <if test="serviceName != null and serviceName !=''">
+            <bind name="serviceNameLike" value="'%'+serviceName+'%'"/>
+            AND hs.service_name LIKE #{serviceNameLike}
+        </if>
+        ORDER BY hs.service_code ASC, hs.creation_date DESC
+    </select>
+
+    <select id="selectDefaultServicesWithVersion" resultType="org.hzero.admin.domain.entity.HService">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        SELECT
+        hs.service_id,
+        hs.service_code,
+        hs.service_name,
+        hs.service_logo,
+        hsv.version_number,
+        hsv.release_date,
+        hsv.last_update_date update_date
+        FROM
+        hadm_service hs
+        LEFT JOIN hadm_service_tl hst ON hs.service_id = hst.service_id and hst.lang = #{lang}
+        LEFT JOIN hadm_service_version hsv ON hs.service_id = hsv.service_id
+        WHERE 1 = 1
+        <if test="serviceCode != null and serviceCode !=''">
+            <bind name="serviceCodeLike" value="'%'+serviceCode+'%'"/>
+            AND hs.service_code LIKE #{serviceCodeLike}
+        </if>
+        <if test="serviceName != null and serviceName !=''">
+            <bind name="serviceNameLike" value="'%'+serviceName+'%'"/>
+            AND hs.service_name LIKE #{serviceNameLike}
+        </if>
+        ORDER BY hs.service_code ASC, hs.creation_date DESC
+    </select>
+
+    <select id="selectServiceDetails" resultType="org.hzero.admin.domain.entity.HService">
+        SELECT
+            service_id,
+            service_name,
+            service_code,
+            service_logo,
+            object_version_number
+        FROM hadm_service
+        WHERE service_id=#{serviceId}
+    </select>
+
+</mapper>

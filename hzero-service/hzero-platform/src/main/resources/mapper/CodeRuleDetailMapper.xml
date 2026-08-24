@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.platform.infra.mapper.CodeRuleDetailMapper">
+    <select id="selectCodeRuleDetailList" parameterType="java.lang.Long"
+            resultType="org.hzero.platform.api.dto.CodeRuleDetailDTO">
+        SELECT
+            hcrd.rule_detail_id,
+            hcrd.rule_dist_id,
+            hcrd.order_seq,
+            hcrd.field_type,
+		    hcrd.reset_frequency,
+            (SELECT meaning FROM hpfm_lov_value WHERE lov_code = 'HPFM.CODE_RULE.FIELD_TYPE' AND value = hcrd.field_type) field_type_description,
+            hcrd.field_value,
+            hcrd.date_mask,
+            hcrd.seq_length,
+            hcrd.start_value,
+            hcrd.encrypted_flag,
+            hcrd.current_value,
+            hcrd.object_version_number,
+            (SELECT meaning FROM hpfm_lov_value WHERE lov_code = 'HPFM.CODE_RULE.RESET_FREQUENCY' AND value = hcrd.reset_frequency) reset_frequency_description
+        FROM
+            hpfm_code_rule_detail hcrd
+        WHERE rule_dist_id = #{ruleDistId}
+    </select>
+
+    <update id="updateCodeRuleDetailWithNotOVN">
+        UPDATE hpfm_code_rule_detail
+        SET current_value = #{currentValue},
+        reset_date = #{resetDate}
+        WHERE
+            rule_detail_id = #{ruleDetailId}
+    </update>
+
+    <select id="selectDetailListByRuleCode" resultType="org.hzero.platform.domain.entity.CodeRuleDetail">
+        SELECT
+            hcrd.rule_dist_id,
+            hcrd.rule_detail_id,
+            hcrd.order_seq,
+            hcrd.field_type,
+            hcrd.field_value,
+            hcrd.seq_length,
+            hcrd.start_value,
+            hcrd.current_value,
+            hcrd.reset_frequency,
+            hcrd.reset_date,
+            hcrd.date_mask,
+            hcrd.encrypted_flag,
+            hcrd.object_version_number
+        FROM
+            hpfm_code_rule hcr,
+            hpfm_code_rule_dist crd,
+            hpfm_code_rule_detail hcrd
+        WHERE
+            hcr.rule_id = crd.rule_id
+            AND crd.rule_dist_id = hcrd.rule_dist_id
+            AND hcr.rule_code = #{ruleCode}
+            AND hcr.tenant_id = #{tenantId}
+            AND hcr.rule_level = #{ruleLevel}
+            <if test="levelValue != null and levelValue != ''">
+                AND crd.level_code = #{levelCode}
+            </if>
+            <if test="levelValue != null and levelValue != ''">
+                AND crd.level_value = #{levelValue}
+            </if>
+    </select>
+    <select id="listCodeRuleWithPrevious" resultType="org.hzero.platform.domain.entity.CodeRuleDetail">
+        SELECT
+            hcrd.rule_dist_id,
+            hcrd.rule_detail_id,
+            hcrd.order_seq,
+            hcrd.field_type,
+            hcrd.field_value,
+            hcrd.seq_length,
+            hcrd.start_value,
+            <if test="previousLevelValue == null or previousLevelValue ==''">
+                hcrd.current_value,
+                hcrd.reset_date,
+            </if>
+            <if test="previousLevelValue != null and previousLevelValue !=''">
+                hcrv.current_value,
+                hcrv.reset_date,
+            </if>
+            hcrd.reset_frequency,
+            hcrd.date_mask,
+            hcrd.encrypted_flag,
+            hcrd.object_version_number
+        FROM
+            hpfm_code_rule hcr
+            JOIN hpfm_code_rule_dist crd ON hcr.rule_id = crd.rule_id AND crd.level_value = #{levelValue} AND crd.level_code = #{levelCode} AND crd.enabled_flag = 1
+            JOIN hpfm_code_rule_detail hcrd ON crd.rule_dist_id = hcrd.rule_dist_id
+            <if test="previousLevelValue != null and previousLevelValue !=''">
+                LEFT JOIN hpfm_code_rule_value hcrv ON hcrv.rule_detail_id = hcrd.rule_detail_id AND hcrv.level_value = #{previousLevelValue} AND hcrv.rule_level = #{previousLevelCode}
+            </if>
+        WHERE
+            hcr.rule_code = #{ruleCode}
+            AND hcr.tenant_id = #{tenantId}
+            AND hcr.rule_level = #{ruleLevel}
+    </select>
+</mapper>

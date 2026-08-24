@@ -1,0 +1,798 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.iam.infra.mapper.SecGrpDclLineMapper">
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap id="BaseResultMap" type="org.hzero.iam.domain.entity.SecGrpDclLine">
+        <result column="sec_grp_dcl_line_id" property="secGrpDclLineId" jdbcType="DECIMAL"/>
+        <result column="sec_grp_dcl_id" property="secGrpDclId" jdbcType="DECIMAL"/>
+        <result column="sec_grp_id" property="secGrpId" jdbcType="DECIMAL"/>
+        <result column="tenant_id" property="tenantId" jdbcType="DECIMAL"/>
+        <result column="data_id" property="dataId" jdbcType="DECIMAL"/>
+        <result column="data_code" property="dataCode" jdbcType="VARCHAR"/>
+        <result column="data_name" property="dataName" jdbcType="VARCHAR"/>
+        <result column="object_version_number" property="objectVersionNumber" jdbcType="DECIMAL"/>
+        <result column="creation_date" property="creationDate" jdbcType="DATE"/>
+        <result column="created_by" property="createdBy" jdbcType="DECIMAL"/>
+        <result column="last_updated_by" property="lastUpdatedBy" jdbcType="DECIMAL"/>
+        <result column="last_update_date" property="lastUpdateDate" jdbcType="DATE"/>
+    </resultMap>
+
+    <!-- 联数据原始表 -->
+    <sql id="joinSourceTable">
+        JOIN (
+            <choose>
+                <when test="authorityTypeCode == 'PURCHASE_ORGANIZATION'">
+                    SELECT
+                    hpo.tenant_id,
+                    hpo.purchase_org_id AS data_id
+                    FROM hpfm_purchase_organization hpo
+                </when>
+                <when test="authorityTypeCode == 'LOV'">
+                    SELECT
+                    hl.tenant_id,
+                    hl.lov_id AS data_id
+                    FROM hpfm_lov hl
+                </when>
+                <when test="authorityTypeCode == 'LOV_VIEW'">
+                    SELECT
+                    hl.tenant_id,
+                    hl.view_header_id AS data_id
+                    FROM hpfm_lov_view_header hl
+                </when>
+                <when test="authorityTypeCode == 'PURCHASE_AGENT'">
+                    SELECT
+                    hpa.tenant_id,
+                    hpa.purchase_agent_id AS data_id
+                    FROM hpfm_purchase_agent hpa
+                </when>
+                <when test="authorityTypeCode == 'DATASOURCE'">
+                    SELECT
+                    hd.tenant_id,
+                    hd.datasource_id AS data_id
+                    FROM hpfm_datasource hd
+                </when>
+                <when test="authorityTypeCode == 'DATA_GROUP'">
+                    SELECT
+                    hdg.tenant_id,
+                    hdg.group_id AS data_id
+                    FROM hpfm_data_group hdg
+                </when>
+                <otherwise>
+                    SELECT
+                    -1 tenant_id,
+                    -1 data_id
+                </otherwise>
+            </choose>
+        ) source ON (source.data_id = hsgdl.data_id OR (source.data_id = -1 AND source.tenant_id = -1))
+    </sql>
+
+    <insert id="batchInsertBySql">
+        <choose>
+            <when test="_databaseId == 'oracle'">
+                INSERT INTO hiam_sec_grp_dcl_line (sec_grp_dcl_line_id, sec_grp_dcl_id, sec_grp_id, tenant_id, data_id, data_code, data_name, created_by, last_updated_by)
+                SELECT hiam_sec_grp_dcl_line_S.nextval, t.*
+                FROM (
+                <foreach collection="list" item="item" separator=" union all ">
+                    select #{item.secGrpDclId}, #{item.secGrpId}, #{item.tenantId}, #{item.dataId}, #{item.dataCode}, #{item.dataName}, #{item.createdBy}, #{item.lastUpdatedBy} FROM dual
+                </foreach>
+                ) t
+            </when>
+            <otherwise>
+                INSERT INTO hiam_sec_grp_dcl_line (sec_grp_dcl_id, sec_grp_id, tenant_id, data_id, data_code, data_name,
+                created_by, last_updated_by)
+                VALUES
+                <foreach collection="list" item="item" separator=",">
+                    (#{item.secGrpDclId}, #{item.secGrpId}, #{item.tenantId}, #{item.dataId}, #{item.dataCode}, #{item.dataName}, #{item.createdBy}, #{item.lastUpdatedBy})
+                </foreach>
+            </otherwise>
+        </choose>
+    </insert>
+
+    <select id="selectDeletedDclLineId" resultType="java.lang.Long">
+        SELECT HSGDL.SEC_GRP_DCL_LINE_ID
+        FROM HIAM_SEC_GRP_DCL_LINE HSGDL
+        JOIN HIAM_SEC_GRP_DCL HSGD ON (
+            HSGD.SEC_GRP_DCL_ID = HSGDL.SEC_GRP_DCL_ID
+            AND HSGD.SEC_GRP_ID = #{secGrpId}
+            AND HSGD.AUTHORITY_TYPE_CODE = #{authorityTypeCode}
+        )
+        WHERE HSGDL.DATA_ID IN
+        <foreach collection="dataIds" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
+    <delete id="batchDeleteBySql">
+        DELETE FROM  HIAM_SEC_GRP_DCL_LINE
+        WHERE SEC_GRP_DCL_LINE_ID IN
+        <foreach collection="dclLineIds" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+
+
+    <select id="listSecGrpDclLine" resultType="org.hzero.iam.domain.entity.SecGrpDclLine">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        SELECT
+            hsgdl.sec_grp_dcl_line_id,
+            hsgdl.sec_grp_dcl_id,
+            hsgdl.sec_grp_id,
+            hsgdl.tenant_id,
+            hsgdl.data_id,
+            hsgdl.data_code,
+            hsgdl.data_name,
+            httl.tenant_name
+        FROM hiam_sec_grp_dcl_line hsgdl
+        JOIN hiam_sec_grp_dcl hsgd ON hsgd.sec_grp_dcl_id = hsgdl.sec_grp_dcl_id AND hsgd.authority_type_code = #{authorityTypeCode}
+        <include refid="joinSourceTable" />
+        LEFT JOIN hpfm_tenant_tl httl ON hsgdl.tenant_id = httl.tenant_id AND httl.lang = #{lang}
+        WHERE hsgd.sec_grp_id = #{secGrpId}
+        <if test="dataCode != null and dataCode != ''">
+            <bind name="dataCodeLike" value="'%' + dataCode + '%'"/>
+            AND hsgdl.data_code LIKE #{dataCodeLike}
+        </if>
+        <if test="dataName != null and dataName != ''">
+            <bind name="dataNameLike" value="'%' + dataName + '%'"/>
+            AND hsgdl.data_name LIKE #{dataNameLike}
+        </if>
+        -- 不在回收表
+        AND NOT EXISTS
+        (
+        SELECT 1
+        FROM hiam_sec_grp_revoke hsgr
+        WHERE
+        (
+        hsgr.revoke_type = 'REVOKE'
+        AND hsgr.authority_id = hsgdl.sec_grp_dcl_line_id
+        AND hsgr.authority_type = 'DCL'
+        AND hsgr.sec_grp_id = #{secGrpId}
+        )
+        )
+        <if test="secGrpSource == 'parent'">
+        -- 不在屏蔽表
+            AND NOT EXISTS
+            (
+            SELECT 1
+            FROM hiam_sec_grp_revoke hsgr
+            WHERE
+            (
+            hsgr.revoke_type = 'SHIELD'
+            AND hsgr.authority_id = hsgdl.sec_grp_dcl_line_id
+            AND hsgr.authority_type = 'DCL'
+            AND hsgr.shield_role_id = #{roleId}
+            AND hsgr.sec_grp_id = #{secGrpId}
+            )
+            )
+        </if>
+    </select>
+
+    <select id="listRoleSecGrpDcl" resultType="org.hzero.iam.domain.entity.SecGrpDclLine">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        SELECT
+            hsgdl.data_id,
+            hsgdl.data_code,
+            hsgdl.data_name,
+            hsgdl.tenant_id,
+            hsgdl.sec_grp_dcl_line_id,
+            httl.tenant_name,
+            (
+            CASE WHEN hsgr.authority_id IS NOT NULL
+            THEN 1
+            ELSE 0
+            END
+            ) shield_flag
+        FROM
+        hiam_sec_grp_dcl_line hsgdl
+        <include refid="joinSourceTable" />
+        JOIN hpfm_tenant ht on hsgdl.tenant_id = ht.tenant_id
+        LEFT JOIN hpfm_tenant_tl httl ON ht.tenant_id = httl.tenant_id AND httl.lang = #{lang}
+        JOIN hiam_sec_grp_dcl hsgd ON hsgd.sec_grp_dcl_id = hsgdl.sec_grp_dcl_id AND hsgd.authority_type_code = #{authorityTypeCode}
+        LEFT JOIN hiam_sec_grp_revoke hsgr ON hsgr.authority_id = hsgdl.sec_grp_dcl_line_id AND hsgr.revoke_type = 'SHIELD'
+        AND hsgr.authority_type = 'DCL' AND hsgr.sec_grp_id = #{secGrpId} AND hsgr.shield_role_id = #{roleId}
+        WHERE
+        hsgdl.sec_grp_id = #{secGrpId}
+        <if test="dataCode != null and dataCode != ''">
+            <bind name="dataCodeLike" value="'%' + dataCode + '%'"/>
+            AND hsgdl.data_code LIKE #{dataCodeLike}
+        </if>
+        <if test="dataName != null and dataName != ''">
+            <bind name="dataNameLike" value="'%' + dataName + '%'"/>
+            AND hsgdl.data_name LIKE #{dataNameLike}
+        </if>
+        -- 不在回收表
+        AND NOT EXISTS
+        (
+            SELECT 1
+            FROM hiam_sec_grp_revoke hsgr
+            WHERE
+            (
+                hsgr.revoke_type = 'REVOKE'
+                AND hsgr.authority_id = hsgdl.sec_grp_dcl_line_id
+                AND hsgr.authority_type = 'DCL'
+            )
+        )
+
+    </select>
+
+    <select id="selectAssignableSecGrpDclLine" resultType="org.hzero.iam.domain.entity.SecGrpDclLine">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        SELECT DISTINCT
+        hsgdl.data_id,
+        hsgdl.data_code,
+        hsgdl.data_name,
+        source.tenant_id,
+        httl.tenant_name
+        FROM hiam_sec_grp_dcl_line hsgdl
+        JOIN hiam_sec_grp_dcl hsgd ON hsgd.sec_grp_dcl_id = hsgdl.sec_grp_dcl_id AND hsgd.authority_type_code =
+        #{authorityTypeCode}
+        JOIN hiam_sec_grp hsg ON hsg.sec_grp_id = hsgdl.sec_grp_id AND hsg.enabled_flag = 1
+        JOIN iam_role_permission irp ON irp.type = 'SG' AND irp.permission_id = hsg.sec_grp_id AND (irp.h_create_flag =
+        'Y' OR irp.h_inherit_flag = 'Y')
+        AND irp.role_id = #{roleId}
+        <include refid="joinSourceTable" />
+        LEFT JOIN hpfm_tenant_tl httl ON source.tenant_id = httl.tenant_id AND httl.lang = #{lang}
+        WHERE
+        <!-- 过滤已经分配的  -->
+        NOT EXISTS (
+        SELECT 1
+        FROM hiam_sec_grp_dcl_line hsgdl_in
+        JOIN hiam_sec_grp_dcl hsgd_in on hsgdl_in.sec_grp_dcl_id = hsgd_in.sec_grp_dcl_id
+        WHERE hsgd_in.authority_type_code = #{authorityTypeCode}
+        AND hsgdl_in.data_id = hsgdl.data_id
+        AND hsgdl_in.sec_grp_id = #{secGrpId}
+        )
+        <!-- 过滤回收的和屏蔽的  -->
+        AND NOT EXISTS(
+        SELECT 1
+        FROM hiam_sec_grp_revoke hsgr
+        WHERE
+        -- 被屏蔽的数据
+        (
+        hsgr.revoke_type = 'SHIELD'
+        AND hsgr.authority_id = hsgdl.sec_grp_dcl_line_id
+        AND hsgr.authority_type = 'DCL'
+        AND hsgr.shield_role_id = #{roleId}
+        )
+        OR
+        -- 被回收的数据
+        (
+        hsgr.revoke_type = 'REVOKE'
+        AND hsgr.authority_id = hsgdl.sec_grp_dcl_line_id
+        AND hsgr.authority_type = 'DCL'
+        AND hsgr.sec_grp_id = #{secGrpId}
+        )
+        )
+        <if test="dataCode != null and dataCode != ''">
+            <bind name="dataCodeLike" value="'%' + dataCode + '%'"/>
+            AND hsgdl.data_code LIKE #{dataCodeLike}
+        </if>
+        <if test="dataName != null and dataName != ''">
+            <bind name="dataNameLike" value="'%' + dataName + '%'"/>
+            AND hsgdl.data_name LIKE #{dataNameLike}
+        </if>
+    </select>
+
+    <select id="selectGlobalAssignableDataGroup" resultType="org.hzero.iam.domain.entity.SecGrpDclLine">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        SELECT
+        hdg.group_id data_id,
+        hdg.group_code data_code,
+        hdg.group_name data_name,
+        hdg.tenant_id,
+        httl.tenant_name
+        from
+        hpfm_data_group hdg
+        join hpfm_tenant ht on hdg.tenant_id = ht.tenant_id AND (ht.tenant_id = #{tenantId} OR ht.tenant_id = 0)
+        left join hpfm_tenant_tl httl ON ht.tenant_id = httl.tenant_id AND httl.lang = #{lang}
+        where hdg.enabled_flag = 1
+        <if test="@org.apache.commons.lang3.StringUtils@isNotBlank(dataCode)">
+            <bind name="dataCodeLike" value="'%' + dataCode + '%'"/>
+            and hdg.group_code like #{dataCodeLike}
+        </if>
+        <if test="@org.apache.commons.lang3.StringUtils@isNotBlank(dataName)">
+            <bind name="dataNameLike" value="'%' + dataName + '%'"/>
+            and hdg.group_name like #{dataNameLike}
+        </if>
+        -- 排除已经分配的
+        AND NOT EXISTS (
+        SELECT 1
+        FROM hiam_sec_grp_dcl_line hsgdl
+        JOIN hiam_sec_grp_dcl hsgd ON hsgdl.sec_grp_dcl_id = hsgd.sec_grp_dcl_id
+        WHERE
+        hsgd.authority_type_code = #{authorityTypeCode}
+        AND hdg.group_id = hsgdl.data_id
+        AND hsgd.sec_grp_id = #{secGrpId}
+        )
+    </select>
+
+    <select id="selectGlobalAssignableDatasource" resultType="org.hzero.iam.domain.entity.SecGrpDclLine">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        select
+        hd.datasource_id data_id,
+        hd.datasource_code data_code,
+        hd.description data_name,
+        hd.tenant_id,
+        httl.tenant_name
+        from hpfm_datasource hd
+        join hpfm_tenant ht on hd.tenant_id = ht.tenant_id AND (ht.tenant_id = #{tenantId} OR ht.tenant_id = 0)
+        left join hpfm_tenant_tl httl ON ht.tenant_id = httl.tenant_id AND httl.lang = #{lang}
+        where hd.enabled_flag = 1
+        <if test="dataCode != null and dataCode != ''">
+            <bind name="dataCodeLike" value="'%' + dataCode + '%'"/>
+            and hd.datasource_code like #{dataCodeLike}
+        </if>
+        <if test="dataName != null and dataName != ''">
+            <bind name="dataNameLike" value="'%' + dataName + '%'"/>
+            and hd.description like #{dataNameLike}
+        </if>
+        -- 排除已经分配的
+        AND NOT EXISTS (
+        SELECT 1
+        FROM hiam_sec_grp_dcl_line hsgdl
+        JOIN hiam_sec_grp_dcl hsgd ON hsgdl.sec_grp_dcl_id = hsgd.sec_grp_dcl_id
+        WHERE
+        hsgd.authority_type_code = #{authorityTypeCode}
+        AND hd.datasource_id = hsgdl.data_id
+        AND hsgd.sec_grp_id = #{secGrpId}
+        )
+    </select>
+    <select id="selectGlobalAssignableLovView" resultType="org.hzero.iam.domain.entity.SecGrpDclLine">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        select
+        hl.view_header_id data_id,
+        hl.view_code data_code,
+        hl.view_name data_name,
+        hl.tenant_id,
+        httl.tenant_name
+        from hpfm_lov_view_header hl
+        join hpfm_tenant ht on hl.tenant_id = ht.tenant_id AND (ht.tenant_id = #{tenantId} OR ht.tenant_id = 0)
+        left join hpfm_tenant_tl httl ON ht.tenant_id = httl.tenant_id AND httl.lang = #{lang}
+        where hl.enabled_flag = 1
+        <if test="dataCode != null and dataCode != ''">
+            <bind name="dataCodeLike" value="'%' + dataCode + '%'"/>
+            and hl.view_code like #{dataCodeLike}
+        </if>
+        <if test="dataName != null and dataName != ''">
+            <bind name="dataNameLike" value="'%' + dataName + '%'"/>
+            and hl.view_name like #{dataNameLike}
+        </if>
+        -- 排除已经分配的
+        AND NOT EXISTS (
+        SELECT 1
+        FROM hiam_sec_grp_dcl_line hsgdl
+        JOIN hiam_sec_grp_dcl hsgd ON hsgdl.sec_grp_dcl_id = hsgd.sec_grp_dcl_id
+        WHERE
+        hsgd.authority_type_code = #{authorityTypeCode}
+        AND hl.view_header_id = hsgdl.data_id
+        AND hsgd.sec_grp_id = #{secGrpId}
+        )
+    </select>
+
+    <select id="selectGlobalAssignableLov" resultType="org.hzero.iam.domain.entity.SecGrpDclLine">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        select
+        hl.lov_id data_id,
+        hl.lov_code data_code,
+        hlt.lov_name data_name,
+        hl.tenant_id,
+        httl.tenant_name
+        from hpfm_lov hl
+        LEFT join hpfm_lov_tl hlt on hlt.lov_id = hl.lov_id and hlt.lang = #{lang}
+        LEFT JOIN hpfm_tenant_tl httl ON hl.tenant_id = httl.tenant_id AND httl.lang = #{lang}
+        where hl.enabled_flag = 1
+        <if test="dataCode != null and dataCode != ''">
+            <bind name="dataCodeLike" value="'%' + dataCode + '%'"/>
+            and hl.lov_code like #{dataCodeLike}
+        </if>
+        <if test="dataName != null and dataName != ''">
+            <bind name="dataNameLike" value="'%' + dataName + '%'"/>
+            and hlt.lov_name like #{dataNameLike}
+        </if>
+        -- 排除已经分配的
+        AND NOT EXISTS (
+        SELECT 1
+        FROM hiam_sec_grp_dcl_line hsgdl
+        JOIN hiam_sec_grp_dcl hsgd ON hsgdl.sec_grp_dcl_id = hsgd.sec_grp_dcl_id
+        WHERE
+        hsgd.authority_type_code = #{authorityTypeCode}
+        AND hl.lov_id = hsgdl.data_id
+        AND hsgd.sec_grp_id = #{secGrpId}
+        )
+    </select>
+
+    <select id="selectGlobalAssignablePurAgent" resultType="org.hzero.iam.domain.entity.SecGrpDclLine">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        select
+        hpa.purchase_agent_id data_id,
+        hpa.purchase_agent_code data_code,
+        hpa.purchase_agent_name data_name,
+        hpa.tenant_id,
+        httl.tenant_name
+        from hpfm_purchase_agent hpa
+        join hpfm_tenant ht on ht.tenant_id = hpa.tenant_id AND (ht.tenant_id = #{tenantId} OR ht.tenant_id = 0)
+        LEFT JOIN hpfm_tenant_tl httl ON ht.tenant_id = httl.tenant_id AND httl.lang = #{lang}
+        where
+        hpa.enabled_flag = 1
+        <if test="dataCode != null and dataCode != ''">
+            <bind name="dataCodeLike" value="'%' + dataCode + '%'"/>
+            and purchase_agent_code like #{dataCodeLike}
+        </if>
+        <if test="dataName != null and dataName != ''">
+            <bind name="dataNameLike" value="'%' + dataName + '%'"/>
+            and purchase_agent_name like #{dataNameLike}
+        </if>
+        -- 排除已经分配的
+        AND NOT EXISTS (
+        SELECT 1
+        FROM hiam_sec_grp_dcl_line hsgdl
+        JOIN hiam_sec_grp_dcl hsgd ON hsgdl.sec_grp_dcl_id = hsgd.sec_grp_dcl_id
+        WHERE
+        hsgd.authority_type_code = #{authorityTypeCode}
+        AND hpa.purchase_agent_id = hsgdl.data_id
+        AND hsgd.sec_grp_id = #{secGrpId}
+        )
+    </select>
+
+    <select id="selectGlobalAssignablePurOrg" resultType="org.hzero.iam.domain.entity.SecGrpDclLine">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        select
+        hpo.purchase_org_id data_id,
+        hpo.organization_code data_code,
+        hpo.organization_name data_name,
+        hpo.tenant_id,
+        httl.tenant_name
+        from hpfm_purchase_organization hpo
+        join hpfm_tenant ht on ht.tenant_id = hpo.tenant_id AND (ht.tenant_id = #{tenantId} OR ht.tenant_id = 0)
+        left join hpfm_tenant_tl httl ON ht.tenant_id = httl.tenant_id AND httl.lang = #{lang}
+        where hpo.enabled_flag = 1
+        <if test="dataCode != null and dataCode != ''">
+            <bind name="dataCodeLike" value="'%' + dataCode + '%'"/>
+            and hpo.organization_code like #{dataCodeLike}
+        </if>
+        <if test="dataName != null and dataName != ''">
+            <bind name="dataNameLike" value="'%' + dataName + '%'"/>
+            and hpo.organization_name like #{dataNameLike}
+        </if>
+        -- 排除已经分配的
+        AND NOT EXISTS (
+        SELECT 1
+        FROM hiam_sec_grp_dcl_line hsgdl
+        JOIN hiam_sec_grp_dcl hsgd ON hsgdl.sec_grp_dcl_id = hsgd.sec_grp_dcl_id
+        WHERE
+        hsgd.authority_type_code = #{authorityTypeCode}
+        AND hpo.purchase_org_id = hsgdl.data_id
+        AND hsgd.sec_grp_id = #{secGrpId}
+        )
+    </select>
+
+    <select id="selectSecGrpDclInGrp" resultType="org.hzero.iam.domain.entity.SecGrpDclLine">
+        SELECT
+            hsgdl.sec_grp_dcl_line_id,
+            hsgdl.sec_grp_dcl_id,
+            hsgdl.sec_grp_id,
+            hsgdl.tenant_id,
+            hsgdl.data_id,
+            hsgdl.data_code,
+            hsgdl.data_name,
+            hsgd.authority_type_code
+
+        FROM hiam_sec_grp_dcl_line hsgdl
+        JOIN hiam_sec_grp_dcl hsgd ON hsgdl.sec_grp_dcl_id = hsgd.sec_grp_dcl_id
+        WHERE hsgdl.sec_grp_id = #{secGrpId}
+        AND NOT EXISTS
+            (
+                SELECT
+                    1
+                FROM
+                hiam_sec_grp_revoke hsgr
+                WHERE
+                    (
+                        hsgr.revoke_type = 'REVOKE'
+                        AND hsgr.authority_id = hsgdl.sec_grp_dcl_line_id
+                        AND hsgr.authority_type = 'DCL'
+                    )
+            )
+
+
+    </select>
+
+    <select id="selectSecGrpDclInRole" resultType="org.hzero.iam.domain.entity.SecGrpDclLine">
+        SELECT
+            hsgdl.sec_grp_dcl_line_id,
+            hsgdl.sec_grp_dcl_id,
+            hsgdl.sec_grp_id,
+            hsgdl.tenant_id,
+            hsgdl.data_id,
+            hsgdl.data_code,
+            hsgdl.data_name,
+            hsgd.authority_type_code
+        FROM hiam_sec_grp_dcl_line hsgdl
+        JOIN hiam_sec_grp_dcl hsgd ON hsgdl.sec_grp_dcl_id = hsgd.sec_grp_dcl_id
+        JOIN hiam_sec_grp hsg ON  hsg.sec_grp_id = hsgdl.sec_grp_id AND hsg.enabled_flag = 1
+        WHERE EXISTS(
+                SELECT 1
+                FROM iam_role_permission irp
+                WHERE
+                irp.role_id = #{roleId}
+                AND  irp.type = 'SG'
+                AND ( irp.h_create_flag = 'Y' or irp.h_inherit_flag = 'Y')
+                AND irp.permission_id = hsg.sec_grp_id
+        )
+                  -- 没有在回收列表
+        AND NOT EXISTS
+                (
+                        SELECT
+                                1
+                        FROM
+                        hiam_sec_grp_revoke hsgr
+                        WHERE
+                        -- 没有对当前角色屏蔽
+                        (
+                        hsgr.revoke_type = 'SHIELD'
+                        AND hsgr.authority_id = hsgdl.sec_grp_dcl_line_id
+                        AND hsgr.authority_type = 'DCL'
+                        AND hsgr.shield_role_id =#{roleId}
+                        )
+                        OR
+                        -- 没有在回收表
+                        (
+                        hsgr.revoke_type = 'REVOKE'
+                        AND hsgr.authority_id = hsgdl.sec_grp_dcl_line_id
+                        AND hsgr.authority_type = 'DCL'
+                        )
+                )
+    </select>
+
+    <!-- 查询角色分配的安全组中可访问的数据权限 -->
+    <select id="selectRoleSecGrpDcl" resultType="org.hzero.iam.domain.entity.SecGrpDclLine">
+        SELECT
+            hsgdl.sec_grp_dcl_line_id,
+            hsgdl.sec_grp_dcl_id,
+            hsgdl.sec_grp_id,
+            hsgdl.tenant_id,
+            hsgdl.data_id,
+            hsgdl.data_code,
+            hsgdl.data_name,
+            hsgd.authority_type_code
+        FROM hiam_sec_grp_dcl_line hsgdl
+        JOIN hiam_sec_grp_dcl hsgd ON hsgdl.sec_grp_dcl_id = hsgd.sec_grp_dcl_id
+        JOIN hiam_sec_grp hsg ON  hsg.sec_grp_id = hsgdl.sec_grp_id
+		WHERE hsgdl.sec_grp_id IN
+        <foreach  item="item" collection="secGrpIds" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        AND NOT EXISTS (
+            SELECT 1
+            FROM hiam_sec_grp_revoke hsgr
+            WHERE
+            -- 没有对当前角色屏蔽
+            (
+                hsgr.revoke_type = 'SHIELD'
+                AND hsgr.authority_id = hsgdl.sec_grp_dcl_line_id
+                AND hsgr.authority_type = 'DCL'
+                AND hsgr.shield_role_id = #{roleId}
+            )
+            OR
+            -- 没有在回收表
+            (
+                hsgr.revoke_type = 'REVOKE'
+                AND hsgr.authority_id = hsgdl.sec_grp_dcl_line_id
+                AND hsgr.authority_type = 'DCL'
+            )
+        )
+    </select>
+    <select id="selectSecGrpDclBindPermissionIdInRoleAndSubRole" resultType="org.hzero.iam.domain.entity.SecGrpDclLine">
+        SELECT
+        hsgdl.sec_grp_dcl_line_id,
+        hsgdl.sec_grp_dcl_id,
+        hsgdl.sec_grp_id,
+        hsgdl.tenant_id,
+        hsgdl.data_id,
+        hsgdl.data_code,
+        hsgdl.data_name,
+        hsgd.authority_type_code
+        FROM
+          hiam_sec_grp_dcl_line hsgdl
+        JOIN hiam_sec_grp_dcl hsgd ON hsgdl.sec_grp_dcl_id = hsgd.sec_grp_dcl_id AND hsgd.authority_type_code = #{authorityType}
+        JOIN hiam_sec_grp hsg ON hsgdl.sec_grp_id = hsg.sec_grp_id
+        JOIN iam_role ir_out ON hsg.role_id = ir_out.id
+        WHERE hsgdl.data_id in
+        <foreach  item="item" collection="dataIds" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        -- 用子角色限定
+        AND EXISTS(
+        SELECT
+        1
+        FROM
+          iam_role ir
+        WHERE ir.id = #{roleId}
+        AND (ir_out.h_level_path LIKE CONCAT(ir.h_level_path,"|%")OR ir_out.h_level_path = ir.h_level_path)
+        )
+        <if test="includeRevokeFlag != null and includeRevokeFlag == 0">
+            -- 没有在回收列表
+            AND NOT EXISTS (
+            SELECT
+            1
+            FROM
+              hiam_sec_grp_revoke hsgr
+            WHERE
+            hsgr.revoke_type = 'REVOKE'
+            AND hsgr.authority_id = hsgdl.sec_grp_dcl_line_id
+            AND hsgr.authority_type = 'DCL'
+            )
+        </if>
+    </select>
+
+    <select id="selectSecGrpDclBindPermissionIdInRole" resultType="org.hzero.iam.domain.entity.SecGrpDclLine">
+        SELECT
+        hsgdl.sec_grp_dcl_line_id,
+        hsgdl.sec_grp_dcl_id,
+        hsgdl.sec_grp_id,
+        hsgdl.tenant_id,
+        hsgdl.data_id,
+        hsgdl.data_code,
+        hsgdl.data_name,
+        hsgd.authority_type_code
+        FROM
+          hiam_sec_grp_dcl_line hsgdl
+        JOIN hiam_sec_grp_dcl hsgd ON hsgdl.sec_grp_dcl_id = hsgd.sec_grp_dcl_id AND hsgd.authority_type_code = #{authorityTypeCode}
+        JOIN hiam_sec_grp hsg ON hsgdl.sec_grp_id = hsg.sec_grp_id AND hsg.role_id = #{roleId}
+        WHERE hsgdl.data_id in
+        <foreach  item="item" collection="dataIds" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+
+        <if test="includeRevokeFlag != null and includeRevokeFlag == 0">
+            -- 没有在回收列表
+            AND NOT EXISTS(
+            SELECT
+            1
+            FROM
+              hiam_sec_grp_revoke hsgr
+            WHERE
+            hsgr.revoke_type = 'REVOKE'
+            AND hsgr.authority_id = hsgdl.sec_grp_dcl_line_id
+            AND hsgr.authority_type = 'DCL'
+            )
+        </if>
+    </select>
+
+    <select id="selectSecGrpDclLineDetailById" resultType="org.hzero.iam.domain.entity.SecGrpDclLine">
+        SELECT
+        hsgdl.sec_grp_dcl_line_id,
+        hsgdl.sec_grp_dcl_id,
+        hsgdl.sec_grp_id,
+        hsgdl.tenant_id,
+        hsgdl.data_id,
+        hsgdl.data_code,
+        hsgdl.data_name,
+        hsgd.authority_type_code
+        FROM
+          hiam_sec_grp_dcl_line hsgdl
+        JOIN hiam_sec_grp_dcl hsgd ON hsgdl.sec_grp_dcl_id = hsgd.sec_grp_dcl_id
+        WHERE
+        hsgdl.sec_grp_dcl_line_id = #{secGrpDclLineId}
+
+    </select>
+
+    <select id="selectRoleNotIncludeSecGrpDclLine" resultType="org.hzero.iam.domain.entity.SecGrpDclLine">
+        SELECT
+        hsgdl.sec_grp_dcl_line_id,
+        hsgdl.sec_grp_dcl_id,
+        hsgdl.sec_grp_id,
+        hsgdl.tenant_id,
+        hsgdl.data_id,
+        hsgdl.data_code,
+        hsgdl.data_name
+        FROM hiam_sec_grp hsg
+        INNER JOIN hiam_sec_grp_dcl hsgd
+        ON hsg.role_id = #{roleId}
+        AND hsg.sec_grp_id = hsgd.sec_grp_id
+        INNER JOIN hiam_sec_grp_dcl_line hsgdl
+        ON hsgd.authority_type_code = #{authorityTypeCode}
+        AND hsgdl.data_id IN
+        <foreach collection="dataIds" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        AND hsgd.sec_grp_dcl_id = hsgdl.sec_grp_dcl_id
+        AND hsgdl.data_id NOT IN (
+        SELECT hsgdl.data_id
+        FROM iam_role_permission irp
+        INNER JOIN hiam_sec_grp hsg
+        ON irp.type = 'SG'
+        AND (irp.h_create_flag = 'Y' OR irp.h_inherit_flag = 'Y')
+        AND irp.role_id = #{roleId}
+        AND hsg.sec_grp_id &lt;&gt; #{secGrpId}
+        AND irp.permission_id = hsg.sec_grp_id
+        INNER JOIN hiam_sec_grp_dcl hsgd
+        ON hsgd.authority_type_code = #{authorityTypeCode}
+        AND hsg.sec_grp_id = hsgd.sec_grp_id
+        INNER JOIN hiam_sec_grp_dcl_line hsgdl
+        ON hsgdl.data_id IN
+        <foreach collection="dataIds" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        AND hsgd.sec_grp_dcl_id = hsgdl.sec_grp_dcl_id
+        )
+    </select>
+
+    <select id="selectUserNotIncludeSecGrpDclLine" resultType="org.hzero.iam.domain.entity.SecGrpDclLine">
+        SELECT
+        hsgdl.sec_grp_dcl_line_id,
+        hsgdl.sec_grp_dcl_id,
+        hsgdl.sec_grp_id,
+        hsgdl.tenant_id,
+        hsgdl.data_id,
+        hsgdl.data_code,
+        hsgdl.data_name
+        FROM hiam_sec_grp_dcl_line hsgdl
+        JOIN hiam_sec_grp_dcl hsgd ON hsgd.sec_grp_dcl_id = hsgdl.sec_grp_dcl_id
+        AND hsgd.authority_type_code = #{authorityTypeCode}
+        AND hsgd.sec_grp_id = #{secGrpId}
+        AND hsgdl.data_id IN
+        <foreach collection="dataIds" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        AND hsgdl.data_id NOT IN (
+        SELECT hsgdl.data_id
+        FROM hiam_sec_grp_assign hsga
+        INNER JOIN hiam_sec_grp hsg
+        ON hsga.assign_dimension = 'USER'
+        AND hsga.dimension_value = #{userId}
+        AND hsg.sec_grp_id &lt;&gt; #{secGrpId}
+        AND hsga.sec_grp_id = hsg.sec_grp_id
+        INNER JOIN hiam_sec_grp_dcl hsgd
+        ON hsgd.authority_type_code = #{authorityTypeCode}
+        AND hsg.sec_grp_id = hsgd.sec_grp_id
+        INNER JOIN hiam_sec_grp_dcl_line hsgdl
+        ON hsgdl.data_id IN
+        <foreach collection="dataIds" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        AND hsgd.sec_grp_dcl_id = hsgdl.sec_grp_dcl_id
+        )
+    </select>
+
+    <select id="selectRoleIncludedDclLine" resultType="org.hzero.iam.domain.entity.SecGrpDclLine">
+        SELECT
+        hsgdl.sec_grp_dcl_line_id,
+        hsgdl.sec_grp_dcl_id,
+        hsgdl.sec_grp_id,
+        hsgdl.tenant_id,
+        hsgdl.data_id,
+        hsgdl.data_code,
+        hsgdl.data_name
+        FROM hiam_sec_grp_dcl_line hsgdl
+        JOIN hiam_sec_grp_dcl hsgd ON hsgd.sec_grp_dcl_id = hsgdl.sec_grp_dcl_id AND hsgd.authority_type_code =
+        #{authorityTypeCode}
+        JOIN hiam_sec_grp hsg ON hsg.sec_grp_id = hsgd.sec_grp_id
+        JOIN iam_role_permission irp ON irp.type = 'SG' AND irp.permission_id = hsg.sec_grp_id AND (irp.h_create_flag =
+        'Y' OR irp.h_inherit_flag = 'Y')
+        AND irp.role_id = #{roleId}
+        AND hsg.sec_grp_id &lt;> #{excludeSecGrpId}
+        WHERE hsgdl.data_id IN
+        <foreach collection="dataIds" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        AND NOT EXISTS (
+            SELECT 1
+            FROM hiam_sec_grp_revoke hsgr
+            WHERE
+            -- 没有对当前角色屏蔽
+            (
+                hsgr.revoke_type = 'SHIELD'
+                AND hsgr.authority_id = hsgdl.sec_grp_dcl_line_id
+                AND hsgr.authority_type = 'DCL'
+                AND hsgr.shield_role_id = #{roleId}
+            )
+            OR
+            -- 没有在回收表
+            (
+                hsgr.revoke_type = 'REVOKE'
+                AND hsgr.authority_id = hsgdl.sec_grp_dcl_line_id
+                AND hsgr.authority_type = 'DCL'
+            )
+        )
+    </select>
+</mapper>

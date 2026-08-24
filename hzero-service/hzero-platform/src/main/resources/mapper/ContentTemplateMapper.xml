@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.platform.infra.mapper.ContentTemplateMapper">
+
+    <select id="selectTemplates" resultType="org.hzero.platform.domain.entity.ContentTemplate">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        SELECT
+        ht.template_id,
+        ht.template_code,
+        ht.template_name,
+        ht.template_avatar,
+        ht.template_path,
+        ht.enabled_flag,
+        ht.object_version_number,
+        ht.tenant_id,
+        httl.tenant_name,
+        ht.template_level_code
+        FROM hpfm_template ht
+        JOIN hpfm_tenant hpt ON ht.tenant_id = hpt.tenant_id
+        LEFT JOIN hpfm_tenant_tl httl ON hpt.tenant_id = httl.tenant_id AND httl.lang = #{lang}
+        WHERE 1=1
+        <if test="tenantId != null">
+            <choose>
+                <when test="siteQueryFlag != null and siteQueryFlag != 0">
+                    AND ht.tenant_id = #{tenantId}
+                </when>
+                <otherwise>
+                    AND (ht.tenant_id = #{tenantId} OR ht.tenant_id = 0)
+                </otherwise>
+            </choose>
+        </if>
+        <if test="tenantId != null and tenantId != 0">
+            AND ht.template_id NOT IN (
+            SELECT ht1.template_id
+            FROM hpfm_template ht1
+            WHERE ht1.tenant_id = 0
+            AND EXISTS (
+            SELECT 1
+            FROM hpfm_template ht2
+            WHERE ht2.template_code = ht1.template_code
+            AND ht2.tenant_id = #{tenantId}
+            )
+            )
+        </if>
+        <if test="templateCode != null">
+            <bind name="templateCodeLike" value="'%'+templateCode+'%'"/>
+            AND ht.template_code LIKE #{templateCodeLike}
+        </if>
+        <if test="templateName != null">
+            <bind name="templateNameLike" value="'%'+templateName+'%'"/>
+            AND ht.template_name LIKE #{templateNameLike}
+        </if>
+        <if test="templateLevelCode != null">
+            AND ht.template_level_code = #{templateLevelCode}
+        </if>
+    </select>
+    <select id="selectTemplateByTenantAndCode" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM hpfm_template
+        WHERE tenant_id = #{tenantId}
+        AND template_code = #{templateCode}
+    </select>
+
+</mapper>

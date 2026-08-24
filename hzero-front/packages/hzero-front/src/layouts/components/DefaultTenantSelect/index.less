@@ -1,0 +1,17 @@
+.tenant {
+  max-width: 100%;
+  position: relative;
+  .tenant-select-wrapper {
+    visibility: hidden;
+    z-index: 100;
+    position: absolute;
+    width: 100%;
+    opacity: 0.4;
+    height: 100%;
+  }
+}
+
+.tenant:hover .tenant-select-wrapper {
+  visibility: visible;
+  background: #f0f4ff;
+}

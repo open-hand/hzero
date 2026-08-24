@@ -1,0 +1,55 @@
+.content {
+  :global {
+    .c7n-steps {
+      .c7n-steps-item-content {
+        padding: 4px;
+        // padding-right: 0px ;
+        //   border: 1px solid black;
+        .c7n-steps-item-title {
+          padding-right: 0;
+          // font-size: 24px !important;
+        }
+        .c7n-steps-item-title:after {
+          left: 110%;
+        }
+      }
+      margin-top: 50px;
+      margin-bottom: 50px;
+    }
+    span.c7n-pro-output {
+      word-break: break-all;
+    }
+  }
+}
+
+.tooltip {
+  text-align: center;
+  color: red;
+}
+
+.cursor {
+  :global {
+    .c7n-steps-item-icon {
+      cursor: pointer;
+    }
+    .c7n-steps-item-content {
+      cursor: pointer;
+    }
+    .c7n-steps-item-title::after {
+      cursor: default;
+    }
+  }
+}
+
+.buttonContainer {
+  text-align: center;
+  padding-top: 24px;
+}
+
+.button {
+  // font-size: 18px !important;
+  // height: 42px !important;
+  transition: none !important;
+  // background-color: initial !important;
+  border: none !important;
+}

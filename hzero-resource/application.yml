@@ -1,0 +1,32 @@
+server:
+  port: 8099
+# mysql
+spring:
+  datasource:
+    # 数据源配置只需修改IP、端口、用户名和密码
+    driver-class-name: com.mysql.jdbc.Driver
+    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3306/?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=GMT}
+    username: ${SPRING_DATASOURCE_USERNAME:root}
+    password: ${SPRING_DATASOURCE_PASSWORD:root}
+
+#    driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
+#    url: ${SPRING_DATASOURCE_URL:jdbc:sqlserver://localhost:1433;}
+#    username: ${SPRING_DATASOURCE_USERNAME:hzero}
+#    password: ${SPRING_DATASOURCE_PASSWORD:hzero}
+
+#    driver-class-name: org.postgresql.Driver
+#    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/postgres}
+#    username: ${SPRING_DATASOURCE_USERNAME:postgres}
+#    password: ${SPRING_DATASOURCE_PASSWORD:postgres}
+
+#    driver-class-name: oracle.jdbc.driver.OracleDriver
+#    url: ${SPRING_DATASOURCE_URL:jdbc:oracle:thin:@localhost:1521:helowin}
+#    username: ${SPRING_DATASOURCE_USERNAME:system}
+#    password: ${SPRING_DATASOURCE_PASSWORD:manager}
+
+installer:
+  dataDir: init-data
+  groovyDir: groovy
+  fixDir: fix-data
+data:
+  version: 1.5.RELEASE

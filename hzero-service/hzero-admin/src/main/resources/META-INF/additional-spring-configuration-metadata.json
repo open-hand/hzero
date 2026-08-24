@@ -1,0 +1,24 @@
+{
+  "properties": [
+    {
+      "name": "hzero.service-init-registry.skip-expression",
+      "type": "java.lang.String",
+      "sourceType": "org.hzero.admin.config.ServiceInitRegistryProperties",
+      "description": "忽略服务spel表达式，以该表达式作为匹配规则，匹配成功的服务会被跳过初始化过程(eg.\"service.serviceName=='hzero-config'||service.serviceName=='hzero-oauth'\")."
+    },
+    {
+      "name": "hzero.service-init-registry.health-check.connect-timeout",
+      "type": "java.lang.Integer",
+      "sourceType": "org.hzero.admin.config.ServiceInitRegistryProperties$HealthCheck",
+      "defaultValue": 3000,
+      "description": "服务初始化注册中心的健康检查连接超时时间，单位ms."
+    },
+    {
+      "name": "hzero.service-init-registry.health-check.read-timeout",
+      "type": "java.lang.Integer",
+      "sourceType": "org.hzero.admin.config.ServiceInitRegistryProperties$HealthCheck",
+      "defaultValue": 6000,
+      "description": "服务初始化注册中心的健康检查读超时时间，单位ms."
+    }
+  ]
+}

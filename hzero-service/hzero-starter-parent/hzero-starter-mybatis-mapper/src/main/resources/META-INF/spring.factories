@@ -1,0 +1,11 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+io.choerodon.mybatis.MybatisMapperAutoConfiguration,\
+io.choerodon.mybatis.helper.MybatisHelperAutoConfiguration,\
+io.choerodon.mybatis.TimestampAutoConfiguration,\
+org.hzero.mybatis.config.AopProxyConfig,\
+org.hzero.mybatis.config.BatchInsertHelperConfig,\
+org.hzero.mybatis.config.DatabaseIdConfig,\
+org.hzero.mybatis.config.HzeroMybatisMapperConfig,\
+org.hzero.mybatis.config.SecurityTokenProperty,\
+org.hzero.mybatis.config.WebMvcConfig,\
+org.hzero.mybatis.parser.autoconfigure.SqlParserInterceptorConfiguration

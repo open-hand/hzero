@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.iam.infra.mapper.RoleAuthorityLineMapper">
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap id="BaseResultMap" type="org.hzero.iam.domain.entity.RoleAuthorityLine">
+        <result column="role_auth_line_id" property="roleAuthLineId" jdbcType="DECIMAL"/>
+        <result column="role_auth_id" property="roleAuthId" jdbcType="DECIMAL"/>
+        <result column="role_id" property="roleId" jdbcType="DECIMAL"/>
+        <result column="auth_type_code" property="authTypeCode" jdbcType="VARCHAR"/>
+        <result column="auth_scope_code" property="dimensionType" jdbcType="VARCHAR"/>
+        <result column="data_source" property="dataSource" jdbcType="VARCHAR"/>
+        <result column="auth_doc_type_id" property="docTypeId" jdbcType="DECIMAL"/>
+        <result column="object_version_number" property="objectVersionNumber" jdbcType="DECIMAL"/>
+        <result column="creation_date" property="creationDate" jdbcType="DATE"/>
+        <result column="created_by" property="createdBy" jdbcType="DECIMAL"/>
+        <result column="last_updated_by" property="lastUpdatedBy" jdbcType="DECIMAL"/>
+        <result column="last_update_date" property="lastUpdateDate" jdbcType="DATE"/>
+    </resultMap>
+    <select id="selectByRoleAuthId" resultMap="BaseResultMap">
+        SELECT
+            hral.role_auth_line_id,
+            hral.role_id,
+            hral.auth_type_code,
+            hra.auth_scope_code,
+            hral.data_source,
+            hra.auth_doc_type_id
+        FROM hiam_role_authority_line hral
+        JOIN hiam_role_authority hra ON hral.role_auth_id = hra.role_auth_id
+        WHERE hral.role_auth_id = #{roleAuthId}
+    </select>
+    <select id="selectDocRoleAuthLine" resultMap="BaseResultMap">
+        SELECT
+            hra.auth_scope_code,
+            hra.auth_doc_type_id,
+            hral.role_id,
+            hral.auth_type_code
+        FROM
+        hiam_role_authority_line hral
+        JOIN hiam_role_authority hra ON hra.role_auth_id = hral.role_auth_id
+        JOIN hiam_doc_type hdt ON (hdt.doc_type_id = hra.auth_doc_type_id)
+        JOIN hiam_doc_type_auth_dim hdtad ON (hdtad.doc_type_id = hdt.doc_type_id AND hdtad.auth_type_code = hral.auth_type_code)
+        JOIN hiam_doc_type_dimension hdtd ON (hdtd.dimension_code = hdtad.auth_type_code)
+    </select>
+    <select id="selectRoleAuthLineByAuthTypeCode" resultType="org.hzero.iam.domain.entity.RoleAuthorityLine">
+        SELECT
+            hral.role_id,
+            hral.auth_type_code,
+            hra.auth_scope_code dimension_type,
+            hra.auth_doc_type_id doc_type_id
+        FROM
+            hiam_role_authority_line hral
+            JOIN hiam_role_authority hra ON hral.role_auth_id = hra.role_auth_id
+            JOIN hiam_doc_type hdt ON hra.auth_doc_type_id = hdt.doc_type_id
+        WHERE
+        hral.auth_type_code = #{authTypeCode}
+        AND hdt.enabled_flag = 1
+    </select>
+</mapper>

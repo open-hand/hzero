@@ -1,0 +1,330 @@
+html, body {
+    padding: 0px;
+    margin: 0px;
+    overflow: hidden;
+    font-family: 'Microsoft YaHei', arial;
+    font-size: 13px;
+    line-height: 20px;
+    direction: ltr;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-image: url(../img/bg.svg);
+    background-size: cover;
+}
+
+.logoleft {
+    width: 85%;
+    height: 100%;
+    position: absolute;
+}
+
+.login .logo {
+    font-size: 30px;
+    width: 279px;
+    margin: 50px auto;
+    padding: 15px;
+    text-align: start;
+    position: relative;
+    color: #0366D6;
+    word-break: break-all;
+}
+
+.login #content {
+    padding-left: 42px;
+    background-color: #fff;
+    width: 454px;
+    min-height: 434px;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.20);
+    padding-right: 42px;
+    border-radius: 2px;
+}
+
+.login #content .form-title {
+    font-weight: 300;
+    margin-bottom: 25px;
+    font-size: 24.5px;
+}
+
+.login #content .login-form {
+    padding: 0px;
+    margin: 0px;
+}
+
+.alert-error {
+    color: #f92e2d;
+    position: absolute;
+    width: 270px;
+    margin-top: 16px;
+}
+
+.login #content .control-group {
+    margin-top: 30px;
+}
+
+.control-label {
+    margin-top: 2px;
+    display: block;
+    margin-bottom: 5px;
+    font-size: 14px;
+    font-weight: normal;
+    line-height: 20px;
+    color: rgba(0, 0, 0, 0.87);
+}
+
+.input-icon {
+    border-width: 0px;
+    border-style: solid;
+}
+
+.login #content .input-icon .m-wrap {
+    margin: 0px !important;
+    position: relative;
+    left: 10px;
+}
+
+.login #content .m-wrap {
+    width: calc(100% - 10px);
+}
+
+select {
+    width: 220px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    height: 30px;
+    line-height: 30px;
+}
+
+input.m-wrap {
+    border: 0;
+}
+
+input[type="text"].m-wrap, input[type="password"].m-wrap {
+    -webkit-appearance: none !important;
+    outline: 0;
+    padding: 6px 0px !important;
+    line-height: 20px;
+    font-size: 14px;
+    font-weight: normal;
+    vertical-align: top;
+    background-color: #ffffff;
+    background-image: none !important;
+    filter: none !important;
+    -webkit-box-shadow: none !important;
+    -moz-box-shadow: none !important;
+    box-shadow: none !important;
+    -webkit-border-radius: 0px;
+    -moz-border-radius: 0px;
+    border-radius: 0px;
+    background: transparent;
+}
+
+.login #content .form-actions {
+    clear: both;
+    margin-top: 20px;
+}
+
+input.error {
+    background: #fff0f0 !important;
+    border-color: #A90329;
+}
+
+.btn {
+    background-color: #386bd7;
+    background-image: none;
+    filter: none;
+    border: 0;
+    text-shadow: none;
+    font-size: 14px;
+    color: #ffffff;
+    cursor: pointer;
+    outline: none;
+    -webkit-box-shadow: none !important;
+    -moz-box-shadow: none !important;
+    -webkit-border-radius: 0 !important;
+    -moz-border-radius: 0 !important;
+    box-shadow: 0 3px 1px -2px rgba(0, 0, 0, 0.20), 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12) !important;
+    border-radius: 2px !important;
+    width: 100%;
+    height: 38px;
+    margin-bottom: 30px;
+}
+
+
+@font-face {
+    font-family: 'FontAwesome';
+    src: url("../css/fontawesome-webfont.woff2") format('woff2');
+    font-weight: normal;
+    font-style: normal;
+}
+
+.ant-btn > div.btn-loading > span {
+    background: #fff;
+    border-color: #fff;
+    display: inline-block;
+    border-radius: 50%;
+    width: 7px;
+    height: 7px;
+}
+
+
+.fa {
+    display: inline-block;
+    font: normal normal normal 14px/1 FontAwesome;
+    font-size: inherit;
+    text-rendering: auto;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.fa-refresh:before {
+    content: "\21BB";
+}
+
+.arrow {
+    float: right;
+    font-size: 1.6rem;
+}
+
+#list {
+    float: right;
+    margin-top: 10px;
+    margin-right: 10px;
+    font-size: 2rem;
+}
+
+.remember {
+    text-align: right;
+}
+
+.resigter {
+    text-decoration: none;
+    margin-right: 10px;
+    font-size: 13px;
+    color: #999;
+}
+
+.forget {
+    text-decoration: none;
+    margin-left: 10px;
+    font-size: 13px;
+    color: #999;
+}
+
+.forget-passwd {
+    font-size: 10px;
+    color: #333333;
+    float: right;
+    margin-top: 16px;
+    display: inline-block;
+}
+
+.forget-passwd:hover {
+    color: #464444;
+}
+
+.pIcon {
+    color: #3F51B5;
+    width: 38px;
+    height: 38px;
+}
+
+.pText {
+    display: block;
+    font-family: Monospaced Number, Chinese Quote, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, PingFang SC, Hiragino Sans GB, Microsoft YaHei, Helvetica Neue, Helvetica, Arial, sans-serif;
+    font-weight: 400;
+    line-height: 36px;
+    height: 38px;
+    margin-left: 8px;
+    font-size: 24px;
+    color: rgba(0, 0, 0, 0.65);
+}
+
+.loginSpan {
+    font-size: 20px;
+    text-align: center;
+    display: block;
+    margin-top: 22px;
+    color: rgba(0, 0, 0, 0.65);
+}
+
+.login #content .form-actions a {
+    color: #3F51B5;
+}
+
+input:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0px 1000px white inset;
+    border: 0px solid #CCC !important;
+}
+
+input:-webkit-autofill + span + .ant-input-label {
+    -webkit-transform: scale(.75) translateY(-20px) translateZ(.001px);
+    transform: scale(.75) translateY(-20px) translateZ(.001px);
+}
+
+.ant-btn-flat:hover {
+    background: #3F51B5;
+}
+
+.ant-btn-raised:hover {
+    background: #214ab0;
+}
+
+#usernameInupt i, #passwordInupt i {
+    margin: 0 10px 0 7px;
+}
+
+.ant-input-rendered {
+    margin: 0px 0px 0px 37px ! important;
+    width: 331px ! important;
+}
+
+
+/* open-app-login */
+.login-open-app-wrap {
+    /*display: flex;*/
+    /*align-items: center;*/
+}
+
+.login-open-app-wrap > .login-open-app {
+    /*flex-grow: 1;*/
+}
+
+.login-open-app-wrap > span {
+    /*flex-shrink: 0;*/
+}
+
+/* open app login icons' wrap */
+.login-open-app {
+    /* there use flex because found some flex layout in this project */
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.login-open-app > span {
+    /* span is every item in login-open-app */
+    flex-shrink: 0;
+    height: 80px;
+    line-height: 80px;
+    /* limit item height to 40px */
+    max-height: 80px;
+    overflow: hidden;
+}
+
+.login-open-app .login-open-app-icon-btn-wrap {
+    /* submit btn */
+    background-color: transparent;
+    outline: none;
+    border: 0;
+    cursor: pointer;
+}
+
+.login-open-app .login-open-app-icon {
+    /* icon's style */
+    margin-bottom: 12px;
+    height: 40px;
+    width: 40px;
+}

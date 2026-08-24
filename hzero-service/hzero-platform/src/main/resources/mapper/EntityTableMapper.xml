@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.platform.infra.mapper.EntityTableMapper">
+    <!-- 可根据自己的需求，是否要使用 -->
+    <resultMap id="BaseResultMap" type="org.hzero.platform.domain.entity.EntityTable">
+        <result column="entity_table_id" property="entityTableId" jdbcType="DECIMAL"/>
+        <result column="service_name" property="serviceName" jdbcType="VARCHAR"/>
+        <result column="entity_class" property="entityClass" jdbcType="VARCHAR"/>
+        <result column="table_name" property="tableName" jdbcType="VARCHAR"/>
+        <result column="table_catalog" property="tableCatalog" jdbcType="VARCHAR"/>
+        <result column="table_schema" property="tableSchema" jdbcType="VARCHAR"/>
+        <result column="table_comment" property="tableComment" jdbcType="VARCHAR"/>
+        <result column="multi_language_flag" property="multiLanguageFlag" jdbcType="DECIMAL"/>
+        <result column="multi_language_unique_flag" property="multiLanguageUniqueFlag" jdbcType="DECIMAL"/>
+        <result column="multi_language_table_name" property="multiLanguageTableName" jdbcType="VARCHAR"/>
+        <result column="remark" property="remark" jdbcType="VARCHAR"/>
+        <result column="object_version_number" property="objectVersionNumber" jdbcType="DECIMAL"/>
+        <result column="creation_date" property="creationDate" jdbcType="DATE"/>
+        <result column="created_by" property="createdBy" jdbcType="DECIMAL"/>
+        <result column="last_updated_by" property="lastUpdatedBy" jdbcType="DECIMAL"/>
+        <result column="last_update_date" property="lastUpdateDate" jdbcType="DATE"/>
+    </resultMap>
+    <select id="listEntityTable" resultType="org.hzero.platform.domain.entity.EntityTable">
+        SELECT
+        het.entity_table_id,
+        het.service_name,
+        het.entity_class,
+        het.table_name,
+        het.table_catalog,
+        het.table_schema,
+        het.table_comment,
+        het.multi_language_flag,
+        het.multi_language_unique_flag,
+        het.multi_language_table_name,
+        het.remark,
+        het.object_version_number
+        from
+        hpfm_entity_table het
+        where
+        1=1
+        <if test="serviceName!=null and serviceName!=''">
+            <bind name="serviceNameLike" value="'%'+serviceName+'%'"></bind>
+            and het.service_name like #{serviceNameLike}
+        </if>
+        <if test="tableName!=null and tableName!=''">
+            <bind name="tableNameLike" value="'%'+tableName+'%'"></bind>
+            and het.table_name like #{tableNameLike}
+        </if>
+    </select>
+    <select id="selectServices" resultType="java.lang.String">
+        SELECT
+            service_name
+        FROM hpfm_entity_table
+        GROUP BY service_name
+    </select>
+</mapper>

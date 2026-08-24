@@ -1,0 +1,48 @@
+.compare-group {
+  h3 {
+    position: relative;
+    padding-left: 16px;
+    font-size: 14px;
+    color: #386bd7;
+    &::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      height: 18px;
+      width: 3px;
+      background-color: #386bd7;
+    }
+  }
+  .compare-item {
+    margin: 0 24px 12px 32px;
+    background-color: #282d34;
+    color: white;
+    padding: 12px 20px;
+    line-height: 1.42;
+    p {
+      margin-bottom: 5px;
+      color: rgb(252, 146, 158);
+      span:nth-child(2) {
+        color: white;
+      }
+    }
+    & > p:last-child {
+      margin: 0;
+    }
+  }
+}
+.changedLibs {
+  h3 {
+    color: #f8b303;
+  }
+}
+.missingLibs {
+  h3 {
+    color: #ef6623;
+  }
+}
+.newLibs {
+  h3 {
+    color: #39c878;
+  }
+}

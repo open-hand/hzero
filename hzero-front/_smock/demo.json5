@@ -1,0 +1,91 @@
+// 文档参考：https://www.npmjs.com/package/@smock/mock
+{
+  name: "array-params-test",
+  desc: "user login and logout",
+  apis: [
+    {
+      name: "test array params",
+      desc: "if user login success, will get a token",
+      method: "GET",
+      url: "/array",
+      query: {
+        username: { type: "string", desc: "xxxxx", required: true },
+        password: { type: "string" },
+      },
+      response: {
+        code: { desc: "response result code", type: "number" },
+        arrValue: [{ desc: "arr value", type: "string", $$mock: "color", required: true }],
+        msg: {
+          type: "string",
+          desc: "",
+          $$mock: "csentence",
+          required: true,
+        },
+        token: {
+          type: "string",
+          $$mock: "string",
+          params: [18, 18],
+          required: true,
+        },
+        obj: {
+          prop1: { type: "string", required: true, $$mock: "csentence" },
+          prop2: { type: "string", required: true, $$mock: "time" },
+        },
+        arrObj: [
+          {
+            length: 2,
+            prop1: { type: "string", required: true, $$mock: "csentence" },
+            prop2: { type: "string", required: true, $$mock: "time" },
+          },
+        ],
+      },
+      mock_data: [
+        {
+          body: { username: ["edison"], password: "123" },
+          response: { code: -1, msg: "password incorrect1" },
+        },
+      ],
+    },
+    {
+      name: "原始类型",
+      desc: "测试单值情况",
+      method: "POST",
+      url: "/array1",
+      body: { type: "string", required: true },
+      response: {
+        type: "string",
+        required: true,
+        $$mock: "time",
+      },
+    },
+    {
+      name: "原始类型数组",
+      desc: "测试单值情况",
+      method: "POST",
+      url: "/array2",
+      body: [{ type: "string", required: true }],
+      response: {
+        type: "string",
+        required: true,
+        $$mock: "time",
+      },
+    },
+    {
+      name: "对象数组",
+      desc: "测试单值情况",
+      method: "POST",
+      url: "/array3",
+      body: [
+        {
+          name: { type: "string", required: true },
+          age: { type: "number", required: true },
+        },
+      ],
+      response: {
+        type: "string",
+        required: true,
+        $$mock: "time",
+      },
+    },
+  ],
+}

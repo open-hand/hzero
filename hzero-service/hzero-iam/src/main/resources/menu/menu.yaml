@@ -1,0 +1,212 @@
+menu:
+  -
+    # 菜单模块信息 -- 也即root菜单
+    name: "iam"
+    icon: IAM
+    sort: 1
+    site: # 全局菜单/组织菜单/项目菜单/个人中心菜单 -- 共计四类
+      -
+        # 菜单项信息 -- 也即末级菜单项, 挂载在root菜单之下
+        name: "organization"
+        icon: manage_organization
+        route: /iam/organization
+        sort: 1
+        permission:
+          # 菜单权限列表信息
+          - 'iam-service.organization.list'
+          - 'organization-service.organization.create'
+          - 'iam-service.organization.check'
+          - 'iam-service.organization.query'
+          - 'iam-service.organization.update'
+          - 'iam-service.organization.disableOrganization'
+          - 'iam-service.organization.enableOrganization'
+      -
+        name: "menu-management"
+        icon: view_list
+        route: /iam/menuTree
+        sort: 2
+        permission:
+          - 'iam-service.menu.create'
+          - 'iam-service.menu.saveListTree'
+          - 'iam-service.menu.query'
+          - 'iam-service.menu.update'
+          - 'iam-service.menu.delete'
+      -
+        name: "role"
+        icon: assignment_ind
+        route: /iam/role
+        sort: 3
+        permission:
+          - 'iam-service.role.create'
+          - 'iam-service.role.createBaseOnRoles'
+          - 'iam-service.role.check'
+          - 'iam-service.role.list'
+          - 'iam-service.role-member.listRolesWithUserCountOnSiteLevel'
+          - 'iam-service.role.queryWithPermissionsAndLabels'
+          - 'iam-service.role.update'
+          - 'iam-service.role.disableRole'
+          - 'iam-service.role.enableRole'
+          - 'iam-service.role-member.pagingQueryUsersByRoleIdOnSiteLevel'
+      -
+        name: "member-role-global"
+        icon: person_add
+        route: /iam/memberRole
+        sort: 4
+        permission:
+          - 'iam-service.role-member.createOrUpdateOnSiteLevel'
+          - 'iam-service.role-member.deleteOnSiteLevel'
+          - 'iam-service.role-member.pagingQueryUsersByRoleIdOnSiteLevel'
+          - 'iam-service.role-member.listRolesWithUserCountOnSiteLevel'
+          - 'iam-service.role-member.pagingQueryUsersWithSiteLevelRoles'
+      -
+        name: "root-user"
+        icon: root
+        route: /iam/rootuser
+        sort: 5
+        permission:
+          - 'iam-service.user.pagingQueryAdminUsers'
+          - 'iam-service.user.addDefaultUsers'
+          - 'iam-service.user.deleteDefaultUser'
+
+  # 微服务管理
+  -
+    name: "microservice"
+    icon: micro
+    sort: 1
+    site:
+      -
+        name: "route-management"
+        icon: routeroutline
+        route: /iam/route
+        sort: 1
+        permission:
+          - 'manager-service.route.list'
+          - 'manager-service.route.create'
+          - 'manager-service.route.update'
+          - 'manager-service.route.delete'
+
+  # 租户设置
+  -
+    name: "rentsetting"
+    icon: IAM
+    sort: 1
+    organization:
+      -
+        name: "project"
+        icon: manage_project
+        route: /iam/project
+        sort: 1
+        permission:
+          - 'iam-service.organization-project.list'
+          - 'iam-service.organization-project.create'
+          - 'iam-service.organization-project.update'
+          - 'iam-service.organization-project.enableProject'
+      -
+        name: "user"
+        icon: manage_person
+        route: /iam/user
+        sort: 2
+        permission:
+          - 'iam-service.organization-user.create'
+          - 'iam-service.organization-user.list'
+          - 'iam-service.organization-user.query'
+          - 'iam-service.organization-user.update'
+          - 'iam-service.organization-user.delete'
+          - 'iam-service.organization-user.disableUser'
+          - 'iam-service.organization-user.enableUser'
+          - 'iam-service.organization-user.unlock'
+      -
+        name: "member-role-organization"
+        icon: person_add
+        route: /iam/memberRole
+        sort: 3
+        permission:
+          - 'iam-service.role-member.createOrUpdateOnOrganizationLevel'
+          - 'iam-service.role-member.deleteOnOrganizationLevel'
+          - 'iam-service.role-member.listRolesWithUserCountOnOrganizationLevel'
+          - 'iam-service.role-member.pagingQueryUsersByRoleIdOnOrganizationLevel'
+          - 'iam-service.role-member.pagingQueryUsersWithOrganizationLevelRoles'
+      -
+        name: "client"
+        icon: laptop_mac
+        route: /iam/client
+        sort: 4
+        permission:
+          - 'iam-service.client.check'
+          - 'iam-service.client.create'
+          - 'iam-service.client.delete'
+          - 'iam-service.client.list'
+          - 'iam-service.client.query'
+          - 'iam-service.client.queryByName'
+          - 'iam-service.client.update'
+      -
+        name: "ldap"
+        icon: device_hub
+        route: '/iam/ldap'
+        sort: 5
+        permission:
+          - 'iam-service.ldap.create'
+          - 'iam-service.ldap.query'
+          - 'iam-service.ldap.queryByOrgId'
+          - 'iam-service.ldap.syncUsers'
+          - 'iam-service.ldap.testConnect'
+          - 'iam-service.ldap.update'
+      -
+        name: "password-policy"
+        icon: password
+        route: /iam/password-policy
+        sort: 6
+        permission:
+          - 'iam-service.password-policy.create'
+          - 'iam-service.password-policy.queryByOrganizationId'
+          - 'iam-service.password-policy.update'
+
+  # 项目设置
+  -
+    name: "prosetting"
+    icon: IAM
+    sort: 1
+    project:
+      -
+        name: "proManage"
+        icon: settings_applications
+        route: /iam/proManage
+        sort: 1
+        permission:
+          - 'iam-service.project.disableProject'
+          - 'iam-service.project.query'
+          - 'iam-service.project.update'
+      -
+        name: "member-role-project"
+        icon: person_add
+        route: /iam/memberRole
+        sort: 2
+        permission:
+          - 'iam-service.role-member.createOrUpdateOnSiteLevel'
+          - 'iam-service.role-member.deleteOnProjectLevel'
+          - 'iam-service.role-member.listRolesWithUserCountOnProjectLevel'
+          - 'iam-service.role-member.pagingQueryUsersByRoleIdOnProjectLevel'
+          - 'iam-service.role-member.pagingQueryUsersWithProjectLevelRoles'
+  # 个人中心
+  -
+    name: "usercenter"
+    icon: accessibility
+    sort: 1
+    user:
+      -
+        name: "user-info"
+        icon: person
+        route: /iam/userinfo
+        sort: 1
+        permission:
+          - 'iam-service.user.queryInfo'
+          - 'iam-service.user.updateInfo'
+          - 'iam-service.user.uploadPhoto'
+          - 'iam-service.user.querySelf'
+      -
+        name: "password"
+        icon: vpn_key
+        route: /iam/usermodifyPwd
+        sort: 2
+        permission:
+          - 'iam-service.user.selfUpdatePassword'

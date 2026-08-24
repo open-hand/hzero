@@ -1,0 +1,38 @@
+.wrapper {
+  .compare-group {
+    margin-bottom: 10px;
+
+    h3 {
+      position: relative;
+      padding-left: 16px;
+      font-size: 14px;
+      color: #386bd7;
+
+      &::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        height: 18px;
+        width: 3px;
+        background-color: #386bd7;
+      }
+    }
+
+    .content {
+      margin-left: 52px;
+      color: #ef6623;
+      background: #f6f6f6;
+      box-sizing: border-box;
+      padding: 20px;
+      font-size: 14px;
+      white-space: pre-wrap;
+    }
+  }
+
+  .delete {
+    .content {
+      text-decoration: line-through red;
+      color: red;
+    }
+  }
+}

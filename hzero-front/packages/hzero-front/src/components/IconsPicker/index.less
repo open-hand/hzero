@@ -1,0 +1,36 @@
+@import '~hzero-front/lib/assets/styles/variables.less';
+
+.icon-picker-button {
+  border-radius: 2px;
+}
+
+.icon-picker {
+  .ant-input-suffix {
+    font-size: 14px;
+    cursor: pointer;
+    .icons-picker-clear {
+      margin-right: 4px;
+    }
+  }
+}
+
+.icons-picker-wrapper {
+  display: flex;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  width: 300px;
+  .icons {
+    width: 20px;
+    text-align: center;
+    margin: 4px 5px;
+    cursor: pointer;
+    &:hover {
+      color: @hzero-primary-color-2;
+    }
+  }
+}
+
+.icons-pagination {
+  display: flex;
+  justify-content: flex-end;
+}

@@ -1,0 +1,80 @@
+.template-form {
+  :global {
+    .rc-md-navigation .button-wrap .button.button-type-underline {
+      display: none;
+    }
+
+    .section.sec-md.visible {
+      border-right: 1px solid #e8e8e8;
+    }
+    //.ant-col-4 {
+    //  width: 16.2%;
+    //}
+
+    .ql-toolbar {
+      height: 11%;
+    }
+
+    .ql-container {
+      height: 88%;
+    }
+
+    .ql-toolbar.ql-snow {
+      line-height: 100%;
+    }
+
+    .ql-snow .ql-picker-label::before,
+    .ql-snow .ql-color-picker .ql-picker-label svg,
+    .ql-snow .ql-icon-picker .ql-picker-label svg {
+      vertical-align: top;
+    }
+  }
+
+  .templateContent > div + div > div > span > div > div {
+    border: 1px solid #f5222d;
+  }
+
+  .templateContent > div + div > div {
+    line-height: 0 !important;
+  }
+
+  .templateContentLabel::before {
+    display: inline-block;
+    margin-right: 4px;
+    content: '*';
+    line-height: 1;
+    font-size: 12px;
+    color: #f5222d;
+  }
+
+  .templateContentError {
+    font-size: 12px;
+    line-height: 15px;
+    color: #f5222d;
+    position: relative;
+    zoom: 1;
+  }
+
+  // 占 2/3 宽度的表单
+  .row-item2 {
+    margin-bottom: 12px;
+
+    :global {
+      .ant-form-item-label.ant-col-4 {
+        width: 18.75%;
+        padding-left: 12px;
+        padding-right: 12px;
+        margin-left: -12px;
+        margin-right: -12px;
+      }
+
+      .ant-form-item-control-wrapper.ant-col-20 {
+        width: 81.25%;
+        padding-left: 12px;
+        padding-right: 12px;
+        margin-left: -12px;
+        margin-right: -12px;
+      }
+    }
+  }
+}

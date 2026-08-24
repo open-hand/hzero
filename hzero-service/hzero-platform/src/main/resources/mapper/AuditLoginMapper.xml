@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.platform.infra.mapper.AuditLoginMapper">
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap id="BaseResultMap" type="org.hzero.platform.domain.entity.AuditLogin">
+        <result column="audit_id" property="auditId" jdbcType="DECIMAL"/>
+        <result column="audit_type" property="auditType" jdbcType="VARCHAR"/>
+        <result column="user_id" property="userId" jdbcType="DECIMAL"/>
+        <result column="login_name" property="loginName" jdbcType="VARCHAR"/>
+        <result column="phone" property="phone" jdbcType="VARCHAR"/>
+        <result column="email" property="email" jdbcType="VARCHAR"/>
+        <result column="tenant_id" property="tenantId" jdbcType="DECIMAL"/>
+        <result column="login_date" property="loginDate" jdbcType="DATE"/>
+        <result column="login_ip" property="loginIp" jdbcType="VARCHAR"/>
+        <result column="login_client" property="loginClient" jdbcType="VARCHAR"/>
+        <result column="login_platform" property="loginPlatform" jdbcType="VARCHAR"/>
+        <result column="login_os" property="loginOs" jdbcType="VARCHAR"/>
+        <result column="login_browser" property="loginBrowser" jdbcType="VARCHAR"/>
+        <result column="login_status" property="loginStatus" jdbcType="DECIMAL"/>
+        <result column="login_message" property="loginMessage" jdbcType="VARCHAR"/>
+        <result column="object_version_number" property="objectVersionNumber" jdbcType="DECIMAL"/>
+        <result column="creation_date" property="creationDate" jdbcType="DATE"/>
+        <result column="created_by" property="createdBy" jdbcType="DECIMAL"/>
+        <result column="last_updated_by" property="lastUpdatedBy" jdbcType="DECIMAL"/>
+        <result column="last_update_date" property="lastUpdateDate" jdbcType="DATE"/>
+    </resultMap>
+    <delete id="batchDeleteById">
+        DELETE FROM hpfm_audit_login WHERE audit_id IN
+        <foreach collection="auditLoginIds" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+
+    <select id="listAuditLogin" parameterType="org.hzero.platform.domain.entity.AuditLogin" resultType="org.hzero.platform.domain.entity.AuditLogin">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()" />
+        SELECT
+            hla.user_id,
+            hla.audit_type,
+            hla.login_name,
+            hla.phone,
+            ht.tenant_name,
+            hla.login_date,
+            hla.login_ip,
+            hla.login_platform,
+            hla.login_os,
+            hla.login_browser,
+            iu.real_name AS user_name,
+            CONCAT(
+            CONCAT(hla.login_os, '/'),
+            hla.login_browser
+            ) AS login_device,
+            hla.login_message
+        FROM
+            hpfm_audit_login hla
+        LEFT JOIN iam_user iu ON hla.user_id = iu.id
+        LEFT JOIN hpfm_tenant_tl ht ON ht.tenant_id = hla.tenant_id AND ht.lang = #{lang}
+        <where>
+            <if test="auditType != null">
+                AND hla.audit_type = #{auditType}
+            </if>
+            <if test="loginName != null and loginName != ''">
+                <bind name="loginNameLike" value="'%'+loginName+'%'"/>
+                and hla.login_name like #{loginNameLike}
+            </if>
+            <if test="userName != null and userName != ''">
+                <bind name="userNameLike" value="'%'+userName+'%'"/>
+                and iu.real_name like #{userNameLike}
+            </if>
+            <if test="userId != null">
+                and hla.user_id = #{userId}
+            </if>
+            <if test="tenantId != null">
+                and hla.tenant_id = #{tenantId}
+            </if>
+            <if test="phone != null and phone != ''">
+                <bind name="phoneLike" value="'%'+phone+'%'"/>
+                and hla.phone like #{phoneLike}
+            </if>
+            <if test="loginDateAfter !=null">
+                and hla.login_date &gt;= #{loginDateAfter}
+            </if>
+            <if test="loginDateBefore !=null">
+                and hla.login_date &lt;= #{loginDateBefore}
+            </if>
+        </where>
+    </select>
+    <select id="selectSelfTenantsWithLogs" resultType="org.hzero.platform.domain.entity.AuditLogin">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        SELECT
+            hla.login_date,
+            ht.tenant_id,
+            ht.tenant_num,
+            httl.tenant_name
+        FROM
+        hpfm_tenant ht
+        LEFT JOIN
+        hpfm_tenant_tl httl ON ht.tenant_id = httl.tenant_id and httl.lang = #{lang}
+        LEFT JOIN
+        hpfm_audit_login hla ON hla.audit_type = 'LOGIN' AND hla.user_id = #{userId}
+        LEFT JOIN
+        iam_user iu ON hla.user_id = iu.id AND iu.id = #{userId}
+        JOIN (
+          SELECT
+             ir.h_tenant_id tenant_id
+          FROM iam_member_role imr
+          JOIN iam_role ir ON ir.id = imr.role_id
+          WHERE imr.member_id = #{userId}
+          group by tenant_id
+        ) irt ON irt.tenant_id = ht.tenant_id
+        WHERE
+        ht.enabled_flag = 1
+    </select>
+
+    <select id="listUserInfo" resultType="org.hzero.platform.domain.entity.AuditLogin">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        SELECT
+        	hal.user_id,
+        	hal.login_name,
+        	hal.phone,
+        	hal.email,
+        	hal.tenant_id,
+        	ht.tenant_name,
+        	hal.login_date,
+        	hal.login_ip,
+        	hal.access_token
+        FROM
+        	hpfm_audit_login hal
+        	LEFT JOIN hpfm_tenant_tl ht ON ht.tenant_id = hal.tenant_id
+        	AND ht.lang = #{lang}
+        WHERE
+        	hal.audit_type = 'LOGIN'
+        	AND hal.access_token IN
+        <foreach collection="accessTokenList" item="item" index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
+    <select id="listUserTenant" resultType="org.hzero.platform.api.dto.OnLineUserDTO">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        SELECT
+            ht.tenant_id,
+            ht.tenant_name
+        FROM
+            hpfm_tenant_tl ht
+        WHERE
+            ht.lang = #{lang}
+            AND ht.tenant_id IN
+        <foreach collection="tenantIdList" item="item" index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
+    <select id="listLogIdByTime" resultType="long">
+        SELECT
+            hla.audit_id
+        FROM
+            hpfm_audit_login hla
+        WHERE hla.login_date &lt;= #{time}
+        <if test="tenantId != null">
+            and hla.tenant_id = #{tenantId}
+        </if>
+    </select>
+</mapper>

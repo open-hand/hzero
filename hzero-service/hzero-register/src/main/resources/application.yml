@@ -1,0 +1,19 @@
+eureka:
+  instance:
+    preferIpAddress: true
+    leaseRenewalIntervalInSeconds: 10
+    leaseExpirationDurationInSeconds: 30
+    metadata-map:
+      VERSION: 1.3.0
+  client:
+    # 检索服务选项，注册中心不需要检索服务
+    fetch-registry: ${EUREKA_CLIENT_FETCH_REGISTRY:false}
+    # 注册中心将自己作为客户端来尝试注册自己，注册中心集群环境下需开启此配置
+    register-with-eureka: ${EUREKA_CLIENT_REGISTER_WITH_EUREKA:false}
+    serviceUrl:
+      defaultZone: ${EUREKA_DEFAULT_ZONE:http://dev.hzero.com.cn:8000/eureka}
+    registryFetchIntervalSeconds: 10
+    disable-delta: true
+  server:
+    evictionIntervalTimerInMs: 4000
+    enable-self-preservation: ${EUREKA_SERVER_ENABLE_SELF_PRESERVATION:false}

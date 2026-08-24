@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.platform.infra.mapper.ServerClusterMapper">
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap id="BaseResultMap" type="org.hzero.platform.domain.entity.ServerCluster">
+        <result column="CLUSTER_ID" property="clusterId" jdbcType="DECIMAL"/>
+        <result column="CLUSTER_CODE" property="clusterCode" jdbcType="VARCHAR"/>
+        <result column="CLUSTER_NAME" property="clusterName" jdbcType="VARCHAR"/>
+        <result column="CLUSTER_DESCRIPTION" property="clusterDescription" jdbcType="VARCHAR"/>
+        <result column="ENABLED_FLAG" property="enabledFlag" jdbcType="DECIMAL"/>
+        <result column="tenant_id" property="tenantId" jdbcType="DECIMAL"/>
+        <result column="object_version_number" property="objectVersionNumber" jdbcType="DECIMAL"/>
+        <result column="creation_date" property="creationDate" jdbcType="DATE"/>
+        <result column="created_by" property="createdBy" jdbcType="DECIMAL"/>
+        <result column="last_updated_by" property="lastUpdatedBy" jdbcType="DECIMAL"/>
+        <result column="last_update_date" property="lastUpdateDate" jdbcType="DATE"/>
+    </resultMap>
+    
+     <select id="selectClusterList" resultType="org.hzero.platform.domain.entity.ServerCluster">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()" />
+        SELECT
+            hsc.CLUSTER_ID,
+            hsc.CLUSTER_CODE,
+            hsc.CLUSTER_NAME,
+            hsc.CLUSTER_DESCRIPTION,
+            hsc.ENABLED_FLAG,
+            hsc.tenant_id,
+            hsc.object_version_number,
+            hsc.creation_date,
+            ht.tenant_name
+        FROM
+            hpfm_server_cluster hsc
+            join hpfm_tenant_tl ht on hsc.tenant_id = ht.tenant_id and ht.lang = #{lang}
+        <where>
+            <if test="tenantId!= null">
+                AND hsc.tenant_id = #{tenantId,jdbcType=DECIMAL}
+            </if>
+            <if test="clusterId != null">
+                AND hsc.cluster_id = #{clusterId,jdbcType=DECIMAL}
+            </if>
+            <if test="clusterName != null">
+                AND hsc.cluster_Name like concat('%',concat(#{clusterName} ,'%'))
+            </if>
+            <if test="clusterDescription!= null">
+                AND hsc.cluster_Description like concat('%',concat(#{clusterDescription} ,'%'))
+            </if>
+            <if test="clusterCode != null">
+                AND hsc.cluster_Code like concat('%',concat(#{clusterCode} ,'%'))
+            </if>
+        </where>
+    </select>
+</mapper>

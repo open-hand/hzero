@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.report.infra.mapper.DatasetMapper">
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap id="BaseResultMap" type="org.hzero.report.domain.entity.Dataset">
+        <result column="dataset_id" property="datasetId" jdbcType="DECIMAL"/>
+        <result column="dataset_code" property="datasetCode" jdbcType="VARCHAR"/>
+        <result column="dataset_name" property="datasetName" jdbcType="VARCHAR"/>
+        <result column="datasource_code" property="datasourceCode" jdbcType="DECIMAL"/>
+        <result column="datasource_name" property="datasourceName" jdbcType="VARCHAR"/>
+        <result column="sql_text" property="sqlText" jdbcType="VARCHAR"/>
+        <result column="query_params" property="queryParams" jdbcType="VARCHAR"/>
+        <result column="sql_type" property="sqlType" jdbcType="VARCHAR"/>
+        <result column="enabled_flag" property="enabledFlag" jdbcType="DECIMAL"/>
+        <result column="remark" property="remark" jdbcType="VARCHAR"/>
+        <result column="tenant_id" property="tenantId" jdbcType="DECIMAL"/>
+        <result column="tenant_name" property="tenantName" jdbcType="VARCHAR"/>
+        <result column="object_version_number" property="objectVersionNumber" jdbcType="DECIMAL"/>
+        <result column="creation_date" property="creationDate" jdbcType="DATE"/>
+        <result column="created_by" property="createdBy" jdbcType="DECIMAL"/>
+        <result column="last_updated_by" property="lastUpdatedBy" jdbcType="DECIMAL"/>
+        <result column="last_update_date" property="lastUpdateDate" jdbcType="DATE"/>
+    </resultMap>
+
+    <!-- 查询数据源列表 -->
+    <select id="selectDatasets" parameterType="org.hzero.report.domain.entity.Dataset" resultMap="BaseResultMap">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()" />
+        SELECT
+            hd.dataset_id,
+            hd.dataset_code,
+            hd.dataset_name,
+            hd.datasource_code,
+            hd.sql_type,
+            hd.enabled_flag,
+            hd.remark,
+            hd.tenant_id,
+            ht.tenant_name,
+            hd.object_version_number
+        FROM
+            hrpt_dataset hd
+        JOIN hpfm_tenant_tl ht ON hd.tenant_id = ht.tenant_id AND ht.lang = #{lang}
+        <where>
+            <if test="datasetCode != null and datasetCode != ''">
+                <bind name="datasetCodeLike" value="'%' + datasetCode + '%'" />
+                AND hd.dataset_code LIKE #{datasetCodeLike}
+            </if>
+            <if test="datasetName != null and datasetName != ''">
+                <bind name="datasetNameLike" value="'%' + datasetName + '%'" />
+                AND hd.dataset_name LIKE #{datasetNameLike}
+            </if>
+            <if test="datasourceCode != null and datasourceCode != ''">
+                <bind name="datasourceCodeLike" value="'%' + datasourceCode + '%'" />
+                AND hd.datasource_code LIKE #{datasourceCodeLike}
+            </if>
+            <if test="tenantId != null">
+                AND hd.tenant_id = #{tenantId}
+            </if>
+        </where>
+    </select>
+
+    <!-- 查询数据源明细-->
+    <select id="selectDataset" resultMap="BaseResultMap">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()" />
+        SELECT
+        	hd.dataset_id,
+        	hd.dataset_code,
+        	hd.dataset_name,
+        	hd.datasource_code,
+        	hd.sql_text,
+        	hd.query_params,
+        	hd.meta_columns,
+        	hd.sql_type,
+        	hd.enabled_flag,
+        	hd.remark,
+        	hd.tenant_id,
+        	ht.tenant_name,
+        	hd.object_version_number
+        FROM
+        	hrpt_dataset hd
+        	JOIN hpfm_tenant_tl ht ON hd.tenant_id = ht.tenant_id AND ht.lang = #{lang}
+        WHERE
+        	hd.dataset_id = #{datasetId}
+        <if test="tenantId != null">
+            AND hd.tenant_id = #{tenantId}
+        </if>
+    </select>
+
+    <!-- 查询被引用次数 -->
+    <select id="selectReferenceCount" resultType="java.lang.Integer">
+        SELECT
+        	COUNT( * )
+        FROM
+        	hrpt_report hr
+        WHERE
+        	hr.dataset_id = #{datasetId}
+    </select>
+
+</mapper>

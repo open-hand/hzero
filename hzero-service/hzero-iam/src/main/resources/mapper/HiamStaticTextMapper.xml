@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.iam.infra.mapper.HiamStaticTextMapper">
+
+    <!-- 查询有效的注册协议 -->
+    <select id="countValidRegisterProtocol" resultType="int">
+        SELECT
+          count(1)
+        FROM hpfm_static_text hst
+        WHERE hst.text_id = #{textId}
+        AND hst.start_date &lt;= #{now}
+        AND (hst.end_date IS NULL OR hst.end_date > #{now})
+    </select>
+
+</mapper>

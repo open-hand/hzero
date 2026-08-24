@@ -1,0 +1,144 @@
+@import '../../assets/styles/variables';
+
+:global {
+  .lov-modal {
+    word-break: break-all;
+
+    .ant-modal-title {
+      font-size: 18px;
+    }
+
+    .ant-modal-header {
+      padding: 16px 16px 0;
+      border-bottom: none;
+    }
+
+    .ant-modal-footer {
+      border-top: none;
+      padding: 0 16px 16px;
+      margin-top: 16px;
+    }
+
+    .ant-form-item {
+      display: flex;
+      margin-bottom: 0;
+    }
+
+    .ant-pagination-options-size-changer.ant-select {
+      margin-right: 0;
+    }
+
+    .lov-modal-btn-container {
+      flex-shrink: 0;
+      display: flex;
+      height: 40px;
+      align-items: center;
+    }
+  }
+
+  .lov-input {
+    .ant-input-group-wrapper {
+      vertical-align: middle;
+    }
+
+    .ant-input {
+      // 两个 icon 的位置
+      padding-right: 48px !important;
+      transition: padding 0s, background-color 0.3s, border 0.3s;
+    }
+
+    .ant-input-suffix {
+      > .lov-clear {
+        margin-right: 4px;
+        display: none;
+      }
+
+      // LOV 查询icon颜色和DatePicker等组件的icon颜色一样
+      .anticon-search:before {
+        color: rgba(0, 0, 0, 0.25);
+      }
+    }
+  }
+
+  .lov-suffix {
+    .ant-input-suffix {
+      > .anticon {
+        // ICON
+      }
+
+      > .lov-clear {
+        display: none;
+        cursor: pointer;
+      }
+    }
+
+    &:hover {
+      .ant-input-suffix {
+        > .lov-clear {
+          display: inline-block;
+        }
+      }
+    }
+  }
+
+  .ant-form-item-required .lov-suffix {
+    &:hover {
+      .ant-input-suffix {
+        background: @hzero-form-required-color;
+        display: block;
+      }
+    }
+  }
+
+  //.lov-input {
+  //  > .ant-input {
+  //    // addAfter
+  //    border-right: 0;
+  //  }
+  //
+  //  + .ant-input-group-addon {
+  //    // addAfter
+  //    border: 1px solid;
+  //    border-left: 0 none;
+  //  }
+  //}
+  //
+  //// 表单中的 Lov required
+  //// FIXME: focus active hover 状态等 需要注意
+  //.ant-form-item-required .ant-form-item-children .ant-input-group-wrapper {
+  //  .lov-input {
+  //    + .ant-input-group-addon {
+  //      // addAfter
+  //      border-color: @hzero-primary-color-3-yellow;
+  //      background-color: @hzero-form-required-color;
+  //    }
+  //  }
+  //
+  //  .lov-input.lov-disabled {
+  //    + .ant-input-group-addon {
+  //      // addAfter
+  //      border-color: @hzero-color-disabled;
+  //      background-color: @hzero-bgc-color-disabled;
+  //    }
+  //  }
+  //}
+  //
+  //// 表单中的 Lov has error
+  //.ant-form-item-required.has-error .ant-form-item-children .ant-input-group-wrapper {
+  //  .lov-input {
+  //    + .ant-input-group-addon {
+  //      // addAfter
+  //      border-color: @form-item-has-error-color;
+  //      background-color: #fff;
+  //    }
+  //  }
+  //}
+  //
+  //.lov-input.lov-disabled {
+  //  + .ant-input-group-addon {
+  //    // addAfter
+  //    border-color: @hzero-color-disabled;
+  //    background-color: @hzero-bgc-color-disabled;
+  //  }
+  //}
+}

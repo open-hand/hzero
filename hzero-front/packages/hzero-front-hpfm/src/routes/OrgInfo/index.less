@@ -1,0 +1,102 @@
+@import '~hzero-ui/es/style/themes/default.less';
+
+.org-info {
+  display: flex;
+  padding: 0;
+  background: #f5f5f5;
+
+  .org-info-left {
+    flex: 0 0 auto;
+    width: 274px;
+    padding: 10px 24px 0;
+    border-right: 1px solid #ebedf2;
+
+    .orgchart {
+      display: flex;
+      flex: 0 0 auto;
+      justify-content: space-between;
+      width: 230px;
+    }
+
+    .orgchart-item {
+      width: 100px;
+      margin: 8px auto;
+      padding: 12px;
+      text-align: center;
+      background: #fff;
+      border: 1px solid #ddd;
+
+      .link {
+        padding: 12px;
+        text-decoration: none;
+        color: #333;
+      }
+    }
+
+    .orgchart-item:hover {
+      border: 1px solid #5867dd;
+    }
+
+    .orgchart-light {
+      border: 1px solid #5867dd;
+      background: #fafafa;
+    }
+
+    .divider {
+      display: block;
+      height: 22px;
+      margin: 0 auto;
+      border-right: 1px dashed #333;
+    }
+
+    .divider::after,
+    .divider-horizontal::after,
+    .divider-horizontal::before {
+      position: relative;
+      right: 5px;
+      top: 11px;
+      display: block;
+      content: ' ';
+      height: 10px;
+      width: 10px;
+      border-right: 1px dashed #000;
+      border-left: 1px dashed transparent;
+      border-top: 1px dashed #000;
+      border-bottom: 1px dashed transparent;
+      transform: rotate(135deg);
+    }
+
+    .divider-horizontal::after {
+      top: 1px;
+    }
+
+    .divider-horizontal::before {
+      position: relative;
+      right: -94px;
+      top: 11px;
+    }
+
+    .divider-horizontal {
+      width: 100px;
+      height: 22px;
+      border: 1px dashed #333;
+      margin: 0 auto;
+      border-bottom: none;
+    }
+  }
+
+  .org-info-right {
+    flex: auto;
+    display: flex;
+    flex-direction: column;
+    overflow: auto;
+  }
+}
+
+.db-list {
+  :global {
+    .ant-form-item {
+      margin-bottom: 0;
+    }
+  }
+}

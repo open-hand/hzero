@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.hzero.message.infra.mapper.ReceiverTypeLineMapper">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap id="BaseResultMap" type="org.hzero.message.domain.entity.ReceiverTypeLine">
+		<result column="receiver_type_line_id" property="receiverTypeLineId" jdbcType="DECIMAL"/>
+        <result column="receiver_type_id" property="receiverTypeId" jdbcType="DECIMAL"/>
+        <result column="receive_target_id" property="receiveTargetId" jdbcType="DECIMAL"/>
+        <result column="receive_target_tenant_id" property="receiveTargetTenantId" jdbcType="DECIMAL"/>
+        <result column="receive_target_name" property="receiveTargetName" jdbcType="VARCHAR"/>
+        <result column="receive_target_code" property="receiveTargetCode" jdbcType="VARCHAR"/>
+        <result column="object_version_number" property="objectVersionNumber" jdbcType="DECIMAL"/>
+        <result column="creation_date" property="creationDate" jdbcType="DATE"/>
+        <result column="created_by" property="createdBy" jdbcType="DECIMAL"/>
+        <result column="last_updated_by" property="lastUpdatedBy" jdbcType="DECIMAL"/>
+        <result column="last_update_date" property="lastUpdateDate" jdbcType="DATE"/>
+    </resultMap>
+
+	<resultMap id="ReceiverTypeLineMap" type="org.hzero.message.domain.entity.ReceiverTypeLine">
+		<result column="receiver_type_line_id" property="receiverTypeLineId" jdbcType="DECIMAL"/>
+		<result column="receiver_type_id" property="receiverTypeId" jdbcType="DECIMAL"/>
+		<result column="receive_target_id" property="receiveTargetId" jdbcType="DECIMAL"/>
+		<result column="receive_target_tenant_id" property="receiveTargetTenantId" jdbcType="DECIMAL"/>
+		<result column="receive_target_name" property="receiveTargetName" jdbcType="VARCHAR"/>
+		<result column="receive_target_code" property="receiveTargetCode" jdbcType="VARCHAR"/>
+		<association property="receiverDetail" javaType="org.hzero.message.domain.entity.ReceiverDetail">
+			<result column="account_type_code" property="accountTypeCode"/>
+			<result column="account_num" property="accountNum"/>
+			<result column="description" property="description"/>
+		</association>
+	</resultMap>
+
+	<select id="listReceiveTypeLine" resultMap="ReceiverTypeLineMap">
+		SELECT
+			hrtl.receiver_type_line_id,
+			hrtl.receiver_type_id,
+			hrtl.receive_target_id,
+			hrtl.receive_target_tenant_id,
+			hrt.type_mode_code,
+			case
+       			when hrt.type_mode_code = 'UNIT' then hu.unit_name
+       			when hrt.type_mode_code = 'USER_GROUP' then hug.group_name
+       			when hrt.type_mode_code = 'USER' then iu.real_name
+      		end receive_target_name,
+			case
+       			when hrt.type_mode_code = 'UNIT' then hu.unit_code
+       			when hrt.type_mode_code = 'USER_GROUP' then hug.group_code
+      		end receive_target_code,
+      		hrd.account_type_code,
+      		hrd.account_num,
+      		hrd.description
+		FROM
+			hmsg_receiver_type_line hrtl
+			left JOIN hmsg_receiver_type hrt on hrtl.receiver_type_id = hrt.receiver_type_id
+			left JOIN hiam_user_group hug ON hrtl.receive_target_id = hug.user_group_id
+			left JOIN hpfm_unit hu ON hrtl.receive_target_id = hu.unit_id
+			left JOIN hmsg_receiver_detail hrd on hrd.receiver_detail_id = hrtl.receive_target_id
+			left JOIN iam_user iu on iu.id = hrtl.receive_target_id
+		where hrtl.receiver_type_id = #{receiverTypeId}
+	</select>
+</mapper>

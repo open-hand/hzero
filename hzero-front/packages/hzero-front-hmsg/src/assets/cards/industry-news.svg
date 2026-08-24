@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="38px" height="38px" viewBox="0 0 38 38" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 52.2 (67145) - http://www.bohemiancoding.com/sketch -->
+    <title>industry-news</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="industry-news">
+            <rect id="Rectangle" fill-opacity="0.01" fill="#FFFFFF" x="0" y="0" width="38" height="38"></rect>
+            <g id="Group-19" transform="translate(2.000000, 2.000000)">
+                <polygon id="Path-5" fill="#19BBCB" points="0.906350084 7 0.906350084 31.9900462 4.21411229 33.3220615 8 33.3220615 9 26.6303125 9 6.62362907"></polygon>
+                <path d="M17,34 L5,34 C2.23857625,34 0,32.0972102 0,29.75 L0,21 L0,7 C-6.76353751e-17,6.44771525 0.44771525,6 1,6 L8,6 L8,2.68421053 C8,1.20176199 9.12650934,0 10.516129,0 L31.483871,0 C32.8734907,0 34,1.20176199 34,2.68421053 L34,31.3157895 C34,32.798238 32.8734907,34 31.483871,34 L17,34 Z M17,32 L31.1851852,32 C31.635195,32 32,31.6049571 32,31.1176471 L32,2.88235294 C32,2.39504287 31.635195,2 31.1851852,2 L10.8148148,2 C10.364805,2 10,2.39504287 10,2.88235294 L10,25 L10,29.75 C10,30.5762805 9.72258949,31.3474872 9.24261559,32 L17,32 Z M8,8 L2,8 L2,21 L2,29.65625 C2,30.9506674 3.34314575,32 5,32 C6.65685425,32 8,30.9506674 8,29.65625 L8,25 L8,8 Z M13,5 L29,5 C29.5522847,5 30,5.44771525 30,6 C30,6.55228475 29.5522847,7 29,7 L13,7 C12.4477153,7 12,6.55228475 12,6 C12,5.44771525 12.4477153,5 13,5 Z M13,10 L20,10 C20.5522847,10 21,10.4477153 21,11 C21,11.5522847 20.5522847,12 20,12 L13,12 C12.4477153,12 12,11.5522847 12,11 C12,10.4477153 12.4477153,10 13,10 Z" id="Rectangle" fill="#1E3255" fill-rule="nonzero"></path>
+                <circle id="Oval" fill="#19BBCB" cx="18.5" cy="17.5" r="1.5"></circle>
+                <polyline id="Path-32" stroke="#1E3255" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" points="12.2441636 27 15.0722146 21.6025979 18.7044968 27 24.4821099 17.5263927 29.6797441 26.7009619"></polyline>
+            </g>
+        </g>
+    </g>
+</svg>

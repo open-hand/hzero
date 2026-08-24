@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.platform.infra.mapper.DatasourceDriverMapper">
+    <select id="selectDatasourceDrivers" resultType="org.hzero.platform.domain.entity.DatasourceDriver">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()" />
+        select
+          hdd.driver_id,
+          hddtl.driver_name,
+          hdd.description,
+          hdd.database_type,
+          hdd.driver_version,
+          hdd.driver_path,
+          hdd.main_class,
+          hdd.enabled_flag,
+          hdd.tenant_id,
+          htt.tenant_name
+        from hpfm_datasource_driver hdd
+        JOIN hpfm_datasource_driver_tl hddtl ON hddtl.driver_id = hdd.driver_id AND hddtl.lang = #{lang}
+        join hpfm_tenant ht on ht.tenant_id = hdd.tenant_id
+        join hpfm_tenant_tl htt on ht.tenant_id = htt.tenant_id and htt.lang = #{lang}
+          <where>
+              <if test="tenantId != null">
+                  AND hdd.tenant_id IN (#{tenantId}<if test="orgQueryFlag">, 0</if>)
+              </if>
+              <if test="driverName != null and driverName != ''">
+              <bind name="driverNameLike" value="'%'+driverName+'%'" />
+                  and hddtl.driver_name like #{driverNameLike}
+              </if>
+              <if test="description != null and description != ''">
+              <bind name="descriptionLike" value="'%'+description+'%'" />
+                  and hdd.description like #{descriptionLike}
+              </if>
+              <if test="driverVersion != null and driverVersion != ''">
+                  and hdd.driver_version = #{driverVersion}
+              </if>
+              <if test="databaseType != null and databaseType != ''">
+                  and hdd.database_type = #{databaseType}
+              </if>
+              <if test="orgQueryFlag and tenantId != null and tenantId != 0">
+                  AND hdd.driver_id NOT IN (
+                  SELECT hddt.driver_id
+                  FROM hpfm_datasource_driver hddt
+                  WHERE hddt.tenant_id = 0
+                  AND EXISTS (
+                  SELECT 1
+                  FROM hpfm_datasource_driver hddt1
+                  WHERE hddt1.tenant_id = #{tenantId}
+                  AND hddt1.database_type = hddt.database_type
+                  AND hddt1.driver_version = hddt.driver_version
+                  )
+                  )
+              </if>
+          </where>
+    </select>
+    <select id="selectDriverByDatabaseType" resultType="org.hzero.platform.domain.entity.DatasourceDriver">
+        select
+            hdd.driver_id,
+            hdd.driver_name,
+            hdd.driver_version
+        from hpfm_datasource_driver hdd
+        where hdd.tenant_id = #{tenantId}
+        and hdd.database_type = #{databaseType}
+        and hdd.enabled_flag = 1
+    </select>
+    <select id="selectDriverDetails" resultType="org.hzero.platform.domain.entity.DatasourceDriver">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()" />
+        select
+          hdd.driver_id,
+          hdd.driver_name,
+          hdd.description,
+          hdd.database_type,
+          hdd.driver_version,
+          hdd.driver_path,
+          hdd.main_class,
+          hdd.enabled_flag,
+          hdd.tenant_id,
+          hdd.object_version_number,
+          htt.tenant_name
+        from hpfm_datasource_driver hdd
+        join hpfm_tenant ht on ht.tenant_id = hdd.tenant_id
+        join hpfm_tenant_tl htt on ht.tenant_id = htt.tenant_id and htt.lang = #{lang}
+        where hdd.driver_id = #{driverId}
+    </select>
+</mapper>

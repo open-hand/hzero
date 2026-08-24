@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.message.infra.mapper.MessageMapper">
+    <resultMap id="UserMessage" type="org.hzero.message.api.dto.UserMessageDTO">
+        <result column="transaction_id" property="transactionId" jdbcType="BIGINT"/>
+        <result column="trx_status_code" property="trxStatusCode" jdbcType="VARCHAR"/>
+        <result column="from_tenant_id" property="fromTenantId" jdbcType="BIGINT"/>
+        <result column="t_object_version_number" property="transactionObjectVersionNumber" jdbcType="BIGINT"/>
+        <result column="message_id" property="messageId" jdbcType="BIGINT"/>
+        <result column="tenant_id" property="tenantId" jdbcType="BIGINT"/>
+        <result column="message_type_code" property="messageTypeCode" jdbcType="VARCHAR"/>
+        <result column="template_code" property="templateCode" jdbcType="VARCHAR"/>
+        <result column="lang" property="lang" jdbcType="VARCHAR"/>
+        <result column="server_code" property="serverCode" jdbcType="VARCHAR"/>
+        <result column="subject" property="subject" jdbcType="VARCHAR"/>
+        <result column="content" property="content" jdbcType="VARCHAR"/>
+        <result column="send_args" property="sendArgs" jdbcType="VARCHAR"/>
+        <result column="external_code" property="externalCode" jdbcType="VARCHAR"/>
+        <result column="object_version_number" property="objectVersionNumber" jdbcType="BIGINT"/>
+        <collection property="messageReceiverList" ofType="org.hzero.message.domain.entity.MessageReceiver">
+            <result column="receiver_address" property="receiverAddress" jdbcType="VARCHAR"/>
+            <result column="target_tenant_id" property="tenantId" jdbcType="BIGINT"/>
+            <result column="idd" property="idd" jdbcType="VARCHAR"/>
+        </collection>
+    </resultMap>
+
+    <select id="selectMessage" resultType="org.hzero.message.domain.entity.Message">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()" />
+        select
+            hm.message_id,
+            hm.tenant_id,
+            hm.message_type_code,
+            hm.server_code,
+            hm.subject,
+            hm.object_version_number,
+            ht.tenant_name,
+            <if test="!&quot;P&quot;.equals(trxStatusCode)">
+                case when hmt.trx_status_code is null then 'P' else hmt.trx_status_code end as trx_status_code,
+                hmt.last_update_date as send_date,
+                hmt.transaction_id
+            </if>
+            <if test="&quot;P&quot;.equals(trxStatusCode)">
+                'P' as trx_status_code
+            </if>
+        from hmsg_message hm
+            join hmsg_message_transaction hmt on hm.message_id = hmt.message_id
+            <if test="!&quot;P&quot;.equals(trxStatusCode)">
+                <if test="trxStatusCode != null and trxStatusCode != ''">
+                    and hmt.trx_status_code = #{trxStatusCode}
+                </if>
+                <if test="startDate != null">
+                    and hmt.last_update_date &gt;= #{startDate}
+                </if>
+                <if test="endDate != null">
+                    and hmt.last_update_date &lt;= #{endDate}
+                </if>
+            </if>
+            join hpfm_tenant_tl ht on hm.tenant_id = ht.tenant_id and ht.lang = #{lang}
+        <where>
+            <if test="tenantId != null">
+                hm.tenant_id = #{tenantId}
+            </if>
+            <if test="serverCode != null and serverCode != ''">
+                <bind name="serverCode" value="'%' + serverCode + '%'"/>
+                and hm.server_code like #{serverCode}
+            </if>
+            <if test="messageTypeCode != null and messageTypeCode != ''">
+                and hm.message_type_code = #{messageTypeCode}
+            </if>
+            <if test="subject != null and subject != ''">
+                <bind name="subject" value="'%' + subject + '%'"/>
+                and hm.subject like #{subject}
+            </if>
+            <if test="trxStatusCode != null and trxStatusCode.equals(&quot;P&quot;)">
+                and not exists(select 1 from hmsg_message_transaction hmt1 where hmt1.message_id = hm.message_id)
+            </if>
+            <if test="receiver != null and receiver != ''">
+                and exists (select 1 from hmsg_message_receiver hmr where hmr.message_id = hm.message_id and hmr.receiver_address = #{receiver})
+            </if>
+        </where>
+        order by hmt.last_update_date DESC
+    </select>
+    <select id="selectMessageDetails" resultMap="UserMessage">
+        select
+            hmt.transaction_id,
+            hmt.trx_status_code,
+            hmt.tenant_id from_tenant_id,
+            hmt.object_version_number t_object_version_number,
+            hm.message_id,
+            hm.tenant_id,
+            hm.message_type_code,
+            hm.template_code,
+            hm.lang,
+            hm.server_code,
+            hm.subject,
+            hm.content,
+            hm.send_args,
+            hm.external_code,
+            hm.object_version_number,
+            hmc.receiver_address,
+            hmc.tenant_id target_tenant_id,
+            hmc.idd
+        from hmsg_message_transaction hmt
+            inner join hmsg_message hm on hm.message_id = hmt.message_id
+            left join hmsg_message_receiver hmc on hmc.message_id = hm.message_id
+        where hmt.transaction_id = #{transactionId}
+        AND ( hmc.filter_flag IS NULL OR hmc.filter_flag = 0 )
+    </select>
+</mapper>

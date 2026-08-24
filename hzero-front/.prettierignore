@@ -1,0 +1,15 @@
+src/assets
+**/*.md
+**/*.svg
+**/*.html
+**/*.ejs
+**/*.png
+**/*.eot
+**/*.woff
+**/*.woff2
+**/*.ttf
+**/*.gif
+**/*.jpg
+package.json
+**/*.jpeg
+src/routes/mall/

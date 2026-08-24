@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.boot.imported.infra.mapper.ImportMapper">
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap id="BaseResultMap" type="org.hzero.boot.imported.domain.entity.Import">
+        <result column="import_id" property="importId" jdbcType="DECIMAL"/>
+        <result column="batch" property="batch" jdbcType="VARCHAR"/>
+        <result column="status" property="status" jdbcType="VARCHAR"/>
+        <result column="data_count" property="dataCount" jdbcType="DECIMAL"/>
+        <result column="object_version_number" property="objectVersionNumber" jdbcType="DECIMAL"/>
+        <result column="creation_date" property="creationDate" jdbcType="DATE"/>
+        <result column="created_by" property="createdBy" jdbcType="DECIMAL"/>
+        <result column="last_updated_by" property="lastUpdatedBy" jdbcType="DECIMAL"/>
+        <result column="last_update_date" property="lastUpdateDate" jdbcType="DATE"/>
+    </resultMap>
+
+    <select id="listImport" resultType="org.hzero.boot.imported.domain.entity.Import">
+        SELECT
+            hi.import_id,
+            hi.batch,
+            hi.status,
+            hi.data_count,
+            hi.object_version_number,
+            hi.creation_date,
+            hi.template_code,
+            hi.tenant_id,
+            hi.param,
+            hi.created_by
+        FROM
+            himp_import hi
+        WHERE hi.tenant_id = #{tenantId}
+        AND hi.template_code = #{templateCode}
+        <if test="creationDateFrom != null">
+            AND hi.creation_date &gt;= #{creationDateFrom}
+        </if>
+        <if test="creationDateTo != null">
+            AND hi.creation_date &lt;= #{creationDateTo}
+        </if>
+    </select>
+</mapper>

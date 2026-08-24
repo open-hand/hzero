@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="org.hzero.swagger.infra.mapper.SwaggerMapper">
+
+    <select id="selectSwaggerId" resultType="org.hzero.swagger.domain.entity.Swagger">
+      SELECT
+        hs.id,
+        hs.service_name,
+        hs.service_version,
+        hs.object_version_number
+      FROM hadm_swagger hs
+      where hs.service_name = #{serviceName}
+      and hs.service_version = #{serviceVersion}
+    </select>
+
+</mapper>

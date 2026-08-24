@@ -1,0 +1,111 @@
+{
+  "name": "hzero-front-hiam",
+  "devDependencies": {
+    "@babel/cli": "^7.2.3",
+    "@babel/core": "7.2.2",
+    "babel-loader": "8.0.5",
+    "conventional-changelog-cli": "^2.0.12",
+    "standard-version": "^5.0.2",
+    "yarn": "^1.13.0"
+  },
+  "dependencies": {
+    "react": "^16.8.3",
+    "react-dom": "^16.8.3"
+  },
+  "resolutions": {
+    "conventional-changelog": "~3.0.6"
+  },
+  "description": "hzero-front-hiam",
+  "author": "",
+  "version": "1.5.6-beta.1",
+  "eslintConfig": {
+    "extends": "react-app"
+  },
+  "scripts": {
+    "start": "hzero-cli start",
+    "start:mock": "cross-env NODE_PROFILE=mock hzero-cli start",
+    "build": "hzero-cli build",
+    "build:ms": "hzero-cli build --only-build-micro",
+    "build:analyze": "cross-env ANALYZE=true hzero-cli build",
+    "transpile": "hzero-cli transpile --non-interactive",
+    "lint": "eslint 'src/**/*.{js,jsx,tsx,ts}' && npm run lint:style && tsc --noEmit --emitDeclarationOnly false",
+    "lint:fix": "eslint --quiet --fix 'src/**/*.{js,jsx,tsx,ts}' && npm run lint:style",
+    "lint:style": "stylelint \"src/**/*.less\" --syntax less",
+    "lint-staged": "lint-staged",
+    "test": "hzero-cli test",
+    "changelog": "node node_modules/.bin/conventional-changelog -p eslint -i CHANGELOG.md -s -r 0 && git add CHANGELOG.md",
+    "prettier": "prettier --write ./src/**/**/**/*",
+    "tree": "tree -I node_modules -L 3",
+    "release": "standard-version",
+    "tsc": "tsc"
+  },
+  "publishConfig": {
+    "registry": "http://nexus.saas.hand-china.com/content/repositories/hzero-ui/"
+  },
+  "files": [
+    "lib",
+    "config/routers.js",
+    "package.json",
+    "README.md",
+    "CHANGELOG.md"
+  ],
+  "browserslist": [
+    ">0.2%",
+    "not dead",
+    "not ie <= 10",
+    "not op_mini all"
+  ],
+  "jest": {
+    "collectCoverageFrom": [
+      "src/**/*.{js,jsx,ts,tsx}",
+      "!src/**/*.d.ts"
+    ],
+    "resolver": "jest-pnp-resolver",
+    "setupFiles": [
+      "react-app-polyfill/jsdom"
+    ],
+    "testMatch": [
+      "<rootDir>/src/**/__tests__/**/*.{js,jsx,ts,tsx}",
+      "<rootDir>/src/**/?(*.)(spec|test).{js,jsx,ts,tsx}"
+    ],
+    "testEnvironment": "jsdom",
+    "testURL": "http://localhost",
+    "transform": {
+      "^.+\\.(js|jsx|ts|tsx)$": "<rootDir>/node_modules/babel-jest",
+      "^.+\\.css$": "<rootDir>/config/jest/cssTransform.js",
+      "^(?!.*\\.(js|jsx|ts|tsx|css|json)$)": "<rootDir>/config/jest/fileTransform.js"
+    },
+    "transformIgnorePatterns": [
+      "[/\\\\]node_modules[/\\\\].+\\.(js|jsx|ts|tsx)$",
+      "^.+\\.module\\.(css|sass|scss)$"
+    ],
+    "moduleNameMapper": {
+      "^react-native$": "react-native-web",
+      "^.+\\.module\\.(css|sass|scss)$": "identity-obj-proxy"
+    },
+    "moduleFileExtensions": [
+      "web.js",
+      "js",
+      "web.ts",
+      "ts",
+      "web.tsx",
+      "tsx",
+      "json",
+      "web.jsx",
+      "jsx",
+      "node"
+    ],
+    "watchPlugins": [
+      "<rootDir>/node_modules/jest-watch-typeahead/filename.js",
+      "<rootDir>/node_modules/jest-watch-typeahead/testname.js"
+    ]
+  },
+  "lint-staged": {
+    "src/**/*.{js,jsx,tsx,ts}": "eslint --quiet --fix",
+    "src/**/*.less": "stylelint --syntax less",
+    "src/**/*.{js,jsx,ts,tsx,less}": [
+      "prettier --write",
+      "git add"
+    ]
+  }
+}

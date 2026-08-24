@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.platform.infra.mapper.PromptMapper">
+    <!-- 可根据自己的需求，是否要使用 -->
+    <resultMap id="BaseResultMap" type="org.hzero.platform.domain.entity.Prompt">
+        <result column="prompt_id" property="promptId" jdbcType="DECIMAL"/>
+        <result column="prompt_key" property="promptKey" jdbcType="VARCHAR"/>
+        <result column="prompt_code" property="promptCode" jdbcType="VARCHAR"/>
+        <result column="lang" property="lang" jdbcType="VARCHAR"/>
+        <result column="description" property="description" jdbcType="VARCHAR"/>
+        <result column="object_version_number" property="objectVersionNumber" jdbcType="DECIMAL"/>
+        <result column="creation_date" property="creationDate" jdbcType="DATE"/>
+        <result column="created_by" property="createdBy" jdbcType="DECIMAL"/>
+        <result column="last_updated_by" property="lastUpdatedBy" jdbcType="DECIMAL"/>
+        <result column="last_update_date" property="lastUpdateDate" jdbcType="DATE"/>
+    </resultMap>
+
+    <select id="selectPrompt" parameterType="org.hzero.platform.domain.entity.Prompt"
+            resultType="org.hzero.platform.api.dto.PromptDTO">
+        <bind name="language" value="@io.choerodon.mybatis.helper.LanguageHelper@language()" />
+        SELECT
+            hp.prompt_id,
+            hp.tenant_id,
+            hp.prompt_code,
+            hp.prompt_key,
+            hp.description,
+            hp.object_version_number,
+            hp.lang,
+            flt.description lang_description
+        FROM
+            hpfm_prompt hp,
+            fd_language fl,
+            fd_language_tl flt
+        WHERE hp.lang = fl.code
+        AND fl.id = flt.id
+        AND hp.lang = #{language}
+        AND flt.lang = #{language}
+        AND hp.tenant_id IN (0, #{tenantId})
+        <if test="promptId != null">
+            AND hp.prompt_id = #{promptId}
+        </if>
+        <if test="promptKey != null">
+            <bind name="keyLike" value="'%'+ promptKey + '%'"/>
+            AND hp.prompt_key LIKE #{keyLike}
+        </if>
+        <if test="promptCode != null">
+            <bind name="codeLike" value="'%'+ promptCode + '%'"/>
+            AND hp.prompt_code LIKE #{codeLike}
+        </if>
+        <if test="description != null">
+        <bind name="descriptionLike" value="'%' + description + '%'"/>
+            AND hp.prompt_id IN (
+                SELECT
+                  hpe.prompt_id
+                FROM
+                  hpfm_prompt hpe
+                JOIN hpfm_prompt hpet ON (hpet.prompt_key = hpe.prompt_key AND hpet.prompt_code = hpe.prompt_code)
+                WHERE
+                  hpet.description LIKE #{descriptionLike}
+                AND hpe.lang = #{language}
+                GROUP BY hpe.prompt_id
+            )
+        </if>
+
+    </select>
+
+    <select id="selectPromptTenant" resultType="org.hzero.platform.api.dto.PromptDTO">
+        <bind name="language" value="@io.choerodon.mybatis.helper.LanguageHelper@language()" />
+        SELECT
+            hp.prompt_id,
+            hp.tenant_id,
+            hp.prompt_code,
+            hp.prompt_key,
+            hp.description,
+            hp.object_version_number,
+            hp.lang,
+            flt.description lang_description
+        FROM
+            hpfm_prompt hp,
+            fd_language fl,
+            fd_language_tl flt
+        WHERE
+            hp.lang = fl. CODE
+        AND fl.id = flt.id
+        AND hp.lang = #{language}
+        AND flt.lang = #{language}
+        AND (hp.tenant_id = 0 <if test="tenantId != null and tenantId != 0">OR hp.tenant_id = #{tenantId}</if>)
+        <if test="tenantId != null and tenantId != 0">
+            AND hp.prompt_id NOT IN (
+            SELECT hpr.prompt_id
+            FROM hpfm_prompt hpr
+            JOIN hpfm_prompt hpr1 ON (hpr.prompt_key = hpr1.prompt_key
+                AND hpr.prompt_code = hpr1.prompt_code
+                AND hpr.lang = hpr1.lang
+                AND hpr1.tenant_id = #{tenantId})
+            WHERE hpr.tenant_id = 0
+            )
+        </if>
+        <if test="promptKey != null">
+            <bind name="keyLike" value="'%'+ promptKey + '%'"/>
+            AND hp.prompt_key LIKE #{keyLike}
+        </if>
+        <if test="promptCode != null">
+            <bind name="codeLike" value="'%'+ promptCode + '%'"/>
+            AND hp.prompt_code LIKE #{codeLike}
+        </if>
+        <if test="description != null">
+            <bind name="descriptionLike" value="'%' + description + '%'"/>
+            AND hp.prompt_id IN (
+                SELECT
+                  hpe.prompt_id
+                FROM
+                  hpfm_prompt hpe
+                JOIN hpfm_prompt hpet ON (hpet.prompt_key = hpe.prompt_key AND hpet.prompt_code = hpe.prompt_code)
+                WHERE
+                  hpet.description LIKE #{descriptionLike}
+                AND hpe.lang = #{language}
+                GROUP BY hpe.prompt_id
+            )
+        </if>
+    </select>
+    
+    <select id="selectOnePrompt" resultType="org.hzero.platform.domain.entity.Prompt">
+        SELECT
+            hp.prompt_id,
+            hp.tenant_id,
+            hp.prompt_code,
+            hp.prompt_key,
+            hp.description,
+            hp.object_version_number,
+            hp.lang,
+            hp.creation_date,
+            hp.created_by,
+            hp.last_updated_by,
+            hp.last_update_date
+        FROM
+            hpfm_prompt hp
+       WHERE hp.tenant_id = #{tenantId}
+         AND hp.prompt_key = #{promptKey}
+         AND hp.prompt_code = #{promptCode}
+         AND hp.lang = #{lang}  
+    </select>
+    <select id="selectCachePrompt" resultType="org.hzero.platform.domain.entity.Prompt">
+        select
+          tenant_id,
+          prompt_code,
+          prompt_key,
+          description,
+          lang
+        from hpfm_prompt
+    </select>
+
+</mapper>

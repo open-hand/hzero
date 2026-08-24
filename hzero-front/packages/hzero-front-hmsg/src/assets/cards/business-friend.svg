@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="38px" height="38px" viewBox="0 0 38 38" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 52.2 (67145) - http://www.bohemiancoding.com/sketch -->
+    <title>business-friend</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <rect id="path-1" x="0" y="0" width="38" height="38"></rect>
+    </defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="business-friend">
+            <mask id="mask-2" fill="white">
+                <use xlink:href="#path-1"></use>
+            </mask>
+            <use id="Rectangle-Copy-24" fill="#D8D8D8" opacity="0.01" xlink:href="#path-1"></use>
+            <g id="Group-43" mask="url(#mask-2)">
+                <g transform="translate(-1.000000, 4.000000)">
+                    <path d="M20,30 C11.7157288,30 5,23.2842712 5,15 C5,6.71572875 11.7157288,0 20,0 C28.2842712,0 35,6.71572875 35,15 C35,23.2842712 28.2842712,30 20,30 Z M20,28 C27.1797017,28 33,22.1797017 33,15 C33,7.82029825 27.1797017,2 20,2 C12.8202983,2 7,7.82029825 7,15 C7,22.1797017 12.8202983,28 20,28 Z" id="Oval" stroke="none" fill="#1E3255" fill-rule="nonzero"></path>
+                    <circle id="Oval-Copy-20" stroke="#1E3255" stroke-width="2" fill="#19BBCB" fill-rule="evenodd" cx="15" cy="21" r="2"></circle>
+                    <path d="M7.86433538,7.89318949 L7.06311179,10.3524365 C4.65400711,11.4257068 3.21903463,12.7289077 3.21903463,13.9711635 C3.21903463,16.8118236 10.7224671,19.9711635 20.2190346,19.9711635 C29.7156022,19.9711635 37.2190346,16.8118236 37.2190346,13.9711635 C37.2190346,12.5844535 35.4309306,11.1218005 32.4957464,9.98780953 L31.9078082,7.66373318 C36.3580773,9.12790427 39.2190346,11.4088576 39.2190346,13.9711635 C39.2190346,18.3894415 30.7124449,21.9711635 20.2190346,21.9711635 C9.72562438,21.9711635 1.21903463,18.3894415 1.21903463,13.9711635 C1.21903463,11.5390578 3.79662756,9.36043792 7.86433538,7.89318949 Z" id="Oval" stroke="none" fill="#1E3255" fill-rule="nonzero" transform="translate(20.219035, 14.817448) rotate(-15.000000) translate(-20.219035, -14.817448) "></path>
+                    <circle id="Oval" stroke="#1E3255" stroke-width="2" fill="#19BBCB" fill-rule="evenodd" cx="16" cy="10" r="3"></circle>
+                    <circle id="Oval-Copy-19" stroke="#1E3255" stroke-width="2" fill="#19BBCB" fill-rule="evenodd" cx="26" cy="12" r="2"></circle>
+                    <circle id="Oval-Copy-22" stroke="#1E3255" stroke-width="2" fill="none" cx="4.5" cy="29.5" r="1.5"></circle>
+                    <circle id="Oval-Copy-22" stroke="#1E3255" stroke-width="2" fill="none" cx="34.5" cy="3.5" r="1.5"></circle>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

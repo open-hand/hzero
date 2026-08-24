@@ -1,0 +1,928 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.iam.infra.mapper.UserMapper">
+    <resultMap id="UserVO" type="org.hzero.iam.domain.vo.UserVO" autoMapping="true">
+        <id property="id" column="id"/>
+        <result property="loginName" column="login_name"/>
+        <result property="email" column="email"/>
+        <result property="organizationId" column="organization_id"/>
+        <result property="realName" column="real_name"/>
+        <result property="phone" column="phone"/>
+        <result property="internationalTelCode" column="INTERNATIONAL_TEL_CODE"/>
+        <result property="imageUrl" column="image_url"/>
+        <result property="profilePhoto" column="profile_photo"/>
+        <result property="language" column="language"/>
+        <result property="languageName" column="language_name"/>
+        <result property="timeZone" column="time_zone"/>
+        <result property="lastLoginAt" column="last_login_at"/>
+        <result property="enabled" column="is_enabled"/>
+        <result property="locked" column="is_locked"/>
+        <result property="admin" column="is_admin"/>
+        <result property="ldap" column="is_ldap"/>
+        <result property="lockedUntilAt" column="locked_until_at"/>
+        <result property="companyName" column="company_name"/>
+        <result property="invitationCode" column="invitation_code"/>
+        <result property="employeeId" column="employee_id"/>
+        <result property="textId" column="text_id"/>
+        <result property="objectVersionNumber" column="object_version_number"/>
+        <result property="currentRoleCode" column="current_role_code"/>
+        <result property="currentRoleName" column="current_role_name"/>
+        <result property="currentRoleLevel" column="current_role_level"/>
+        <result property="lastPasswordUpdatedAt" column="last_password_updated_at"/>
+        <result property="birthday" column="birthday"/>
+        <result property="nickname" column="nickname"/>
+        <result property="gender" column="gender"/>
+        <result property="countryId" column="country_id"/>
+        <result property="countryName" column="country_name"/>
+        <result property="regionId" column="region_id"/>
+        <result property="regionName" column="region_name"/>
+        <result property="addressDetail" column="address_detail"/>
+        <result property="userType" column="user_type"/>
+
+        <result property="securityLevelCode" column="security_level_code"/>
+        <result property="securityLevelMeaning" column="security_level_meaning"/>
+        <result property="startDateActive" column="start_date_active" javaType="java.time.LocalDate"/>
+        <result property="endDateActive" column="end_date_active" javaType="java.time.LocalDate"/>
+        <result property="userSource" column="user_source"/>
+        <result property="phoneCheckFlag" column="phone_check_flag"/>
+        <result property="emailCheckFlag" column="email_check_flag"/>
+        <result property="passwordResetFlag" column="password_reset_flag"/>
+        <result property="defaultRoleId" column="default_role_id"/>
+        <result property="defaultRoleName" column="default_role_name"/>
+        <result property="defaultCompanyId" column="default_company_id"/>
+        <result property="defaultCompanyName" column="default_company_name"/>
+        <result property="lockedDate" column="locked_date"/>
+        <result property="dateTimeFormat" column="date_time_format"/>
+        <result property="dateFormat" column="date_format"/>
+        <result property="timeFormat" column="time_format"/>
+        <result property="menuLayout" column="menu_layout"/>
+        <result property="menuLayoutTheme" column="menu_layout_theme"/>
+        <result property="roleMergeFlag" column="role_merge_flag"/>
+
+        <result property="tenantName" column="tenant_name"/>
+        <result property="tenantNum" column="tenant_num"/>
+        <result property="groupName" column="group_name"/>
+        <result property="groupNum" column="group_num"/>
+
+        <!--添加密码修改提醒-->
+        <result property="popoutReminderFlag" column="popout_reminder_flag"/>
+        <result property="passwordUpdateRate" column="password_update_rate"/>
+        <result property="passwordReminderPeriod" column="password_reminder_period"/>
+
+        <result property="memberRoleId" column="member_role_id"/>
+        <result property="assignLevel" column="h_assign_level"/>
+        <result property="assignLevelValue" column="h_assign_level_value"/>
+        <result property="assignLevelValueMeaning" column="assign_level_value_meaning"/>
+        <result property="assignLevelMeaning" column="assign_level_meaning"/>
+    </resultMap>
+
+    <resultMap id="UserExportMap" type="org.hzero.iam.api.dto.UserExportDTO">
+        <id property="loginName" column="login_name"/>
+        <result property="email" column="email"/>
+        <result property="realName" column="real_name"/>
+        <result property="phone" column="phone"/>
+        <result property="enabled" column="is_enabled"/>
+        <result property="userType" column="user_type"/>
+        <result property="startDateActive" column="start_date_active" javaType="java.time.LocalDate"/>
+        <result property="endDateActive" column="end_date_active" javaType="java.time.LocalDate"/>
+
+        <collection property="roleList" columnPrefix="role_" ofType="org.hzero.iam.api.dto.RoleExportDTO">
+            <result property="code" column="code"/>
+            <result property="name" column="name"/>
+        </collection>
+
+        <collection property="userAuthorityList" columnPrefix="authority_"
+                    ofType="org.hzero.iam.api.dto.UserAuthorityExportDTO">
+            <result property="authorityTypeCodeMeaning" column="type_code_meaning"/>
+            <result property="dataCode" column="data_code"/>
+            <result property="dataName" column="data_name"/>
+            <result property="authorityTypeCode" column="type_code"/>
+        </collection>
+
+    </resultMap>
+
+    <!--  用户详细信息查询基础字段  -->
+    <sql id="userDetailsSelectBaseColumn">
+        iu.id,
+        iu.login_name,
+        iu.real_name,
+        iu.organization_id,
+        iu.email,
+        iu.phone,
+        iu.INTERNATIONAL_TEL_CODE,
+        iu.image_url,
+        iu.profile_photo,
+        iu.language as language,
+        fl.name language_name,
+        iu.time_zone,
+        iu.last_login_at,
+        iu.user_type,
+
+        hui.user_source,
+        hui.phone_check_flag,
+        hui.email_check_flag,
+        hui.password_reset_flag,
+        hui.birthday,
+        hui.nickname,
+        hui.gender,
+        hui.country_id,
+        hct.country_name,
+        hui.region_id,
+        hrt.region_name,
+        hui.address_detail,
+
+        httl.tenant_name,
+        ht.tenant_num,
+        hg.group_num,
+        hg.group_name
+    </sql>
+
+    <!--  用户查询基础条件  -->
+    <sql id="userSelectBaseWhere">
+        <if test="enabled != null">
+            AND iu.is_enabled = #{enabled}
+        </if>
+        <if test="id != null">
+            AND iu.id = #{id}
+        </if>
+        <if test="organizationId != null">
+            AND iu.organization_id = #{organizationId}
+        </if>
+        <if test="loginName != null and loginName != ''">
+            <bind name="loginNameLike" value="'%' + loginName + '%'" />
+            AND iu.login_name LIKE #{loginNameLike}
+        </if>
+        <if test="realName != null and realName != ''">
+            <bind name="realNameLike" value="'%' + realName + '%'" />
+            AND iu.real_name LIKE #{realNameLike}
+        </if>
+        <if test="phone != null and phone != ''">
+            <bind name="phoneLike" value="'%' + phone + '%'" />
+            AND iu.phone LIKE #{phoneLike}
+        </if>
+        <if test="email != null and email != ''">
+            <bind name="emailLike" value="'%' + email + '%'" />
+            AND iu.email LIKE #{emailLike}
+        </if>
+        <if test="locked != null">
+            AND iu.is_locked = #{locked}
+        </if>
+        <if test="startDateActive != null">
+            AND hui.start_date_active >= #{startDateActive}
+        </if>
+        <if test="endDateActive != null">
+            AND hui.end_date_active &lt;= #{endDateActive}
+        </if>
+        <if test="tenantName != null and tenantName != ''">
+            <bind name="tenantNameLike" value="'%' + tenantName + '%'" />
+            AND ht.tenant_name LIKE #{tenantName}
+        </if>
+        <if test="tenantNum != null and tenantNum != ''">
+            <bind name="tenantNumLike" value="'%' + tenantNum + '%'" />
+            AND ht.tenant_num LIKE #{tenantNum}
+        </if>
+        <if test="tenantCondition != null and tenantCondition != ''">
+            <bind name="tenantConditionLike" value="'%' + tenantCondition + '%'" />
+            AND ( ht.tenant_num LIKE #{tenantConditionLike} OR ht.tenant_name LIKE #{tenantConditionLike} )
+        </if>
+        <if test="userCondition != null and userCondition != ''">
+            <bind name="userConditionLike" value="'%' + userCondition + '%'" />
+            AND (
+            iu.login_name LIKE #{userConditionLike}
+            OR iu.real_name LIKE #{userConditionLike}
+            OR iu.email LIKE #{userConditionLike}
+            OR iu.phone LIKE #{userConditionLike}
+            )
+        </if>
+        <if test="excludeUserIds != null and excludeUserIds.size() > 0">
+            AND iu.id NOT IN
+            <foreach collection="excludeUserIds" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+    </sql>
+
+    <!-- 查询用户简要信息 -->
+    <select id="selectSimpleUsers" parameterType="org.hzero.iam.domain.vo.UserVO" resultMap="UserVO">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        SELECT
+            iu.id,
+            iu.login_name,
+            iu.real_name,
+            iu.organization_id,
+            iu.email,
+            iu.international_tel_code,
+            iu.phone,
+            iu.is_locked,
+            iu.is_enabled,
+            iu.is_admin,
+            iu.user_type,
+            hui.start_date_active,
+            hui.end_date_active,
+            httl.tenant_name,
+            ht.tenant_num
+        FROM iam_user iu
+        JOIN hiam_user_info hui ON hui.user_id = iu.id
+        JOIN hpfm_tenant ht ON ht.tenant_id = iu.organization_id
+        LEFT JOIN hpfm_tenant_tl httl ON ht.tenant_id = httl.tenant_id AND httl.lang = #{lang}
+        WHERE iu.id > 0
+        <choose>
+            <when test="userType != null and userType != ''">
+                and iu.user_type = #{userType}
+            </when>
+            <otherwise>
+                and iu.user_type = 'P'
+            </otherwise>
+        </choose>
+        <include refid="userSelectBaseWhere" />
+    </select>
+
+    <!-- 跨租户查询所有用户简要信息 -->
+    <select id="selectAllocateUsers" parameterType="org.hzero.iam.domain.vo.UserVO" resultMap="UserVO">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        SELECT
+            iu.id,
+            iu.login_name,
+            iu.real_name,
+            iu.email,
+            iu.phone,
+            iu.organization_id,
+            iu.user_type,
+            ht.tenant_num,
+            httl.tenant_name
+        FROM iam_user iu
+        JOIN hiam_user_info hui on iu.id = hui.user_id
+        JOIN hpfm_tenant ht ON ht.tenant_id = iu.organization_id
+        LEFT JOIN hpfm_tenant_tl httl ON ht.tenant_id = httl.tenant_id AND httl.lang = #{lang}
+        WHERE
+        iu.is_admin = 0
+        AND iu.is_enabled = 1
+        AND iu.is_locked = 0
+        AND iu.id > 0
+        <choose>
+            <when test="userType != null and userType != ''">
+                and iu.user_type = #{userType}
+            </when>
+            <otherwise>
+                and iu.user_type = 'P'
+            </otherwise>
+        </choose>
+        AND NOT EXISTS (
+            SELECT 1 FROM iam_member_role imr WHERE imr.role_id = #{allocateRoleId} AND imr.member_id = iu.id
+        )
+        AND (
+            <!-- 当前租户的模糊匹配 -->
+            (
+                iu.organization_id = #{tenantId}
+                <if test="loginName != null and loginName != ''">
+                    <bind name="loginNameLike" value="'%' + loginName + '%'" />
+                    AND iu.login_name LIKE #{loginNameLike}
+                </if>
+                <if test="realName != null and realName != ''">
+                    <bind name="realNameLike" value="'%' + realName + '%'" />
+                    AND iu.real_name LIKE #{realNameLike}
+                </if>
+                <if test="phone != null and phone != ''">
+                    <bind name="phoneLike" value="'%' + phone + '%'" />
+                    AND iu.phone LIKE #{phoneLike}
+                </if>
+                <if test="email != null and email != ''">
+                    <bind name="emailLike" value="'%' + email + '%'" />
+                    AND iu.email LIKE #{emailLike}
+                </if>
+            )
+            <if test="(loginName != null and loginName != '') or (realName != null and realName != '') or (phone != null and phone != '') or (email != null and email != '')">
+                OR
+                <!-- 非当前租户的需要全匹配 -->
+                (
+                    iu.organization_id != #{tenantId}
+                    <if test="loginName != null and loginName != ''">
+                        AND iu.login_name = #{loginName}
+                    </if>
+                    <if test="realName != null and realName != ''">
+                        AND iu.real_name = #{realName}
+                    </if>
+                    <if test="phone != null and phone != ''">
+                        AND iu.phone = #{phone}
+                    </if>
+                    <if test="email != null and email != ''">
+                        AND iu.email = #{email}
+                    </if>
+                )
+            </if>
+        )
+        <if test="excludeUserIds != null and excludeUserIds.size > 0">
+            AND iu.id NOT IN
+            <foreach collection="excludeUserIds" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+    </select>
+
+    <!-- 查询用户详细信息 -->
+    <select id="selectUserDetails" parameterType="org.hzero.iam.domain.vo.UserVO" resultMap="UserVO">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        SELECT
+            <!-- 账号状态信息 -->
+            iu.is_enabled,
+            iu.is_locked,
+            iu.object_version_number,
+            hui.company_name,
+            hui.invitation_code,
+            hui.employee_id,
+            hui.start_date_active,
+            hui.end_date_active,
+            hui.locked_date,
+
+            <include refid="userDetailsSelectBaseColumn" />
+        FROM iam_user iu
+        JOIN hiam_user_info hui ON hui.user_id = iu.id
+        JOIN hpfm_tenant ht ON ht.tenant_id = iu.organization_id
+        LEFT JOIN hpfm_tenant_tl httl ON ht.tenant_id = httl.tenant_id AND httl.lang = #{lang}
+        JOIN hpfm_group hg ON hg.tenant_id = iu.organization_id
+        LEFT JOIN fd_language fl ON fl.code = iu.language
+        LEFT JOIN hpfm_country_tl hct ON hui.country_id = hct.country_id AND hct.lang = iu.language
+        LEFT JOIN hpfm_region_tl hrt ON hui.region_id = hrt.region_id AND hrt.lang = iu.language
+        WHERE 1=1
+        <include refid="userSelectBaseWhere" />
+    </select>
+
+    <!-- 查询当前登录用户简要信息 -->
+    <select id="selectSelf" parameterType="org.hzero.iam.domain.vo.UserVO" resultMap="UserVO">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        <bind name="now" value="@java.time.LocalDate@now()" />
+        SELECT
+            <!-- 日期时间格式 -->
+            hui.date_format,
+            hui.time_format,
+            concat(hui.date_format, concat(' ', hui.time_format)) AS date_time_format,
+            <!-- 当前角色信息 -->
+            ir.code current_role_code,
+            irt.name current_role_name,
+            ir.fd_level current_role_level,
+            iu.id,
+            iu.login_name,
+            iu.real_name,
+            iu.organization_id,
+            iu.email,
+            iu.phone,
+            iu.INTERNATIONAL_TEL_CODE,
+            iu.image_url,
+            iu.profile_photo,
+            fl.code AS language,
+            fl.name language_name,
+            iu.time_zone,
+
+            hui.phone_check_flag,
+            hui.email_check_flag,
+            hui.password_reset_flag,
+            hui.birthday,
+            hui.nickname,
+            hui.gender,
+            hui.country_id,
+            hct.country_name,
+            hui.region_id,
+            hrt.region_name,
+            hui.address_detail,
+
+            httl.tenant_name,
+            ht.tenant_num,
+
+            iu.last_password_updated_at,
+            huc.popout_reminder_flag,
+            opp.password_update_rate,
+            opp.password_reminder_period
+        FROM iam_user iu
+        JOIN hiam_user_info hui ON hui.user_id = iu.id
+        JOIN hpfm_tenant ht ON (ht.tenant_id = #{tenantId} and ht.enabled_flag = 1)
+        JOIN hpfm_tenant_tl httl ON ht.tenant_id = httl.tenant_id AND httl.lang = #{lang}
+        JOIN hpfm_group hg ON (hg.tenant_id = iu.organization_id and hg.enabled_flag = 1)
+        JOIN iam_role ir ON (ir.id = #{currentRoleId} and ir.is_enabled = 1)
+        LEFT JOIN iam_role_tl irt ON (ir.id = irt.id and irt.lang = #{lang})
+        LEFT JOIN hiam_user_config huc ON (huc.user_id=iu.id and huc.tenant_id = #{tenantId})
+        LEFT JOIN oauth_password_policy opp ON opp.organization_id=iu.organization_id
+        LEFT JOIN fd_language fl ON fl.code = #{lang}
+        LEFT JOIN hpfm_country_tl hct ON hui.country_id = hct.country_id AND hct.lang = #{lang}
+        LEFT JOIN hpfm_region_tl hrt ON hui.region_id = hrt.region_id AND hrt.lang = #{lang}
+        WHERE iu.id = #{id}
+    </select>
+
+    <select id="selectTenantAccess" resultType="org.hzero.iam.domain.entity.Tenant">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        <bind name="now" value="@java.time.LocalDate@now()" />
+        SELECT
+            hta.access_count,
+            hta.access_datetime,
+            hta.tenant_id,
+            ahtt.tenant_name,
+            aht.tenant_num
+        FROM iam_user iu
+        JOIN hiam_tenant_access hta ON (iu.id = hta.user_id)
+        LEFT JOIN hpfm_tenant aht ON aht.tenant_id = hta.tenant_id AND aht.enabled_flag = 1
+        LEFT JOIN hpfm_tenant_tl ahtt ON aht.tenant_id = ahtt.tenant_id AND ahtt.lang = #{lang}
+        WHERE iu.id = #{id}
+        AND hta.access_datetime &gt;= #{timeRecentAccessTenant}
+        AND (
+            iu.is_admin = 1 OR
+            hta.tenant_id IN (
+                SELECT ir2.h_tenant_id
+                FROM iam_role ir2
+                JOIN iam_member_role imr ON imr.member_id = #{id} AND imr.member_type = 'user' AND ir2.id = imr.role_id
+                WHERE ir2.is_enabled = 1
+                AND (imr.start_date_active IS NULL OR imr.start_date_active &lt;= #{now})
+                AND (imr.end_date_active IS NULL OR imr.end_date_active &gt;= #{now})
+            )
+        )
+        ORDER BY access_count DESC, access_datetime DESC
+    </select>
+
+    <!-- 查询当前登录用户详细信息 -->
+    <select id="selectSelfDetails" parameterType="org.hzero.iam.domain.vo.UserVO" resultMap="UserVO">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        SELECT
+            <!-- 日期时间格式 -->
+            hui.date_format,
+            hui.time_format,
+            hui.company_name,
+            hui.invitation_code,
+            hui.security_level_code,
+            <!-- 默认角色 -->
+            huc.default_role_id,
+            ir.name default_role_name,
+            huc.default_company_id,
+            hc.company_name default_company_name,
+            hui.start_date_active,
+            huc.menu_layout,
+            huc.menu_layout_theme,
+            huc.role_merge_flag,
+            huc.popout_reminder_flag,
+            <include refid="userDetailsSelectBaseColumn" />
+        FROM iam_user iu
+        JOIN hiam_user_info hui ON hui.user_id = iu.id
+        JOIN hpfm_tenant ht ON (ht.tenant_id = #{tenantId} and ht.enabled_flag = 1)
+        LEFT JOIN hpfm_tenant_tl httl ON ht.tenant_id = httl.tenant_id AND httl.lang = #{lang}
+        JOIN hpfm_group hg ON (hg.tenant_id = iu.organization_id and hg.enabled_flag = 1)
+        LEFT JOIN fd_language fl ON fl.code = iu.language
+        LEFT JOIN hpfm_country_tl hct ON hui.country_id = hct.country_id AND hct.lang = iu.language
+        LEFT JOIN hpfm_region_tl hrt ON hui.region_id = hrt.region_id AND hrt.lang = iu.language
+        LEFT JOIN hiam_user_config huc ON huc.user_id = iu.id AND huc.tenant_id = #{tenantId}
+        LEFT JOIN iam_role ir ON ir.id = huc.default_role_id
+        LEFT JOIN hpfm_company hc ON hc.company_id = huc.default_company_id
+        WHERE iu.id = #{id}
+    </select>
+
+    <!--  查询角色关联的用户  -->
+    <select id="selectRoleUsers" resultMap="UserVO">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        select
+            iu.id,
+            iu.is_admin,
+            iu.is_enabled,
+            iu.login_name,
+            iu.real_name,
+            iu.organization_id,
+            iu.user_type,
+            ht.tenant_num,
+            httl.tenant_name,
+            imr.id member_role_id,
+            imr.h_assign_level,
+            imr.h_assign_level_value,
+            imr.start_date_active,
+            imr.end_date_active
+        from iam_member_role imr
+        join iam_user iu ON iu.id = imr.member_id
+        join iam_role ir on imr.role_id = ir.id
+        join hpfm_tenant ht on ht.tenant_id = iu.organization_id
+        join hpfm_tenant_tl httl ON ht.tenant_id = httl.tenant_id AND httl.lang = #{lang}
+        where imr.role_id = #{roleId}
+        and imr.member_type = 'user'
+        and ir.is_enabled = 1
+        and iu.id > 0
+        <choose>
+            <when test="userType != null and userType != ''">
+                and iu.user_type = #{userType}
+            </when>
+            <otherwise>
+                and iu.user_type = 'P'
+            </otherwise>
+        </choose>
+        <if test="userRealName != null and userRealName != ''">
+            <bind name="nameLike" value="'%' + userRealName + '%'" />
+            and (iu.login_name like #{nameLike} or iu.real_name like #{nameLike})
+        </if>
+        <if test="userLoginName != null and userLoginName != ''">
+            <bind name="userLoginNameLike" value="'%' + userLoginName + '%'" />
+            and iu.login_name like #{userLoginNameLike}
+        </if>
+        <if test="tenantName != null and tenantName != ''">
+            <bind name="tenantNameLike" value="'%' + tenantName + '%'" />
+            and httl.tenant_name like #{tenantNameLike}
+        </if>
+        order by iu.organization_id,iu.id asc
+    </select>
+
+    <!-- 根据用户名查询用户信息 -->
+    <select id="selectByLoginNameOrEmailOrPhone" resultType="org.hzero.iam.domain.vo.UserVO">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        SELECT
+          iu.id,
+          iu.login_name,
+          iu.organization_id,
+          iu.user_type,
+          httl.tenant_name
+        FROM iam_user iu
+        JOIN hpfm_tenant ht ON iu.organization_id = ht.tenant_id
+        LEFT JOIN hpfm_tenant_tl httl ON ht.tenant_id = httl.tenant_id AND httl.lang = #{lang}
+        WHERE iu.login_name = #{condition}
+        OR (iu.email = #{condition} AND iu.user_type = #{userType})
+        OR (iu.phone = #{condition} AND iu.user_type = #{userType})
+        <if test="organizationId != null">
+            AND organization_id = #{organizationId}
+        </if>
+    </select>
+
+    <select id="selectByRealName" resultType="org.hzero.iam.domain.vo.UserVO">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        SELECT
+          iu.id,
+          iu.login_name,
+          iu.organization_id,
+          iu.user_type,
+          iu.real_name,
+          httl.tenant_name
+        FROM iam_user iu
+        JOIN hpfm_tenant ht ON iu.organization_id = ht.tenant_id
+        LEFT JOIN hpfm_tenant_tl httl ON ht.tenant_id = httl.tenant_id AND httl.lang = #{lang}
+        <bind name="conditionLike" value="'%' + condition + '%'"/>
+        WHERE (iu.real_name LIKE #{conditionLike}
+            OR (iu.email LIKE #{conditionLike} AND iu.user_type = #{userType}))
+        <if test="organizationId != null">
+            AND organization_id = #{organizationId}
+        </if>
+    </select>
+
+    <!-- 查询公司名称 -->
+    <select id="countCompanyByName" resultType="org.hzero.iam.domain.vo.CompanyVO">
+      SELECT
+        hc.company_id,
+        hc.company_name,
+        hc.creation_date
+      FROM hpfm_company hc
+      WHERE hc.company_name = #{companyName}
+    </select>
+
+    <select id="selectMultiTenantUsers" resultType="org.hzero.iam.domain.vo.UserVO">
+        SELECT
+            iu.id,
+            iu.login_name,
+            iu.email,
+            iu.organization_id,
+            iu.real_name,
+            iu.phone
+        FROM iam_user iu
+        where iu.is_enabled = 1
+        and iu.is_locked = 0
+        and iu.id > 0
+        <choose>
+            <when test="userType != null and userType != ''">
+                and iu.user_type = #{userType}
+            </when>
+            <otherwise>
+                and iu.user_type = 'P'
+            </otherwise>
+        </choose>
+        and exists (
+          select 'x'
+            from iam_role ir
+            join iam_member_role imr on imr.role_id = ir.id
+            where ir.is_enabled = 1
+            and ir.h_tenant_id = #{organizationId}
+            and imr.member_type = 'user'
+            and imr.member_id = iu.id
+        )
+        and not exists (
+            select 'x'
+            from hpfm_employee_user heu
+            where heu.tenant_id = #{organizationId}
+            and heu.user_id = iu.id
+        )
+        <if test="excludeUserIds != null and excludeUserIds.size > 0">
+            and iu.id not in
+            <foreach collection="excludeUserIds" open="(" separator="," item="excludeUserId" close=")">
+                #{excludeUserId}
+            </foreach>
+        </if>
+        <if test="loginName != null and loginName != ''">
+            <bind name="loginNameLike" value="'%' + loginName + '%'" />
+            AND iu.login_name LIKE #{loginNameLike}
+        </if>
+        <if test="realName != null and realName != ''">
+            <bind name="realNameLike" value="'%' + realName + '%'" />
+            AND iu.real_name LIKE #{realNameLike}
+        </if>
+        <if test="phone != null and phone != ''">
+            <bind name="phoneLike" value="'%' + phone + '%'" />
+            AND iu.phone LIKE #{phoneLike}
+        </if>
+        <if test="email != null and email != ''">
+            <bind name="emailLike" value="'%' + email + '%'" />
+            AND iu.email LIKE #{emailLike}
+        </if>
+        order by iu.id
+    </select>
+
+    <select id="selectCompanyName" resultType="org.hzero.iam.domain.vo.UserVO">
+        select
+          company_name
+        from hiam_user_info
+        where user_id = #{userId}
+    </select>
+
+    <select id="selectUserTenant" resultType="org.hzero.iam.domain.entity.User">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        select
+            iu.id,
+            iu.organization_id,
+            ht.tenant_num,
+            httl.tenant_name
+        from iam_user iu
+        join hpfm_tenant ht on iu.organization_id = ht.tenant_id
+        join hpfm_tenant_tl httl ON ht.tenant_id = httl.tenant_id AND httl.lang = #{lang}
+        <where>
+            <if test="enabled != null">
+                AND iu.is_enabled = #{enabled}
+            </if>
+            <if test="id != null">
+                AND iu.id = #{id}
+            </if>
+            <if test="organizationId != null">
+                AND iu.organization_id = #{organizationId}
+            </if>
+            <if test="loginName != null and loginName != ''">
+                <bind name="loginNameLike" value="'%' + loginName + '%'" />
+                AND iu.login_name LIKE #{loginNameLike}
+            </if>
+            <if test="locked != null">
+                AND iu.is_locked = #{locked}
+            </if>
+        </where>
+    </select>
+
+    <select id="selectExportUsers" resultMap="UserExportMap">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        select
+            iu.login_name,
+            iu.real_name,
+            iu.email,
+            iu.phone,
+            iu.user_type,
+            iu.is_enabled,
+            hui.start_date_active,
+            hui.end_date_active
+            <if test="selectRole == true">
+                ,
+                ir.code role_code,
+                irt.name role_name
+            </if>
+            <if test="selectAuthority">
+                ,
+                hua.authority_type_code authority_type_code,
+                hlvt.meaning authority_type_code_meaning,
+                hual.data_code authority_data_code,
+                hual.data_name authority_data_name
+            </if>
+        from iam_user iu
+        join hiam_user_info hui on iu.id = hui.user_id
+        <if test="selectRole == true">
+            left join iam_member_role imr on (imr.member_id = iu.id and imr.member_type = 'user')
+            left join iam_role ir on imr.role_id = ir.id and ir.is_enabled = 1
+            left join iam_role_tl irt on ir.id = irt.id and irt.lang = #{lang}
+        </if>
+        <if test="selectAuthority">
+            left join hiam_user_authority hua on
+            (
+                hua.user_id = iu.id
+                and hua.authority_type_code in
+                <foreach collection="authorityTypeQueryParams" open="(" close=")" separator="," item="authorityTypeQueryParam">
+                    #{authorityTypeQueryParam, jdbcType=VARCHAR}
+                </foreach>
+            )
+            left join hiam_user_authority_line hual ON hual.authority_id = hua.authority_id
+            left join hpfm_lov_value hlv on (hlv.lov_code = 'HIAM.AUTHORITY_TYPE_CODE' and hua.authority_type_code = hlv.value)
+            left join hpfm_lov_value_tl hlvt on (hlvt.lov_value_id = hlv.lov_value_id and hlvt.lang = #{lang})
+        </if>
+        where iu.id > 0
+        <choose>
+            <when test="userType != null and userType != ''">
+                and iu.user_type = #{userType}
+            </when>
+            <otherwise>
+                and iu.user_type = 'P'
+            </otherwise>
+        </choose>
+        <include refid="userSelectBaseWhere" />
+    </select>
+
+    <select id="matchLoginName" resultType="java.lang.String">
+        SELECT login_name
+        FROM iam_user
+        WHERE 1=1
+        and login_name in
+        <foreach item="item" index="index" collection="nameSet" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+
+    </select>
+
+    <select id="matchEmail" resultType="java.lang.String">
+        SELECT email
+        FROM iam_user
+        WHERE 1=1
+        <choose>
+            <when test="userType != null and userType != ''">
+                and user_type = #{userType}
+            </when>
+            <otherwise>
+                and user_type = 'P'
+            </otherwise>
+        </choose>
+        and email in
+        <foreach item="item" index="index" collection="emailSet" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
+    <select id="matchPhone" resultType="java.lang.String">
+        SELECT phone
+        FROM iam_user
+        WHERE 1=1
+        <choose>
+            <when test="userType != null and userType != ''">
+                and user_type = #{userType}
+            </when>
+            <otherwise>
+                and user_type = 'P'
+            </otherwise>
+        </choose>
+        and phone in
+        <foreach item="item" index="index" collection="phoneSet" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
+    <select id="getIdsByMatchLoginName" resultType="java.lang.Long">
+        SELECT id
+        FROM iam_user
+        WHERE 1=1
+        and login_name in
+        <foreach item="item" index="index" collection="nameSet" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
+    <update id="disableByIdList">
+        <bind name="now" value="@java.time.LocalDateTime@now()" />
+        UPDATE iam_user SET
+            is_enabled = 0,
+            last_update_date = #{now}
+        WHERE id
+        IN
+        <foreach item="item" index="index" collection="idSet" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </update>
+
+    <select id="selectUserEmployeeAssignList" resultType="org.hzero.iam.api.dto.UserEmployeeAssignDTO">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        SELECT
+        heu.user_id,
+        he.employee_id,
+        he.employee_num,
+        he.name as employee_name
+        <if test="organizationId == null">
+            ,
+            ht.tenant_id,
+            httl.tenant_name
+        </if>
+        FROM
+        hpfm_employee he
+        JOIN hpfm_employee_user heu ON he.employee_id = heu.employee_id
+        JOIN iam_user iu ON iu.id = heu.user_id
+        <if test="organizationId == null">
+            JOIN hpfm_tenant ht ON he.tenant_id = ht.tenant_id
+            JOIN hpfm_tenant_tl httl ON httl.tenant_id = ht.tenant_id AND httl.lang = #{lang}
+        </if>
+        <where>
+            <if test="userId != null">
+                AND iu.id = #{userId}
+            </if>
+            <if test="organizationId != null">
+                AND he.tenant_id = #{organizationId}
+            </if>
+            <if test="employeeNum != null and employeeNum != ''">
+                <bind name="employeeNumLike" value="'%' + employeeNum + '%'"/>
+                AND he.employee_num like #{employeeNumLike}
+            </if>
+            <if test="employeeName != null and employeeName != ''">
+                <bind name="employeeNameLike" value="'%' + employeeName + '%'"/>
+                AND he.name like #{employeeNameLike}
+            </if>
+            <if test="tenantId != null and organizationId == null">
+                AND httl.tenant_id = #{tenantId}
+            </if>
+        </where>
+    </select>
+    <select id="listReceiverByUserIds" resultType="org.hzero.boot.message.entity.Receiver">
+        SELECT
+        iu.id user_id,
+        iu.organization_id target_user_tenant_id,
+        iu.email,
+        iu.phone
+        FROM iam_user iu
+        WHERE iu.id in
+        <foreach collection="userIds" item="userId" open="(" close=")" separator=",">
+            #{userId}
+        </foreach>
+    </select>
+
+    <select id="selectCacheUseInfo" resultType="org.hzero.iam.domain.entity.User">
+        select
+            iu.id,
+            iu.organization_id,
+            iu.login_name,
+            iu.real_name,
+            iu.language,
+            iu.user_type,
+            ht.tenant_num,
+            ht.tenant_name,
+            iu.image_url
+        from iam_user iu
+        join hpfm_tenant ht on iu.organization_id = ht.tenant_id
+        <where>
+            <if test="id != null">
+                and iu.id = #{id}
+            </if>
+        </where>
+        order by iu.id
+    </select>
+    <select id="listOpenReceiverByUserIds" resultType="org.hzero.boot.message.entity.Receiver">
+        SELECT
+        hhse.userid open_user_id,
+        hhse.tenant_id targetUserTenantId
+        FROM iam_user iu
+        JOIN hpfm_employee_user heu on heu.user_id = iu.id
+        JOIN hpfm_employee he on he.employee_id = heu.employee_id
+        JOIN hpfm_hr_sync_employee hhse on hhse.employee_num = he.employee_num
+        AND hhse.tenant_id = he.tenant_id
+        WHERE iu.is_enabled = 1
+        AND hhse.sync_type_code = #{thirdPlatformType}
+        AND iu.id in
+        <foreach collection="userIds" item="userId" separator="," open="(" close=")">
+            #{userId}
+        </foreach>
+    </select>
+
+
+    <select id="listSecondaryCheck" resultType="org.hzero.iam.api.dto.UserSecCheckDTO">
+        SELECT
+        iu.id,
+        iu.login_name,
+        iu.real_name,
+        hui.sec_check_phone_flag,
+        hui.sec_check_email_flag
+        FROM iam_user iu
+        INNER JOIN hiam_user_info hui ON hui.user_id = iu.id
+        <where>
+            <if test="@java.util.Objects@nonNull(tenantId)">
+                iu.organization_id = #{tenantId}
+            </if>
+            <if test="@org.apache.commons.lang3.StringUtils@isNotBlank(loginName)">
+                <bind name="loginNameLike" value="'%' + loginName + '%'"/>
+                AND iu.login_name like #{loginNameLike}
+            </if>
+            <if test="@org.apache.commons.lang3.StringUtils@isNotBlank(realName)">
+                <bind name="realNameLike" value="'%' + realName + '%'"/>
+                AND iu.real_name like #{realNameLike}
+            </if>
+            <if test="@java.util.Objects@nonNull(secCheckPhoneFlag)">
+                AND hui.sec_check_phone_flag = #{secCheckPhoneFlag}
+            </if>
+            <if test="@java.util.Objects@nonNull(secCheckEmailFlag)">
+                AND hui.sec_check_email_flag = #{secCheckEmailFlag}
+            </if>
+        </where>
+    </select>
+    <select id="getLanguageNameByLanguage" resultType="org.hzero.iam.domain.vo.UserVO">
+        SELECT
+            fl.name language_name,
+            hct.country_name,
+            hrt.region_name
+        FROM iam_user iu
+        JOIN hiam_user_info hui ON hui.user_id = iu.id
+        JOIN fd_language fl on fl.code = #{language}
+        LEFT JOIN hpfm_country_tl hct ON hui.country_id = hct.country_id AND hct.lang = #{language}
+        LEFT JOIN hpfm_region_tl hrt ON hui.region_id = hrt.region_id AND hrt.lang = #{language}
+        WHERE iu.id = #{userId}
+    </select>
+
+</mapper>

@@ -1,0 +1,293 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.iam.infra.mapper.RoleAuthDataMapper">
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap id="BaseResultMap" type="org.hzero.iam.domain.entity.RoleAuthData">
+        <result column="auth_data_id" property="authDataId" jdbcType="DECIMAL"/>
+        <result column="role_id" property="roleId" jdbcType="DECIMAL"/>
+        <result column="tenant_id" property="tenantId" jdbcType="DECIMAL"/>
+        <result column="authority_type_code" property="authorityTypeCode" jdbcType="VARCHAR"/>
+        <result column="include_all_flag" property="includeAllFlag" jdbcType="DECIMAL"/>
+        <result column="object_version_number" property="objectVersionNumber" jdbcType="DECIMAL"/>
+        <result column="creation_date" property="creationDate" jdbcType="DATE"/>
+        <result column="created_by" property="createdBy" jdbcType="DECIMAL"/>
+        <result column="last_updated_by" property="lastUpdatedBy" jdbcType="DECIMAL"/>
+        <result column="last_update_date" property="lastUpdateDate" jdbcType="DATE"/>
+    </resultMap>
+    <select id="listCompanyUoInvorg" resultType="org.hzero.iam.api.dto.CompanyOuInvorgNodeDTO">
+        SELECT
+          *
+        FROM
+        (
+            (
+                SELECT
+                    hc.company_id,
+                    hc.company_num,
+                    hc.company_name,
+                    CASE
+                    WHEN temp2.data_id IS NOT NULL THEN 1
+                    WHEN temp2.data_id IS NULL THEN 0
+                    END as com_checked_flag,
+                    hou.ou_id,
+                    hou.ou_code,
+                    hou.ou_name,
+                    CASE
+                    WHEN temp1.data_id IS NOT NULL THEN 1
+                    WHEN temp1.data_id IS NULL THEN 0
+                    END as ou_checked_flag,
+                    hio.organization_id,
+                    hio.organization_code,
+                    hio.organization_name,
+                    CASE
+                    WHEN temp.data_id IS NOT NULL THEN 1
+                    WHEN temp.data_id IS NULL THEN 0
+                    END as org_checked_flag
+                FROM
+                hpfm_company hc
+                JOIN hpfm_operation_unit hou ON hc.company_id = hou.company_id
+                JOIN hpfm_inv_organization hio ON hou.ou_id = hio.ou_id
+                LEFT JOIN
+                    (
+                    SELECT
+                    data_id
+                    FROM
+                    hiam_role_auth_data_line hual
+                    JOIN hiam_role_auth_data hua ON hual.auth_data_id = hua.auth_data_id
+                    AND hual.data_source LIKE '%DEFAULT%'
+                    AND hua.data_source LIKE '%DEFAULT%'
+                    AND hua.tenant_id = #{tenantId}
+                    AND hua.role_id = #{roleId}
+                    AND hua.authority_type_code = 'INV_ORGANIZATION'
+                    )
+                    temp on temp.data_id = hio.organization_id
+                LEFT JOIN
+                    (
+                    SELECT
+                    data_id
+                    FROM
+                    hiam_role_auth_data_line hual
+                    JOIN hiam_role_auth_data hua ON hual.auth_data_id = hua.auth_data_id
+                    AND hual.data_source LIKE '%DEFAULT%'
+                    AND hua.data_source LIKE '%DEFAULT%'
+                    AND hua.tenant_id = #{tenantId}
+                    AND hua.role_id = #{roleId}
+                    AND hua.authority_type_code = 'OU'
+                    ) temp1 on temp1.data_id = hou.ou_id
+                LEFT JOIN
+                    (
+                    SELECT
+                    data_id
+                    FROM
+                    hiam_role_auth_data_line hual
+                    JOIN hiam_role_auth_data hua ON hual.auth_data_id = hua.auth_data_id
+                    AND hual.data_source LIKE '%DEFAULT%'
+                    AND hua.data_source LIKE '%DEFAULT%'
+                    AND hua.tenant_id = #{tenantId}
+                    AND hua.role_id = #{roleId}
+                    AND hua.authority_type_code = 'COMPANY'
+                    ) temp2 on temp2.data_id = hc.company_id
+                WHERE
+                    hio.tenant_id = #{tenantId} and hou.tenant_id = #{tenantId} and hc.tenant_id= #{tenantId} and hc.enabled_flag= 1
+                    <if test="dataCode != null and dataCode != ''">
+                        <bind name="dataCodeLike" value="'%'+dataCode+'%'"/>
+                        and hio.organization_code like #{dataCodeLike}
+                    </if>
+                    <if test="dataName != null and dataName != ''">
+                        <bind name="dataNameLike" value="'%'+dataName+'%'"/>
+                        and  hio.organization_name like #{dataNameLike}
+                    </if>
+            )
+            UNION
+            (
+                SELECT
+                    hc1.company_id,
+                    hc1.company_num,
+                    hc1.company_name,
+                    CASE
+                    WHEN temp1.data_id IS NOT NULL THEN 1
+                    WHEN temp1.data_id IS NULL THEN 0
+                    END as com_checked_flag,
+                    hou1.ou_id,
+                    hou1.ou_code,
+                    hou1.ou_name,
+                    CASE
+                    WHEN temp.data_id IS NOT NULL THEN 1
+                    WHEN temp.data_id IS NULL THEN 0
+                    END as ou_checked_flag,
+                    NULL AS organization_id,
+                    NULL AS organization_code,
+                    NULL AS organization_name,
+                    NULL AS org_checked_flag
+                FROM
+                    hpfm_company hc1
+                JOIN hpfm_operation_unit hou1 ON hc1.company_id = hou1.company_id
+                LEFT JOIN
+                (
+                    SELECT
+                    data_id
+                    FROM
+                    hiam_role_auth_data_line hual
+                    JOIN hiam_role_auth_data hua ON hual.auth_data_id = hua.auth_data_id
+                    AND hual.data_source LIKE '%DEFAULT%'
+                    AND hua.data_source LIKE '%DEFAULT%'
+                    AND hua.tenant_id = #{tenantId}
+                    AND hua.role_id = #{roleId}
+                    AND hua.authority_type_code = 'OU'
+                ) temp on temp.data_id = hou1.ou_id
+                LEFT JOIN
+                (
+                SELECT
+                data_id
+                FROM
+                hiam_role_auth_data_line hual
+                JOIN hiam_role_auth_data hua ON hual.auth_data_id = hua.auth_data_id
+                AND hual.data_source LIKE '%DEFAULT%'
+                AND hua.data_source LIKE '%DEFAULT%'
+                AND hua.tenant_id = #{tenantId}
+                AND hua.role_id = #{roleId}
+                AND hua.authority_type_code = 'COMPANY'
+                ) temp1 on temp1.data_id = hc1.company_id
+                WHERE
+                    hou1.tenant_id = #{tenantId} and hc1.tenant_id = #{tenantId} and hc1.enabled_flag = 1
+                    <if test="dataCode != null and dataCode != ''">
+                        <bind name="dataCodeLike" value="'%'+dataCode+'%'"/>
+                        and hou1.ou_code like #{dataCodeLike}
+                    </if>
+                    <if test="dataName != null and dataName != ''">
+                        <bind name="dataNameLike" value="'%'+dataName+'%'"/>
+                        and  hou1.ou_name like #{dataNameLike}
+                    </if>
+            )
+            UNION
+            (
+            SELECT
+                hc2.company_id,
+                hc2.company_num,
+                hc2.company_name,
+            CASE
+                WHEN temp.data_id IS NOT NULL THEN 1
+                WHEN temp.data_id IS NULL THEN 0
+                END as com_checked_flag,
+                NULL AS ou_id,
+                NULL AS ou_code,
+                NULL AS ou_name,
+                NULL AS ou_checked_flag,
+                NULL AS organization_id,
+                NULL AS organization_code,
+                NULL AS organization_name,
+                NULL AS org_checked_flag
+            FROM
+                hpfm_company hc2
+            LEFT JOIN
+                (
+                SELECT
+                data_id
+                FROM
+                hiam_role_auth_data_line hual
+                JOIN hiam_role_auth_data hua ON hual.auth_data_id = hua.auth_data_id
+                AND hual.data_source LIKE '%DEFAULT%'
+                AND hua.data_source LIKE '%DEFAULT%'
+                AND hua.tenant_id = #{tenantId}
+                AND hua.role_id = #{roleId}
+                AND hua.authority_type_code = 'COMPANY'
+                ) temp on temp.data_id = hc2.company_id
+            WHERE
+                hc2.tenant_id = #{tenantId} AND hc2.enabled_flag = 1
+                <if test="dataCode != null and dataCode != ''">
+                    <bind name="dataCodeLike" value="'%'+dataCode+'%'"/>
+                    and hc2.company_num like #{dataCodeLike}
+                </if>
+                <if test="dataName != null and dataName != ''">
+                    <bind name="dataNameLike" value="'%'+dataName+'%'"/>
+                    and  hc2.company_name like #{dataNameLike}
+                </if>
+            )
+        ) result
+    </select>
+
+    <select id="listAuthDataAssignedRole" resultType="org.hzero.iam.domain.entity.RoleAuthData">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        SELECT
+          hrad.role_id,
+          ir.code as role_code,
+          ir_tl.name as role_name,
+          ir_parent_tl.name as parent_role_name,
+          <!-- 注意这里取得数据权限得租户id -->
+          hrad.tenant_id,
+          htl.tenant_name,
+          hrad.auth_data_id,
+          hrad.authority_type_code,
+          hrad.include_all_flag,
+          hrad.object_version_number
+        FROM iam_role ir
+          JOIN hiam_role_auth_data hrad on(ir.id = hrad.role_id)
+          LEFT JOIN iam_role ir_parent on(ir_parent.id = ir.h_parent_role_id)
+          LEFT JOIN hpfm_tenant ht on(ht.tenant_id = ir.h_tenant_id)
+          LEFT JOIN hpfm_tenant_tl htl on(ht.tenant_id = htl.tenant_id and  htl.lang = #{lang})
+          left join iam_role_tl ir_tl on(ir_tl.id = ir.id and ir_tl.lang=#{lang})
+          left join iam_role_tl ir_parent_tl on(ir_parent_tl.id = ir_parent.id and ir_parent_tl.lang=#{lang})
+        where
+        <!-- 限制数据权限id是存在该角色对应权限头下面的 -->
+        (EXISTS(
+            SELECT 1 FROM hiam_role_auth_data_line hradl
+            WHERE hradl.auth_data_id = hrad.auth_data_id
+            AND hradl.data_id = #{dataId}
+        ) or hrad.include_all_flag = 1)
+        <!-- 限制权限代码 -->
+        and hrad.authority_type_code = #{authorityTypeCode}
+        <!-- 限制角色只有当前用户可见: 租户维度限制 or 角色是管理型角色的子角色-->
+        and (ir.h_tenant_id = #{roleAuthData.organizationId} or ir.created_by_tenant_id = #{roleAuthData.organizationId}
+        OR
+        EXISTS (
+            SELECT
+            1
+            FROM
+            iam_menu im
+            JOIN iam_role_permission irp ON (
+                                              im.id = irp.permission_id
+                                              AND im.type = 'ps'
+                                              AND im.h_enabled_flag = 1
+                                              AND im.CODE LIKE '%role.ps.create'
+                                              AND irp.type = 'PS'
+                                              AND ( irp.h_create_flag = 'Y' OR irp.h_inherit_flag = 'Y' )
+            )
+            JOIN iam_member_role imr_admin ON imr_admin.role_id = irp.role_id
+            JOIN iam_role ir_admin ON (
+                                        ( ir_admin.id = imr_admin.role_id AND ir_admin.is_enabled = 1 )
+                                        OR ( ir_admin.h_parent_role_assign_level = imr_admin.h_assign_level AND ir_admin.h_parent_role_assign_level_val = imr_admin.h_assign_level_value AND imr_admin.h_assign_level = 'org' )
+            )
+            WHERE
+                imr_admin.member_id = #{roleAuthData.userId}
+                AND imr_admin.member_type = 'user'
+                AND ir.h_level_path LIKE CONCAT( ir_admin.h_level_path, '|%' )
+            )
+        )
+        <if test="roleAuthData.roleCode!=null and roleAuthData.roleCode!=''">
+            <bind name="roleCodeLike" value="'%'+roleAuthData.roleCode+'%'"/>
+            and ir.code like #{roleCodeLike}
+        </if>
+        <if test="roleAuthData.roleName!=null and roleAuthData.roleName!=''">
+            <bind name="roleNameLike" value="'%'+roleAuthData.roleName+'%'"/>
+            and ir.name like #{roleNameLike}
+        </if>
+    </select>
+    <select id="selectByUniqueKey" resultType="org.hzero.iam.domain.entity.RoleAuthData">
+        select
+            auth_data_id,
+            role_id,
+            tenant_id,
+            authority_type_code,
+            include_all_flag,
+            data_source,
+            object_version_number,
+            created_by,
+            creation_date,
+            last_update_date,
+            last_updated_by
+        from hiam_role_auth_data
+        where data_source LIKE '%DEFAULT%'
+        and role_id = #{roleId}
+        and tenant_id = #{tenantId}
+        and authority_type_code = #{authorityTypeCode}
+    </select>
+</mapper>

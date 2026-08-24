@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.admin.infra.mapper.ServiceVersionMapper">
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap id="BaseResultMap" type="org.hzero.admin.domain.entity.ServiceVersion">
+        <result column="service_version_id" property="serviceVersionId" jdbcType="DECIMAL"/>
+        <result column="service_id" property="serviceId" jdbcType="DECIMAL"/>
+        <result column="version_number" property="versionNumber" jdbcType="VARCHAR"/>
+        <result column="meta_version" property="metaVersion" jdbcType="VARCHAR"/>
+        <result column="release_date" property="releaseDate" jdbcType="DATE"/>
+        <result column="update_log" property="updateLog" jdbcType="VARCHAR"/>
+        <!--<result column="service_version_config" property="serviceVersionConfig" jdbcType="VARCHAR"/>-->
+        <result column="object_version_number" property="objectVersionNumber" jdbcType="DECIMAL"/>
+        <result column="creation_date" property="creationDate" jdbcType="DATE"/>
+        <result column="created_by" property="createdBy" jdbcType="DECIMAL"/>
+        <result column="last_updated_by" property="lastUpdatedBy" jdbcType="DECIMAL"/>
+        <result column="last_update_date" property="lastUpdateDate" jdbcType="DATE"/>
+    </resultMap>
+</mapper>

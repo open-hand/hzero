@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.platform.infra.mapper.StaticTextValueMapper">
+
+    <select id="selectTextByCode" resultType="org.hzero.platform.domain.vo.StaticTextValueVO">
+        SELECT
+          hstv.text_id,
+          hstv.lang,
+          hstv.text,
+          hstv.title,
+          hstv.description,
+          hst.text_code,
+          hst.end_date
+        FROM hpfm_static_text_value hstv
+        JOIN hpfm_static_text hst ON hst.text_id = hstv.text_id
+        WHERE hst.text_code = #{textCode}
+        AND hst.tenant_id = #{tenantId}
+        AND hst.company_id = #{companyId}
+        AND hstv.lang = #{lang}
+        AND hst.start_date &lt;= #{now}
+        AND (hst.end_date IS NULL OR hst.end_date > #{now})
+    </select>
+
+    <select id="selectTextValueById" resultType="org.hzero.platform.domain.entity.StaticTextValue">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        SELECT
+            hstv.text_id,
+            hstv.text
+        FROM hpfm_static_text_value hstv
+        WHERE hstv.text_id = #{textId}
+        AND hstv.lang = #{lang}
+    </select>
+</mapper>

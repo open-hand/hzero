@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.iam.infra.mapper.UserConfigMapper">
+    <!-- 可根据自己的需求，是否要使用 -->
+    <resultMap id="BaseResultMap" type="org.hzero.iam.domain.entity.UserConfig">
+        <result column="user_config_id" property="userConfigId" jdbcType="DECIMAL"/>
+        <result column="user_id" property="userId" jdbcType="DECIMAL"/>
+        <result column="tenant_id" property="tenantId" jdbcType="DECIMAL"/>
+        <result column="default_company_id" property="defaultCompanyId" jdbcType="DECIMAL"/>
+        <result column="default_role_id" property="defaultRoleId" jdbcType="DECIMAL"/>
+        <result column="object_version_number" property="objectVersionNumber" jdbcType="DECIMAL"/>
+        <result column="creation_date" property="creationDate" jdbcType="DATE"/>
+        <result column="created_by" property="createdBy" jdbcType="DECIMAL"/>
+        <result column="last_updated_by" property="lastUpdatedBy" jdbcType="DECIMAL"/>
+        <result column="last_update_date" property="lastUpdateDate" jdbcType="DATE"/>
+    </resultMap>
+
+    <!-- 根据用户ID查询用户配置 -->
+    <select id="selectByUserId" resultType="org.hzero.iam.domain.entity.UserConfig">
+        SELECT
+        user_config_id,
+        user_id,
+        tenant_id,
+        default_company_id,
+        default_role_id,
+        popout_reminder_flag,
+        object_version_number
+        FROM
+        hiam_user_config
+        WHERE 1=1
+        <if test="userId != null and userId != ''">
+            and user_id = #{userId}
+        </if>
+    </select>
+
+    <!-- 根据用户ID和租户ID查询用户配置 -->
+    <select id="queryUserConfig" resultType="org.hzero.iam.domain.entity.UserConfig">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        SELECT
+        huc.user_config_id,
+        huc.user_id,
+        huc.tenant_id,
+        huc.default_company_id,
+        huc.default_role_id,
+        huc.popout_reminder_flag,
+        huc.object_version_number,
+        iu.real_name as user_name,
+        httl.tenant_name,
+        hc.company_name,
+        ir.name as role_name
+        FROM
+        hiam_user_config huc,
+        iam_role ir,
+        iam_user iu,
+        hpfm_company hc,
+        hpfm_tenant ht
+        LEFT JOIN hpfm_tenant_tl httl ON ht.tenant_id = httl.tenant_id AND httl.lang = #{lang}
+        WHERE
+        huc.user_id = iu.id
+        AND huc.default_role_id = ir.id
+        AND huc.default_company_id = hc.company_id
+        and huc.tenant_id = ht.tenant_id
+        <if test="userId != null and userId != ''">
+            and huc.user_id = #{userId}
+        </if>
+        <if test="tenantId != null and tenantId != ''">
+            and huc.tenant_id = #{tenantId}
+        </if>
+    </select>
+</mapper>

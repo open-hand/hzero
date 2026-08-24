@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.platform.infra.mapper.PermissionRangeMapper">
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap id="BaseResultMap" type="org.hzero.platform.domain.entity.PermissionRange">
+        <result column="range_id" property="rangeId" jdbcType="DECIMAL"/>
+        <result column="table_name" property="tableName" jdbcType="VARCHAR"/>
+        <result column="sql_id" property="sqlId" jdbcType="VARCHAR"/>
+        <result column="description" property="description" jdbcType="VARCHAR"/>
+        <result column="object_version_number" property="objectVersionNumber" jdbcType="DECIMAL"/>
+        <result column="creation_date" property="creationDate" jdbcType="DATE"/>
+        <result column="created_by" property="createdBy" jdbcType="DECIMAL"/>
+        <result column="last_updated_by" property="lastUpdatedBy" jdbcType="DECIMAL"/>
+        <result column="last_update_date" property="lastUpdateDate" jdbcType="DATE"/>
+    </resultMap>
+
+    <select id="selectPermissionRange" resultType="org.hzero.platform.api.dto.PermissionRangeDTO">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()" />
+        SELECT
+            hpr.range_id,
+            hpr.table_name,
+            hpr.sql_id,
+            hpr.tenant_id,
+            hpr.enabled_flag,
+            hpr.service_name,
+            hpr.description,
+            hpr.custom_rule_flag,
+            hpr.editable_flag,
+            hpr.object_version_number,
+            httl.tenant_name
+        FROM
+            hpfm_permission_range hpr
+        join hpfm_tenant ht on ht.tenant_id = hpr.tenant_id
+        JOIN hpfm_tenant_tl httl ON ht.tenant_id = httl.tenant_id AND httl.lang = #{lang}
+        WHERE
+            1=1
+        <if test="tenantId != null">
+            AND hpr.tenant_id = #{tenantId}
+        </if>
+        <if test="serviceName != null and serviceName !=''">
+            <bind name="serviceNameLike" value="'%' + serviceName + '%'"/>
+            AND hpr.service_name LIKE #{serviceNameLike}
+        </if>
+        <if test="tableName != null and tableName != ''">
+            <bind name="nameLike" value="'%' + tableName + '%'"/>
+            AND hpr.table_name LIKE #{nameLike}
+        </if>
+        <if test="sqlId != null and sqlId != ''">
+            <bind name="sqlLike" value="'%' + sqlId + '%'"/>
+            AND hpr.sql_id LIKE #{sqlLike}
+        </if>
+        <if test="enabledFlag != null">
+            AND hpr.enabled_flag = #{enabledFlag}
+        </if>
+        <if test="customRuleFlag != null">
+            AND hpr.custom_rule_flag = #{customRuleFlag}
+        </if>
+        <if test="ruleCode != null and ruleCode != ''">
+            <bind name="ruleCodeLike" value="'%' + ruleCode + '%'"/>
+            AND
+            EXISTS (
+            SELECT
+            1
+            FROM
+            hpfm_permission_rule hpru
+            JOIN hpfm_permission_rel hprl ON hpru.rule_id = hprl.rule_id
+            WHERE
+            hprl.range_id = hpr.range_id
+            AND hpru.rule_code LIKE #{ruleCodeLike}
+            )
+        </if>
+    </select>
+    <select id="queryPermissionRule" resultType="org.hzero.platform.domain.entity.PermissionRange">
+        SELECT
+            range_id,
+            custom_rule_flag,
+            table_name,
+            sql_id,
+            description,
+            tenant_id,
+            service_name,
+            enabled_flag,
+            object_version_number
+        FROM hpfm_permission_range
+        WHERE
+            table_name = #{tableName}
+            AND tenant_id = #{tenantId}
+            <choose>
+                <when test="serviceName != null and serviceName != ''">
+                    AND service_name = #{serviceName}
+                </when>
+                <otherwise>
+                    AND service_name IS NULL
+                </otherwise>
+            </choose>
+            <choose>
+                <when test="sqlId != null and sqlId != ''">
+                    AND sql_id = #{sqlId}
+                </when>
+                <otherwise>
+                    AND sql_id IS NULL
+                </otherwise>
+            </choose>
+    </select>
+    <select id="listDisablePermissionRange" resultType="org.hzero.platform.domain.entity.PermissionRange">
+        SELECT
+            hpra.range_id,
+            hpra.custom_rule_flag,
+            hpra.table_name,
+            hpra.sql_id,
+            hpra.description,
+            hpra.tenant_id,
+            hpra.service_name,
+            hpra.enabled_flag,
+            hpra.object_version_number
+        FROM hpfm_permission_range hpra
+        JOIN hpfm_permission_rel hpre ON hpre.range_id = hpra.range_id AND hpre.rule_id IN
+        <foreach collection="permissionRuleIdList" open="(" close=")" separator="," item="permissionRuleId">
+            #{permissionRuleId}
+        </foreach>
+        WHERE
+            hpra.enabled_flag = 1
+            AND NOT EXISTS(
+                SELECT 1
+                FROM hpfm_permission_rel hpre2
+                JOIN hpfm_permission_rule hpru ON hpre2.rule_id = hpru.rule_id AND hpru.enabled_flag = 1
+                WHERE hpre2.range_id = hpra.range_id)
+    </select>
+    <select id="listEmptyRange" resultType="org.hzero.platform.domain.entity.PermissionRange">
+        SELECT
+            hpra.range_id,
+            hpra.custom_rule_flag,
+            hpra.table_name,
+            hpra.sql_id,
+            hpra.description,
+            hpra.tenant_id,
+            hpra.service_name,
+            hpra.enabled_flag,
+            hpra.object_version_number
+        FROM hpfm_permission_range hpra
+        WHERE hpra.range_id IN
+        <foreach collection="rangeIdList" item="rangeId" open="(" close=")">
+            #{rangeId}
+        </foreach>
+        AND NOT EXISTS(
+            SELECT 1 FROM hpfm_permission_rel hpre
+            WHERE hpre.range_id = hpra.range_id
+        )
+    </select>
+</mapper>

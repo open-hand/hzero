@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.message.infra.mapper.TemplateArgMapper">
+
+    <select id="selectByTemplateId" parameterType="org.hzero.message.domain.entity.TemplateArg" resultType="org.hzero.message.domain.entity.TemplateArg">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        select
+            ta.arg_id,
+            ta.template_id,
+            ta.arg_name,
+            tl.description,
+            ta.object_version_number
+        from hmsg_template_arg ta
+        join hmsg_template_arg_tl tl on ta.arg_id = tl.arg_id
+        where ta.template_id = #{templateId}
+        and tl.lang = #{lang}
+        <if test="argName != null and argName != ''">
+            <bind name="argNameLike" value="'%' + argName + '%'"/>
+            and ta.arg_name like #{argNameLike}
+        </if>
+    </select>
+
+</mapper>

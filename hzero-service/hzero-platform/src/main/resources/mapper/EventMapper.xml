@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.platform.infra.mapper.EventMapper">
+
+    <resultMap id="BaseResultMap" type="org.hzero.platform.api.dto.EventDTO">
+        <result property="eventId" column="event_id"/>
+        <result property="eventCode" column="event_code"/>
+        <result property="enabledFlag" column="enabled_flag"/>
+        <result property="eventDescription" column="event_description"/>
+        <result property="objectVersionNumber" column="object_version_number"/>
+    </resultMap>
+
+    <select id="selectEvent" parameterType="org.hzero.platform.api.dto.EventDTO" resultMap="BaseResultMap">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()" />
+        SELECT
+        hfe.event_id,
+        hfe.event_code,
+        hfe.enabled_flag,
+        het.event_description,
+        hfe.tenant_id,
+        httl.tenant_name,
+        hfe.object_version_number
+        FROM hpfm_event hfe
+        LEFT JOIN hpfm_event_tl het ON hfe.event_id = het.event_id AND het.lang = #{lang}
+        LEFT JOIN hpfm_tenant ht ON ht.tenant_id = hfe.tenant_id
+        LEFT JOIN hpfm_tenant_tl httl ON ht.tenant_id = httl.tenant_id AND httl.lang = #{lang}
+        <where>
+            <if test="eventId != null">
+                AND hfe.event_id = #{eventId}
+            </if>
+            <if test="eventCode != null">
+                AND hfe.event_code LIKE concat('%', concat(#{eventCode}, '%'))
+            </if>
+            <if test="eventDescription != null">
+                AND het.event_description LIKE concat('%', concat(#{eventDescription}, '%'))
+            </if>
+            <if test="enabledFlag != null">
+                AND hfe.enabled_flag = #{enabledFlag}
+            </if>
+            <if test="eventIds != null and eventIds.size()>0">
+                AND hfe.event_id IN
+                <foreach collection="eventIds" item="item" index="index" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="tenantId != null">
+                <choose>
+                    <when test="siteQueryFlag != null and siteQueryFlag != 0">
+                        AND hfe.tenant_id = #{tenantId,jdbcType=DECIMAL}
+                    </when>
+                    <otherwise>
+                        AND (hfe.tenant_id = #{tenantId,jdbcType=DECIMAL} OR hfe.tenant_id = 0)
+                    </otherwise>
+                </choose>
+            </if>
+            <if test="tenantId != null and tenantId != 0">
+                AND hfe.event_id NOT IN (
+                  SELECT he.event_id
+                  FROM hpfm_event he
+                  WHERE he.tenant_id = 0
+                  AND EXISTS (
+                    SELECT 1
+                    FROM hpfm_event he1
+                    WHERE he1.event_code = he.event_code
+                    AND he1.tenant_id = #{tenantId}
+                  )
+                )
+            </if>
+        </where>
+        ORDER BY hfe.event_id DESC
+    </select>
+
+</mapper>

@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.platform.infra.mapper.LovPermissionMapper">
+
+    <resultMap id="LovUrlPermissionMap" type="org.hzero.platform.domain.vo.LovUrlPermissionVO">
+        <result column="lov_code" property="lovCode"/>
+        <result column="permission_code" property="permissionCode"/>
+        <result column="public_access" property="publicAccess"/>
+        <result column="login_access" property="loginAccess"/>
+    </resultMap>
+
+    <select id="selectAccessiblePermissionCodes" resultType="java.lang.String">
+        <bind name="now" value="@java.time.LocalDate@now()" />
+        SELECT DISTINCT imp.permission_code
+        FROM iam_member_role imr
+        JOIN iam_role ir ON imr.role_id = ir.id AND ir.is_enabled = 1
+        JOIN iam_role_permission irp ON irp.role_id = ir.id AND irp.type = 'PS'
+        JOIN iam_menu_permission imp ON imp.menu_id = irp.permission_id
+            AND (imp.tenant_id = 0 OR irp.tenant_id = imp.tenant_id)
+        JOIN iam_menu im ON im.id = imp.menu_id AND im.type = 'ps' AND im.h_enabled_flag = 1
+        WHERE imr.member_id = #{memberId}
+        AND imr.member_type = #{memberType}
+        AND (imr.start_date_active IS NULL OR imr.start_date_active &lt;= #{now})
+        AND (imr.end_date_active IS NULL OR imr.end_date_active >= #{now})
+        <if test="checkCurrentRole">
+            AND ir.id IN
+            <foreach collection="roleIds" item="roleId" open="(" separator="," close=")">
+                #{roleId}
+            </foreach>
+        </if>
+        AND imp.permission_code IN
+        <foreach collection="permissionCodes" item="permissionCode" open="(" separator="," close=")">
+            #{permissionCode}
+        </foreach>
+        AND (irp.h_create_flag = 'Y' OR irp.h_inherit_flag = 'Y')
+
+        <if test="includeSecurityGroup">
+            UNION ALL
+
+            SELECT DISTINCT imp.permission_code
+            FROM iam_member_role imr
+            JOIN iam_role ir ON imr.role_id = ir.id AND ir.is_enabled = 1
+            JOIN hiam_sec_grp_assign hsgas ON hsgas.dimension_value = ir.id
+                AND hsgas.assign_dimension = 'ROLE'
+            JOIN hiam_sec_grp_acl hsga ON hsga.sec_grp_id = hsgas.sec_grp_id
+            JOIN hiam_sec_grp hsg ON hsg.sec_grp_id = hsga.sec_grp_id AND hsg.enabled_flag = 1
+            JOIN iam_menu im ON im.id = hsga.permission_id AND im.type = 'ps' AND im.h_enabled_flag = 1
+            JOIN iam_menu_permission imp ON imp.menu_id = im.id
+                AND (imp.tenant_id = 0 OR ir.h_tenant_id = imp.tenant_id)
+            WHERE imr.member_id = #{memberId}
+            AND imr.member_type = #{memberType}
+            AND (imr.start_date_active IS NULL OR imr.start_date_active &lt;= #{now})
+            AND (imr.end_date_active IS NULL OR imr.end_date_active >= #{now})
+            <if test="checkCurrentRole">
+                AND ir.id IN
+                <foreach collection="roleIds" item="roleId" open="(" separator="," close=")">
+                    #{roleId}
+                </foreach>
+            </if>
+            AND imp.permission_code IN
+            <foreach collection="permissionCodes" item="permissionCode" open="(" separator="," close=")">
+                #{permissionCode}
+            </foreach>
+            AND NOT EXISTS (
+                SELECT 1
+                FROM hiam_sec_grp_revoke hsgr
+                WHERE hsgr.authority_id = hsga.sec_grp_acl_id
+                AND hsgr.authority_type = 'ACL'
+                AND (hsgr.revoke_type = 'REVOKE'
+                    OR (hsgr.revoke_type = 'SHIELD' AND hsgr.shield_role_id = ir.id))
+            )
+        </if>
+    </select>
+
+    <select id="selectUrlPermissions" resultMap="LovUrlPermissionMap">
+        <foreach collection="urlLovs" item="urlLov" separator=" UNION ALL ">
+            SELECT #{urlLov.lovCode} AS lov_code,
+                   ip.code AS permission_code,
+                   ip.public_access,
+                   ip.login_access
+            FROM iam_permission ip
+            WHERE ip.service_name = #{urlLov.serviceName}
+            AND ip.path = #{urlLov.path}
+            AND ip.method = #{urlLov.method}
+        </foreach>
+    </select>
+
+    <select id="selectRoleIdsByCode" resultType="java.lang.Long">
+        SELECT ir.id
+        FROM iam_role ir
+        WHERE ir.code = #{code}
+        AND ir.h_tenant_id = 0
+    </select>
+</mapper>

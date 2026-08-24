@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.platform.infra.mapper.FormHeaderMapper">
+
+    <select id="selectFormHeaders" resultType="org.hzero.platform.domain.entity.FormHeader">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        SELECT
+            hfh.form_header_id,
+            hfh.form_code,
+            hfht.form_name,
+            hfh.form_group_code,
+            hfht.form_description,
+            hfh.enabled_flag,
+            hfh.tenant_id,
+            httl.tenant_name
+        FROM hpfm_form_header hfh
+        LEFT JOIN hpfm_form_header_tl hfht ON hfht.form_header_id = hfh.form_header_id AND hfht.lang = #{lang}
+        JOIN hpfm_tenant ht ON ht.tenant_id = hfh.tenant_id
+        LEFT JOIN hpfm_tenant_tl httl ON ht.tenant_id = httl.tenant_id AND httl.lang = #{lang}
+        <where>
+            <if test="formCode != null and formCode != ''">
+              <bind name="formCodeLike" value="'%'+formCode+'%'"/>
+                AND hfh.form_code LIKE #{formCodeLike}
+            </if>
+            <if test="formName != null and formName != ''">
+              <bind name="formNameLike" value="'%'+formName+'%'"/>
+                AND hfht.form_name LIKE #{formNameLike}
+            </if>
+            <if test="tenantId != null">
+                AND hfh.tenant_id = #{tenantId}
+            </if>
+            <if test="formGroupCode != null and formGroupCode != ''">
+                AND hfh.form_group_code = #{formGroupCode}
+            </if>
+        </where>
+    </select>
+    <select id="selectOneFormHeaderById" resultType="org.hzero.platform.domain.entity.FormHeader">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        SELECT
+            hfh.form_header_id,
+            hfh.form_code,
+            hfht.form_name,
+            hfh.form_group_code,
+            hfht.form_description,
+            hfh.enabled_flag,
+            hfh.tenant_id,
+            httl.tenant_name,
+            hfh.object_version_number
+        FROM hpfm_form_header hfh
+        LEFT JOIN hpfm_form_header_tl hfht ON hfht.form_header_id = hfh.form_header_id AND hfht.lang = #{lang}
+        JOIN hpfm_tenant ht ON ht.tenant_id = hfh.tenant_id
+        LEFT JOIN hpfm_tenant_tl httl ON ht.tenant_id = httl.tenant_id AND httl.lang = #{lang}
+        WHERE hfh.form_header_id = #{formHeaderId}
+    </select>
+</mapper>

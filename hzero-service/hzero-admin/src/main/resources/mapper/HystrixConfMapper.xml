@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.admin.infra.mapper.HystrixConfMapper">
+    <!-- 可根据自己的需求，是否要使用 -->
+    <resultMap id="BaseResultMap" type="org.hzero.admin.domain.entity.HystrixConf">
+        <result column="conf_id" property="confId" jdbcType="DECIMAL"/>
+        <result column="conf_key" property="confKey" jdbcType="VARCHAR"/>
+        <result column="conf_type_code" property="confTypeCode" jdbcType="VARCHAR"/>
+        <result column="service_name" property="serviceName" jdbcType="VARCHAR"/>
+        <result column="service_conf_label" property="serviceConfLabel" jdbcType="VARCHAR"/>
+        <result column="service_conf_profile" property="serviceConfProfile" jdbcType="VARCHAR"/>
+        <result column="enabled_flag" property="enabledFlag" jdbcType="DECIMAL"/>
+        <result column="order_seq" property="orderSeq" jdbcType="DECIMAL"/>
+        <result column="remark" property="remark" jdbcType="VARCHAR"/>
+        <result column="object_version_number" property="objectVersionNumber" jdbcType="DECIMAL"/>
+        <result column="creation_date" property="creationDate" jdbcType="DATE"/>
+        <result column="created_by" property="createdBy" jdbcType="DECIMAL"/>
+        <result column="last_updated_by" property="lastUpdatedBy" jdbcType="DECIMAL"/>
+        <result column="last_update_date" property="lastUpdateDate" jdbcType="DATE"/>
+
+        <result column="refresh_status" property="refreshStatus" jdbcType="DECIMAL"/>
+        <result column="refresh_time" property="refreshTime" jdbcType="DATE"/>
+        <result column="refresh_message" property="refreshMessage" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <select id="listByCondition" parameterType="org.hzero.admin.domain.entity.HystrixConf"
+            resultType="org.hzero.admin.domain.entity.HystrixConf">
+        select
+        hhc.conf_id,
+        hhc.conf_key,
+        hhc.conf_type_code,
+        hhc.service_name,
+        hhc.service_conf_label,
+        hhc.service_conf_profile,
+        hhc.enabled_flag,
+        hhc.order_seq,
+        hhc.remark,
+        hhc.object_version_number,
+        hhc.refresh_status,
+        hhc.refresh_time,
+        hhc.refresh_message
+
+        from hadm_hystrix_conf hhc
+        <where>
+
+            <if test="refreshStatus != null">
+                hhc.refresh_status = #{refreshStatus}
+            </if>
+
+            <if test="confKey != null  and confKey != ''">
+                <bind name="confKey" value="'%' + confKey + '%'"/>
+                and hhc.conf_key like #{confKey}
+            </if>
+            <if test="confTypeCode != null and confTypeCode != ''">
+                <bind name="confTypeCode" value="'%' + confTypeCode + '%'"/>
+                and hhc.conf_type_code like #{confTypeCode}
+            </if>
+            <if test="remark != null and remark != ''">
+                <bind name="remark" value="'%' + remark + '%'"/>
+                and hhc.remark like #{remark}
+            </if>
+            <if test="serviceName != null and serviceName != ''">
+                <bind name="serviceName" value="'%' + serviceName + '%'"/>
+                and hhc.service_name like #{serviceName}
+            </if>
+        </where>
+    </select>
+
+    <select id="countExclusiveSelf" parameterType="org.hzero.admin.domain.entity.HystrixConf"
+            resultType="java.lang.Integer">
+        select
+        COUNT(*)
+        from hadm_hystrix_conf hhc
+        <where>
+            hhc.conf_key = #{confKey}
+            and hhc.conf_type_code = #{confTypeCode}
+            and hhc.service_name = #{serviceName}
+
+            <choose>
+                <when test="@org.springframework.util.StringUtils@hasText(serviceConfProfile)">
+                    and hhc.service_conf_profile = #{serviceConfProfile}
+                </when>
+                <otherwise>
+                    and (hhc.service_conf_profile is NULL or hhc.service_conf_profile='')
+                </otherwise>
+            </choose>
+            <choose>
+                <when test="@org.springframework.util.StringUtils@hasText(serviceConfLabel)">
+                    and hhc.service_conf_label = #{serviceConfLabel}
+                </when>
+                <otherwise>
+                    and (hhc.service_conf_label is NULL or hhc.service_conf_label= '')
+                </otherwise>
+            </choose>
+
+            <if test="confId != null">
+                and hhc.conf_id != #{confId}
+            </if>
+
+        </where>
+    </select>
+
+</mapper>

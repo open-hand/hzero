@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.platform.infra.mapper.CodeRuleDistMapper">
+    <select id="selectCodeRuleDistList" parameterType="org.hzero.platform.domain.entity.CodeRuleDist"
+            resultType="org.hzero.platform.api.dto.CodeRuleDistDTO">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        SELECT
+            hcrd.rule_dist_id,
+            hcrd.rule_id,
+            hcrd.level_code,
+            hcrd.description,
+            hcrd.level_value,
+        (   SELECT plvt.meaning
+            FROM hpfm_lov_value plv
+            JOIN hpfm_lov_value_tl plvt ON plvt.lov_value_id = plv.lov_value_id AND plvt.lang = #{lang}
+            WHERE lov_code = 'HPFM.CODE_RULE.LEVEL_CODE' AND hcrd.level_code = VALUE ) level_code_description,
+        (
+        CASE
+            hcrd.level_code
+        WHEN 'COM' THEN
+        ( SELECT hc.company_name FROM hpfm_company hc WHERE hcrd.level_value = hc.company_num AND hc.tenant_id = hcr.tenant_id ) ELSE hcrd.level_value
+        END
+        ) level_value_description,
+            hcrd.enabled_flag,
+            hcrd.used_flag,
+            hcrd.object_version_number
+        FROM
+            hpfm_code_rule_dist hcrd
+        JOIN hpfm_code_rule hcr ON hcr.rule_id = hcrd.rule_id
+        WHERE
+            1 = 1
+        <if test="ruleId != null">
+            AND hcrd.rule_id = #{ruleId}
+        </if>
+        <if test="ruleDistId != null">
+            AND hcrd.rule_dist_id = #{ruleDistId}
+        </if>
+    </select>
+</mapper>

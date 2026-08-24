@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.plugin.platform.hr.infra.mapper.HrSyncEmployeeMapper">
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap id="BaseResultMap" type="org.hzero.plugin.platform.hr.domain.entity.HrSyncEmployee">
+        <result column="sync_employee_id" property="syncEmployeeId" jdbcType="DECIMAL"/>
+        <result column="sync_type_code" property="syncTypeCode" jdbcType="VARCHAR"/>
+        <result column="userid" property="userid" jdbcType="VARCHAR"/>
+        <result column="name" property="name" jdbcType="VARCHAR"/>
+        <result column="mobile" property="mobile" jdbcType="VARCHAR"/>
+        <result column="position" property="position" jdbcType="VARCHAR"/>
+        <result column="gender" property="gender" jdbcType="DECIMAL"/>
+        <result column="email" property="email" jdbcType="VARCHAR"/>
+        <result column="tenant_id" property="tenantId" jdbcType="DECIMAL"/>
+        <result column="object_version_number" property="objectVersionNumber" jdbcType="DECIMAL"/>
+        <result column="creation_date" property="creationDate" jdbcType="DATE"/>
+        <result column="created_by" property="createdBy" jdbcType="DECIMAL"/>
+        <result column="last_updated_by" property="lastUpdatedBy" jdbcType="DECIMAL"/>
+        <result column="last_update_date" property="lastUpdateDate" jdbcType="DATE"/>
+    </resultMap>
+    <select id="getCreateEmployee" resultType="org.hzero.plugin.platform.hr.domain.entity.HrSyncEmployee">
+        select
+            he.employee_num userid,
+            he.name,
+            he.email,
+            he.mobile,
+            hea.unit_id department_id,
+            hp.position_name position,
+            he.gender,
+            he.tenant_id
+        from hpfm_employee he
+         join hpfm_employee_assign hea on hea.employee_id = he.employee_id
+         join hpfm_unit hu on hu.unit_id=hea.unit_id
+         join hpfm_position hp on hp.position_id = hea.position_id
+        where he.tenant_id= #{tenantId} and hu.enabled_flag=1 and hp.enabled_flag=1 and he.enabled_flag=1 and he.employee_num not in
+        (select hhse.userid from hpfm_hr_sync_employee hhse where hhse.tenant_id = #{tenantId} and hhse.sync_type_code = #{syncTypeCode})
+    </select>
+    <select id="getUpdateEmployee" resultType="org.hzero.plugin.platform.hr.domain.entity.HrSyncEmployee">
+        SELECT
+            hhse.sync_employee_id,
+            he.employee_num  userid,
+            he.name,
+            he.email,
+            he.mobile,
+            hea.unit_id  department_id,
+            hp.position_name  position,
+            hea.primary_position_flag,
+            he.gender,
+            he.tenant_id,
+            hhse.object_version_number,
+            hhse.sync_type_code
+        FROM hpfm_employee he
+            JOIN hpfm_employee_assign hea ON hea.employee_id = he.employee_id
+            JOIN hpfm_unit hu ON hu.unit_id = hea.unit_id
+            JOIN hpfm_position hp ON hp.position_id = hea.position_id
+            JOIN hpfm_hr_sync_employee hhse ON he.employee_num = hhse.userid
+        WHERE he.tenant_id = #{tenantId}
+            AND hu.enabled_flag = 1
+            AND hp.enabled_flag = 1
+            AND he.enabled_flag = 1
+            AND hhse.tenant_id = #{tenantId}
+            AND hhse.sync_type_code = #{syncTypeCode}
+            AND ((
+                    SELECT COUNT(1)
+                    FROM hpfm_employee_assign hea2
+                        JOIN hpfm_unit hu2 ON hea2.unit_id = hu2.unit_id
+                        JOIN hpfm_position hp2 ON hea2.position_id = hp2.position_id
+                    WHERE hea2.employee_id = he.employee_id AND hu2.enabled_flag = 1 AND hp2.enabled_flag = 1
+                        AND hea2.unit_id NOT IN (
+                            SELECT hhsd.unit_id
+                            FROM hpfm_hr_sync_dept_employee hhsde
+                                JOIN hpfm_hr_sync_dept hhsd ON hhsde.sync_dept_id = hhsd.sync_dept_id
+                            WHERE hhsde.sync_employee_id = hhse.sync_employee_id
+                        )
+                ) != 0
+                OR (
+                    SELECT COUNT(1)
+                    FROM hpfm_hr_sync_dept_employee hhsde2
+                        JOIN hpfm_hr_sync_dept hhsd2 ON hhsde2.sync_dept_id = hhsd2.sync_dept_id
+                    WHERE hhsde2.sync_employee_id = hhse.sync_employee_id
+                        AND hhsd2.unit_id NOT IN (
+                            SELECT hu3.unit_id
+                            FROM hpfm_employee_assign hea3
+                                JOIN hpfm_unit hu3 ON hea3.unit_id = hu3.unit_id
+                                JOIN hpfm_position hp3 ON hea3.position_id = hp3.position_id
+                            WHERE hea3.employee_id = he.employee_id AND hu3.enabled_flag = 1 AND hp3.enabled_flag = 1
+                        )
+                ) != 0
+                OR he.name != hhse.name
+                OR he.email != hhse.email
+                OR he.mobile != hhse.mobile
+                OR EXISTS (
+                    SELECT hp4.position_name
+                    FROM hpfm_employee_assign hea4
+                        JOIN hpfm_position hp4 ON hea4.position_id = hp4.position_id
+                    WHERE hea4.primary_position_flag = 1
+                        AND hea4.employee_id = he.employee_id
+                        AND hp4.position_name != hhse.position
+                )
+                <if test="syncTypeCode == 'WX'">
+                    or he.gender+1 != hhse.gender
+                </if>)
+    </select>
+    <select id="getDeleteEmployee" resultType="org.hzero.plugin.platform.hr.domain.entity.HrSyncEmployee">
+        select
+            hhse.sync_employee_id,
+            hhse.userid,
+            hhse.tenant_id,
+            hhse.object_version_number,
+            hhse.sync_type_code,
+            hhse.gender
+        from hpfm_hr_sync_employee hhse
+        where hhse.tenant_id = #{tenantId} and hhse.sync_type_code = #{syncTypeCode} and hhse.userid not in
+        (select he.employee_num
+        from hpfm_employee he
+         join hpfm_employee_assign hea on hea.employee_id = he.employee_id
+         join hpfm_unit hu on hu.unit_id=hea.unit_id
+         join hpfm_position hp on hp.position_id = hea.position_id
+        where he.tenant_id= #{tenantId} and hu.enabled_flag=1 and hp.enabled_flag=1 and he.enabled_flag=1)
+    </select>
+</mapper>

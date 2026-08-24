@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="38px" height="38px" viewBox="0 0 38 38" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 52.2 (67145) - http://www.bohemiancoding.com/sketch -->
+    <title>company-notice</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <rect id="path-1" x="0" y="0" width="38" height="38"></rect>
+    </defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="company-notice">
+            <mask id="mask-2" fill="white">
+                <use xlink:href="#path-1"></use>
+            </mask>
+            <use id="Rectangle" fill="#D8D8D8" opacity="0.01" xlink:href="#path-1"></use>
+            <g id="Group-33" mask="url(#mask-2)">
+                <g transform="translate(0.000000, 1.000000)">
+                    <polygon id="Path-13" stroke="none" fill="#19BBCB" fill-rule="evenodd" points="19.4625618 28.4444444 19.4625618 9 24.4625618 5 24.4625618 32"></polygon>
+                    <path d="M19.4625618,8.76920283 L19.4625618,29" id="Path-12" stroke="#1E3255" stroke-width="2" fill="none"></path>
+                    <path d="M24.4625618,5 L24.4625618,32" id="Path-12" stroke="#1E3255" stroke-width="2" fill="none"></path>
+                    <path d="M30,1 L16.6666667,11 L3,11 C1.8954305,11 1,11.8954305 1,13 L1,25 C1,26.1045695 1.8954305,27 3,27 L16.8867962,27 L30,35.1957524 L30,1 Z" id="Rectangle-2" stroke="#1E3255" stroke-width="2" fill="none"></path>
+                    <rect id="Rectangle" stroke="#1E3255" stroke-width="2" fill="#19BBCB" fill-rule="evenodd" x="5" y="15" width="8" height="3" rx="1.5"></rect>
+                    <rect id="Rectangle" stroke="none" fill="#1E3255" fill-rule="evenodd" transform="translate(35.000000, 4.500000) rotate(-30.000000) translate(-35.000000, -4.500000) " x="32" y="3" width="6" height="3" rx="1.5"></rect>
+                    <rect id="Rectangle" stroke="none" fill="#1E3255" fill-rule="evenodd" x="32" y="16" width="6" height="3" rx="1.5"></rect>
+                    <rect id="Rectangle" stroke="none" fill="#1E3255" fill-rule="evenodd" transform="translate(35.000000, 30.500000) rotate(-330.000000) translate(-35.000000, -30.500000) " x="32" y="29" width="6" height="3" rx="1.5"></rect>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.admin.infra.mapper.ServiceConfigMapper">
+
+    <select id="selectServiceConfigList" resultType="org.hzero.admin.domain.entity.ServiceConfig">
+        SELECT
+            hsc.service_config_id,
+            hsc.service_code,
+            hsc.config_version
+        FROM hadm_service_config hsc
+        WHERE 1 = 1
+        <if test="serviceCode != null and serviceCode != ''">
+            <bind name="serviceCodeLike" value="'%'+serviceCode+'%'" />
+            AND hsc.service_code LIKE #{serviceCodeLike}
+        </if>
+        <if test="configVersion != null and configVersion != ''">
+            <bind name="configVersionLike" value="'%'+configVersion+'%'" />
+            AND hsc.config_version LIKE #{configVersionLike}
+        </if>
+    </select>
+
+    <select id="selectConfigWithVersion" resultType="org.hzero.admin.domain.entity.ServiceConfig">
+        SELECT
+        hsc.service_config_id,
+        hsc.config_value,
+        object_version_number
+        FROM hadm_service_config hsc
+        WHERE hsc.service_code = #{serviceCode}
+        <if test="version != null">
+            AND hsc.config_version = #{version}
+        </if>
+        <if test="version == null">
+            AND hsc.config_version IS NULL
+        </if>
+    </select>
+
+    <select id="selectConfigCount" resultType="java.lang.Integer">
+        SELECT
+        COUNT(hsc.service_config_id)
+        FROM hadm_service_config hsc
+        WHERE 1 = 1
+        <if test="serviceCode != null and serviceCode != ''">
+            AND hsc.service_code = #{serviceCode}
+        </if>
+        <if test="serviceVersion != null and serviceVersion != ''">
+            AND hsc.config_version = #{serviceVersion}
+        </if>
+        <if test="serviceVersion == null">
+            AND hsc.config_version IS NULL
+        </if>
+    </select>
+</mapper>

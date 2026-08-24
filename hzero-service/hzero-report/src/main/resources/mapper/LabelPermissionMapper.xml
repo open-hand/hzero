@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.report.infra.mapper.LabelPermissionMapper">
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap id="BaseResultMap" type="org.hzero.report.domain.entity.LabelPermission">
+        <result column="permission_id" property="permissionId" jdbcType="DECIMAL"/>
+        <result column="label_template_id" property="labelTemplateId" jdbcType="DECIMAL"/>
+        <result column="tenant_id" property="tenantId" jdbcType="DECIMAL"/>
+        <result column="role_id" property="roleId" jdbcType="DECIMAL"/>
+        <result column="start_date" property="startDate" jdbcType="DATE"/>
+        <result column="end_date" property="endDate" jdbcType="DATE"/>
+        <result column="remark" property="remark" jdbcType="VARCHAR"/>
+        <result column="object_version_number" property="objectVersionNumber" jdbcType="DECIMAL"/>
+        <result column="creation_date" property="creationDate" jdbcType="DATE"/>
+        <result column="created_by" property="createdBy" jdbcType="DECIMAL"/>
+        <result column="last_updated_by" property="lastUpdatedBy" jdbcType="DECIMAL"/>
+        <result column="last_update_date" property="lastUpdateDate" jdbcType="DATE"/>
+    </resultMap>
+
+    <select id="selectLabelPermissions" resultType="org.hzero.report.domain.entity.LabelPermission">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()" />
+        SELECT
+            hlp.permission_id,
+            hlp.label_template_id,
+            hlp.tenant_id,
+            hlp.role_id,
+            hlp.start_date,
+            hlp.end_date,
+            hlp.remark,
+            hlp.object_version_number,
+            ht.tenant_name,
+            ir.name role_name
+        FROM
+            hrpt_label_template hlt
+            join hrpt_label_permission hlp on hlt.label_template_id = hlp.label_template_id
+            left join hpfm_tenant_tl ht on hlp.tenant_id = ht.tenant_id and ht.lang = #{lang}
+            left join iam_role ir on hlp.role_id = ir.id
+        WHERE
+            hlp.label_template_id = #{labelTemplateId}
+        <if test="tenantId != null">
+            AND hlp.tenant_id = #{tenantId}
+        </if>
+        <if test="flag == true">
+            AND hlp.role_id != -1
+        </if>
+    </select>
+</mapper>

@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.file.infra.mapper.ServerConfigMapper">
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap id="BaseResultMap" type="org.hzero.file.domain.entity.ServerConfig">
+        <result column="config_id" property="configId" jdbcType="DECIMAL"/>
+        <result column="config_code" property="configCode" jdbcType="VARCHAR"/>
+        <result column="description" property="description" jdbcType="VARCHAR"/>
+        <result column="source_type" property="sourceType" jdbcType="VARCHAR"/>
+        <result column="root_dir" property="rootDir" jdbcType="VARCHAR"/>
+        <result column="enabled_flag" property="enabledFlag" jdbcType="DECIMAL"/>
+        <result column="tenant_id" property="tenantId" jdbcType="DECIMAL"/>
+        <result column="object_version_number" property="objectVersionNumber" jdbcType="DECIMAL"/>
+        <result column="creation_date" property="creationDate" jdbcType="DATE"/>
+        <result column="created_by" property="createdBy" jdbcType="DECIMAL"/>
+        <result column="last_updated_by" property="lastUpdatedBy" jdbcType="DECIMAL"/>
+        <result column="last_update_date" property="lastUpdateDate" jdbcType="DATE"/>
+    </resultMap>
+
+    <select id="listConfig" resultType="org.hzero.file.domain.entity.ServerConfig">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()" />
+        SELECT
+        	hsc.config_id,
+        	hsc.config_code,
+        	hsc.description,
+        	hsc.source_type,
+        	hsc.root_dir,
+        	hsc.enabled_flag,
+        	hsc.tenant_id,
+        	ht.tenant_name,
+        	hsc.object_version_number
+        FROM
+        	hfle_server_config hsc
+        	JOIN hpfm_tenant_tl ht ON ht.tenant_id = hsc.tenant_id AND ht.lang = #{lang}
+        WHERE
+            1 = 1
+        <if test="tenantId != null">
+            AND hsc.tenant_id = #{tenantId}
+        </if>
+        <if test="configCode != null and configCode != ''">
+            <bind name="configCodeLike" value="'%'+configCode+'%'"/>
+            AND hsc.config_code LIKE #{configCodeLike}
+        </if>
+        <if test="description != null and description != ''">
+            <bind name="descriptionLike" value="'%'+description+'%'"/>
+            AND hsc.description LIKE #{descriptionLike}
+        </if>
+        <if test="enabledFlag != null">
+            AND hsc.enabled_flag = #{enabledFlag}
+        </if>
+    </select>
+
+    <select id="detailConfig" resultType="org.hzero.file.domain.entity.ServerConfig">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()" />
+        SELECT
+            hsc.config_id,
+            hsc.config_code,
+            hsc.description,
+            hsc.source_type,
+            hsc.root_dir,
+            hsc.enabled_flag,
+            hsc.tenant_id,
+            ht.tenant_name,
+            hsc.object_version_number
+        FROM
+            hfle_server_config hsc
+        JOIN hpfm_tenant_tl ht ON ht.tenant_id = hsc.tenant_id AND ht.lang = #{lang}
+        WHERE
+            hsc.config_id = #{configId}
+        <if test="tenantId != null">
+            AND hsc.tenant_id = #{tenantId}
+        </if>
+    </select>
+</mapper>

@@ -1,0 +1,17 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+org.hzero.boot.autoconfigure.platform.PlatformAutoConfiguration,\
+org.hzero.boot.platform.data.autoconfigure.PermissionDataAutoConfiguration,\
+org.hzero.boot.platform.event.autoconfigure.EventAutoConfiguration,\
+org.hzero.boot.platform.lov.autoconfigure.LovAutoConfiguration,\
+org.hzero.boot.platform.code.autoconfigure.CodeAutoConfigure,\
+org.hzero.boot.platform.rule.autoconfigure.RuleScriptAutoConfigure,\
+org.hzero.boot.platform.ds.autoconfigure.DsAutoConfigure,\
+org.hzero.boot.platform.permission.autoconfigure.PermissionAutoConfiguration,\
+org.hzero.boot.platform.profile.autoconfigure.ProfileAutoConfigure,\
+org.hzero.boot.platform.entity.autoconfigure.EntityRegistAutoConfiguration,\
+org.hzero.boot.platform.common.autoconfigure.CommonAutoConfigure,\
+org.hzero.boot.platform.plugin.autoconfigure.PluginAutoConfig,\
+org.hzero.boot.platform.export.DefaultAsyncExportAutoConfiguration,\
+org.hzero.boot.platform.form.autoconfigure.FormAutoConfiguration,\
+org.hzero.boot.platform.language.autoconfigure.LanguageAutoRefreshAutoConfiguration
+

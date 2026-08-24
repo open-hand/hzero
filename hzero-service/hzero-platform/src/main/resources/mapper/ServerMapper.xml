@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.platform.infra.mapper.ServerMapper">
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap id="BaseResultMap" type="org.hzero.platform.domain.entity.Server">
+        <result column="SERVER_ID" property="serverId" jdbcType="DECIMAL"/>
+        <result column="SERVER_CODE" property="serverCode" jdbcType="VARCHAR"/>
+        <result column="SERVER_NAME" property="serverName" jdbcType="VARCHAR"/>
+        <result column="SERVER_DESCRIPTION" property="serverDescription" jdbcType="VARCHAR"/>
+        <result column="PROTOCOL_CODE" property="protocolCode" jdbcType="VARCHAR"/>
+        <result column="IP" property="ip" jdbcType="VARCHAR"/>
+        <result column="PORT" property="port" jdbcType="DECIMAL"/>
+        <result column="LOGIN_USER" property="loginUser" jdbcType="VARCHAR"/>
+        <result column="LOGIN_ENC_PWD" property="loginEncPwd" jdbcType="VARCHAR"/>
+        <result column="ENABLED_FLAG" property="enabledFlag" jdbcType="DECIMAL"/>
+        <result column="TENANT_ID" property="tenantId" jdbcType="DECIMAL"/>
+        <result column="object_version_number" property="objectVersionNumber" jdbcType="DECIMAL"/>
+        <result column="creation_date" property="creationDate" jdbcType="DATE"/>
+        <result column="created_by" property="createdBy" jdbcType="DECIMAL"/>
+        <result column="last_updated_by" property="lastUpdatedBy" jdbcType="DECIMAL"/>
+        <result column="last_update_date" property="lastUpdateDate" jdbcType="DATE"/>
+    </resultMap>
+    
+    <select id="selectByServerIdList" resultType="org.hzero.platform.domain.entity.Server">
+        SELECT hfs.SERVER_ID,
+               hfs.server_name,
+               hfs.SERVER_CODE,
+               hfs.server_description,
+               hfs.protocol_code,
+               hfs.IP,
+               hfs.PORT,
+               hfs.LOGIN_USER,
+               hfs.LOGIN_ENC_PWD,
+               hfs.enabled_flag,
+               hfs.tenant_id,
+               hfs.OBJECT_VERSION_NUMBER,
+               hfs.CREATION_DATE,
+               hfs.CREATED_BY,
+               hfs.LAST_UPDATED_BY,
+               hfs.LAST_UPDATE_DATE
+        FROM hpfm_server hfs
+        where hfs.SERVER_ID in
+        <foreach collection="serverIds" item="serverId" open="(" close=")" separator=",">
+                     #{serverIds}
+        </foreach>
+    </select>
+    
+    <select id="selectByClusterIdList" resultType="org.hzero.platform.domain.entity.Server">
+        select hsa.CLUSTER_ID,
+               hfs.SERVER_ID,  
+               hfs.server_name,
+               hfs.SERVER_CODE,
+               hfs.server_description,
+               hfs.protocol_code,
+               hfs.IP,
+               hfs.PORT,
+               hfs.LOGIN_USER,
+               hfs.LOGIN_ENC_PWD,
+               hfs.enabled_flag,
+               hfs.tenant_id,
+               hfs.OBJECT_VERSION_NUMBER,
+               hfs.CREATION_DATE,
+               hfs.CREATED_BY,
+               hfs.LAST_UPDATED_BY,
+               hfs.LAST_UPDATE_DATE
+        from hpfm_server_assign hsa 
+        LEFT JOIN hpfm_server hfs on hsa.server_id = hfs.SERVER_ID
+        where hsa.cluster_id in
+            <foreach collection="clusterIds" item="clusterId" open="(" close=")" separator=",">
+                     #{clusterId}
+            </foreach>
+    </select>
+    
+    <select id="selectServerList" parameterType="org.hzero.platform.domain.entity.Server"
+            resultType="org.hzero.platform.domain.entity.Server">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()" />
+        SELECT hfs.SERVER_ID,
+               hfs.server_name,
+               hfs.SERVER_CODE,
+               hfs.server_description,
+               hfs.protocol_code,
+               hfs.IP,
+               hfs.PORT,
+               hfs.LOGIN_USER,
+               hfs.LOGIN_ENC_PWD,
+               hfs.enabled_flag,
+               hfs.tenant_id,
+               hfs.OBJECT_VERSION_NUMBER,
+               hfs.CREATION_DATE,
+               hfs.CREATED_BY,
+               hfs.LAST_UPDATED_BY,
+               hfs.LAST_UPDATE_DATE,
+               ht.tenant_name
+        FROM hpfm_server hfs
+        join hpfm_tenant_tl ht on hfs.tenant_id = ht.tenant_id and ht.lang = #{lang}
+        <where>
+            <if test="tenantId!= null">
+                AND hfs.tenant_id = #{tenantId,jdbcType=DECIMAL}
+            </if>
+             <if test="serverId != null">
+                AND hfs.server_id = #{serverId,jdbcType=DECIMAL}
+            </if>
+            <if test="serverName!= null">
+                AND hfs.server_name like concat('%',concat(#{serverName} ,'%'))
+            </if>
+            <if test="serverDescription!= null">
+                AND hfs.server_description like concat('%',concat(#{serverDescription} ,'%'))
+            </if>
+            <if test="protocolCode != null">
+                AND hfs.protocol_code = #{protocolCode}
+            </if>
+        </where>
+    </select>
+    
+    <select id="selectAllWithClusterInfo" parameterType="org.hzero.platform.domain.entity.Server"
+            resultType="org.hzero.platform.domain.entity.Server">
+        SELECT hfs.SERVER_ID,
+               hfs.server_name,
+               hfs.SERVER_CODE,
+               hfs.server_description,
+               hfs.protocol_code,
+               hfs.IP,
+               hfs.PORT,
+               hfs.LOGIN_USER,
+               hfs.LOGIN_ENC_PWD,
+               hfs.enabled_flag,
+               hfs.tenant_id,
+               hfs.OBJECT_VERSION_NUMBER,
+               hfs.CREATION_DATE,
+               hfs.CREATED_BY,
+               hfs.LAST_UPDATED_BY,
+               hfs.LAST_UPDATE_DATE,
+               c.cluster_id,
+               c.cluster_code,
+               c.cluster_name
+        FROM hpfm_server hfs
+             join hpfm_server_assign a
+                           on hfs.server_id = a.server_id
+              join hpfm_server_cluster c
+                           on a.cluster_id = c.cluster_id
+        <where>
+            <if test="serverId!= null">
+                AND hfs.SERVER_ID = #{serverId,jdbcType=DECIMAL}
+            </if>
+            <if test="tenantId!= null">
+                AND hfs.tenant_id = #{tenantId,jdbcType=DECIMAL}
+            </if>
+            <if test="serverName!= null">
+                AND hfs.server_name like concat('%',concat(#{serverName} ,'%'))
+            </if>
+            <if test="serverDescription!= null">
+                AND hfs.server_description like concat('%',concat(#{serverDescription} ,'%'))
+            </if>
+            <if test="enabledFlag!= null">
+                AND hfs.ENABLEd_FLAG = #{enabledFlag}
+            </if>
+            <if test="clusterId!= null">
+                AND a.cluster_id = #{clusterId}
+            </if>
+        </where>
+    </select>
+
+    <select id="fetchCanAssignFileServers" resultType="org.hzero.platform.domain.entity.Server">
+        select hfs.SERVER_ID,
+               hfs.server_name,
+               hfs.SERVER_CODE,
+               hfs.server_description,
+               hfs.protocol_code,
+               hfs.IP,
+               hfs.PORT,
+               hfs.LOGIN_USER,
+               hfs.LOGIN_ENC_PWD,
+               hfs.enabled_flag,
+               hfs.tenant_id
+        from hpfm_server hfs,hpfm_server_cluster hsc
+        where  hsc.cluster_id = #{clusterId}
+               and hfs.TENANT_ID = hsc.tenant_id
+            <if test="serverName!= null">
+                AND hfs.server_name like concat('%',concat(#{serverName} ,'%'))
+            </if>
+            <if test="serverDescription!= null">
+                AND hfs.server_description like concat('%',concat(#{serverDescription} ,'%'))
+            </if>
+        and server_id not in (
+            select server_id from hpfm_server_assign a where a.cluster_id = #{clusterId}
+        )
+    </select>
+
+    <select id="findCluster" resultMap="BaseResultMap">
+        SELECT
+            fs.server_id,
+            fs.server_name,
+            fs.server_code,
+            fs.server_description,
+            fs.protocol_code,
+            fs.ip,
+            fs.port,
+            fs.login_user,
+            fs.login_enc_pwd,
+            fs.enabled_flag,
+            fs.tenant_id,
+            fs.object_version_number,
+            fs.creation_date,
+            fs.created_by,
+            fs.last_updated_by,
+            fs.last_update_date
+        FROM
+            hpfm_server fs
+            JOIN hpfm_server_assign fsa ON fsa.server_id = fs.server_id
+        WHERE
+            fsa.cluster_id = #{clusterId}
+    </select>
+    
+    <select id="selectByServerId" resultType="org.hzero.platform.domain.entity.Server">
+        SELECT hfs.SERVER_ID,
+               hfs.server_name,
+               hfs.SERVER_CODE,
+               hfs.server_description,
+               hfs.protocol_code,
+               hfs.IP,
+               hfs.PORT,
+               hfs.LOGIN_USER,
+               hfs.LOGIN_ENC_PWD,
+               hfs.enabled_flag,
+               hfs.tenant_id,
+               hfs.OBJECT_VERSION_NUMBER,
+               hfs.CREATION_DATE,
+               hfs.CREATED_BY,
+               hfs.LAST_UPDATED_BY,
+               hfs.LAST_UPDATE_DATE
+        FROM hpfm_server hfs
+        where hfs.SERVER_ID = #{serverId}
+            <if test="tenantId!= null">
+                AND hfs.tenant_id = #{tenantId,jdbcType=DECIMAL}
+            </if>
+    </select>
+    
+</mapper>

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.file.infra.mapper.FileEditLogMapper">
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap id="BaseResultMap" type="org.hzero.file.domain.entity.FileEditLog">
+        <result column="log_id" property="logId" jdbcType="DECIMAL"/>
+        <result column="file_id" property="fileId" jdbcType="DECIMAL"/>
+        <result column="user_id" property="userId" jdbcType="DECIMAL"/>
+        <result column="edit_type" property="editType" jdbcType="VARCHAR"/>
+        <result column="change_log" property="changeLog" jdbcType="VARCHAR"/>
+        <result column="change_date" property="changeDate" jdbcType="DATE"/>
+        <result column="object_version_number" property="objectVersionNumber" jdbcType="DECIMAL"/>
+        <result column="creation_date" property="creationDate" jdbcType="DATE"/>
+        <result column="created_by" property="createdBy" jdbcType="DECIMAL"/>
+        <result column="last_updated_by" property="lastUpdatedBy" jdbcType="DECIMAL"/>
+        <result column="last_update_date" property="lastUpdateDate" jdbcType="DATE"/>
+    </resultMap>
+
+    <select id="listFileEditLog" resultType="org.hzero.file.domain.entity.FileEditLog">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()" />
+        SELECT
+        	hfel.log_id,
+        	hfel.file_id,
+        	hf.file_name,
+        	hf.tenant_id,
+        	ht.tenant_name,
+        	hfel.user_id,
+        	iu.real_name,
+        	hfel.edit_type,
+        	hfel.change_log,
+        	hfel.change_date,
+        	hfel.object_version_number
+        FROM
+        	hfle_file_edit_log hfel
+        	JOIN hfle_file hf ON hf.file_id = hfel.file_id
+        	JOIN iam_user iu ON iu.id = hfel.user_id
+        	JOIN hpfm_tenant_tl ht ON ht.tenant_id = hf.tenant_id AND ht.lang = #{lang}
+        WHERE
+            1 = 1
+        <if test="tenantId != null">
+            AND hf.tenant_id = #{tenantId}
+        </if>
+        <if test="fileName != null and fileName != ''">
+            <bind name="fileNameLike" value="'%' + fileName + '%'"/>
+            AND hf.file_name LIKE #{fileNameLike}
+        </if>
+        <if test="realName != null and realName != ''">
+            <bind name="realNameLike" value="'%' + realName + '%'"/>
+            AND iu.real_name LIKE #{realNameLike}
+        </if>
+        <if test="editType != null and editType != ''">
+            AND hfel.edit_type = #{editType}
+        </if>
+        <if test="changeDateFrom != null">
+            AND hfel.change_date &gt;= #{changeDateFrom}
+        </if>
+        <if test="changeDateTo != null">
+            AND hfel.change_date &lt;= #{changeDateTo}
+        </if>
+    </select>
+</mapper>

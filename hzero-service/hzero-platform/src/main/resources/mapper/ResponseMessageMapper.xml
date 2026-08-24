@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.platform.infra.mapper.ResponseMessageMapper">
+    <select id="selectMessageList" resultType="org.hzero.platform.domain.entity.Message">
+        SELECT
+          hm.message_id,
+          hm.code,
+          hm.type,
+          hm.lang,
+          hm.description,
+          hm.object_version_number,
+          fl.description lang_meaning
+        FROM hpfm_message hm
+        JOIN fd_language fl ON hm.lang=fl.code
+        <where>
+            <if test="code != null and code != ''">
+            <bind name="codeLike" value="'%'+code+'%'"/>
+                AND hm.code LIKE #{codeLike}
+            </if>
+            <if test="type != null and type != ''">
+                AND hm.type=#{type}
+            </if>
+            <if test="lang != null and lang != ''">
+                AND hm.lang=#{lang}
+            </if>
+            <if test="messageId != null">
+                AND hm.message_id=#{messageId}
+            </if>
+            <if test="description != null and description != ''">
+            <bind name="descriptionLike" value="'%'+description+'%'" />
+                AND hm.description LIKE #{descriptionLike}
+            </if>
+        </where>
+        ORDER BY hm.creation_date DESC
+    </select>
+</mapper>

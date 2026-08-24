@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.report.infra.mapper.TemplateMapper">
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap id="BaseResultMap" type="org.hzero.report.domain.entity.Template">
+        <result column="template_id" property="templateId" jdbcType="DECIMAL"/>
+        <result column="template_type_code" property="templateTypeCode" jdbcType="VARCHAR"/>
+        <result column="template_code" property="templateCode" jdbcType="VARCHAR"/>
+        <result column="template_name" property="templateName" jdbcType="VARCHAR"/>
+        <result column="enabled_flag" property="enabledFlag" jdbcType="DECIMAL"/>
+        <result column="remark" property="remark" jdbcType="VARCHAR"/>
+        <result column="tenant_id" property="tenantId" jdbcType="DECIMAL"/>
+        <result column="tenant_name" property="tenantName" jdbcType="VARCHAR"/>
+        <result column="object_version_number" property="objectVersionNumber" jdbcType="DECIMAL"/>
+        <result column="creation_date" property="creationDate" jdbcType="DATE"/>
+        <result column="created_by" property="createdBy" jdbcType="DECIMAL"/>
+        <result column="last_updated_by" property="lastUpdatedBy" jdbcType="DECIMAL"/>
+        <result column="last_update_date" property="lastUpdateDate" jdbcType="DATE"/>
+    </resultMap>
+    
+    <!-- 查询模板列表 -->
+    <select id="selectTemplates" parameterType="org.hzero.report.domain.entity.Template" resultMap="BaseResultMap">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()" />
+        SELECT
+			hl.template_id,
+			hl.template_type_code,
+			hl.template_code,
+            htl.template_name,
+			hl.enabled_flag,
+			hl.remark,
+			hl.tenant_id,
+			ht.tenant_name,
+			hl.object_version_number
+        FROM hrpt_template hl
+        LEFT JOIN hpfm_tenant_tl ht ON hl.tenant_id = ht.tenant_id AND ht.lang = #{lang}
+        LEFT JOIN hrpt_template_tl htl ON htl.template_id = hl.template_id AND htl.lang = #{lang}
+        <where>
+            <if test="templateCode != null and templateCode != ''">
+                <bind name="templateCodeLike" value="'%' + templateCode + '%'" />
+                AND hl.template_code LIKE #{templateCodeLike}
+            </if>
+            <if test="templateName != null and templateName != ''">
+                <bind name="templateNameLike" value="'%' + templateName + '%'" />
+                AND htl.template_name LIKE #{templateNameLike}
+            </if>
+            <if test="templateTypeCode != null and templateTypeCode != ''">
+                AND hl.template_type_code = #{templateTypeCode}
+            </if>
+            <if test="tenantId != null">
+                AND hl.tenant_id = #{tenantId}
+            </if>
+        </where>
+    </select>
+    
+    <!-- 查询模板明细 -->
+    <select id="selectTemplate" resultMap="BaseResultMap">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()" />
+        SELECT
+        	hl.template_id,
+        	hl.template_type_code,
+        	hl.template_code,
+            htl.template_name,
+        	hl.enabled_flag,
+        	hl.remark,
+        	hl.tenant_id,
+        	ht.tenant_name,
+        	hl.object_version_number
+        FROM
+        	hrpt_template hl
+        LEFT JOIN hpfm_tenant_tl ht ON hl.tenant_id = ht.tenant_id AND ht.lang = #{lang}
+        LEFT JOIN hrpt_template_tl htl ON htl.template_id = hl.template_id AND htl.lang = #{lang}
+        WHERE
+        	hl.template_id = #{templateId}
+    </select>
+    
+    <!-- 查询被引用次数 -->
+    <select id="selectReferenceCount" resultType="java.lang.Integer">
+        SELECT
+        	COUNT( * )
+        FROM
+        	hrpt_report_template hrt
+        WHERE
+        	hrt.template_id = #{templateId}
+    </select>
+    
+</mapper>

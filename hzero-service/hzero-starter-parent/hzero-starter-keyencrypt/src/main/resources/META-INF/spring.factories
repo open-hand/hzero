@@ -1,0 +1,3 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+org.hzero.starter.keyencrypt.EncryptConfiguration,\
+org.hzero.starter.keyencrypt.mvc.EncryptArgParamResolverConfiguration

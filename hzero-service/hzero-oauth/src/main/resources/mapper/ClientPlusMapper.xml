@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.oauth.infra.mapper.ClientPlusMapper">
+    <resultMap id="RoleDetails" type="org.hzero.oauth.domain.vo.ClientRoleDetails">
+        <result column="h_tenant_id" property="tenantId" jdbcType="BIGINT"/>
+        <collection property="roles" ofType="org.hzero.oauth.domain.vo.Role">
+            <result column="role_id" property="id" jdbcType="BIGINT"/>
+        </collection>
+    </resultMap>
+
+    <resultMap id="ClientMap" type="org.hzero.oauth.domain.entity.Client">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="organization_id" property="organizationId"/>
+        <result column="resource_ids" property="resourceIds"/>
+        <result column="secret" property="secret"/>
+        <result column="scope" property="scope"/>
+        <result column="authorized_grant_types" property="authorizedGrantTypes"/>
+        <result column="web_server_redirect_uri" property="webServerRedirectUri"/>
+        <result column="access_token_validity" property="accessTokenValidity"/>
+        <result column="refresh_token_validity" property="refreshTokenValidity"/>
+        <result column="additional_information" property="additionalInformation"/>
+        <result column="auto_approve" property="autoApprove"/>
+        <result column="created_by" property="createdBy"/>
+        <result column="access_roles" property="accessRoles"/>
+        <result column="pwd_replay_flag" property="pwdReplayFlag"/>
+        <result column="time_zone" property="clientTimeZone"/>
+
+        <result column="user_id" property="userId"/>
+        <result column="real_name" property="realName"/>
+        <result column="email" property="email"/>
+        <result column="time_zone" property="timeZone"/>
+        <result column="language" property="language"/>
+        <result column="is_admin" property="isAdmin"/>
+
+        <collection property="roles" ofType="org.hzero.oauth.domain.vo.Role">
+            <id column="role_id" property="id"/>
+            <result column="tenant_id" property="tenantId"/>
+        </collection>
+    </resultMap>
+
+    <select id="selectClientWithUserAndRole" resultMap="ClientMap" >
+        select
+            oc.id,
+            oc.name,
+            oc.organization_id,
+            oc.resource_ids,
+            oc.secret,
+            oc.scope,
+            oc.authorized_grant_types,
+            oc.web_server_redirect_uri,
+            oc.access_token_validity,
+            oc.refresh_token_validity,
+            oc.additional_information,
+            oc.auto_approve,
+            oc.created_by,
+            oc.access_roles,
+            oc.pwd_replay_flag,
+            oc.time_zone,
+
+            iu.id user_id,
+            iu.real_name,
+            iu.email,
+            iu.time_zone,
+            iu.language,
+            iu.is_admin,
+
+            imr.role_id,
+            ht.tenant_id
+        from
+            oauth_client oc
+            left join iam_user iu on iu.id = oc.created_by
+            left join iam_member_role imr ON (oc.id = imr.member_id and imr.member_type = 'client')
+            left join iam_role ir ON (ir.id = imr.role_id AND ir.is_enabled = 1)
+            left join hpfm_tenant ht ON (ht.tenant_id = ir.h_tenant_id AND ht.enabled_flag = 1)
+        where
+            oc.name = #{clientName}
+    </select>
+    <select id="selectRoleDetails" resultMap="RoleDetails">
+        <bind name="now" value="@java.time.LocalDate@now()" />
+        SELECT
+            ir.h_tenant_id,
+            imr.role_id
+        FROM
+            iam_member_role imr
+            JOIN iam_role ir ON imr.role_id = ir.id
+        WHERE
+            imr.member_type = 'client'
+            AND imr.member_id = #{clientId}
+            and (
+                imr.start_date_active is null
+                or imr.start_date_active &lt;= #{now}
+            )
+            and (
+                imr.end_date_active is null
+                or imr.end_date_active >= #{now}
+            )
+    </select>
+
+</mapper>

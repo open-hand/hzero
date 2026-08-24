@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.platform.infra.mapper.PermissionRangeExclMapper">
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap id="BaseResultMap" type="org.hzero.platform.domain.entity.PermissionRangeExcl">
+        <result column="range_exclude_id" property="rangeExcludeId" jdbcType="DECIMAL"/>
+        <result column="range_id" property="rangeId" jdbcType="DECIMAL"/>
+        <result column="service_name" property="serviceName" jdbcType="VARCHAR"/>
+        <result column="tenant_id" property="tenantId" jdbcType="DECIMAL"/>
+        <result column="sql_id" property="sqlId" jdbcType="VARCHAR"/>
+        <result column="object_version_number" property="objectVersionNumber" jdbcType="DECIMAL"/>
+        <result column="creation_date" property="creationDate" jdbcType="DATE"/>
+        <result column="created_by" property="createdBy" jdbcType="DECIMAL"/>
+        <result column="last_updated_by" property="lastUpdatedBy" jdbcType="DECIMAL"/>
+        <result column="last_update_date" property="lastUpdateDate" jdbcType="DATE"/>
+    </resultMap>
+    <select id="listExcl" resultType="org.hzero.platform.domain.entity.PermissionRangeExcl">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()" />
+        SELECT
+            hpre.range_exclude_id,
+            hpre.range_id,
+            hpre.service_name,
+            hpre.tenant_id,
+            hpre.sql_id,
+            hpre.object_version_number,
+            htt.tenant_name
+        FROM
+            hpfm_permission_range_excl hpre
+            LEFT JOIN hpfm_tenant_tl htt ON htt.tenant_id = hpre.tenant_id AND htt.lang = #{lang}
+        WHERE
+            hpre.range_id IN
+        <foreach collection="rangeIds" item="rangeId" open="(" close=")" separator=",">
+            #{rangeId}
+        </foreach>
+    </select>
+</mapper>

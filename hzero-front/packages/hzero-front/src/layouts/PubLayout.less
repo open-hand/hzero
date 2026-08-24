@@ -1,0 +1,26 @@
+:global {
+  .menu-tabs {
+    flex: auto;
+    height: 100%;
+    margin-top: -41px;
+
+    > .ant-tabs-bar {
+      margin-bottom: 0;
+      padding: 0 12px 0 64px;
+    }
+
+    > .ant-tabs-content {
+      height: e('calc( 100% - 40px )');
+
+      > .ant-tabs-tabpane {
+        height: 100%;
+        overflow: auto;
+
+        > .page-container {
+          height: 100%;
+          background-color: #fff;
+        }
+      }
+    }
+  }
+}

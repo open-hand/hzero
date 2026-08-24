@@ -1,0 +1,91 @@
+
+*{margin: 0}
+html{
+  width: 100%;
+  height: 100%;
+}
+body {
+  width: 100%;
+  background-image: url(/public/static/main/img/bg.svg);
+  background-size: cover;
+  padding-top: 30px;
+  height: calc(100% - 30px);
+}
+.step-input {
+  font-size: 14px;padding: 6px;width: 370px;border: 1px solid rgba(0,0,0,0.26);border-radius: 1px;
+}
+.step-body{
+  width: 78.1%;
+  position: relative;
+  margin-left: auto;
+  margin-right: auto;
+  box-shadow: 0 1px 3px 0 rgba(0,0,0,0.20);
+  background: white;
+  padding-top: 40px;
+    padding-left: 71px;
+    padding-right: 71px;
+    padding-bottom: 100px;
+}
+.step-header{
+		
+		width: 100%;
+		margin: 0 auto;
+		display: none;
+}
+.step-header ul{
+		padding: 0;
+}
+.step-header li{
+	list-style-type:none;
+	text-align: center;
+	float: left;
+	position: relative;
+}
+.step-header li p{
+	margin-top: 18px;
+	font-weight: bold;
+	font-size: 14px;
+	font-family:  寰蒋闆呴粦;
+	color: #999999;
+
+
+}
+.step-header li span{
+	position: relative;
+	margin: 0 auto;
+	font-weight: bold;
+	font-size: 20px;
+	font-family: Arial;
+	color: #303F9F;
+	height: 40px;
+	line-height: 40px;
+	background: url(./images/cell2.jpg) center top  no-repeat ;
+	display: block;
+}
+.step-header li.step-active span{
+	background: url(./images/cell-active2.jpg) center top  no-repeat ;
+	color: white;
+}
+.step-header li.step-active p{
+	color: #333333;
+}
+.step-bar,.step-bar-active{
+	height: 8px;
+	border-radius: 1rem;
+}
+.step-bar{
+	width:100%;
+	background: url(./images/bar-bg2.jpg) ;
+	position: relative;
+	border-radius: 12px;
+	top: 26px;
+}
+.step-bar-active{
+	width: 0px;
+	background: url(./images/bar-bg-active2.jpg) ;
+
+}
+.step-list{
+	display: none;
+	clear: both;
+}

@@ -1,0 +1,53 @@
+/*!
+    style - 平台级期间定义
+    @author WH <heng.wei@hand-china.com>
+    @version 0.5.0
+    @copyright Copyright (c) 2018, Hand
+*/
+.hpfm-period {
+  height: auto;
+
+  :global {
+    .ant-tabs-tabpane > .ant-row {
+      margin: 12px 0;
+    }
+    .ant-form-item {
+      width: 90%;
+    }
+  }
+}
+.hpfm-period-list {
+  // width: 900px;
+  :global {
+    .ant-form-item-control {
+      line-height: 29px;
+    }
+    .ant-form-item {
+      margin: 0;
+      width: 100%;
+    }
+    .ant-input-number-input {
+      text-align: right;
+      padding-right: 24px;
+    }
+    .ant-input-disabled {
+      background-color: #fff;
+      border: none;
+      &:hover {
+        // background: #eeeffb;
+        background-color: #fff;
+      }
+    }
+    .ant-form-explain {
+      text-align: left;
+      padding: 2px;
+    }
+  }
+}
+.hpfm-period-modal {
+  :global {
+    .ant-modal-footer .ant-btn-primary {
+      display: none;
+    }
+  }
+}

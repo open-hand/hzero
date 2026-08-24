@@ -1,0 +1,27 @@
+.header-text {
+  margin-bottom: 20px;
+}
+.service-name-render {
+  margin: -20px 0 0 100px;
+  .service-name-item {
+    align-items: center;
+    padding-top: 5px;
+    margin-top: 7px;
+    border-top: 1px solid #eee;
+    &:first-child {
+      padding-top: 0;
+      margin-top: 0;
+      border-top: none;
+    }
+    & > div:first-child {
+      flex: 0 0 350px;
+    }
+    & > div:nth-child(2) {
+      margin: 0 20px;
+      flex: 0 0 200px;
+    }
+    & > div:last-child {
+      flex: 200px;
+    }
+  }
+}

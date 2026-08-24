@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.platform.infra.mapper.CountryMapper">
+
+    <select id="listCountryByCondition" resultType="org.hzero.platform.domain.entity.Country">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        select
+            hc.country_id,
+            hc.country_code,
+            hct.country_name,
+            hc.enabled_flag,
+            hc.object_version_number,
+            hct.quick_index,
+            hc.tenant_id,
+            hct.abbreviation
+        from hpfm_country hc
+            join hpfm_country_tl hct on hc.country_id = hct.country_id and hct.lang = #{lang}
+        <where>
+            <if test="@org.springframework.util.StringUtils@hasText(condition)">
+                <bind name="condition" value="'%' + condition + '%'"/>
+                (hc.country_code like #{condition} or hct.country_name like #{condition} or hc.abbreviation like #{condition})
+            </if>
+            <if test="enabledFlag != null">
+                and hc.enabled_flag = #{enabledFlag}
+            </if>
+            <if test="tenantId != null">
+                and (hc.tenant_id = #{tenantId} OR hc.tenant_id = 0)
+            </if>
+        </where>
+    </select>
+    <select id="selectByPrimaryKeyList" resultType="org.hzero.platform.domain.entity.Country">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        select
+            hc.country_id,
+            hc.country_code,
+            hct.country_name
+        from hpfm_country hc
+            join hpfm_country_tl hct on hc.country_id = hct.country_id and hct.lang = #{lang}
+        where
+            hc.country_id in
+        <foreach collection="ids" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+    </select>
+
+    <select id="queryCountryByPrimaryKeys" resultType="org.hzero.platform.api.dto.CountryDTO">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        SELECT hc.country_id,        hc.country_code,
+                hct.country_name
+        FROM hpfm_country hc
+             LEFT JOIN hpfm_country_tl hct ON hct.country_id = hc.country_id AND hct.lang = #{lang}
+        WHERE hc.country_id IN
+                    <foreach collection="countryIds" item="countryId" separator=","
+                          open="(" close=")">
+                        #{countryId}
+                    </foreach>
+    </select>
+
+</mapper>

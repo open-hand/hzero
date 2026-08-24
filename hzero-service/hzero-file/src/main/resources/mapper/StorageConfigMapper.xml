@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.file.infra.mapper.StorageConfigMapper">
+    <!-- 可根据自己的需求，是否要使用 -->
+    <resultMap id="BaseResultMap" type="org.hzero.file.domain.entity.StorageConfig">
+        <result column="storage_config_id" property="storageConfigId" jdbcType="DECIMAL"/>
+        <result column="storage_type" property="storageType" jdbcType="DECIMAL"/>
+        <result column="domain" property="domain" jdbcType="VARCHAR"/>
+        <result column="end_point" property="endPoint" jdbcType="VARCHAR"/>
+        <result column="access_key_id" property="accessKeyId" jdbcType="VARCHAR"/>
+        <result column="access_key_secret" property="accessKeySecret" jdbcType="VARCHAR"/>
+        <result column="app_id" property="appId" jdbcType="DECIMAL"/>
+        <result column="region" property="region" jdbcType="VARCHAR"/>
+        <result column="default_flag" property="defaultFlag" jdbcType="DECIMAL"/>
+        <result column="tenant_id" property="tenantId" jdbcType="DECIMAL"/>
+        <result column="object_version_number" property="objectVersionNumber" jdbcType="DECIMAL"/>
+        <result column="creation_date" property="creationDate" jdbcType="DATE"/>
+        <result column="created_by" property="createdBy" jdbcType="DECIMAL"/>
+        <result column="last_updated_by" property="lastUpdatedBy" jdbcType="DECIMAL"/>
+        <result column="last_update_date" property="lastUpdateDate" jdbcType="DATE"/>
+    </resultMap>
+
+    <update id="resetDefaultStorageConfig" parameterType="java.lang.Long">
+        UPDATE hfle_storage_config
+        SET default_flag = 0
+        WHERE tenant_id = #{tenantId}
+            AND default_flag = 1
+    </update>
+
+    <select id="selectByUnique" resultType="org.hzero.file.domain.entity.StorageConfig">
+        SELECT
+            hsc.storage_config_id,
+            hsc.storage_code,
+            hsc.storage_type,
+            hsc.domain,
+            hsc.end_point,
+            hsc.access_key_id,
+            hsc.access_key_secret,
+            hsc.app_id,
+            hsc.region,
+            hsc.bucket_prefix,
+            hsc.tenant_id,
+            hsc.default_flag,
+            hsc.access_control,
+            hsc.prefix_strategy,
+            hsc.create_bucket_flag,
+            hsc.object_version_number
+        FROM
+            hfle_storage_config hsc
+        WHERE
+            hsc.tenant_id = #{tenantId}
+            <if test="storageCode != null and storageCode != ''">
+                AND hsc.storage_code = #{storageCode}
+            </if>
+            <if test="storageCode == null">
+                AND hsc.storage_code IS NULL
+            </if>
+    </select>
+</mapper>

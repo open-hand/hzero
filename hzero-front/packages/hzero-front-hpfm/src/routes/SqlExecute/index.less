@@ -1,0 +1,70 @@
+/*!
+    style - SQL执行界面
+    @author LZY <zhuyan.luo@hand-china.com>
+    @version 0.5.0
+    @copyright Copyright (c) 2018, Hand
+*/
+.sql-execute {
+  display: flex;
+  padding: 0;
+  background: #f5f5f5;
+
+  .sql-execute-left {
+    flex: 0 0 auto;
+    width: 294px;
+    overflow: auto;
+    padding: 10px 24px 0;
+    background-color: #fff;
+    border-right: 1px solid #ebedf2;
+
+    .table-title {
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    .field-type-title {
+      color: #898b96;
+    }
+
+    :global {
+      .ant-form-item {
+        margin-bottom: 0;
+      }
+    }
+  }
+
+  .sql-execute-right {
+    flex: auto;
+    display: flex;
+    flex-direction: column;
+    overflow: auto;
+
+    .execute-form {
+      flex: none;
+      padding: 20px 24px;
+      background-color: #fff;
+    }
+
+    .result-table {
+      flex: auto;
+      background-color: #fff;
+      padding: 0 24px 20px 24px;
+      overflow: auto;
+      // :global {
+      //   .ant-tabs {
+      //     position: inherit
+      //   }
+      //   .ant-tabs-bar {
+      //     position: absolute;
+      //     background: #fff;
+      //     z-index: 10000;
+      //     width: 100%;
+      //   }
+      //   .ant-tabs:not(.ant-tabs-vertical) > .ant-tabs-content {
+      //     width: 100%;
+      //     margin-top: 56px;
+      //   }
+      // }
+    }
+  }
+}

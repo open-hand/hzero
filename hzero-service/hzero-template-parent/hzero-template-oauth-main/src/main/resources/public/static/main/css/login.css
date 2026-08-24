@@ -1,0 +1,540 @@
+::-webkit-input-placeholder {
+    /* WebKit browsers */
+    color: #bfbfbf;
+}
+
+::-moz-placeholder {
+    /* Mozilla Firefox 19+ */
+    color: #bfbfbf;
+}
+
+:-ms-input-placeholder {
+    /* Internet Explorer 10+ */
+    color: #bfbfbf;
+}
+
+/** 文本输入框的 X  **/
+input::-ms-clear {
+    display: none;
+}
+
+/** 密码输入框的 X  **/
+input::-ms-reveal {
+    display: none;
+}
+
+/* 整个页面外面的样式 */
+
+body {
+    font-family: Monospaced Number, Chinese Quote, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, PingFang SC, Hiragino Sans GB, Microsoft YaHei, Helvetica Neue, Helvetica, Arial, sans-serif;
+}
+
+.login-layout {
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -webkit-flex-direction: column;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    -webkit-box-flex: 1;
+    -webkit-flex: auto;
+    -ms-flex: auto;
+    flex: auto;
+    background: #f0f2f5;
+}
+
+.login-container {
+    width: 100vw;
+    background: #f0f2f5;
+    height: 100vh;
+    align-items: center;
+}
+
+.login-container>.header,
+.login-container>.footer {
+    width: 100%;
+}
+
+.login-container>.login-layout-content {
+    flex: auto;
+    display: flex;
+    align-items: center;
+}
+
+/* Tabs 的样式 */
+.login-container>.login-layout-content>.login-tab {
+    flex-shrink: 0;
+    width: 500px;
+    min-height: 420px;
+    background-color: #fff;
+}
+
+.lang-icon {
+    cursor: pointer;
+}
+
+.lang-type {
+    display: flex;
+    justify-content: flex-start;
+    align-self: flex-end;
+}
+
+.lang-type>a {
+    margin: 6px;
+}
+
+.lang-type>a>img {
+    width: 40px;
+    height: 40px;
+}
+
+
+
+/*!* 覆盖 Tabs 的样式 *!*/
+/*.login-tab > .ant-tabs > .ant-tabs-bar > .ant-tabs-nav-container > .ant-tabs-tab-prev,*/
+/*.login-tab > .ant-tabs > .ant-tabs-bar > .ant-tabs-nav-container > .ant-tabs-tab-next,*/
+/*.login-tab > .ant-tabs > .ant-tabs-bar > .ant-tabs-nav-container > .ant-tabs-nav-wrap*/
+/*> .ant-tabs-nav-scroll > .ant-tabs-nav > .ant-tabs-ink-bar {*/
+/*    !* 由于 改写的 style 控制, 所以 这里 使用 !import *!*/
+/*    display: none !important;*/
+/*}*/
+
+/*.login-tab > .ant-tabs > .ant-tabs-bar > .ant-tabs-nav-container > .ant-tabs-nav-wrap*/
+/*> .ant-tabs-nav-scroll > .ant-tabs-nav > .ant-tabs-tab {*/
+/*    width: 200px;*/
+/*}*/
+
+/* Tabs.TabPane 的样式 */
+.login-tab-pane {
+    padding: 0 60px 30px;
+}
+
+.login-tab-pane>.logo {
+    padding-top: 48px;
+    height: 60px;
+    text-align: center;
+}
+
+.login-tab-pane>.logo>a {
+}
+
+.login-tab-pane>.logo+form {
+    margin-top: 64px;
+}
+
+.login-tab-pane>.logo+form+div {
+    /* ant-form-item */
+    margin-bottom: 0;
+}
+
+/* Footer 的样式 */
+.footer {
+    bottom: 10px;
+    padding: 24px 50px;
+    color: #555;
+    font-size: 12px;
+    text-align: center;
+    background-color: #f0f2f5;
+}
+
+
+/* open app login icons' wrap */
+.login-open-app {
+    /* there use flex because found some flex layout in this project */
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.login-open-app>span {
+    /* span is every item in login-open-app */
+    flex-shrink: 0;
+    height: 40px;
+    line-height: 40px;
+    /* limit item height to 40px */
+    max-height: 40px;
+    overflow: hidden;
+}
+
+.login-open-app .login-open-app-icon-btn-wrap {
+    /* submit btn */
+    background-color: transparent;
+    outline: none;
+    border: 0;
+    cursor: pointer;
+}
+
+.login-open-app .login-open-app-icon {
+    /* icon's style */
+    margin-bottom: 12px;
+    height: 40px;
+    width: 40px;
+}
+
+
+/* 覆盖 表单组件的样式 */
+
+.login-form-item {
+    margin-bottom: 24px;
+    vertical-align: top;
+}
+
+.login-form-item-with-help {
+    margin-bottom: 6.5px;
+}
+
+.login-form-item-children-input {
+    padding-left: 10px;
+    margin: 0 0 0 30px !important;
+    width: calc(100% - 30px) !important;
+}
+
+.login-form-item-children-prefix {
+    display: inline-block;
+    position: relative;
+    width: 100%;
+    margin-bottom: 3px;
+    border: 1px solid #ccc;
+    border-radius: 2px;
+}
+
+.login-form-explain {
+    color: #d50000;
+    line-height: normal;
+}
+
+.login-form-item-children-input .login-form-input {
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+    background-color: transparent !important;
+    margin: 0;
+    padding: 0;
+    line-height: normal;
+    height: 36px;
+    font-size: 13px;
+}
+
+.login-form-input-prefix {
+    padding-left: 10px;
+    position: absolute !important;
+    top: 0;
+    bottom: 0;
+    margin: auto 0;
+    color: rgba(0, 0, 0, .26);
+}
+
+.login-col-12 {
+    width: 50%;
+    float: left;
+}
+
+.login-form-item-control {
+    height: 42.75px
+}
+
+.login-form-item-control:after,
+.login-form-item-control:before {
+    content: " ";
+    display: table;
+}
+
+.login-form-button-captcha {
+    margin-left: 6px;
+    width: 91px;
+    background: #f2f2f5;
+}
+
+.has-error .login-form-input-prefix {
+    color: #d50000;
+}
+
+.has-error-msg {
+    color: #d50000;
+    position: absolute;
+    left: 0;
+    top: 30px;
+    font-weight: normal;
+}
+
+.login-tab-pane .login-form-item-children {
+    height: 28px;
+    line-height: 36px;
+}
+
+
+.login-tab-pane .login-form-item-children-input input:-webkit-autofill {
+    background-color: transparent !important;
+    -webkit-box-shadow: 0 0 0 1000px white inset !important;
+    border: 0 solid #CCC !important;
+}
+
+/* login-account */
+
+.login-form-item-children .btn-raised {
+    height: 37px;
+    font-size: 13px;
+    line-height: 26px;
+    overflow: hidden;
+}
+
+
+
+.login-account-login-btn {
+    width: 100%;
+    background-color: #3367d6;
+    text-align: center;
+}
+
+.login-form-item-children-input .look {
+    position: absolute;
+    right: 10px;
+    top: 12px;
+    cursor: pointer;
+    display: none;
+}
+
+.login-account-captcha {
+    padding-left: 10px;
+}
+
+/* forget password */
+.login-account-find-password {
+    text-align: right;
+    margin-bottom: 0 !important;
+}
+
+/* login-phone */
+
+.login-phone-login-btn {
+    width: 100%;
+    background-color: #3367d6;
+    text-align: center;
+}
+
+.btn-flat:hover {
+    background: rgba(0, 0, 0, .08);
+}
+
+
+/* Custom Tabs */
+
+.login-tabs {
+    position: relative;
+}
+
+.login-tabs-tab-pane {
+    width: 100%;
+    display: none;
+}
+
+.login-tabs-tab-pane-active {
+    display: block;
+}
+
+.login-tabs-tab-nav {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 60px;
+    height: 60px;
+}
+
+.login-tabs-tab-nav-icon {
+    display: none;
+    position: relative;
+    /* icon 的层级要比 三角高 */
+    z-index: 2;
+}
+
+.login-tabs-tab-nav-icon>i {
+    position: absolute;
+    left: 8px;
+    top: 10px;
+    /* icon 的层级要比 三角高 */
+    z-index: 2;
+    color: #fff;
+    cursor: pointer;
+    font-size: 20px;
+}
+
+.login-tabs-tab-nav-icon::after {
+    position: absolute;
+    content: ' ';
+    left: 0;
+    top: 0;
+    width: 0;
+    height: 0;
+    border: 30px solid transparent;
+    border-left-color: #3367d6;
+    border-top-color: #3367d6;
+    /* icon 的层级要比 三角高 */
+    z-index: 1;
+}
+
+.login-tabs-tab-nav-icon-active {
+    display: block;
+}
+
+/* 覆盖样式 */
+.login-container a {
+    color: #3367d6;
+    background-color: transparent;
+    text-decoration: none !important;
+    outline: none;
+    cursor: pointer;
+    -webkit-transition: color .3s;
+    transition: color .3s;
+    -webkit-text-decoration-skip: objects;
+}
+
+.login-container a:hover {
+    color: #5b8ae3;
+}
+
+.login-container a:active,
+a:hover {
+    outline: 0;
+    text-decoration: none;
+}
+
+.login-container a:active {
+    color: #214ab0;
+}
+
+.login-container .btn:focus {
+    outline: none;
+    box-shadow: none;
+    border: 0;
+}
+
+/* notification */
+
+.login-notification {
+    position: fixed;
+    right: 0;
+    bottom: 60px;
+    background-color: transparent
+}
+
+.login-alert {
+    position: relative;
+    padding: 16px 24px;
+    margin-right: 24px;
+    margin-bottom: 16px;
+    width: 384px;
+    background-color: #fff;
+    font-size: 18px;
+    border-radius: .02rem;
+    webkit-box-shadow: 0 0.04rem 0.12rem rgba(0, 0, 0, 0.12);
+    box-shadow: 0 0.04rem 0.12rem rgba(0, 0, 0, 0.12);
+    animation: notificationMove 0.5s;
+    -webkit-animation: notificationMove 0.5s;
+}
+
+@keyframes notificationMove {
+    0% {
+        right: -100px;
+    }
+
+    100% {
+        right: 0;
+    }
+}
+
+@-webkit-keyframes notificationMove
+
+/* Safari and Chrome */
+    {
+    0% {
+        right: -100px;
+    }
+
+    100% {
+        right: 0;
+    }
+}
+
+.login-alert .glyphicon-ok {
+    position: absolute;
+    top: 16px;
+}
+
+.login-alert .glyphicon-exclamation-sign {
+    position: absolute;
+    top: 16px;
+}
+
+.login-alert .glyphicon-remove {
+    font-size: 12px;
+    color: rgba(0, 0, 0, .45);
+    position: absolute;
+    right: 22px;
+    top: 16px;
+    outline: none;
+    cursor: pointer;
+}
+
+.login-alert .login-notification-content {
+    margin-left: 48px;
+}
+
+.login-notification-error {
+    color: #d50000;
+    font-size: 24px;
+}
+
+.login-notification-success {
+    color: #00bf96;
+    font-size: 24px;
+}
+
+
+.water-btn-style {
+    position: relative;
+    background: #fff;
+    border-radius: 100%;
+    animation: waterBtn 3s;
+    -webkit-animation: waterBtn 3s;
+    transform: translate(-50%, -50%) scale(1);
+}
+
+@keyframes waterBtn {
+    0% {
+        width: 0px;
+        height: 0px;
+    }
+
+    50% {
+        width: 1000px;
+        height: 1000px;
+        opacity: 0
+    }
+
+    100% {
+        opacity: 0
+    }
+}
+
+@-webkit-keyframes waterBtn
+
+/* Safari and Chrome */
+    {
+    0% {
+        width: 0px;
+        height: 0px;
+    }
+
+    50% {
+        width: 1000px;
+        height: 1000px;
+        opacity: 0
+    }
+
+    100% {
+        opacity: 0
+    }
+}

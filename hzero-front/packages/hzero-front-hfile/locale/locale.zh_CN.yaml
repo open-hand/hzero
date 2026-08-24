@@ -1,0 +1,96 @@
+# hzero-国际化
+
+hfile.editLog:
+  model.editLog.changeDate: 提交时间
+  model.editLog.editType: 编辑类型
+  model.editLog.fileName: 文件名
+  model.editLog.realName: 提交人
+  model.editLog.tenantName: 租户
+  view.message.title: 文件编辑日志
+  model.editLog.changeDateFrom: 编辑时间从
+  model.editLog.changeDateTo: 编辑时间至
+
+# 文件汇总查询
+hfile.fileAggregate:
+  model.fileAggregate.attachmentUuid: 批号
+  model.fileAggregate.bucketName: 分组
+  model.fileAggregate.configCode: 上传配置编码
+  model.fileAggregate.cover: 覆盖已有文件
+  model.fileAggregate.directory: 上传目录
+  model.fileAggregate.fileFormat: 文件格式
+  model.fileAggregate.fileMaxSize: 文件最大
+  model.fileAggregate.fileMinSize: 文件最小
+  model.fileAggregate.fileName: 文件名
+  model.fileAggregate.fileSize: 文件大小
+  model.fileAggregate.fileType: 文件类型
+  model.fileAggregate.hrealName: 上传人
+  model.fileAggregate.isDirectory: 文件夹上传
+  model.fileAggregate.path: 上传目录
+  model.fileAggregate.realName: 上传人
+  model.fileAggregate.serverCode: 服务器编码
+  model.fileAggregate.sourceTypeMeaning: 来源类型
+  model.fileAggregate.storageCode: 存储配置编码
+  model.fileAggregate.tenantId: 租户
+  model.fileAggregate.type: 类型
+  model.fileAggregate.type.ecs: 服务器存储
+  model.fileAggregate.type.obs: 对象存储
+  view.button.saveAndClose: 保存并关闭
+  view.button.upload: 文件上传
+  view.message.patternValidate: 请输入大于等于0的整数
+  view.message.title: 文件汇总查询
+  view.validation.bucketName: 只能由小写字母，"-"组成
+hfile.fileUpload:
+  model.fileUpload.bucketName: 分组
+  model.fileUpload.contentType: 文件分类
+  model.fileUpload.directory: 上传目录
+  model.fileUpload.fileFormat: 文件格式
+  model.fileUpload.redisUsedCapacity: 已使用容量
+  model.fileUpload.storageSize: 文件大小限制
+  model.fileUpload.storageUnit: 文件大小单位
+  model.fileUpload.totalCapacity: 最大容量
+  view.button.add: 添加详细配置
+  view.message.create: 新建文件上传详细配置
+  view.message.edit: 编辑文件上传详细配置
+  view.message.patternValidate: 请输入大于等于0的整数
+  view.message.title: 文件上传配置
+hfile.serverUpload:
+  model.serverUpload.configCode: 配置编码
+  model.serverUpload.defaultRootDir: 默认根目录
+  model.serverUpload.description: 描述
+  model.serverUpload.enableFlag: 启用
+  model.serverUpload.rootDir: 根目录
+  model.serverUpload.sourceCode: 服务器/集群编码
+  model.serverUpload.sourceName: 服务器/集群名称
+  model.serverUpload.sourceType: 上传类型
+  view.button.addTemplate: 添加
+  view.message.drawer.add: 添加
+  view.message.drawer.edit: 编辑
+  view.message.title: 服务器上传配置
+  view.message.title.edit: 服务器上传配置
+  view.message.title.serverUpload: 服务器上传配置
+  view.title.line: 服务器上传配置明细
+hfile.storage:
+  model.storage.AccessKeyId: AccessKeyId
+  model.storage.AppId: AppId
+  model.storage.Domain: 域名(Domain)
+  model.storage.Domain2: 代理地址
+  model.storage.EndPoint: EndPoint
+  model.storage.accessControl: bucket权限控制
+  model.storage.prefix: bucket前缀
+  model.storage.accessKeySecret: AccessKeySecret
+  model.storage.defaultFlag: 默认
+  model.storage.prefixStrategy: 文件名前缀策略
+  model.storage.region: Bucket所属地区
+  model.storage.storageCode: 存储编码
+  model.storage.storageType: 存储类型
+  view.message.storageType.AWS: AWS
+  view.message.storageType.ali: 阿里云
+  view.message.storageType.baidu: 百度云
+  view.message.storageType.huawei: 华为云
+  view.message.storageType.jingdong: 京东云
+  view.message.storageType.local: 本地存储
+  view.message.storageType.minio: Minio
+  view.message.storageType.tencent: 腾讯云
+  view.message.title: 文件存储配置
+  view.validation.notChange: 未更改
+

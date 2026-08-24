@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.platform.infra.mapper.TemplateConfigMapper">
+    <select id="selectTemplateConfigs" resultType="org.hzero.platform.domain.entity.TemplateConfig">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        SELECT
+            htc.config_id,
+            htc.config_type_code,
+            htc.config_code,
+            htc.config_value,
+            htc.remark,
+            htc.tenant_id,
+            htc.template_assign_id,
+            httl.tenant_name,
+            htc.order_seq,
+            htc.object_version_number
+        FROM hpfm_template_config htc
+        JOIN hpfm_template_assign hta ON hta.template_assign_id = htc.template_assign_id
+        JOIN hpfm_tenant ht ON htc.tenant_id = ht.tenant_id
+        LEFT JOIN hpfm_tenant_tl httl ON ht.tenant_id = httl.tenant_id AND httl.lang = #{lang}
+        WHERE 1=1
+        AND htc.template_assign_id = #{templateConfig.templateAssignId}
+        <if test="templateConfig.tenantId != null">
+            AND htc.tenant_id = #{templateConfig.tenantId}
+        </if>
+        <if test="templateConfig.configTypeCode != null">
+            AND htc.config_type_code = #{templateConfig.configTypeCode}
+        </if>
+        <if test="templateConfig.configCode != null">
+            <bind name="configCodeLike" value="'%'+templateConfig.configCode+'%'"/>
+            AND htc.config_code LIKE #{configCodeLike}
+        </if>
+        <if test="templateConfig.remark != null">
+            <bind name="remarkLike" value="'%'+templateConfig.remark+'%'"/>
+            AND htc.remark LIKE #{remarkLike}
+        </if>
+    </select>
+    <select id="selectTemplateConfigDetails" resultType="org.hzero.platform.domain.entity.TemplateConfig">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        SELECT
+            htc.config_id,
+            htc.config_type_code,
+            htc.config_code,
+            htc.config_value,
+            htc.template_assign_id,
+            htc.remark,
+            htc.tenant_id,
+            httl.tenant_name,
+            htc.order_seq,
+            htc.link,
+            htc.object_version_number
+        FROM hpfm_template_config htc
+        JOIN hpfm_tenant ht ON htc.tenant_id = ht.tenant_id
+        LEFT JOIN hpfm_tenant_tl httl ON ht.tenant_id = httl.tenant_id AND httl.lang = #{lang}
+        JOIN hpfm_template_assign hta ON hta.template_assign_id = htc.template_assign_id
+        WHERE htc.config_id = #{configId}
+    </select>
+    <select id="selectTemplateConfigWithCacheData"
+            resultType="org.hzero.platform.domain.vo.TemplateConfigCacheVO">
+        SELECT
+            hd.domain_url,
+            hta.source_type,
+            ht.template_code
+          FROM hpfm_template_config htc
+          JOIN hpfm_template_assign hta ON hta.template_assign_id = htc.template_assign_id
+          JOIN hpfm_template ht ON ht.template_id = hta.template_id
+          JOIN hiam_domain hd ON hta.source_key = hd.domain_id
+         WHERE htc.config_id = #{configId}
+    </select>
+    <select id="selectTemplateConfigVOs" resultType="org.hzero.platform.domain.vo.TemplateConfigVO">
+        SELECT
+            htc.config_id,
+            htc.config_type_code,
+            htc.config_code,
+            htc.config_value,
+            htc.remark,
+            htc.tenant_id,
+            htc.template_assign_id,
+            htc.order_seq
+        FROM hpfm_template_config htc
+        JOIN hpfm_template_assign hta ON hta.template_assign_id = htc.template_assign_id
+        JOIN hpfm_tenant ht ON htc.tenant_id = ht.tenant_id
+        WHERE 1=1
+        AND htc.template_assign_id = #{templateAssignId}
+    </select>
+</mapper>

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.message.infra.mapper.NoticeUnitMapper">
+	<select id="listUnits" resultType="org.hzero.message.domain.entity.Unit">
+		SELECT
+			u.unit_id,
+			u.unit_code,
+			u.unit_name,
+			u.tenant_id
+		FROM
+			hpfm_unit u
+		where u.unit_id not in (select hrtl.receive_target_id from hmsg_receiver_type_line hrtl 
+								where hrtl.receiver_type_id = #{receiverTypeId,jdbcType=DECIMAL})
+		and u.tenant_id = (select hrt.tenant_id from hmsg_receiver_type hrt 
+						   where hrt.receiver_type_id = #{receiverTypeId,jdbcType=DECIMAL}) 
+		<if test="unitName != null and unitName != ''">
+            <bind name="unitNameLike" value="'%' + unitName + '%'" />
+            AND u.unit_name like #{unitNameLike}
+        </if>
+        <if test="unitCode != null and unitCode != ''">
+			<bind name="unitCodeLike" value="'%' + unitCode + '%'" />
+            AND u.unit_code like #{unitCodeLike}
+        </if>
+	</select>
+	
+	<select id="listAllUnits" resultType="org.hzero.message.domain.entity.Unit">
+		SELECT
+			u.unit_id,
+			u.unit_code,
+			u.unit_name,
+			u.tenant_id
+		FROM
+			hpfm_unit u
+		where 1=1
+		<if test="tenantId != null and tenantId != ''">
+            AND u.tenant_id = #{tenantId}
+        </if>
+        <if test="unitName != null and unitName != ''">
+            <bind name="unitNameLike" value="'%' + unitName + '%'" />
+            AND u.unit_name like #{unitNameLike,jdbcType=VARCHAR}
+        </if>
+		<if test="unitCode != null and unitCode != ''">
+			<bind name="unitCodeLike" value="'%' + unitCode + '%'" />
+			AND u.unit_code like #{unitCodeLike}
+		</if>
+	</select>
+</mapper>

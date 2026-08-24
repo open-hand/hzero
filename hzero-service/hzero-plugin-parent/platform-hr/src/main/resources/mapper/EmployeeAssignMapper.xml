@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.plugin.platform.hr.infra.mapper.EmployeeAssignMapper">
+
+    <select id="selectEmployeeAssign" resultType="org.hzero.plugin.platform.hr.api.dto.EmployeeAssignDTO">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        select
+            hea.employee_assign_id,
+            hea.employee_id,
+            hea.unit_company_id,
+            hut.unit_name as unit_company_name,
+            hea.unit_id,
+            hut1.unit_name,
+            hea.position_id,
+            hpt.position_name,
+            hea.primary_position_flag,
+            hea.tenant_id,
+            hea.enabled_flag,
+            hea.object_version_number
+        from hpfm_employee_assign hea
+            join hpfm_position hp on (hea.position_id = hp.position_id and hp.enabled_flag = 1)
+            join hpfm_position_tl hpt on hpt.position_id = hp.position_id and hpt.lang = #{lang}
+            join hpfm_unit_tl hut on hut.unit_id = hea.unit_company_id and hut.lang = #{lang}
+            join hpfm_unit_tl hut1 on hut1.unit_id = hea.unit_id and hut1.lang = #{lang}
+        where
+            hea.tenant_id = #{tenantId}
+            and hea.employee_id = #{employeeId}
+            and hea.enabled_flag = 1
+    </select>
+
+    <select id="hcbmSelectEmployeeAssign" resultType="org.hzero.plugin.platform.hr.api.dto.EmployeeAssignDTO">
+        select
+        hea.employee_assign_id,
+        hea.employee_id,
+        hea.unit_company_id,
+        hut.unit_name as unit_company_name,
+        hea.unit_id,
+        hut1.unit_name,
+        hea.position_id,
+        hpt.position_name,
+        hea.primary_position_flag,
+        hea.tenant_id,
+        hea.enabled_flag,
+        hea.object_version_number
+        from hpfm_employee he
+        join hpfm_employee_assign hea on he.employee_id = hea.employee_id
+        join hpfm_position_tl hpt on hpt.position_id = hea.position_id and hpt.lang = #{language}
+        join hpfm_unit_tl hut on hut.unit_id = hea.unit_company_id and hut.lang = #{language}
+        join hpfm_unit_tl hut1 on hut1.unit_id = hea.unit_id and hut1.lang = #{language}
+        join hpfm_employee_user heu on heu.employee_id = he.employee_id
+        where hea.tenant_id = #{tenantId}
+        and hea.enabled_flag = 1
+        <if test="primaryPositionFlag != null">
+            and hea.primary_position_flag = #{primaryPositionFlag}
+        </if>
+        and heu.user_id = #{userId}
+    </select>
+
+    <select id="employeeNotInPosition" parameterType="java.lang.Long" resultType="org.hzero.plugin.platform.hr.domain.entity.Employee">
+        select
+          employee_id,
+          employee_num,
+          name,
+          name_en,
+          tenant_id,
+          email,
+          mobile,
+          gender,
+          cid,
+          enabled_flag,
+          entry_date,
+          object_version_number
+        from hpfm_employee
+        where
+        enabled_flag =1 and tenant_id = #{tenantId} and employee_id
+        not in (select employee_id from hpfm_employee_assign where position_id=#{positionId} and tenant_id=#{tenantId} and hpfm_employee_assign.enabled_flag = 1)
+        <if test="employeeNum != null and employeeNum != ''">
+            <bind name="employeeNumLike" value="'%'+employeeNum+'%'" />
+            and hpfm_employee.employee_num LIKE #{employeeNumLike}
+        </if>
+
+        <if test="name != null and name !=''">
+            <bind name="nameLike" value="'%'+name+'%'"/>
+            and name like #{nameLike}
+        </if>
+
+    </select>
+
+    <select id="employeeInPosition" parameterType="java.lang.Long" resultType="org.hzero.plugin.platform.hr.domain.entity.Employee">
+        select
+          employee_id,
+          employee_num,
+          name,
+          name_en,
+          tenant_id,
+          email,
+          mobile,
+          gender,
+          cid,
+          enabled_flag,
+          entry_date,
+          object_version_number
+        from hpfm_employee
+        where
+        enabled_flag =1 and tenant_id =#{tenantId} and employee_id
+        in (select employee_id from hpfm_employee_assign where position_id=#{positionId} and tenant_id=#{tenantId} and enabled_flag = 1)
+        <if test="employeeNum != null and employeeNum != ''">
+            <bind name="employeeNumLike" value="'%'+employeeNum+'%'" />
+            and hpfm_employee.employee_num LIKE #{employeeNumLike}
+        </if>
+
+        <if test="name != null and name !=''">
+            <bind name="nameLike" value="'%'+name+'%'"/>
+            and name like #{nameLike}
+        </if>
+
+    </select>
+
+
+    <update id="batchDisableEmployeeAssign">
+        update hpfm_employee_assign set enabled_flag =0 where tenant_id = #{tenantId} and employee_id=#{employeeId}
+    </update>
+
+
+    <select id="selectEmployeeAssignList" resultType="org.hzero.plugin.platform.hr.domain.entity.EmployeeAssign">
+        select
+          employee_assign_id,
+          employee_id,
+          unit_id,
+          position_id,
+          primary_position_flag,
+          tenant_id,
+          enabled_flag,
+          object_version_number
+        from
+          hpfm_employee_assign
+        where
+          tenant_id = #{tenantId} and employee_id= #{employeeId} and enabled_flag=#{enabledFlag}
+
+    </select>
+
+    <select id="selectUnitIdList" resultType="java.lang.Long">
+        select
+          position_id
+        from
+          hpfm_employee_assign
+        where
+          tenant_id = #{tenantId} and employee_id=#{employeeId} and enabled_flag=1
+    </select>
+
+    <select id="listRecentEmployeeAssign" resultType="org.hzero.plugin.platform.hr.api.dto.EmployeeAssignDTO">
+        SELECT
+            hea.employee_assign_id,
+            hea.employee_id,
+            hea.unit_company_id,
+            hea.unit_id,
+            hea.position_id,
+            hea.primary_position_flag,
+            hp.position_code
+        FROM
+            hpfm_employee_assign hea
+                JOIN hpfm_position hp ON hp.position_id = hea.position_id AND hp.tenant_id = hea.tenant_id AND hp.enabled_flag = 1
+        WHERE
+            hea.enabled_flag = 1
+          AND employee_id IN
+        <foreach collection="employeeIds" item="employeeId" open="(" close=")" separator=",">
+            #{employeeId}
+        </foreach>
+    </select>
+    <select id="selectEmployeeAssignForCache"
+            resultType="org.hzero.plugin.platform.hr.domain.vo.EmployeeAssignVO">
+        select
+          employee_id,
+          unit_company_id,
+          unit_id,
+          position_id,
+          primary_position_flag,
+          tenant_id
+        from hpfm_employee_assign
+        where employee_id=#{employeeId}
+        and tenant_id=#{tenantId}
+    </select>
+    <select id="employeeInDept" resultType="org.hzero.plugin.platform.hr.domain.entity.Employee">
+        SELECT he.employee_id, he.employee_num, he.name ,he.email,he.mobile ,he.gender
+        from hpfm_employee he
+         join hpfm_employee_assign hea on hea.employee_id = he.employee_id
+         join hpfm_unit hu on  hu.unit_id=hea.unit_id
+         join hpfm_position hp on hp.position_id = hea.position_id
+        where he.tenant_id=#{tenantId} and hu.enabled_flag=#{enableFlag} and hp.enabled_flag=1 and he.enabled_flag=1 and hea.unit_id in
+        <foreach collection="unitIds" item="unitId" open="(" close=")" separator=",">
+            #{unitId}
+        </foreach>
+    </select>
+    <select id="employeeInCompany" resultType="org.hzero.plugin.platform.hr.domain.entity.Employee">
+        SELECT he.employee_id, he.employee_num, he.name ,he.email,he.mobile ,he.gender
+        from hpfm_employee he
+         join hpfm_employee_assign hea on hea.employee_id = he.employee_id
+         join hpfm_unit hu on  hu.unit_id=hea.unit_id
+         join hpfm_position hp on hp.position_id = hea.position_id
+        where he.tenant_id=#{tenantId} and hu.enabled_flag=#{enableFlag} and hp.enabled_flag=1 and hea.unit_company_id = #{unitCompanyId}
+    </select>
+</mapper>

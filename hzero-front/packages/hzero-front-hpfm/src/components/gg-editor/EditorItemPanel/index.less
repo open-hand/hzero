@@ -1,0 +1,24 @@
+.itemPanel {
+  flex: 1;
+  background: #fafafa;
+
+  :global {
+    .c7n-card {
+      background: #fafafa;
+    }
+
+    .c7n-card-body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+
+      > div {
+        margin-bottom: 16px;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+      }
+    }
+  }
+}

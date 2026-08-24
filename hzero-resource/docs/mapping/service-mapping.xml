@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--服务映射-->
+<services>
+	<schema-merge>
+        <!-- oracle 默认安装到一个库下，若要分多个库，需设置 merge=false -->
+		<oracle merge="true" target-schema="" />
+        <!-- mysql/sqlsrver 默认安装到不同库下，若要合并到一个库下，可设置 merge=true，target-schema 设置合并的库名，也可以修改所有服务对应的schema -->
+		<mysql merge="false" target-schema="" />
+		<postgresql merge="false" target-schema="" />
+		<sqlserver merge="false" target-schema="" />
+	</schema-merge>
+    <!--  排除更新的表和列(不带列标识忽略整个表)多个以逗号分隔  -->
+    <exclusion>
+hpfm_config,iam_role,fd_organization,iam_user,hiam_user_info,iam_member_role,oauth_client,oauth_ldap,oauth_password_policy,hpfm_permission_rule,hpfm_permission_rel,hpfm_config,hpfm_code_rule,hpfm_code_rule,hpfm_code_rule_detail,hpfm_static_text,hpfm_static_text_value,hpfm_tenant,hpfm_group,hmsg_email_server,hmsg_email_property,hmsg_sms_server,hmsg_receive_config,hmsg_receiver_type,hmsg_message_template.template_content,hmsg_message_template.external_code,hfle_capacity_config,hfle_upload_config
+    </exclusion>
+    <!--  值替换,将excel中所以的 key 的值替换成 value 的值  -->
+    <value-replace flag="false">
+        <data key="${HZERO}" value="SRM"/>
+    </value-replace>
+    <!-- name: 服务名; filename: 对应本地文件名;  schema: 安装目标库名，如果与标准库名不同，可修改此属性 -->
+	<!-- oracle 分库的情况下，schema 将作为用户名和密码，也可添加 username和password属性分别制定oracle的用户名和密码 -->
+    <service name="hzero-platform" filename="hzero_platform" schema="hzero_platform" description="平台服务" check="true">
+        <plugin name="iam_tenant" filename="iam_tenant" description="多租户管理插件" check="true"/>
+        <plugin name="hzero-gantt-menu" filename="exclude_plugin_menu/plugin-gantt" description="甘特图插件" check="true"/>
+        <plugin name="hzero-mdm-menu" filename="exclude_plugin_menu/plugin-mdm" description="主数据插件" check="true"/>
+        <plugin name="hzero-datasource-route-menu" filename="exclude_plugin_menu/plugin-datasource-route" description="数据源路由插件" check="true"/>
+        <plugin name="hzero-api-customize-menu" filename="exclude_plugin_menu/plugin-api-customize" description="API个性化插件" check="true"/>
+        <plugin name="hzero-personality-menu" filename="exclude_plugin_menu/plugin-personality" description="页面个性化插件" check="true"/>
+        <plugin name="hzero-org-menu" filename="exclude_plugin_menu/plugin-org" description="业务组织架构" check="true"/>
+        <plugin name="hzero-hr-menu" filename="exclude_plugin_menu/plugin-hr" description="HR组织架构" check="true"/>
+        <plugin name="hzero-three-role-menu" filename="exclude_plugin_menu/plugin-three-role" description="三员管理插件"/>
+    </service>
+    <service name="hzero-admin" filename="hzero_admin" schema="hzero_admin" description="平台治理服务" check="true">
+        <plugin name="hzero-node-group-rule-menu" filename="exclude_plugin_menu/plugin-node-group-rule" description="节点组规则插件" check="true"/>
+        <plugin name="hzero-url-mapping-config-menu" filename="exclude_plugin_menu/plugin-url-mapping" description="url映射插件" check="true"/>
+        <plugin name="hzero-hmkt-menu" filename="exclude_plugin_menu/plugin-hmkt" description="市场客户端插件" check="true"/>
+    </service>
+    <service name="hzero-asgard" filename="hzero_asgard" schema="hzero_asgard" description="事务服务"/>
+    <service name="hzero-file" filename="hzero_file" schema="hzero_file" description="文件服务"/>
+    <service name="hzero-message" filename="hzero_message" schema="hzero_message" description="消息服务"/>
+    <service name="hzero-scheduler" filename="hzero_scheduler" schema="hzero_scheduler" description="调度服务"/>
+    <service name="hzero-import" filename="hzero_import" schema="hzero_import" description="通用导入服务"/>
+    <service name="hzero-interface" filename="hzero_interface" schema="hzero_interface" description="接口服务"/>
+    <service name="hzero-orchestration" filename="hzero_orchestration" schema="hzero_orchestration" description="集成中台-服务编排"/>
+    <service name="hzero-transfer" filename="hzero_transfer" schema="hzero_transfer" description="数据分发服务"/>
+    <service name="hzero-workflow-plus" filename="hzero_workflow_plus" schema="hzero_workflow_plus" description="新工作流服务"/>
+    <service name="hzero-report" filename="hzero_report" schema="hzero_report" description="报表服务"/>
+    <service name="hzero-monitor" filename="hzero_monitor" schema="hzero_monitor" description="监控审计服务"/>
+    <service name="hzero-pay" filename="hzero_pay" schema="hzero_pay" description="支付服务"/>
+    <service name="hzero-invoice" filename="hzero_invoice" schema="hzero_invoice" description="发票服务"/>
+    <service name="hzero-im" filename="hzero_im" schema="hzero_im" description="即时通讯服务"/>
+    <service name="hzero-iot" filename="hzero_iot" schema="hzero_iot" description="IoT服务"/>
+    <service name="hzero-alert" filename="hzero_alert" schema="hzero_alert" description="预警服务"/>
+    <service name="hzero-nlp" filename="hzero_nlp" schema="hzero_nlp" description="内容提取服务"/>
+    <service name="hzero-ocr" filename="hzero_ocr" schema="hzero_ocr" description="OCR服务"/>
+    <service name="hzero-webexcel" filename="hzero_webexcel" schema="hzero_webexcel" description="WebExcel服务"/>
+    <service name="hzero-search" filename="hzero_search" schema="hzero_search" description="检索服务"/>
+	<service name="hzero-charge" filename="hzero_charge" schema="hzero_charge" description="计费服务"/>
+    <service name="hzero-ebank" filename="hzero_ebank" schema="hzero_ebank" description="银企直联服务"/>
+	<service name="hzero-rule-engine" filename="hzero_rule_engine" schema="hzero_rule_engine" description="规则引擎服务"/>
+    <service name="hzero-event" filename="hzero_event" schema="hzero_event" description="事件服务"/>
+    <service name="hzero-datasync" filename="hzero_datasync" schema="hzero_datasync" description="数据同步服务"/>
+    <service name="hzero-workflow" filename="hzero_workflow" schema="hzero_workflow" description="自研工作流服务"/>
+</services>

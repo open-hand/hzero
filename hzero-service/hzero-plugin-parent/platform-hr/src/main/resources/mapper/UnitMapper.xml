@@ -1,0 +1,828 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.plugin.platform.hr.infra.mapper.UnitMapper">
+
+    <sql id="baseColumn">
+        u.unit_id,      u.unit_code,        ut.unit_name,        u.unit_type_code,   u.tenant_id,
+        ut.description,  u.order_seq,        u.parent_unit_id,   u.supervisor_flag,  u.enabled_flag,
+        u.level_path,   u.unit_company_id,  u.object_version_number, u.company_id, u.quick_index, u.phoneticize
+    </sql>
+
+    <select id="selectCompany" parameterType="org.hzero.plugin.platform.hr.domain.entity.Unit"
+            resultType="org.hzero.plugin.platform.hr.api.dto.UnitDTO">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()" />
+        select
+            <include refid="baseColumn"/>,
+            pu.unit_name parent_unit_name,
+            hc.company_name
+        from
+            hpfm_unit u
+        join hpfm_unit_tl ut on ut.unit_id = u.unit_id and ut.lang = #{lang}
+        left join hpfm_unit pu on pu.unit_id = u.parent_unit_id
+        left join hpfm_company hc on hc.company_id = u.company_id
+        where
+            1 = 1
+        and u.tenant_id = #{queryParam.tenantId}
+        <if test='!"Y".equals(queryParam.treeFlag)'>
+            AND EXISTS (
+                SELECT
+                    1
+                FROM
+                    hpfm_unit ut
+                WHERE
+                    1 = 1
+                <foreach collection="topUnitCodes" item="item" index="index" open="and (" separator="or" close=")">
+                    ut.unit_type_code = #{item}
+                </foreach>
+                -- AND (ut.unit_type_code = 'C' or ut.unit_type_code = 'G')
+                <if test="queryParam.unitCode != null and queryParam.unitCode != ''">
+                    <bind name="unitCodeLike" value="'%' + queryParam.unitCode + '%'" />
+                    AND ut.unit_code LIKE #{unitCodeLike}
+                </if>
+                <if test="queryParam.unitName != null and queryParam.unitName != ''">
+                    <bind name="unitNameLike" value="'%' + queryParam.unitName + '%'" />
+                    AND ut.unit_name LIKE #{unitNameLike}
+                </if>
+                <if test="queryParam.enabledFlag != null">
+                    AND ut.enabled_flag = #{queryParam.enabledFlag}
+                </if>
+                AND (ut.unit_id = u.unit_id OR ut.level_path LIKE concat( u.level_path, '|%'))
+            )
+        </if>
+        <foreach collection="topUnitCodes" item="item" index="index" open="and (" separator="or" close=")">
+            u.unit_type_code = #{item}
+        </foreach>
+        -- and (u.unit_type_code = 'C' or u.unit_type_code = 'G')
+        <if test="queryParam.enabledFlag != null">
+            AND u.enabled_flag = #{queryParam.enabledFlag}
+        </if>
+        order by
+            u.order_seq,
+            u.unit_id
+    </select>
+
+    <select id="selectDepartment" parameterType="org.hzero.plugin.platform.hr.domain.entity.Unit"
+            resultType="org.hzero.plugin.platform.hr.api.dto.UnitDTO">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()" />
+        select
+            <include refid="baseColumn"/>,
+            pu.unit_name parent_unit_name,
+            u.enable_budget_flag,
+            u.cost_code,
+            scctl.cost_name
+        from
+            hpfm_unit u
+        join hpfm_unit_tl ut on ut.unit_id = u.unit_id and ut.lang = #{lang}
+        join hpfm_unit pu on pu.unit_id = u.parent_unit_id
+        LEFT JOIN smdm_cost_center scc ON scc.cost_code = u.cost_code AND scc.tenant_id = u.tenant_id
+        LEFT JOIN smdm_cost_center_tl scctl ON scctl.cost_id = scc.cost_id AND scctl.lang = #{lang}
+        where
+            1 = 1
+        and u.tenant_id = #{queryParam.tenantId}
+        and u.unit_company_id = #{queryParam.unitCompanyId}
+        <if test="queryParam.enabledFlag != null">
+            and u.enabled_flag = #{queryParam.enabledFlag}
+        </if>
+        <if test="queryParam.unitCode != null and queryParam.unitCode != ''">
+            <bind name="unitCodeLike" value="'%' + queryParam.unitCode + '%'" />
+            AND u.unit_code LIKE #{unitCodeLike}
+        </if>
+        <if test="queryParam.unitName != null and queryParam.unitName != ''">
+            <bind name="unitNameLike" value="'%' + queryParam.unitName + '%'" />
+            AND ut.unit_name LIKE #{unitNameLike}
+        </if>
+        <foreach collection="topUnitCodes" item="item" index="index" open="and (" separator="and" close=")">
+            u.unit_type_code != #{item}
+        </foreach>
+        order by
+            u.order_seq,
+            u.unit_id
+    </select>
+
+    <select id="selectRepeatCodeCount" parameterType="org.hzero.plugin.platform.hr.domain.entity.Unit" resultType="java.lang.Integer">
+        select
+            count(*)
+        from
+            hpfm_unit u
+        where
+            1 = 1
+        and u.unit_code = #{unitCode}
+        and u.tenant_id = #{tenantId}
+        <if test="unitId != null">
+            and u.unit_id != #{unitId}
+        </if>
+        <if test="unitCompanyId != null">
+            and u.unit_company_id = #{unitCompanyId}
+        </if>
+    </select>
+
+    <update id="updateEnabledFlag" parameterType="org.hzero.plugin.platform.hr.domain.entity.Unit">
+        <bind name="audit" value="@io.choerodon.mybatis.helper.AuditHelper@audit()" />
+        UPDATE
+            hpfm_unit
+        SET
+            enabled_flag = #{enabledFlag},
+            object_version_number = (object_version_number + 1),
+            last_update_date = #{audit.now}
+        WHERE
+            (unit_id = #{unitId} OR level_path LIKE CONCAT(#{levelPath}, '|%'))
+    </update>
+
+    <select id="selectSupervisorCountByParentUnitId" parameterType="org.hzero.plugin.platform.hr.domain.entity.Unit" resultType="java.lang.Integer">
+        SELECT
+            count(*)
+        FROM
+            hpfm_unit u
+        WHERE
+            u.parent_unit_id IS NOT NULL
+        and u.supervisor_flag = 1
+        and u.parent_unit_id = #{parentUnitId}
+        <if test="unitId != null">
+            and u.unit_id != #{unitId}
+        </if>
+    </select>
+
+    <select id="selectChildrenLevelPathById" parameterType="java.lang.Long" resultType="org.hzero.plugin.platform.hr.domain.entity.Unit">
+        SELECT
+            u.unit_id,
+            u.unit_code,
+            u.level_path,
+            u.parent_unit_id,
+            u.unit_company_id,
+            up.level_path parent_level_path,
+            u.object_version_number
+        FROM
+            hpfm_unit u
+        LEFT JOIN hpfm_unit up ON up.unit_id = u.parent_unit_id
+        WHERE
+            u.level_path LIKE concat(
+                (
+                    SELECT
+                        tp.level_path
+                    FROM
+                        hpfm_unit tp
+                    WHERE
+                        tp.unit_id = #{unitId}
+                ),
+                '|%'
+            )
+    </select>
+
+    <select id="selectAllDepartment" resultType="org.hzero.plugin.platform.hr.api.dto.UnitDTO">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()" />
+        select
+        <include refid="baseColumn"/>,
+        pu.unit_name parent_unit_name,
+        u.enable_budget_flag,
+        u.cost_code,
+        scctl.cost_name
+        from
+        hpfm_unit u
+        join hpfm_unit_tl ut on ut.unit_id = u.unit_id and ut.lang = #{lang}
+        join hpfm_unit pu on pu.unit_id = u.parent_unit_id
+        LEFT JOIN smdm_cost_center scc ON scc.cost_code = u.cost_code
+        LEFT JOIN smdm_cost_center_tl scctl ON scctl.cost_id = scc.cost_id AND scctl.lang = #{lang}
+        where
+        1 = 1
+        and u.tenant_id = #{tenantId}
+        <foreach collection="topUnitCodes" item="item" index="index" open="and (" separator="and" close=")">
+            u.unit_type_code != #{item}
+        </foreach>
+        -- and (u.unit_type_code != 'C' and u.unit_type_code != 'G')
+        <if test="enabledFlag != null">
+            and u.enabled_flag = #{enabledFlag}
+        </if>
+        order by
+        u.order_seq,
+        u.unit_id
+    </select>
+
+    <select id="hcbmSelectDepartment" resultType="org.hzero.plugin.platform.hr.api.dto.UnitDTO">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()" />
+        select
+        <include refid="baseColumn"/>,
+        pu.unit_name parent_unit_name,
+        u.enable_budget_flag,
+        u.cost_code,
+        scctl.cost_name
+        from
+        hpfm_unit u
+        join hpfm_unit_tl ut on ut.unit_id = u.unit_id and ut.lang = #{lang}
+        join hpfm_unit pu on pu.unit_id = u.parent_unit_id
+        LEFT JOIN smdm_cost_center scc ON scc.cost_code = u.cost_code
+        LEFT JOIN smdm_cost_center_tl scctl ON scctl.cost_id = scc.cost_id AND scctl.lang = #{lang}
+        where 1 = 1
+        and u.tenant_id = #{tenantId}
+        <foreach collection="topUnitCodes" item="item" index="index" open="and (" separator="and" close=")">
+            u.unit_type_code != #{item}
+        </foreach>
+        -- and (u.unit_type_code != 'C' and u.unit_type_code != 'G')
+        and (
+        <if test="parentUnitIds != null ">
+            u.parent_unit_id in
+            <foreach collection="parentUnitIds" item="id" separator="," open="(" close=")">
+                #{id}
+            </foreach>
+            <if test="unitIds != null">
+                or u.unit_id in
+                <foreach collection="unitIds" item="id" separator="," open="(" close=")">
+                    #{id}
+                </foreach>
+            </if>
+        </if>
+        <if test="parentUnitIds == null">
+            u.unit_id in
+            <foreach collection="unitIds" item="id" separator="," open="(" close=")">
+                #{id}
+            </foreach>
+        </if>
+        )
+        order by
+        u.order_seq,
+        u.unit_id
+    </select>
+
+    <select id="selectByTypeCodes" resultType="org.hzero.plugin.platform.hr.api.dto.UnitDTO">
+        select u.unit_id,
+        u.unit_code,
+        u.unit_name,
+        u.description
+        from hpfm_unit u
+        where 1=1
+        <if test="typeCodes!=null">
+            and u.unit_type_code in
+            <foreach collection="typeCodes" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="tenantId!=null">
+            and u.tenant_id=#{tenantId}
+        </if>
+    </select>
+    <select id="selectDepartmentUsers" resultType="org.hzero.plugin.platform.hr.api.dto.Receiver">
+            SELECT
+            iu.id user_id
+            ,iu.organization_id target_user_tenantId
+            <choose>
+                <when test="typeCode != null">
+                    <if test='typeCode.contains("EMAIL")'>
+                        ,iu.email
+                    </if>
+                    <if test='typeCode.contains("PHONE")'>
+                        ,iu.phone
+                    </if>
+                    <if test='typeCode.contains("IDD")'>
+                        ,iu.INTERNATIONAL_TEL_CODE idd
+                    </if>
+                </when>
+                <otherwise>
+                    ,iu.email
+                    ,iu.phone
+                    ,iu.INTERNATIONAL_TEL_CODE idd
+                </otherwise>
+            </choose>
+            FROM hpfm_employee he
+            JOIN hpfm_employee_assign hea ON he.employee_id = hea.employee_id AND hea.tenant_id = he.tenant_id
+            JOIN hpfm_unit hu ON hu.unit_type_code = 'D' AND hu.unit_id = hea.unit_id
+            JOIN hpfm_employee_user heu ON heu.employee_id = he.employee_id
+            AND (hu.unit_id = #{unit.unitId}
+            <if test="includeChildDepartment">
+                OR hu.level_path LIKE CONCAT((SELECT hu1.level_path FROM hpfm_unit hu1 WHERE hu1.unit_id =
+                #{unit.unitId}), '|%')
+            </if>
+            )
+            JOIN iam_user iu ON iu.id = heu.user_id
+            WHERE he.tenant_id = #{unit.tenantId}
+            AND he.enabled_flag = 1
+    </select>
+    <select id="selectAndSetCurrentLevelPath" resultType="org.hzero.plugin.platform.hr.domain.entity.Unit">
+        SELECT
+            u.unit_id,
+            u.level_path
+        FROM
+            hpfm_unit u
+        WHERE
+            u.unit_id IN
+            <foreach collection="units" index="index" item="item" open="(" separator="," close=")">
+                #{item.parentUnitId}
+            </foreach>
+    </select>
+    <select id="selectAndSetOneCurrentLevelPath" resultType="org.hzero.plugin.platform.hr.domain.entity.Unit">
+        SELECT
+            u.level_path,
+            u.unit_company_id
+        FROM
+            hpfm_unit u
+        WHERE u.unit_id = #{unit.parentUnitId}
+    </select>
+    <select id="selectRootNodeCompany" resultType="org.hzero.plugin.platform.hr.api.dto.UnitDTO">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()" />
+        select
+            <include refid="baseColumn"/>,
+            case
+            when su.parent_unit_id IS NOT NULL then 1
+            else 0
+            end has_next_flag,
+            hc.company_name
+        from
+        hpfm_unit u
+        join hpfm_unit_tl ut on ut.unit_id = u.unit_id and ut.lang = #{lang}
+        <!--查询存在下级的根节点unitId信息-->
+        left join (
+            select
+              su1.parent_unit_id
+            from hpfm_unit u1
+            left join hpfm_unit su1 on u1.unit_id = su1.parent_unit_id
+            where 1=1
+            <foreach collection="topUnitCodes" item="item" index="index" open="and (" separator="or" close=")">
+                su1.unit_type_code = #{item}
+            </foreach>
+            -- and (su1.unit_type_code = 'C' or su1.unit_type_code = 'G')
+            and u1.tenant_id = #{tenantId}
+            and su1.level_path = concat(concat(u1.unit_code,'|'), su1.unit_code)
+            group by su1.parent_unit_id
+        ) su ON su.parent_unit_id = u.unit_id
+        left join hpfm_company hc on hc.company_id = u.company_id
+        where
+        1 = 1
+        and u.tenant_id = #{tenantId}
+        <foreach collection="topUnitCodes" item="item" index="index" open="and (" separator="or" close=")">
+            u.unit_type_code = #{item}
+        </foreach>
+        -- and (u.unit_type_code = 'C' or u.unit_type_code = 'G')
+        and u.unit_code = u.level_path
+        order by
+        u.order_seq,
+        u.unit_id
+    </select>
+    <select id="selectSubNodeCompany" resultType="org.hzero.plugin.platform.hr.api.dto.UnitDTO">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()" />
+        select
+            <include refid="baseColumn"/>,
+            case
+            when u2.parent_unit_id IS NOT NULL then 1
+            else 0
+            end has_next_flag,
+            hc.company_name,
+            pu.unit_name parent_unit_name
+        from
+            hpfm_unit u
+        join hpfm_unit_tl ut on ut.unit_id = u.unit_id and ut.lang = #{lang}
+        <!--判断当前传入unitId的子节点是否存在下级 -->
+        left join (
+            select su1.parent_unit_id from hpfm_unit su1
+            join (select u1.unit_id
+            from hpfm_unit u1
+            where 1=1
+            <foreach collection="topUnitCodes" item="item" index="index" open="and (" separator="or" close=")">
+                u1.unit_type_code = #{item}
+            </foreach>
+            -- and (u1.unit_type_code = 'C' or u1.unit_type_code = 'G')
+            and u1.tenant_id = #{tenantId}
+            and u1.parent_unit_id=#{unitId}) ua on su1.parent_unit_id = ua.unit_id
+            where 1=1
+            <foreach collection="topUnitCodes" item="item" index="index" open="and (" separator="or" close=")">
+                su1.unit_type_code = #{item}
+            </foreach>
+            -- and (su1.unit_type_code = 'C' or su1.unit_type_code = 'G')
+            group by su1.parent_unit_id
+        ) u2 on u2.parent_unit_id = u.unit_id
+        left join hpfm_company hc on hc.company_id = u.company_id
+        left join hpfm_unit pu on pu.unit_id = u.parent_unit_id
+        where
+            1 = 1
+        and u.tenant_id = #{tenantId}
+        and u.parent_unit_id=#{unitId}
+        <foreach collection="topUnitCodes" item="item" index="index" open="and (" separator="or" close=")">
+            u.unit_type_code = #{item}
+        </foreach>
+        -- and (u.unit_type_code = 'C' or u.unit_type_code = 'G')
+        order by
+            u.order_seq,
+            u.unit_id
+    </select>
+    <select id="selectPageCompany" resultType="org.hzero.plugin.platform.hr.api.dto.UnitDTO">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()" />
+        select
+            <include refid="baseColumn"/>,
+            hc.company_name,
+            pu.unit_name parent_unit_name
+        from
+        hpfm_unit u
+        join hpfm_unit_tl ut on ut.unit_id = u.unit_id and ut.lang = #{lang}
+        left join hpfm_company hc on hc.company_id = u.company_id
+        left join hpfm_unit pu on pu.unit_id = u.parent_unit_id
+        where
+        1 = 1
+        and u.tenant_id = #{unit.tenantId}
+        <foreach collection="topUnitCodes" item="item" index="index" open="and (" separator="or" close=")">
+            u.unit_type_code = #{item}
+        </foreach>
+        -- and (u.unit_type_code = 'C' or u.unit_type_code = 'G')
+        <if test="unit.unitCode != null and unit.unitCode != ''">
+            <bind name="unitCodeLike" value="'%' + unit.unitCode + '%'" />
+            AND u.unit_code LIKE #{unitCodeLike}
+        </if>
+        <if test="unit.unitName != null and unit.unitName != ''">
+            <bind name="unitNameLike" value="'%' + unit.unitName + '%'" />
+            AND ut.unit_name LIKE #{unitNameLike}
+        </if>
+        <if test="unit.unitTypeCode != null and unit.unitTypeCode != ''">
+            and u.unit_type_code = #{unit.unitTypeCode}
+        </if>
+        order by
+        u.level_path
+    </select>
+    <select id="selectDepartmentByCondition" resultType="org.hzero.plugin.platform.hr.api.dto.UnitDTO">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()" />
+        SELECT
+            <include refid="baseColumn"/>,
+            u.enable_budget_flag,
+            u.cost_code,
+            scctl.cost_name
+        FROM
+          hpfm_unit u
+        LEFT JOIN hpfm_unit_tl ut ON ut.unit_id = u.unit_id AND ut.lang = #{lang}
+        LEFT JOIN smdm_cost_center scc ON scc.cost_code = u.cost_code
+        LEFT JOIN smdm_cost_center_tl scctl ON scctl.cost_id = scc.cost_id AND scctl.lang = #{lang}
+        where
+        1 = 1
+        and u.tenant_id = #{tenantId}
+        <if test="enabledFlag != null">
+            and u.enabled_flag = #{enabledFlag}
+        </if>
+        <foreach collection="topUnitCodes" item="item" index="index" open="and (" separator="and" close=")">
+            u.unit_type_code != #{item}
+        </foreach>
+        -- and (u.unit_type_code != 'C' and u.unit_type_code != 'G')
+        <if test="unitIds.size() > 0">
+            <!-- 仅存在部门Id做查询条件 -->
+            and
+            <foreach collection="unitIds" separator="or" open="(" close=")" index="index" item="item">
+                u.level_path = (select level_path from hpfm_unit where unit_id = #{item}) or
+                u.level_path like concat((select level_path from hpfm_unit where unit_id = #{item}),'|%')
+            </foreach>
+        </if>
+    </select>
+    <select id="selectUnitNameByTenantAndCode" resultType="java.lang.String">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()" />
+        select ht.unit_name
+          from hpfm_unit u
+          join hpfm_unit_tl ht ON ht.unit_id = u.unit_id and ht.lang = #{lang}
+         where u.tenant_id = #{tenantId}
+        <foreach collection="topUnitCodes" item="item" index="index" open="and (" separator="or" close=")">
+            u.unit_type_code = #{item}
+        </foreach>
+       and u.unit_code in
+        <foreach collection="unitCodes" index="index" item="item" separator="," open="(" close=")">
+            #{item}
+        </foreach>
+        ORDER BY u.level_path
+    </select>
+
+    <select id="selectAllUnit"   resultType="org.hzero.plugin.platform.hr.api.dto.UnitDTO">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()" />
+        select
+        u.unit_id,
+        u.unit_code,
+        (
+        case
+        when ut.unit_name  is NULL THEN  u.unit_name
+        when ut.unit_name='' THEN  u.unit_name
+        ELSE ut.unit_name
+        END
+        ) unit_name,
+        u.order_seq,
+        u.parent_unit_id,
+        u.tenant_id,
+        u.object_version_number,
+        u.unit_company_id,
+        u.unit_type_code
+
+        from
+        hpfm_unit u
+        LEFT join hpfm_unit_tl ut on ut.unit_id = u.unit_id and ut.lang = #{lang,jdbcType=VARCHAR}
+        where
+        u.enabled_flag = 1
+        and u.tenant_id = #{tenantId, jdbcType=DECIMAL}
+        order by
+        u.parent_unit_id,u.order_seq,u.unit_name
+    </select>
+    
+    <select id="selectPlusCompany" resultType="org.hzero.plugin.platform.hr.api.dto.UnitDTO">
+        select
+            <include refid="baseColumn"/>,
+            pu.unit_name parent_unit_name,
+            hc.company_name
+        from
+            hpfm_unit u
+        join hpfm_unit_tl ut on ut.unit_id = u.unit_id and ut.lang = #{lang}
+        left join hpfm_unit pu on pu.unit_id = u.parent_unit_id
+        left join hpfm_company hc on hc.company_id = u.company_id
+        where
+            1 = 1
+        and u.tenant_id = #{tenantId}
+        and (u.unit_type_code = 'C' or u.unit_type_code = 'G')
+        AND EXISTS (
+                SELECT
+                    1
+                FROM
+                    hpfm_unit ut
+                WHERE
+                    1 = 1
+                AND (ut.unit_type_code = 'C' or ut.unit_type_code = 'G')
+                <if test="keyWord != null and keyWord != ''">
+                    <bind name="keyWordLike" value="'%' + keyWord + '%'" />
+                    AND (u.unit_name like #{keyWordLike} or u.unit_code like #{keyWordLike})
+                </if>
+                AND (ut.unit_id = u.unit_id OR ut.level_path LIKE concat( u.level_path, '|%'))
+            )
+        order by
+            u.parent_unit_id,
+            u.order_seq,
+            u.unit_id
+    </select>
+    
+    <select id="selectPlusDepartment" resultType="org.hzero.plugin.platform.hr.api.dto.UnitDTO">
+        select
+            u.unit_id,
+            u.unit_code,
+            ut.unit_name,
+            u.unit_type_code,
+            u.tenant_id,
+            ut.description,
+            u.order_seq,
+            u.parent_unit_id,
+            u.supervisor_flag,
+            u.enabled_flag,
+            u.level_path,
+            u.unit_company_id,
+            u.object_version_number,
+            u.company_id,
+            u.quick_index,
+            u.phoneticize,
+            put.unit_name parent_unit_name,
+            uct.unit_name unit_company_name,
+            hc.company_name 
+        from
+            hpfm_unit u
+        join hpfm_unit_tl ut on ut.unit_id = u.unit_id and ut.lang = #{lang}
+        left join hpfm_unit pu on pu.unit_id = u.parent_unit_id
+        join hpfm_unit_tl put on pu.unit_id = put.unit_id and put.lang = #{lang}
+        left join hpfm_unit uc on u.unit_company_id = uc.unit_id
+        join hpfm_unit_tl uct on uc.unit_id = uct.unit_id and uct.lang = #{lang}
+        left join hpfm_company hc on hc.company_id = u.company_id
+        where
+            1 = 1
+        and u.tenant_id = #{tenantId}
+        and u.unit_type_code = 'D'
+        <if test="unitCompanyId != null">
+               AND u.unit_company_id = #{unitCompanyId}
+        </if> 
+        AND EXISTS (
+                SELECT
+                    1
+                FROM
+                    hpfm_unit ut
+                WHERE
+                    1 = 1
+                AND ut.unit_type_code = 'D'
+                <if test="keyWord != null and keyWord != ''">
+                    <bind name="keyWordLike" value="'%' + keyWord + '%'" />
+                    AND (u.unit_name like #{keyWordLike} or u.unit_code like #{keyWordLike})
+                </if>
+                AND (ut.unit_id = u.unit_id OR ut.level_path LIKE concat( u.level_path, '|%'))
+            )
+        order by
+            u.parent_unit_id,
+            u.order_seq,
+            u.unit_id
+    </select>
+    
+    
+    <select id="queryAllUnitEmployees" resultType="org.hzero.plugin.platform.hr.api.dto.EmployeeDTO">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()" />
+        SELECT
+            he.employee_Id,
+            he.employee_num employee_code,
+            he.NAME,
+            he.NAME_en,
+            he.email,
+            he.mobile,
+            he.gender,
+            hea.unit_id,
+            ut.unit_name,
+            hea.position_id ,
+            hpt.position_name,
+            he.status,
+            hea.primary_position_flag
+        FROM
+    hpfm_employee he
+    JOIN hpfm_employee_assign hea ON he.employee_id = hea.employee_id AND hea.tenant_id = he.tenant_id
+    JOIN hpfm_unit hu ON hu.unit_type_code = 'D' AND hu.unit_id = hea.unit_id
+    join hpfm_unit_tl ut on ut.unit_id = hu.unit_id and ut.lang = #{lang} 
+    JOIN hpfm_position_tl hpt ON hpt.position_id = hea.position_id and hpt.lang = #{lang}
+    WHERE
+        he.tenant_id = #{tenantId}
+        AND he.enabled_flag = 1
+        AND (
+        hu.unit_id = #{unitId}
+        OR hu.level_path LIKE CONCAT((SELECT hu1.level_path FROM hpfm_unit hu1 WHERE hu1.unit_id =
+                #{unitId}), '|%')
+        ) 
+        <if test="keyWord != null and keyWord != ''">
+            <bind name="keyWordLike" value="'%' + keyWord + '%'" />
+                AND (he.employee_num like #{keyWordLike} or he.NAME like #{keyWordLike})
+        </if>
+        <if test="status != null and status != ''">
+             AND he.status = #{status}
+        </if>
+        <if test="primaryPositionFlag != null">
+            and hea.primary_position_flag = #{primaryPositionFlag}
+        </if>
+    </select>
+    
+    <select id="queryUnitDept" resultType="org.hzero.plugin.platform.hr.api.dto.UnitDTO">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()" />
+        SELECT
+            u.unit_id,
+            u.unit_code,
+            ut.unit_name,
+            u.unit_type_code,
+            u.tenant_id,
+            ut.description,
+            u.order_seq,
+            u.parent_unit_id,
+            u.supervisor_flag,
+            u.enabled_flag,
+            u.level_path,
+            u.unit_company_id,
+            u.object_version_number,
+            u.company_id,
+            u.quick_index,
+            u.phoneticize
+        FROM
+          hpfm_unit u
+        LEFT JOIN hpfm_unit_tl ut ON ut.unit_id = u.unit_id AND ut.lang = #{lang}
+        where
+        u.level_path like concat((select level_path from hpfm_unit where unit_id = #{unitId}),'%')
+        and u.tenant_id = #{tenantId}
+        and u.unit_type_code = 'D'
+        <if test="enabledFlag != null">
+            and u.enabled_flag = #{enabledFlag}
+        </if>
+        <if test="keyWord != null and keyWord != ''">
+            <bind name="keyWordLike" value="'%' + keyWord + '%'" />
+                AND (u.unit_code like #{keyWordLike} or ut.unit_name like #{keyWordLike})
+        </if>
+    </select>
+    
+    <select id="queryParentUnitsByLevelPath" resultType="org.hzero.plugin.platform.hr.domain.entity.Unit">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()" />
+        SELECT 
+            unit.unit_id,
+            (
+            case
+                when tl.unit_name  is NULL THEN  unit.unit_name
+                when tl.unit_name='' THEN  unit.unit_name
+                ELSE tl.unit_name
+            END
+            ) unit_name,
+            unit.parent_unit_id
+        from
+            hpfm_unit unit
+            LEFT JOIN hpfm_unit_tl tl on unit.unit_id = tl.unit_id AND  tl.lang= #{lang}
+        WHERE
+            unit.tenant_id = #{tenantId}
+            AND
+            (
+                #{levelPath} = unit.level_path OR #{levelPath}  LIKE concat (unit.level_path,'|%')
+            )
+    </select>
+    <select id="selectParentUnit" resultType="org.hzero.plugin.platform.hr.domain.entity.Unit">
+        select unit.unit_id from hpfm_unit unit join hpfm_unit child on child.unit_company_id = unit.unit_id
+         where child.unit_id in
+        <foreach collection="list" item="unitId" separator="," open="(" close=")">
+            #{unitId}
+        </foreach>
+        and unit.unit_type_code = 'C'
+    </select>
+    <select id="selectOpenDepartmentUsers" resultType="org.hzero.plugin.platform.hr.api.dto.Receiver">
+        SELECT
+            hhse.userid open_user_id
+        FROM
+            hpfm_hr_sync_employee hhse
+        WHERE
+            EXISTS (
+            SELECT
+                1
+            FROM
+                hpfm_hr_sync_dept_employee hhsde,
+                hpfm_hr_sync_dept hhsd,
+                hpfm_employee he,
+                hpfm_employee_user heu,
+                iam_user iu
+            WHERE
+                hhsde.sync_employee_id = hhse.sync_employee_id
+                AND hhsd.sync_dept_id = hhsde.sync_dept_id
+                AND he.employee_num = hhse.employee_num
+                AND he.tenant_id = hhse.tenant_id
+                AND heu.employee_id = he.employee_id
+                AND iu.id = heu.user_id
+                AND iu.is_enabled = 1
+                AND hhsd.tenant_id = #{unit.tenantId}
+                AND he.enabled_flag = 1
+                AND (
+                    hhsd.unit_id = #{unit.unitId}
+                    OR hhsd.unit_id IN (
+                    SELECT
+                    hu.unit_id
+                    FROM
+                    hpfm_unit hu
+                    WHERE
+                        hu.level_path LIKE CONCAT ( ( SELECT hu.level_path FROM hpfm_unit hu WHERE hu.unit_id = #{unit.unitId} ), '|%' )
+                    )
+                )
+                AND hhse.sync_type_code = #{thirdPlatformType}
+            )
+    </select>
+    <select id="selectCompanyUnits" resultType="org.hzero.plugin.platform.hr.domain.entity.Unit">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()" />
+        SELECT
+        u.unit_id,
+        u.unit_code,
+        ut.unit_name,
+        ut.description
+        FROM
+        hpfm_unit u
+        JOIN hpfm_unit_tl ut on ut.unit_id = u.unit_id and ut.lang = #{lang}
+        WHERE
+        1 = 1
+        AND u.unit_type_code in ('C', 'G')
+        AND u.tenant_id = #{tenantId}
+        <if test='unitId != null'>
+            AND u.level_path not like concat((
+            select level_path from hpfm_unit where unit_id = #{unitId}
+            ),'%')
+        </if>
+        <if test='unitCode != null and !("").equals(unitCode)'>
+            <bind name="unitCodeLike" value="'%' + unitCode + '%'" />
+            AND u.unit_code like #{unitCodeLike}
+        </if>
+        <if test='unitName != null and !("").equals(unitName)'>
+            <bind name="unitNameLike" value="'%' + unitName + '%'" />
+            AND u.unit_name like #{unitNameLike}
+        </if>
+    </select>
+    <select id="listDepartmentUnits" resultType="org.hzero.plugin.platform.hr.domain.entity.Unit">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()" />
+        SELECT
+        u.unit_id,
+        u.unit_code,
+        ut.unit_name,
+        ut.description
+        FROM
+        hpfm_unit u
+        JOIN hpfm_unit_tl ut on ut.unit_id = u.unit_id and ut.lang = #{lang}
+        WHERE
+        1 = 1
+        AND u.unit_type_code not in ('C', 'G')
+        <if test='tenantId != null and !("").equals(tenantId)'>
+            AND u.tenant_id = #{tenantId}
+        </if>
+        AND u.unit_company_id = #{unitCompanyId}
+        AND u.level_path not like concat((select level_path from hpfm_unit where unit_id = #{unitId}),'%')
+        <if test='unitCode != null and !("").equals(unitCode)'>
+            <bind name="unitCodeLike" value="'%' + unitCode + '%'" />
+            AND u.unit_code like #{unitCodeLike}
+        </if>
+        <if test='unitName != null and !("").equals(unitName)'>
+            <bind name="unitNameLike" value="'%' + unitName + '%'" />
+            AND u.unit_name like #{unitNameLike}
+        </if>
+    </select>
+    <select id="getDepartmentsByUnitCodes" resultType="org.hzero.plugin.platform.hr.api.dto.UnitDTO">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()" />
+        SELECT
+        <include refid="baseColumn"/>,
+        pu.unit_name parent_unit_name,
+        u.enable_budget_flag,
+        u.cost_code,
+        scctl.cost_name
+        FROM
+        hpfm_unit u
+        JOIN hpfm_unit_tl ut ON ut.unit_id = u.unit_id AND ut.lang = #{lang}
+        JOIN hpfm_unit pu ON pu.unit_id = u.parent_unit_id
+        LEFT JOIN smdm_cost_center scc ON scc.cost_code = u.cost_code AND scc.tenant_id = u.tenant_id
+        LEFT JOIN smdm_cost_center_tl scctl ON scctl.cost_id = scc.cost_id AND scctl.lang = #{lang}
+        WHERE u.tenant_id = #{tenantId}
+        AND u.unit_company_id = #{unitCompanyId}
+        <foreach collection="topUnitCodes" item="item" index="index" open="and (" separator="and" close=")">
+            u.unit_type_code != #{item}
+        </foreach>
+        AND u.unit_code IN
+        <foreach collection="unitCodeSet" item="item1" index="index1" open="(" separator="," close=")">
+            #{item1}
+        </foreach>
+    </select>
+</mapper>

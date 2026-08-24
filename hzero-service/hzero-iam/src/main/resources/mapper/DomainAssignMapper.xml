@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.iam.infra.mapper.DomainAssignMapper">
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap id="BaseResultMap" type="org.hzero.iam.domain.entity.DomainAssign">
+        <result column="domain_assign_id" property="domainAssignId" jdbcType="DECIMAL"/>
+        <result column="domain_id" property="domainId" jdbcType="DECIMAL"/>
+        <result column="tenant_id" property="tenantId" jdbcType="DECIMAL"/>
+        <result column="company_id" property="companyId" jdbcType="DECIMAL"/>
+        <result column="object_version_number" property="objectVersionNumber" jdbcType="DECIMAL"/>
+        <result column="creation_date" property="creationDate" jdbcType="DATE"/>
+        <result column="created_by" property="createdBy" jdbcType="DECIMAL"/>
+        <result column="last_updated_by" property="lastUpdatedBy" jdbcType="DECIMAL"/>
+        <result column="last_update_date" property="lastUpdateDate" jdbcType="DATE"/>
+    </resultMap>
+    <select id="selectDomainAssign" resultType="org.hzero.iam.domain.entity.DomainAssign">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()" />
+        SELECT
+            hda.domain_assign_id,
+            hda.domain_id,
+            hda.tenant_id,
+            hda.company_id,
+            hda.object_version_number,
+            htt.tenant_name,
+            hc.company_name
+        FROM hiam_domain_assign hda
+        JOIN hpfm_tenant_tl htt ON htt.tenant_id = hda.tenant_id AND htt.lang = #{lang}
+        LEFT JOIN hpfm_company hc ON hc.company_id = hda.company_id
+        WHERE hda.domain_id = #{domainId}
+        <if test="tenantName != null and tenantName != ''">
+            <bind name="tenantNameLike" value="'%'+tenantName+'%'" />
+            AND htt.tenant_name LIKE #{tenantNameLike}
+        </if>
+        <if test="companyName != null and companyName != ''">
+            <bind name="companyNameLike" value="'%'+companyName+'%'" />
+            AND hc.company_name LIKE #{companyNameLike}
+        </if>
+        <if test="tenantId != null">
+            AND htt.tenant_id = #{tenantId}
+        </if>
+        <if test="companyId != null">
+            AND hc.company_id LIKE #{companyId}
+        </if>
+    </select>
+    <select id="selectDomainAssignDetail" resultType="org.hzero.iam.domain.entity.DomainAssign">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()" />
+        SELECT
+            hda.domain_assign_id,
+            hda.domain_id,
+            hda.tenant_id,
+            hda.company_id,
+            hda.object_version_number,
+            htt.tenant_name,
+            hc.company_name
+        FROM hiam_domain_assign hda
+        JOIN hpfm_tenant_tl htt ON htt.tenant_id = hda.tenant_id AND htt.lang = #{lang}
+        LEFT JOIN hpfm_company hc ON hc.company_id = hda.company_id
+        WHERE hda.domain_id = #{domainId}
+        AND hda.domainAssignId = #{domainAssignId}
+    </select>
+</mapper>

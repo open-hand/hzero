@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.hzero.platform.infra.mapper.DataHierarchyMapper">
+
+    <select id="listDataHierarchy" resultType="org.hzero.platform.api.dto.DataHierarchyDTO">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()" />
+        SELECT
+            hdh.data_hierarchy_id,
+            hdh.data_hierarchy_code,
+            hdh.data_hierarchy_name,
+            hdh.parent_id,
+            hdh.tenant_id,
+            hdh.value_source_id,
+            hdh.display_style,
+            hdh.enabled_flag,
+            hdh.order_seq,
+            hdh.object_version_number,
+            httl.tenant_name,
+            hlvh.view_name value_source_name,
+            hlvh.view_code value_source_code,
+            hdh1.data_hierarchy_name parent_name
+        FROM hpfm_data_hierarchy hdh
+        LEFT JOIN hpfm_data_hierarchy hdh1 ON hdh1.data_hierarchy_id = hdh.parent_id
+        JOIN hpfm_tenant ht ON hdh.tenant_id = ht.tenant_id
+        LEFT JOIN hpfm_tenant_tl httl ON ht.tenant_id = httl.tenant_id AND httl.lang = #{lang}
+        JOIN hpfm_lov_view_header hlvh ON hlvh.view_header_id = hdh.value_source_id
+        <where>
+            <if test="tenantId != null">
+                AND hdh.tenant_id = #{tenantId}
+            </if>
+            <if test="(dataHierarchyCode != null and dataHierarchyCode != '') or (dataHierarchyName != null and dataHierarchyName != '')">
+                AND EXISTS(SELECT 1
+                            FROM hpfm_data_hierarchy hdh1
+                            WHERE (hdh1.level_path LIKE CONCAT(hdh.level_path, '|%') OR hdh1.level_path = hdh.level_path)
+                            <if test="dataHierarchyCode != null and dataHierarchyCode != ''">
+                                <bind name="dataHierarchyCodeLike" value="'%' + dataHierarchyCode + '%'"/>
+                                AND hdh1.data_hierarchy_code LIKE #{dataHierarchyCodeLike}
+                            </if>
+                            <if test="dataHierarchyName != null and dataHierarchyName != ''">
+                                <bind name="dataHierarchyNameLike" value="'%' + dataHierarchyName + '%'"/>
+                                AND hdh1.data_hierarchy_name LIKE #{dataHierarchyNameLike}
+                            </if>
+                            )
+            </if>
+            <if test="enabledFlag != null">
+                AND hdh.enabled_flag = #{enabledFlag}
+            </if>
+        </where>
+        ORDER BY order_seq
+    </select>
+    <select id="getDataHierarchy" resultType="org.hzero.platform.api.dto.DataHierarchyDTO">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()" />
+         SELECT
+            hdh.data_hierarchy_id,
+            hdh.data_hierarchy_code,
+            hdh.data_hierarchy_name,
+            hdh.parent_id,
+            hdh.tenant_id,
+            hdh.value_source_id,
+            hdh.display_style,
+            hdh.enabled_flag,
+            hdh.level_path,
+            hdh.order_seq,
+            hdh.object_version_number,
+            httl.tenant_name,
+            hlvh.view_name value_source_name,
+            hlvh.view_code value_source_code,
+            hdh1.data_hierarchy_name parent_name
+        FROM hpfm_data_hierarchy hdh
+        LEFT JOIN hpfm_data_hierarchy hdh1 ON hdh1.data_hierarchy_id = hdh.parent_id
+        JOIN hpfm_tenant ht ON hdh.tenant_id = ht.tenant_id
+        LEFT JOIN hpfm_tenant_tl httl ON ht.tenant_id = httl.tenant_id AND httl.lang = #{lang}
+        JOIN hpfm_lov_view_header hlvh ON hlvh.view_header_id = hdh.value_source_id
+        WHERE hdh.data_hierarchy_id = #{dataHierarchyId}
+        <if test="tenantId != null">
+            AND hdh.tenant_id = #{tenantId}
+        </if>
+    </select>
+    <select id="getDataHierarchyByCode" resultType="org.hzero.platform.api.dto.DataHierarchyDTO">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()" />
+        SELECT
+            hdh.data_hierarchy_id,
+            hdh.data_hierarchy_code,
+            hdh.data_hierarchy_name,
+            hdh.parent_id,
+            hdh.tenant_id,
+            hdh.value_source_id,
+            hdh.display_style,
+            hdh.enabled_flag,
+            hdh.order_seq,
+            hdh.object_version_number,
+            httl.tenant_name,
+            hlvh.view_name value_source_name,
+            hlvh.view_code value_source_code
+        FROM hpfm_data_hierarchy hdh
+        LEFT JOIN hpfm_tenant_tl httl ON hdh.tenant_id = httl.tenant_id AND httl.lang = #{lang}
+        JOIN hpfm_lov_view_header hlvh ON hlvh.view_header_id = hdh.value_source_id
+        WHERE hdh.tenant_id = #{tenantId} AND hdh.data_hierarchy_code = #{dataHierarchyCode}
+    </select>
+    <select id="listDataHierarchyChildren" resultType="org.hzero.platform.domain.entity.DataHierarchy">
+        SELECT
+            data_hierarchy_id,
+            data_hierarchy_code,
+            data_hierarchy_name,
+            parent_id,
+            tenant_id,
+            value_source_id,
+            display_style,
+            enabled_flag,
+            level_path,
+            order_seq,
+            object_version_number
+        FROM hpfm_data_hierarchy
+        WHERE level_path LIKE CONCAT(#{levelPath}, '|%')
+        AND tenant_id = #{tenantId}
+    </select>
+    <select id="listDataHierarchyChildrenWithUnique"
+            resultType="org.hzero.platform.domain.entity.DataHierarchy">
+        SELECT
+            hdhc.data_hierarchy_id,
+            hdhc.data_hierarchy_code,
+            hdhc.data_hierarchy_name,
+            hdhc.parent_id,
+            hdhc.tenant_id,
+            hdhc.value_source_id,
+            hdhc.display_style,
+            hdhc.enabled_flag,
+            hdhc.level_path,
+            hdhc.order_seq,
+            hdhc.object_version_number
+        FROM hpfm_data_hierarchy hdhc
+        WHERE EXISTS (SELECT 1
+                        FROM hpfm_data_hierarchy hdhp
+                       WHERE hdhp.tenant_id = #{tenantId}
+                         AND hdhp.data_hierarchy_code = #{dataHierarchyCode}
+                         AND hdhc.level_path LIKE CONCAT(hdhp.level_path, '|%'))
+    </select>
+</mapper>

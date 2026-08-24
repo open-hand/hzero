@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.platform.infra.mapper.EntityColumnMapper">
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap id="BaseResultMap" type="org.hzero.platform.domain.entity.EntityColumn">
+        <result column="entity_column_id" property="entityColumnId" jdbcType="DECIMAL"/>
+        <result column="entity_table_id" property="entityTableId" jdbcType="DECIMAL"/>
+        <result column="field_name" property="fieldName" jdbcType="VARCHAR"/>
+        <result column="java_type" property="javaType" jdbcType="VARCHAR"/>
+        <result column="column_name" property="columnName" jdbcType="VARCHAR"/>
+        <result column="column_comment" property="columnComment" jdbcType="VARCHAR"/>
+        <result column="jdbc_type" property="jdbcType" jdbcType="VARCHAR"/>
+        <result column="type_handler" property="typeHandler" jdbcType="VARCHAR"/>
+        <result column="pk_id_flag" property="pkIdFlag" jdbcType="DECIMAL"/>
+        <result column="pk_sequence_name" property="pkSequenceName" jdbcType="VARCHAR"/>
+        <result column="pk_uuid_flag" property="pkUuidFlag" jdbcType="DECIMAL"/>
+        <result column="pk_identity_flag" property="pkIdentityFlag" jdbcType="DECIMAL"/>
+        <result column="pk_generator" property="pkGenerator" jdbcType="VARCHAR"/>
+        <result column="unique_flag" property="uniqueFlag" jdbcType="DECIMAL"/>
+        <result column="transient_flag" property="transientFlag" jdbcType="DECIMAL"/>
+        <result column="data_security_flag" property="dataSecurityFlag" jdbcType="DECIMAL"/>
+        <result column="blob_flag" property="blobFlag" jdbcType="DECIMAL"/>
+        <result column="lov_code" property="lovCode" jdbcType="VARCHAR"/>
+        <result column="multi_language_flag" property="multiLanguageFlag" jdbcType="DECIMAL"/>
+        <result column="remark" property="remark" jdbcType="VARCHAR"/>
+        <result column="object_version_number" property="objectVersionNumber" jdbcType="DECIMAL"/>
+        <result column="creation_date" property="creationDate" jdbcType="DATE"/>
+        <result column="created_by" property="createdBy" jdbcType="DECIMAL"/>
+        <result column="last_updated_by" property="lastUpdatedBy" jdbcType="DECIMAL"/>
+        <result column="last_update_date" property="lastUpdateDate" jdbcType="DATE"/>
+    </resultMap>
+</mapper>

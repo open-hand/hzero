@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.message.infra.mapper.WebhookServerMapper">
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap id="BaseResultMap" type="org.hzero.message.domain.entity.WebhookServer">
+        <result column="server_id" property="serverId" jdbcType="DECIMAL"/>
+        <result column="server_code" property="serverCode" jdbcType="VARCHAR"/>
+        <result column="server_name" property="serverName" jdbcType="VARCHAR"/>
+        <result column="server_type" property="serverType" jdbcType="VARCHAR"/>
+        <result column="webhook_address" property="webhookAddress" jdbcType="VARCHAR"/>
+        <result column="secret" property="secret" jdbcType="VARCHAR"/>
+        <result column="enabled_flag" property="enabledFlag" jdbcType="DECIMAL"/>
+        <result column="tenant_id" property="tenantId" jdbcType="DECIMAL"/>
+        <result column="description" property="description" jdbcType="VARCHAR"/>
+        <result column="object_version_number" property="objectVersionNumber" jdbcType="DECIMAL"/>
+        <result column="creation_date" property="creationDate" jdbcType="DATE"/>
+        <result column="created_by" property="createdBy" jdbcType="DECIMAL"/>
+        <result column="last_updated_by" property="lastUpdatedBy" jdbcType="DECIMAL"/>
+        <result column="last_update_date" property="lastUpdateDate" jdbcType="DATE"/>
+    </resultMap>
+    <sql id="baseColumns">
+         hws.server_id,
+         hws.server_code,
+         hwst.server_name,
+         hws.server_type,
+         hws.enabled_flag,
+         hws.tenant_id,
+         hws.description,
+         htt.tenant_name
+    </sql>
+    <select id="selectWebHookList" resultType="org.hzero.message.domain.entity.WebhookServer">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()" />
+        SELECT
+          <include refid="baseColumns" />
+        FROM hmsg_webhook_server hws
+        JOIN hmsg_webhook_server_tl hwst ON hwst.server_id = hws.server_id AND hwst.lang = #{lang}
+        JOIN hpfm_tenant_tl htt ON htt.tenant_id = hws.tenant_id AND htt.lang = #{lang}
+        <where>
+            <if test="webhookServer.tenantId != null">
+                AND hws.tenant_id IN (#{webhookServer.tenantId}<if test="includeSiteIfQueryByTenantId">, 0</if>)
+            </if>
+            <if test="webhookServer.serverName != null and webhookServer.serverName != ''">
+                <bind name="serverNameLike" value="'%'+webhookServer.serverName+'%'" />
+                AND hwst.server_name LIKE #{serverNameLike}
+            </if>
+            <if test="webhookServer.serverCode != null and webhookServer.serverCode != ''">
+                <bind name="serverCodeLike" value="'%'+webhookServer.serverCode+'%'" />
+                AND hws.server_code LIKE #{serverCodeLike}
+            </if>
+        </where>
+
+    </select>
+    <select id="selectWebHookDetails" resultType="org.hzero.message.domain.entity.WebhookServer">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()" />
+        SELECT
+          <include refid="baseColumns" />,
+          hws.object_version_number
+        FROM hmsg_webhook_server hws
+        JOIN hmsg_webhook_server_tl hwst ON hwst.server_id = hws.server_id AND hwst.lang = #{lang}
+        LEFT JOIN hpfm_tenant_tl htt ON htt.tenant_id = hws.tenant_id AND htt.lang = #{lang}
+        WHERE hws.server_id = #{serverId}
+        <if test="tenantId != null">
+            AND hws.tenant_id = #{tenantId}
+        </if>
+    </select>
+</mapper>

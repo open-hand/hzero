@@ -1,0 +1,140 @@
+spring:
+  application:
+    name: hzero-platform
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://db.hzero.org:3306/hzero_platform?useUnicode=true&characterEncoding=utf-8&useSSL=false}
+    username: ${SPRING_DATASOURCE_USERNAME:hzero}
+    password: ${SPRING_DATASOURCE_PASSWORD:hzero}
+    hikari:
+      # 连接池最小空闲连接数
+      minimum-idle: ${SPRING_DATASOURCE_MINIMUM_IDLE:20}
+      # 连接池允许的最大连接数
+      maximum-pool-size: ${SPRING_DATASOURCE_MAXIMUM_POOL_SIZE:200}
+      # 等待连接池分配连接的最大时长（毫秒）
+      connection-timeout: ${SPRING_DATASOURCE_CONNECTION_TIMEOUT:30000}
+  redis:
+    host: ${SPRING_REDIS_HOST:redis.hzero.org}
+    port: ${SPRING_REDIS_PORT:6379}
+    database: ${SPRING_REDIS_DATABASE:1}
+    lettuce:
+      pool:
+        # 资源池中最大连接数
+        # 默认8，-1表示无限制；可根据服务并发redis情况及服务端的支持上限调整
+        max-active: ${SPRING_REDIS_POOL_MAX_ACTIVE:50}
+        # 资源池运行最大空闲的连接数
+        # 默认8，-1表示无限制；可根据服务并发redis情况及服务端的支持上限调整，一般建议和max-active保持一致，避免资源伸缩带来的开销
+        max-idle: ${SPRING_REDIS_POOL_MAX_IDLE:50}
+        # 当资源池连接用尽后，调用者的最大等待时间(单位为毫秒)
+        # 默认 -1 表示永不超时，设置5秒
+        max-wait: ${SPRING_REDIS_POOL_MAX_WAIT:5000}
+
+server:
+  undertow:
+    # 设置IO线程数, 它主要执行非阻塞的任务,它们会负责多个连接
+    # 默认值为8，建议设置每个CPU核心一个线程
+    io-threads: ${SERVER_UNDERTOW_IO_THREADS:4}
+    # 阻塞任务线程池, 当执行类似servlet请求阻塞操作, undertow会从这个线程池中取得线程
+    # 默认等于 io-threads*8，它的值设置取决于系统的负载，可适当调大该值
+    worker-threads: ${SERVER_UNDERTOW_WORKER_THREADS:128}
+    # 每块buffer的空间大小，越小空间被利用越充分
+    # 不要设置太大，以免影响其他应用，合适即可
+    buffer-size: ${SERVER_UNDERTOW_BUFFER_SIZE:1024}
+    # 是否分配的直接内存(NIO直接分配的堆外内存)
+    # 默认false
+    direct-buffers: true
+    # HTTP POST请求最大的大小
+    # 默认0，无限制，可设置10M
+    max-http-post-size: 10485760
+    allow-unescaped-characters-in-url: true
+
+feign:
+  hystrix:
+    enabled: true
+
+hystrix:
+  threadpool:
+    default:
+      # 执行命令线程池的核心线程数，也是命令执行的最大并发量
+      # 默认10
+      coreSize: 1000
+      # 最大执行线程数
+      maximumSize: 1000
+  command:
+    default:
+      execution:
+        isolation:
+          thread:
+            # HystrixCommand 执行的超时时间，超时后进入降级处理逻辑。一个接口，理论的最佳响应速度应该在200ms以内，或者慢点的接口就几百毫秒。
+            # 默认 1000 毫秒，最高设置 2000足矣。如果超时，首先看能不能优化接口相关业务、SQL查询等，不要盲目加大超时时间，否则会导致线程堆积过多，hystrix 线程池卡死，最终服务不可用。
+            timeoutInMilliseconds: ${HYSTRIX_COMMAND_TIMEOUT_IN_MILLISECONDS:40000}
+
+ribbon:
+  # 客户端读取超时时间，超时时间要小于Hystrix的超时时间，否则重试机制就无意义了
+  ReadTimeout: ${RIBBON_READ_TIMEOUT:30000}
+  # 客户端连接超时时间
+  ConnectTimeout: ${RIBBON_CONNECT_TIMEOUT:3000}
+  # 访问实例失败(超时)，允许自动重试，设置重试次数，失败后会更换实例访问，请一定确保接口的幂等性，否则重试可能导致数据异常。
+  OkToRetryOnAllOperations: true
+  MaxAutoRetries: 1
+  MaxAutoRetriesNextServer: 1
+
+mybatis:
+  mapperLocations: classpath*:/mapper/*.xml
+  configuration:
+    mapUnderscoreToCamelCase: true
+
+hzero:
+  lov:
+    # 是否开启SQL类型LOV
+    sql:
+      enabled: ${HZERO_LOV_SQL_ENABLED:true}
+      # 是否开启SQL值集 public api
+      public-api-enabled: ${HZERO_LOV_SQL_PUBLIC_API_ENABLED:false}
+    # 是否开启LOV值翻译
+    value:
+      enabled: ${HZERO_LOV_VALUE_ENABLED:true}
+  platform:
+    # 是否启动初始化缓存
+    init-cache: ${HZERO_PLATFORM_INIT_CACHE:true}
+    # 角色模板编码
+    role-template-codes:
+      - ${HZERO_SALES_TEMPLATE_CODE:role/organization/default/template/sales}
+      - ${HZERO_EXPERTS_TEMPLATE_CODE:role/organization/default/template/experts}
+    regist-entity:
+      # 是否开启实体类的注册
+      enable: ${HZERO_REGIST_ENTITY_ENABLE:false}
+    # 公钥和私钥
+    encrypt:
+      public-key: ${HZERO_OAUTH_PASSWORD_PUBLIC_KEY:MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAvqxjS4ny7f6pdSfLNOaItpkeEBRUwMf+haKceZNAKSvdiNBAMwt1a6XtQviF6jMHO9ZB/QdPFkIcBBPwWUULl8Xzg09ip5qr+Huib8PPyfBm0utKS8zAypKSWLpWN/TlbKgG1b4qsThgahLJTvZDXiO758vbhuykKfcaStTu/ST9ny0haa3k+w7u0U0CRR92JdZKO5Dt/2QM2KByw+IX9WBXN2UI2xk2VdsGPaeUHJ4cVfXQjz0s36HZzi39RyidvqChsDPRCcjRSOT3K4JYEScTgs+0w9CzWECsy7jELO3Q7CafMNVYccE3Njknjv0O7sRY/flcQLq7PAsFTObwmQIDAQAB}
+      private-key: ${HZERO_OAUTH_PASSWORD_PRIVATE_KEY:MIIEuwIBADANBgkqhkiG9w0BAQEFAASCBKUwggShAgEAAoIBAQC+rGNLifLt/ql1J8s05oi2mR4QFFTAx/6Fopx5k0ApK92I0EAzC3Vrpe1C+IXqMwc71kH9B08WQhwEE/BZRQuXxfODT2Knmqv4e6Jvw8/J8GbS60pLzMDKkpJYulY39OVsqAbVviqxOGBqEslO9kNeI7vny9uG7KQp9xpK1O79JP2fLSFpreT7Du7RTQJFH3Yl1ko7kO3/ZAzYoHLD4hf1YFc3ZQjbGTZV2wY9p5QcnhxV9dCPPSzfodnOLf1HKJ2+oKGwM9EJyNFI5PcrglgRJxOCz7TD0LNYQKzLuMQs7dDsJp8w1VhxwTc2OSeO/Q7uxFj9+VxAurs8CwVM5vCZAgMBAAECggEANNxj9tg6wiJc5n7uxi63bjAK9pg8WunXNUM8sDPTkNZ5Z2mcssoVdo+ctHlj3ubgtYUT7EsvcNNJIxRICOesbBpUBW5nwmGOFahpAyU9IRYF26mhglw0grSZ4AFgz8iUJkh7BJzhBxrDGAU3TC3XxWyQtpV8ue43IO9BmcdorkMtKlbaHpmUIbROf+01O1+52dA64GnM4++2Ab+ka/HzmxZdSSw8BdJp/IG6lftbye+luvc5Tchflnucoj9WsOfxYTBTqdZZJa36XfwHc0QVMi1L8VlfnrE+55OwVvBiIaI/PNQe836kHjr/2qM0GI0otj3ommGvbH6+D8jFTYJkFQKBgQDvfBxtcqKAWJlidt6rXPcZgd9xofMcf75vHMWMkG21+LUUnb/Isch5iPApoA0q9lBUE7aSrCLjSucD+rimfmVCpio2ZJek8dG1R7UrXkCvPSxu590XdHpXk3f0vj0QYRDlIBsQGr9QZBD8G8Iawsl/wQs6NXLYWwPBSSphX1zRFwKBgQDL0o4ca+HqhvpFxgMDpCkFXB5YNBpiF925GqSbujg2AwKHJ3tGIn1c7wTic/RAWujVJHYpFxz5L5NMGVEO7BBEza1mbpheQN3YcaWfxD7ZXTx7yq4RQUqkLeovCIcHlsRLL1FZdyStJaO++ecDKeG8PyTE/4dK/ExvPXGcRep5zwJ/W60nNL6tdnR0Qz0+AFuWPC17XASjDEXaoK5i8WxYk1CiAUJiKHHmTKAfT8/1On0QQx9IxN0gfeIujVdtWE8KdHknr6rSYlIv9TV+JRvvpyXD3LDl8hSkwOGzCf3JYnvF+/BOa9vRYPTti5UUuSnX+Q/tPFs5m5k71sIrdxsKbQKBgQCO7lql56mHk5wSLeeTOB1kGtNUu0T9IQtlcR+Z7R7aEYZGTROPfUQ4VY0xWGsibh30yhrqecDhpdE/fklvk29dMHa27DuBbS+lRx0EStRgDZgKn3kttIGpXGFrFinK0plYuBfuCzT3DvwjQpATkd0w637XfvHbTc4z+/ydwBHL1QKBgFAYCMf5wmokW5x9iButPpZrYpz8Fk89vEAzEfqQxGCxjvHQKzQ82NymOa7LbHnxvgdy3f6WiphiYFHa0kZvzbO2O4qwg9lLZA0atA2VCnbQ1ggKsNagQtXMY9sjiqBLxp3NK42QbW6r+E//m4blqqGxr6OokQ1ydLRxIJXg0ZsH}
+  data:
+    permission:
+      db-owner: ${HZERO_DB_OWNER:}
+    change:
+      enable: true
+  audit:
+    operation:
+      # 全局开关，默认 false
+      enable: true
+    data:
+      # 是否启用数据变更监控功能
+      enable: true
+  scheduler:
+    executor-code: HPFM_EXECUTOR
+  export:
+    enable-async: true
+  api-customize:
+    enable-agent: false
+  resource:
+    # 匹配的资源才会解析JwtToken便于得到UserDetails
+    pattern: ${HZERO_RESOURCE_PATTERN:/v1/*,/hzero/*,/hpfm/v1/*,/hpfm/hzero/*}
+  field-permission:
+    enable: true
+
+logging:
+  level:
+    io.choerodon: ${LOG_LEVEL:info}
+    org.hzero.mybatis: ${LOG_LEVEL:info}
+    org.hzero.platform: ${LOG_LEVEL:info}
+    org.hzero.starter: ${LOG_LEVEL:info}
+    org.hzero.plugin.platform: ${LOG_LEVEL:info}

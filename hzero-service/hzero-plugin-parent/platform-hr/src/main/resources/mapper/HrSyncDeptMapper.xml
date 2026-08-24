@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.plugin.platform.hr.infra.mapper.HrSyncDeptMapper">
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap id="BaseResultMap" type="org.hzero.plugin.platform.hr.domain.entity.HrSyncDept">
+        <result column="sync_dept_id" property="syncDeptId" jdbcType="DECIMAL"/>
+        <result column="sync_type_code" property="syncTypeCode" jdbcType="VARCHAR"/>
+        <result column="department_id" property="departmentId" jdbcType="DECIMAL"/>
+        <result column="name" property="name" jdbcType="VARCHAR"/>
+        <result column="order_seq" property="orderSeq" jdbcType="DECIMAL"/>
+        <result column="unit_id" property="unitId" jdbcType="DECIMAL"/>
+        <result column="parentid" property="parentid" jdbcType="DECIMAL"/>
+        <result column="tenant_id" property="tenantId" jdbcType="DECIMAL"/>
+        <result column="object_version_number" property="objectVersionNumber" jdbcType="DECIMAL"/>
+        <result column="creation_date" property="creationDate" jdbcType="DATE"/>
+        <result column="created_by" property="createdBy" jdbcType="DECIMAL"/>
+        <result column="last_updated_by" property="lastUpdatedBy" jdbcType="DECIMAL"/>
+        <result column="last_update_date" property="lastUpdateDate" jdbcType="DATE"/>
+    </resultMap>
+    <select id="getCreateDept" resultType="org.hzero.plugin.platform.hr.domain.entity.HrSyncDept">
+        select
+            hu.unit_id,
+            hu.unit_name name,
+            hu.order_seq,
+            hu.parent_unit_id,
+            hu.tenant_id
+        from
+        hpfm_unit hu
+        where hu.tenant_id = #{tenantId} and hu.enabled_flag = 1 and hu.unit_id not in
+        (select hhsd.unit_id from hpfm_hr_sync_dept hhsd where hhsd.sync_type_code = #{syncTypeCode} and hhsd.tenant_id = #{tenantId})
+    </select>
+    <select id="getDeleteDept" resultType="org.hzero.plugin.platform.hr.domain.entity.HrSyncDept">
+        select
+            hhsd.sync_dept_id,
+            hhsd.unit_id,
+            hhsd.department_id,
+            hhsd.name,
+            hhsd.order_seq,
+            hhsd.object_version_number,
+            hhsd.tenant_id,
+            hhsd.sync_type_code,
+            hhsd.parentid
+        from
+        hpfm_hr_sync_dept hhsd
+        where hhsd.tenant_id = #{tenantId} and hhsd.sync_type_code = #{syncTypeCode} and hhsd.unit_id not in
+        (select hu.unit_id from hpfm_unit hu where hu.enabled_flag = 1 and hu.tenant_id = #{tenantId})
+    </select>
+    <select id="getUpdateDept" resultType="org.hzero.plugin.platform.hr.domain.entity.HrSyncDept">
+        select
+            hhsd.sync_dept_id,
+            hhsd.department_id,
+            hu.unit_id,
+            hu.unit_name name,
+            hu.order_seq,
+            hu.parent_unit_id,
+            hu.tenant_id,
+            hhsd.object_version_number,
+            hhsd.sync_type_code
+        from
+        hpfm_unit hu join  hpfm_hr_sync_dept hhsd on hu.unit_id = hhsd.unit_id
+        left join hpfm_hr_sync_dept hhsd1 on hhsd.parentid = hhsd1.department_id
+        where hu.tenant_id = #{tenantId} and hhsd.tenant_id = #{tenantId} and hu.enabled_flag = 1 and hhsd.sync_type_code = #{syncTypeCode}
+        and hhsd1.tenant_id = #{tenantId} and hhsd1.sync_type_code = #{syncTypeCode}
+        and (hu.unit_name != hhsd.name or hu.order_seq != hhsd.order_seq
+        or (hu.parent_unit_id is null and hhsd.parentid != 1) or (hu.parent_unit_id != hhsd1.unit_id))
+    </select>
+</mapper>

@@ -1,0 +1,40 @@
+@import '~hzero-front/lib/assets/styles/variables';
+
+:global {
+  .tl-editor {
+    .tl-editor-trigger {
+      &:before {
+        // 触发编辑多语言的 icon 样式
+        color: rgba(0, 0, 0, 0.25);
+      }
+    }
+
+    .tl-editor-clear {
+      // 删除 icon 样式
+      margin-right: 4px;
+      display: none;
+    }
+
+    &:hover {
+      .tl-editor-clear {
+        // 删除 icon 样式
+        display: inline-block;
+        cursor: pointer;
+      }
+    }
+
+    .ant-input {
+      // 两个 icon 的位置
+      padding-right: 48px !important;
+    }
+  }
+
+  .ant-form-item-required .tl-editor {
+    &:hover {
+      .ant-input-suffix {
+        background: @hzero-form-required-color;
+        display: block;
+      }
+    }
+  }
+}

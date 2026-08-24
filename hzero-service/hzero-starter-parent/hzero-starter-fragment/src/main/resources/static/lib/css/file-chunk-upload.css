@@ -1,0 +1,15 @@
+.file-picker {
+    display: inline-block;
+    height: 34px;
+    background-color: #29BECE;
+}
+
+.file-picker > .webuploader-pick {
+    padding: 0;
+    height: 20px;
+    background: transparent;
+}
+
+.file-picker > .webuploader-pick + div {
+    height: 34px;
+}

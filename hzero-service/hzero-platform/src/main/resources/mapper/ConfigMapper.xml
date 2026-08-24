@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.platform.infra.mapper.ConfigMapper">
+
+    <select id="selectConfigByTenantId" resultType="org.hzero.platform.domain.entity.Config">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        SELECT
+            hc.config_id,
+            hc.config_code,
+            (case when hct.config_value is not null then hct.config_value
+			 else hc.config_value END) config_value,
+            hc.category,
+            hc.object_version_number,
+            hc.tenant_id
+        FROM
+            hpfm_config hc
+        LEFT JOIN hpfm_config_tl hct ON (hct.config_id = hc.config_id AND hct.lang = #{lang} AND hc.config_code = 'TITLE')
+        WHERE
+            hc.tenant_id = #{tenantId}
+        UNION ALL
+        SELECT
+            hc.config_id,
+            hc.config_code,
+            (case when hct.config_value is not null then hct.config_value
+             else hc.config_value END) config_value,
+            hc.category,
+            hc.object_version_number,
+            hc.tenant_id
+        FROM
+            hpfm_config hc
+            LEFT JOIN hpfm_config_tl hct ON (hct.config_id = hc.config_id AND hct.lang = #{lang} AND hc.config_code = 'TITLE')
+        WHERE
+            hc.tenant_id = 0
+        AND NOT EXISTS (
+            SELECT 1 FROM hpfm_config hco WHERE hc.config_code = hco.config_code AND hco.tenant_id = #{tenantId}
+        )
+    </select>
+    <select id="selectLanguageValueMap" resultType="org.hzero.platform.domain.vo.TitleConfigCacheVO">
+        SELECT
+            hct.lang,
+            hct.config_value
+        FROM hpfm_config_tl hct
+        JOIN hpfm_config hc ON hc.config_id = hct.config_id
+        WHERE hct.config_id = #{configId}
+        AND hc.config_code = 'TITLE'
+    </select>
+</mapper>

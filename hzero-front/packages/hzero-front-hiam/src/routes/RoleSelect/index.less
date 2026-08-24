@@ -1,0 +1,35 @@
+@import '~hzero-ui/es/style/themes/default.less';
+
+.select-role {
+  cursor: pointer;
+  display: inline-block;
+  // height: 40px;
+  margin-right: 8px;
+  width: 100%;
+  // overflow: hidden;
+  // text-overflow: ellipsis;
+  // white-space: nowrap;
+  i {
+    font-size: 16px;
+    padding: 4px 0 4px 12px;
+    line-height: 1;
+    vertical-align: middle;
+  }
+  :global(.anticon-down:before) {
+    content: '\E606' !important;
+    color: #b3b3b3;
+    // transform: rotate(180deg);
+    // :hover {
+    //   color: #5867dd
+    // }
+  }
+  :global(.anticon-down:hover) {
+    color: #5867dd;
+  }
+}
+.avatar {
+  margin: 0 8px 0 0;
+  color: @primary-color;
+  background: rgba(255, 255, 255, 0.85);
+  vertical-align: middle;
+}

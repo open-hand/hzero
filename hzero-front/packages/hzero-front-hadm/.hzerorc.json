@@ -1,0 +1,7 @@
+{
+  "package": {
+    "initLoad": true,
+    "indexRouter": "/hadm/service",
+    "registerRegex": "(\\/(private|public|pub))?\\/hadm\\/"
+  }
+}

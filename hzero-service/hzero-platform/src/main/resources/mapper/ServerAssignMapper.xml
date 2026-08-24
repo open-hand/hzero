@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.platform.infra.mapper.ServerAssignMapper">
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap id="BaseResultMap" type="org.hzero.platform.domain.entity.ServerAssign">
+        <result column="ASSIGN_ID" property="assignId" jdbcType="DECIMAL"/>
+        <result column="CLUSTER_ID" property="clusterId" jdbcType="DECIMAL"/>
+        <result column="SERVER_ID" property="serverId" jdbcType="DECIMAL"/>
+        <result column="ASSIGN_DESCRIPTION" property="assignDescription" jdbcType="VARCHAR"/>
+        <result column="tenant_id" property="tenantId" jdbcType="DECIMAL"/>
+        <result column="object_version_number" property="objectVersionNumber" jdbcType="DECIMAL"/>
+        <result column="creation_date" property="creationDate" jdbcType="DATE"/>
+        <result column="created_by" property="createdBy" jdbcType="DECIMAL"/>
+        <result column="last_updated_by" property="lastUpdatedBy" jdbcType="DECIMAL"/>
+        <result column="last_update_date" property="lastUpdateDate" jdbcType="DATE"/>
+    </resultMap>
+    
+    <select id="exists" resultType="java.lang.Long">
+        select assign_id
+        from hpfm_server_assign
+        where cluster_id = #{clusterId}
+          and server_id = #{serverId}
+    </select>
+    <delete id="deleteByServerIdAndClusterId">
+        delete
+        from hpfm_server_assign
+        where server_id = #{serverId}
+          and cluster_id = #{clusterId}
+    </delete>
+</mapper>

@@ -1,0 +1,539 @@
+@import '~hzero-ui/es/style/themes/default.less';
+@import '~choerodon-ui/lib/style/themes/default.less';
+@import './assets/styles/variables.less';
+@import './assets/styles/hzero-ui-override.less';
+@import './assets/styles/global.less';
+
+:global {
+  .global-layout {
+    .ant-row,
+    .ant-form-item {
+      .ant-form-item-label {
+        text-align: left;
+
+        .ant-form-item-required {
+          padding-right: 4px;
+          line-height: 20px;
+
+          &::before {
+            content: '' !important;
+            margin-right: 0;
+          }
+        }
+      }
+    }
+
+    .ant-form-item-control-wrapper {
+      .ant-form-item-required {
+        .ant-form-item-children {
+          // display: flex;
+          &::before {
+            display: inline-block;
+            content: '*';
+            margin-right: 0;
+            font-size: 12px;
+            color: #f5222d;
+            line-height: 39.9999px;
+            font-family: 'SimSun', sans-serif;
+            position: absolute;
+            z-index: 101;
+            left: -8px;
+          }
+        }
+      }
+
+      .has-error {
+        .ant-form-explain {
+          margin: 3px auto;
+        }
+      }
+    }
+  }
+
+  .ant-row,
+  .ant-form-item {
+    .ant-form-item-label {
+      white-space: pre-line;
+      word-break: break-word;
+
+      > label {
+        display: inline-block;
+        line-height: 20px;
+        vertical-align: baseline;
+        word-break: break-word;
+        hyphens: manual;
+      }
+    }
+  }
+}
+
+html,
+body,
+:global(#root) {
+  // overflow: hidden;
+  overflow-y: hidden;
+  overflow-x: auto;
+
+  :global {
+    .ant-input-disabled,
+    .ant-select-disabled {
+      color: #aaa !important;
+    }
+  }
+}
+
+:global(.ant-layout) {
+  min-height: 100%;
+}
+
+//::-webkit-scrollbar {
+//  width: 8px;
+//  height: 8px;
+//}
+//
+//::-webkit-scrollbar-thumb {
+//  background-color: #d6d6d6;
+//  -webkit-transition: background-color 0.3s;
+//  transition: background-color 0.3s;
+//}
+//
+//::-webkit-scrollbar-thumb:hover {
+//  background-color: #aeaeae;
+//}
+
+canvas {
+  display: block;
+}
+
+body {
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+:global {
+  .globalSpin {
+    width: 100%;
+    margin: 40px 0 !important;
+  }
+}
+
+// FIXME: 使用 auto 后, Spin 包裹的 组件会多出额外的滚动条
+// FIXME: 这个 issue 是说换成 auto, 不知道这里为什么换成 visible
+// temp fix for https://github.com/ant-design/ant-design/commit/a1fafb5b727b62cb0be29ce6e9eca8f579d4f8b7
+:global {
+  .ant-spin-container {
+    overflow: visible !important;
+    //overflow: auto !important;
+  }
+
+  .ant-btn .anticon {
+    // 按钮内 图标 变为 12px
+    font-size: 12px;
+  }
+
+  // TODO: 还有没有 label-btn
+  .ant-btn.label-btn {
+    padding: 0 10px;
+    //border: none;
+
+    &:hover {
+      color: #333;
+      //background-color: #e8e8e8;
+    }
+  }
+
+  // ------------- selection ------------
+  // 使文字不能被选中
+  .unselect {
+    user-select: none;
+  }
+
+  .img-preview {
+    overflow: hidden;
+    border-radius: 50%;
+    background: #ddd;
+  }
+
+  // ------------- form -------------
+  .ant-input-disabled {
+    color: #333 !important;
+  }
+
+  .ant-form-item-label label {
+    // FIXME: 不知道为什么会有这个加粗
+    //font-weight: bold;
+  }
+
+  // .ant-form-item-with-help {
+  //   margin-bottom: 0 !important;
+  // }
+  // ------------- form -------------
+
+  // ------------- compose form -------------
+  .compose-form.ant-form-inline .ant-form-item {
+    margin-bottom: 14px;
+    margin-right: 0;
+    display: flex;
+    // 编辑时 TextArea 组件需要留出空间给错误提示
+    textarea {
+      margin-top: 4px;
+      margin-bottom: 4px;
+    }
+  }
+
+  .compose-form.ant-form-inline .ant-form-item-with-help {
+    margin-bottom: 14px;
+  }
+
+  // ------------- compose form  disabled -------------
+  .compose-form-disabled.ant-form-inline .ant-form-item {
+    margin-right: 0;
+    display: flex;
+    margin-bottom: 0;
+
+    .ant-form-item-label {
+      text-align: left;
+
+      > label {
+        font-weight: normal;
+        color: #999;
+      }
+    }
+
+    .compose-field-value-disabled {
+      line-height: 1.5;
+    }
+  }
+
+  .compose-form-disabled.ant-form-inline .ant-form-item-with-help {
+    margin-bottom: 0;
+  }
+
+  .compose-form-disabled .row-disabled {
+    border-bottom: 1px dashed #ddd;
+
+    .ant-form-item-control-wrapper {
+      // TODO 覆盖 antd 的样式
+      display: flex !important;
+      flex-direction: column;
+      justify-content: center;
+    }
+  }
+
+  // ------------- table operator -------------
+
+  // ------------- table operator -------------
+
+  // ------------- Page Header Content --------
+  .page-container {
+    position: relative;
+    display: flex;
+    flex-flow: column;
+    flex-grow: 1;
+    overflow-y: auto;
+    // FIXME: 先使用常量 之后 变量全部完成后再替换成变量
+    background-color: #f4f5f7;
+    scrollbar-width: thin;
+  }
+
+  .page-head {
+    display: flex;
+    height: 48px;
+    min-height: 48px;
+    line-height: 47px;
+    border-bottom: 1px solid #e8e8e8;
+    background-color: #fff;
+    align-items: center;
+
+    &-back-btn {
+      flex-shrink: 0;
+    }
+
+    .back-btn {
+      cursor: pointer;
+      color: @hzero-primary-color;
+      font-size: 22px;
+      vertical-align: middle;
+      margin: 0 -12px 2px 14px;
+      padding: 10px;
+      border-radius: 22px;
+
+      &:hover {
+        background-color: #f0f2f5;
+      }
+    }
+
+    &-title {
+      margin-left: @hzero-gutter;
+      margin-right: 24px;
+      color: #000;
+      font-size: 16px;
+      line-height: 48px;
+    }
+
+    &-operator {
+      margin-right: @hzero-gutter;
+      flex-grow: 1;
+
+      display: flex;
+      flex-direction: row-reverse;
+      justify-content: flex-start;
+      align-items: center;
+
+      // 所有按钮给一个左间距
+      // 由于方向反转了 所以 是 lat-child 没有 margin-left
+      > .ant-btn:not(:last-child),
+      > .page-head-operation:not(:last-child) {
+        margin-left: @hzero-gutter-sm;
+      }
+
+      // 操作区中 按钮的样式
+      .ant-btn[disabled]:not(.ant-btn-loading) {
+        background-color: transparent;
+      }
+
+      .ant-btn-primary {
+        background-color: @hzero-primary-color;
+        border-color: @hzero-primary-color;
+
+        &:active,
+        &:focus {
+          background-color: @hzero-primary-color;
+          border-color: @hzero-primary-color;
+        }
+
+        &:hover {
+          color: #fff;
+          background-color: @hzero-primary-btn-hover-color;
+          border-color: @hzero-primary-btn-hover-color;
+        }
+      }
+
+      .ant-btn:not(.ant-btn-primary) {
+        //border: none;
+
+        &:active,
+        &:focus,
+        &:hover {
+          color: #333;
+          border-color: @hzero-primary-color;
+          background-color: transparent;
+          //background-color: #e8e8e8;
+        }
+      }
+
+      .ant-btn:not(.back-btn) {
+        &[disabled]:not(.ant-btn-loading) {
+          background-color: #fff;
+          color: rgba(0, 0, 0, 0.26);
+        }
+      }
+    }
+  }
+
+  .page-content-wrap {
+    flex-grow: 1;
+    overflow: hidden;
+  }
+
+  .page-content-wrap-no-card {
+    > .page-content {
+      margin: 0;
+    }
+  }
+
+  .page-content {
+    // FIXME: 先使用常量 之后 变量全部完成后再替换成变量
+    margin: @hzero-gutter-sm @hzero-gutter @hzero-gutter;
+    padding: @hzero-gutter;
+    height: calc(~'100% - @{hzero-gutter} - @{hzero-gutter}');
+    background-color: #fff;
+    overflow: auto;
+  }
+
+  .page-content-header {
+    display: block;
+
+    .title {
+      font-size: 20px;
+      font-weight: 500;
+      line-height: 28px;
+      margin-bottom: 10px;
+    }
+
+    .description {
+      font-size: 13px;
+      line-height: 20px;
+      margin-bottom: 24px;
+      max-width: 512px;
+      color: #898b96;
+
+      i.anticon {
+        font-size: 18px;
+        color: #898b96;
+        margin-right: 12px;
+      }
+
+      a {
+        color: #3f51b5;
+        cursor: pointer;
+        text-decoration: underline;
+      }
+    }
+  }
+
+  // -------- Page Header Content --------
+
+  // ------------- sidebar -------------
+  .ant-modal-sidebar-left.ant-modal-auto-center,
+  .ant-modal-sidebar-right.ant-modal-auto-center,
+  .ant-modal-sidebar-left,
+  .ant-modal-sidebar-right {
+    overflow: hidden !important;
+
+    .ant-modal {
+      padding-bottom: 0;
+      position: absolute;
+      top: 0;
+      height: 100%;
+    }
+
+    .ant-modal-content {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+
+      .ant-modal-body {
+        flex: auto;
+        overflow-y: auto;
+      }
+    }
+  }
+
+  .ant-modal-sidebar-left.ant-modal-auto-center,
+  .ant-modal-sidebar-left {
+    .ant-modal {
+      left: 0;
+    }
+  }
+
+  .ant-modal-sidebar-right.ant-modal-auto-center,
+  .ant-modal-sidebar-right {
+    .ant-modal {
+      right: 0;
+    }
+  }
+
+  // ------------- sidebar -------------
+
+  .ant-table-pagination.ant-pagination {
+    margin: 10px 0;
+  }
+
+  .ant-table.ant-table-small {
+    border: none;
+  }
+
+  .ant-table {
+    border: none;
+
+    table {
+      padding: 0 !important;
+
+      .ant-table-tbody {
+        & > tr {
+          & > td {
+            position: relative;
+            padding: 8px;
+            // text-align: left;
+          }
+        }
+      }
+    }
+
+    .ant-table-placeholder {
+      border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+    }
+
+    .ant-table-row {
+      &:last-child {
+        td {
+          border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+        }
+      }
+    }
+
+    .ant-table-body {
+      & > table {
+        padding: 0;
+      }
+
+      & > tr {
+        & > td {
+          border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+        }
+      }
+    }
+
+    .ant-table-thead {
+      & > tr {
+        & > th {
+          // text-align: left;
+          background-color: rgba(0, 0, 0, 0.04) !important;
+          color: #333;
+          // FIXME: 不知道为什么会有这个加粗
+          //font-weight: bold;
+          padding: 14px 8px;
+          border-bottom: 1.1px solid rgba(0, 0, 0, 0.16);
+        }
+      }
+    }
+  }
+
+  .ant-table-fixed-header .ant-table-content .ant-table-scroll .ant-table-header {
+    //overflow: hidden;
+    //padding-bottom: 0 !important;
+    //margin-bottom: 0 !important;
+    //
+    //&::-webkit-scrollbar {
+    //  width: .08rem;
+    //  height: 0;
+    //  border-radius: .1rem;
+    //}
+    //
+    //&::-webkit-scrollbar-thumb {
+    //  border-radius: .1rem;
+    //  box-shadow: inset 0 0 .05rem rgba(0, 0, 0, 0.2);
+    //
+    //  &:hover {
+    //    background: rgba(0, 0, 0, .2)
+    //  }
+    //}
+  }
+
+  // ---------删除按钮---------
+  .delete-button-base-style {
+    background: red;
+    color: #fff;
+    border-color: red;
+  }
+
+  .delete-button-hover-style {
+    background: rgba(255, 0, 0, 0.35);
+    color: #fff;
+    border-color: rgba(255, 0, 0, 0);
+  }
+
+  button.delete-button {
+    .delete-button-base-style;
+
+    &:hover {
+      .delete-button-hover-style;
+    }
+
+    &:focus {
+      .delete-button-hover-style;
+    }
+  }
+}

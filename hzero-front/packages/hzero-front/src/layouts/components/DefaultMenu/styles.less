@@ -1,0 +1,417 @@
+@import '../../../assets/styles/variables';
+@import '../../../assets/styles/mixins';
+
+@collapsedWith: 80px;
+@normalPadding: 20px;
+@itemHeight: 44px;
+@basePadding: 8px;
+@fontNormalSize: 14px;
+@fontNormalPaddingTop: @normalPadding / 2;
+@mainMenuColor: #eee;
+@mainMenuItemWidth: 220px;
+@mainMenuTriangleWidth: 6px; // 三角形的宽度
+@mainMenuTriangleHeight: 4px; // 三角形的高度
+@mainMenuTrianglePadding: @normalPadding - @mainMenuTriangleWidth;
+@mainMenuBGC: @hzero-primary-color;
+@mainMenuActiveBGC: @hzero-primary-color-2;
+@mainMenuActiveColor: #fff;
+// TODO: 菜单的层级 怎么办
+@leafMenuWidth: 520px;
+@subMenuZIndex: 2000;
+@subMenuWidth: 200px;
+@subMenuWrapWidth: @subMenuWidth + @leafMenuWidth;
+@subMenuBGC: @mainMenuBGC;
+@subMenuActiveBGC: @mainMenuActiveBGC;
+@subMenuActiveColor: @mainMenuActiveColor;
+@subMenuTriangleWidth: 6px; // 三角形的宽度
+@subMenuTriangleHeight: 4px; // 三角形的高度
+@subMenuTrianglePadding: @normalPadding - @subMenuTriangleWidth;
+@subMenuColor: @mainMenuColor;
+// 叶子节点菜单
+@leafMenuItemWidth: 152px;
+@leafMenuItemPadding: @basePadding;
+@leafMenuBGC: @mainMenuBGC;
+@leafMenuActiveBGC: @mainMenuActiveBGC;
+@leafMenuColor: @mainMenuColor;
+@leafMenuActiveColor: #fff;
+@leafMenuBorderRadius: 2px;
+@subMenuOpacity: 0.95;
+@leafMenuOpacity: 0.9;
+@leafMenuItemWrapLineBGC: #3f5376;
+@leafMenuItemWrapLinePadding: 8px 8px;
+
+.main-menu-spin {
+  display: block;
+  text-align: center;
+  position: relative;
+  top: 50%;
+}
+
+.resetUl {
+  padding: 0;
+  list-style: none;
+}
+
+.textOverflow() {
+  // 文字显示 ...
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: break-all;
+  white-space: nowrap;
+}
+
+// 一级菜单的包裹元素
+.main-menu-wrap {
+  flex-grow: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  height: 100%;
+}
+
+// 一级菜单包裹元素
+.main-menu {
+  // ul
+  .resetUl();
+  display: flex;
+  flex-direction: column;
+  background-color: @mainMenuBGC;
+}
+
+// 一级菜单
+.main-menu-item {
+  // ul > li
+  cursor: pointer;
+  width: @mainMenuItemWidth;
+
+  &-content {
+    // ul > li > div[0]
+    color: @mainMenuColor;
+    height: @itemHeight;
+    display: flex;
+    align-items: center;
+
+    &::after {
+      // 三角形
+      margin-right: @mainMenuTrianglePadding;
+      content: '';
+      height: 0;
+      width: 0;
+      overflow: hidden;
+      font-size: 0;
+      line-height: 0;
+      border-width: @subMenuTriangleHeight @mainMenuTriangleWidth;
+      border-style: dashed;
+      border-color: transparent;
+      border-left: @mainMenuTriangleWidth solid @mainMenuColor; // 定位
+    }
+  }
+
+  &-icon {
+    // ul > li > div[0] > Icon/img
+    height: @fontNormalSize;
+    line-height: @fontNormalSize;
+    width: @fontNormalSize;
+    margin: 0 @fontNormalPaddingTop 0 @normalPadding;
+
+    &-icon {
+      // ul > li > div[0] > Icon
+      // 如果是 icon  字体大小 需要和 边长一致
+      font-size: @fontNormalSize;
+    }
+  }
+
+  &-title {
+    // ul > li > div[0] > span
+    flex-grow: 1;
+    .textOverflow();
+    .hzero-font-size(@fontNormalSize);
+  }
+
+  // highlight
+  &-hover {
+    // hover菜单 高亮一级菜单
+    .main-menu-item-content {
+      color: @mainMenuActiveColor;
+      background-image: linear-gradient(to right, @mainMenuBGC, @mainMenuActiveBGC);
+      position: relative;
+
+      &::before {
+        content: ' ';
+        position: absolute;
+        left: 0;
+        top: 0;
+        height: 100%;
+        width: 0;
+        border-left: 5px solid @mainMenuActiveBGC;
+      }
+    }
+  }
+
+  // open
+  &-active {
+    // 展开菜单 高亮一级菜单
+    .main-menu-item-content {
+      background-image: linear-gradient(to right, @mainMenuBGC, @mainMenuActiveBGC);
+    }
+
+    .sub-menu-wrap {
+      // transition: opacity .5s;
+      width: @subMenuWrapWidth;
+      opacity: 1;
+      z-index: @subMenuZIndex;
+
+      &-all-only {
+        // 当前二级全部是菜单
+        width: @subMenuWidth;
+      }
+    }
+
+    .sub-menu-mask {
+      z-index: @subMenuZIndex - 4;
+      height: 100vh;
+      width: calc(~'100vw - @{mainMenuItemWidth}');
+    }
+  }
+
+  //&-active {
+  //  // 高亮一级菜单
+  //  .main-menu-item-content {
+  //    color: @mainMenuActiveColor;
+  //  }
+  //}
+}
+
+// 二级菜单 遮造
+.sub-menu-mask {
+  position: absolute;
+  left: @mainMenuItemWidth;
+  top: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.288);
+  //height: 100vh;
+  //width: calc(~"100vw - @{mainMenuItemWidth}");
+  height: 0;
+  width: 0;
+}
+
+// 二级菜单包裹
+.sub-menu-wrap {
+  position: absolute;
+  left: @mainMenuItemWidth;
+  //top: 48px; // 顶部 tab 有 48 的高度
+  bottom: 8px; // 占满剩下的屏幕
+  width: 0; // 默认不显示
+  overflow-x: hidden;
+  overflow-y: auto;
+  opacity: 0; // 透明度有变化
+  // transition: opacity .5s;
+  display: flex;
+
+  // 恢复鼠标状态
+  cursor: initial;
+
+  //// 火狐 滚动条
+  //// stylelint-disable-next-line
+  //scrollbar-color: #d8d8d8 @leafMenuBGC;
+  //
+  //// ie 滚动条
+  //
+  //scrollbar-track-color: @leafMenuBGC; /*立体滚动条背景颜色*/
+  //scrollbar-base-color: #d8d8d8; /*滚动条的基色*/
+  //
+  //// chrome 滚动条
+  //&::-webkit-scrollbar-track {
+  //  background-color: @leafMenuBGC;
+  //  opacity: @leafMenuOpacity;
+  //}
+
+  //&::-webkit-scrollbar-thumb {
+  //  background-color: @leafMenuBGC;
+  //  opacity: @leafMenuOpacity;
+  //}
+
+  &-all-only {
+    // 当前二级全部是菜单
+    width: @subMenuWidth;
+  }
+}
+
+// 二级菜单
+.sub-menu {
+  padding-top: @basePadding;
+  // 加上 8px 的宽度 使菜单数量容易感知 (不要让客户认为下面还有菜单)
+  padding-bottom: @hzero-gutter-sm;
+  opacity: @subMenuOpacity;
+  background-color: @subMenuBGC;
+  width: @subMenuWidth;
+  min-height: 100%;
+  flex-shrink: 0;
+}
+
+.sub-menu-item {
+  &-content {
+    height: @itemHeight;
+    width: @subMenuWidth;
+    display: flex;
+    align-items: center;
+
+    &::after {
+      // 三角形
+      flex-shrink: 0;
+      margin-right: @subMenuTrianglePadding;
+      content: '';
+      height: 0;
+      width: 0;
+      overflow: hidden;
+      font-size: 0;
+      line-height: 0;
+      border-width: @subMenuTriangleHeight @subMenuTriangleWidth;
+      border-style: dashed;
+      border-color: transparent;
+      border-left: @subMenuTriangleWidth solid @subMenuColor; // 定位
+    }
+
+    &-only {
+      // 仅仅只有二级/一级菜单
+      &::after {
+        display: none;
+      }
+    }
+
+    //&:hover {
+    //  color: @subMenuActiveColor;
+    //  //background-color: @subMenuActiveBGC;
+    //
+    //  &::after {
+    //    border-left-color: @subMenuActiveColor;
+    //  }
+    //}
+  }
+
+  &-title {
+    .textOverflow();
+    .hzero-font-size(@fontNormalSize);
+    flex-grow: 1;
+    margin-left: @normalPadding;
+    color: @mainMenuColor;
+  }
+
+  &-active,
+  &-hover {
+    .sub-menu-item-content {
+      color: @subMenuActiveColor;
+      //background-color: @subMenuActiveBGC;
+
+      background-image: linear-gradient(to right, @subMenuBGC, @subMenuActiveBGC);
+
+      &::after {
+        border-left-color: @subMenuActiveColor;
+      }
+    }
+  }
+
+  &-content-only:hover {
+    background-image: linear-gradient(to right, @subMenuBGC, @subMenuActiveBGC);
+
+    .sub-menu-item-title {
+      color: #fff;
+    }
+  }
+}
+
+.leaf-menu {
+  padding-top: @basePadding;
+  // 加上 8px 的宽度 使菜单数量容易感知 (不要让客户认为下面还有菜单)
+  padding-bottom: @hzero-gutter-sm;
+  opacity: @leafMenuOpacity;
+  background-color: @leafMenuBGC;
+  width: @leafMenuWidth;
+  min-height: 100%;
+  flex-shrink: 0;
+}
+
+.leaf-menu-item-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start; // padding:
+  &-line {
+    background-color: @leafMenuItemWrapLineBGC;
+    margin: @leafMenuItemWrapLinePadding;
+    padding: 0;
+    box-sizing: border-box;
+    display: block;
+    height: 1px;
+    clear: both;
+    position: relative;
+    top: -0.06em;
+    list-style: none;
+  }
+}
+
+.leaf-menu-item {
+  .textOverflow();
+  .hzero-font-size(@fontNormalSize);
+  flex-shrink: 0;
+  width: @leafMenuItemWidth;
+  padding: @fontNormalPaddingTop @normalPadding;
+  color: @leafMenuColor;
+  border-radius: @leafMenuBorderRadius;
+  margin-left: @leafMenuItemPadding;
+  cursor: pointer;
+
+  &:hover,
+  &-active {
+    color: @leafMenuActiveColor;
+    background-image: linear-gradient(to right, @leafMenuBGC, @leafMenuActiveBGC);
+  }
+}
+
+// 覆盖样式必须写在最下面
+.main-menu-collapsed {
+  .main-menu-item {
+    width: @collapsedWith;
+  }
+
+  .main-menu-item-title,
+  .main-menu-item-content::after {
+    display: none;
+  }
+
+  .main-menu-item-content {
+    width: @collapsedWith;
+    justify-content: center;
+  }
+
+  .main-menu-item-icon {
+    margin: 0;
+    font-size: @fontNormalSize;
+    width: @fontNormalSize;
+    height: @fontNormalSize;
+  }
+
+  .sub-menu-wrap,
+  .sub-menu-mask {
+    left: @collapsedWith;
+  }
+
+  .sub-menu-mask {
+    height: 100vh;
+    width: calc(~'100vw - @{collapsedWith}');
+  }
+}
+
+.menu-tooltip:global(.ant-tooltip) {
+  z-index: @subMenuZIndex + 4;
+
+  :global {
+    .ant-tooltip-content {
+      > .ant-tooltip-arrow {
+        border-top-color: @leafMenuActiveBGC;
+      }
+
+      > .ant-tooltip-inner {
+        background-color: @leafMenuActiveBGC;
+      }
+    }
+  }
+}

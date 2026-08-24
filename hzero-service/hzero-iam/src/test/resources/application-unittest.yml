@@ -1,0 +1,15 @@
+## 数据库连接的基本配置
+#spring:
+#  datasource:
+#    driverClassName: org.h2.Driver
+#    url: jdbc:h2:mem:hzero_platform;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;MODE=MYSQL
+#    #启动程序，程序运行resources/db/schema/*.sql文件，对数据库的结构进行操作，相当于新建表。
+#    schema: classpath:db/schema/*.sql
+#    #启动程序，程序运行resources/db/data/*.sql文件，对数据库的数据操作，相当于往表中插入数据。
+#    data: classpath:db/data/*.sql
+#
+#  #开启h2控制台功能和访问地址。
+#  h2:
+#    console:
+#      enabled: true
+#      path: /h2-console

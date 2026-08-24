@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.imported.infra.mapper.TemplateHeaderMapper">
+    <select id="selectTemplateHeaderList" resultType="org.hzero.imported.domain.entity.TemplateHeader">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()" />
+        SELECT
+            hth.id,
+            hth.template_code,
+            hth.template_name,
+            hth.template_type,
+            hth.tenant_id,
+            hth.enabled_flag,
+            hth.description,
+            hth.prefix_patch,
+            hth.object_version_number,
+            ht.tenant_name,
+            hth.template_url,
+            hth.fragment_flag
+        FROM
+            himp_template_header hth
+        LEFT JOIN himp_template_header_tl htht ON hth.id = htht.id AND htht.lang = #{lang}
+        JOIN hpfm_tenant_tl ht ON hth.tenant_id = ht.tenant_id AND ht.lang = #{lang}
+        <where>
+            <if test="templateCode != null and templateCode != ''">
+                <bind name="templateCodeLike" value="'%'+templateCode+'%'"/>
+                AND hth.template_code LIKE #{templateCodeLike}
+            </if>
+            <if test="templateName != null and templateName != ''">
+                <bind name="templateNameLike" value="'%'+templateName+'%'"/>
+                AND htht.template_name LIKE #{templateNameLike}
+            </if>
+            <if test="tenantId != null">
+                AND hth.tenant_id = #{tenantId}
+            </if>
+        </where>
+    </select>
+
+    <select id="selectHeaderByTemplateId" resultType="org.hzero.imported.domain.entity.TemplateHeader">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()" />
+        SELECT
+            hth.id,
+            hth.template_code,
+            htht.template_name,
+            hth.template_type,
+            hth.tenant_id,
+            hth.enabled_flag,
+            hth.description,
+            hth.prefix_patch,
+            hth.object_version_number,
+            ht.tenant_name,
+            hth.template_url,
+            hth.fragment_flag
+        FROM
+            himp_template_header hth
+        LEFT JOIN himp_template_header_tl htht ON hth.id = htht.id AND htht.lang = #{lang}
+        JOIN hpfm_tenant_tl ht ON hth.tenant_id = ht.tenant_id AND ht.lang = #{lang}
+        WHERE hth.id = #{templateId}
+        <if test="tenantId != null">
+            AND hth.tenant_id = #{tenantId}
+        </if>
+    </select>
+
+    <select id="selectByTargetId" resultType="org.hzero.imported.domain.entity.TemplateHeader">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()" />
+        SELECT
+        	hth.id,
+        	hth.template_code,
+        	htht.template_name,
+        	hth.enabled_flag,
+        	hth.template_type,
+        	hth.prefix_patch,
+        	hth.description,
+        	hth.tenant_id,
+            hth.fragment_flag,
+        	hth.object_version_number
+        FROM
+        	himp_template_header hth
+        LEFT JOIN himp_template_header_tl htht ON hth.id = htht.id AND htht.lang = #{lang}
+        WHERE
+        	EXISTS ( SELECT 1 FROM himp_template_target htt WHERE htt.header_id = hth.id AND htt.id = #{targetId} )
+    </select>
+</mapper>

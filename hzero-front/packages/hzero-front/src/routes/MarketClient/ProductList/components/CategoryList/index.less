@@ -1,0 +1,40 @@
+.category-wrapper {
+  min-width: 200px;
+  .tree-wrapper {
+    padding: 0;
+    margin: 0;
+    cursor: pointer;
+    .tree-item-leaf {
+      position: relative;
+      padding: 6px 0;
+      margin: 0;
+      list-style: none;
+      &:hover {
+        color: #386bd7;
+        background: #edf2fc;
+      }
+    }
+    .tree-item-leaf-active {
+      color: #386bd7;
+      background: #edf2fc;
+    }
+    // 只针对根结点元素做处理
+    .tree-item-leaf-0 {
+      font-weight: 600;
+      &::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 12px;
+        right: 0;
+        height: 1px;
+        background: #d9d9d9;
+      }
+    }
+    .tree-item-node {
+      padding: 0;
+      margin: 0;
+      list-style: none;
+    }
+  }
+}

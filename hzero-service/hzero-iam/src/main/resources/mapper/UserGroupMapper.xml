@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.iam.infra.mapper.UserGroupMapper">
+    <select id="selectUserGroupList" resultType="org.hzero.iam.domain.entity.UserGroup">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        SELECT
+            hug.user_group_id,
+            hug.group_code,
+            hugt.group_name,
+            hug.enabled_flag,
+            hug.tenant_id,
+            hug.remark,
+            httl.tenant_name,
+            hug.object_version_number
+        FROM hiam_user_group hug
+        left join hiam_user_group_tl hugt on hugt.user_group_id = hug.user_group_id
+        and hugt.lang = #{lang}
+        LEFT JOIN hpfm_tenant ht ON hug.tenant_id = ht.tenant_id
+        LEFT JOIN hpfm_tenant_tl httl ON ht.tenant_id = httl.tenant_id AND httl.lang = #{lang}
+        <where>
+            <if test="userGroupId != null">
+                AND hug.user_group_id = #{userGroupId}
+            </if>
+            <if test="groupName != null and groupName != ''">
+                <bind name="groupNameLike" value="'%'+groupName+'%'" />
+                AND hugt.group_name LIKE #{groupNameLike}
+            </if>
+            <if test="groupCode != null and groupCode != ''">
+                <bind name="groupCodeLike" value="'%'+groupCode+'%'" />
+                AND hug.group_code LIKE #{groupCodeLike}
+            </if>
+            <if test="tenantId != null">
+                AND hug.tenant_id = #{tenantId}
+            </if>
+            <if test="userId != null">
+                AND EXISTS (
+                    SELECT 1
+                    FROM hiam_user_group_assign huga
+                    WHERE huga.user_group_id = hug.user_group_id
+                    AND huga.user_id = #{userId}
+                )
+            </if>
+        </where>
+        ORDER BY hug.creation_date DESC
+    </select>
+</mapper>

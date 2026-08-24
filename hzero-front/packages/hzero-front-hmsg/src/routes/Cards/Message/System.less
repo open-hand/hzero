@@ -1,0 +1,44 @@
+.message-row {
+  padding: 5px 0 5px 10px;
+  transition: background-color 0.5s;
+  cursor: pointer;
+}
+.message-title {
+  color: #333;
+  .title-font;
+}
+.message-row:hover {
+  padding: 5px 0 5px 10px;
+  background: rgba(41, 190, 206, 0.1);
+  border-radius: 2px;
+}
+.message-row:hover .message-title {
+  color: #1e3255;
+  .title-font;
+}
+.message-time {
+  font-size: 12px;
+  color: #999;
+  letter-spacing: 0;
+  line-height: 20px;
+  text-align: right;
+}
+.message-close {
+  visibility: hidden;
+}
+.message-row:hover .message-close {
+  visibility: visible;
+}
+.message-img {
+  margin-top: 35px;
+  transform: translateX(-6px);
+}
+.message-img-wrap {
+  width: 100%;
+  text-align: center;
+}
+.title-font {
+  font-size: 12px;
+  line-height: 20px;
+  text-align: left;
+}

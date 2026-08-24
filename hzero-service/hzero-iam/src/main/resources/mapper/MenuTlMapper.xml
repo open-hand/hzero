@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.iam.infra.mapper.MenuTlMapper">
+    <insert id="insert" parameterType="org.hzero.iam.domain.entity.MenuTl">
+        insert into iam_menu_tl(id, lang, name, tenant_id) values (#{id}, #{lang}, #{name}, #{tenantId})
+    </insert>
+
+    <delete id="deleteByMenuId">
+      delete from iam_menu_tl where id = #{id}
+    </delete>
+</mapper>

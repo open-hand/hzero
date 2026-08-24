@@ -1,0 +1,25 @@
+server:
+  port: 8010
+management:
+  server:
+    port: 8011
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+
+eureka:
+  instance:
+    # 以IP注册到注册中心
+    preferIpAddress: ${EUREKA_INSTANCE_PREFER_IP_ADDRESS:true}
+    leaseRenewalIntervalInSeconds: 10
+    leaseExpirationDurationInSeconds: 30
+    # 服务的一些元数据信息
+    metadata-map:
+      VERSION: 1.5.6
+  client:
+    serviceUrl:
+      # 注册中心地址
+      defaultZone: ${EUREKA_DEFAULT_ZONE:http://dev.hzero.com.cn:8000/eureka}
+    registryFetchIntervalSeconds: 10
+    disable-delta: true

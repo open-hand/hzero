@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.scheduler.infra.mapper.ConcurrentParamMapper">
+    <!-- 可根据自己的需求，是否要使用 -->
+    <resultMap id="BaseResultMap" type="org.hzero.scheduler.domain.entity.ConcurrentParam">
+        <result column="conc_param_id" property="concParamId" jdbcType="DECIMAL"/>
+        <result column="concurrent_id" property="concurrentId" jdbcType="DECIMAL"/>
+        <result column="order_seq" property="orderSeq" jdbcType="DECIMAL"/>
+        <result column="param_code" property="paramCode" jdbcType="VARCHAR"/>
+        <result column="param_name" property="paramName" jdbcType="VARCHAR"/>
+        <result column="param_format_code" property="paramFormatCode" jdbcType="VARCHAR"/>
+        <result column="param_edit_type_code" property="paramEditTypeCode" jdbcType="VARCHAR"/>
+        <result column="notnull_flag" property="notnullFlag" jdbcType="DECIMAL"/>
+        <result column="business_model" property="businessModel" jdbcType="VARCHAR"/>
+        <result column="value_filed_from" property="valueFiledFrom" jdbcType="VARCHAR"/>
+        <result column="value_filed_to" property="valueFiledTo" jdbcType="VARCHAR"/>
+        <result column="show_flag" property="showFlag" jdbcType="DECIMAL"/>
+        <result column="enabled_flag" property="enabledFlag" jdbcType="DECIMAL"/>
+        <result column="tenant_id" property="tenantId" jdbcType="DECIMAL"/>
+        <result column="object_version_number" property="objectVersionNumber" jdbcType="DECIMAL"/>
+        <result column="creation_date" property="creationDate" jdbcType="DATE"/>
+        <result column="created_by" property="createdBy" jdbcType="DECIMAL"/>
+        <result column="last_updated_by" property="lastUpdatedBy" jdbcType="DECIMAL"/>
+        <result column="last_update_date" property="lastUpdateDate" jdbcType="DATE"/>
+    </resultMap>
+
+</mapper>

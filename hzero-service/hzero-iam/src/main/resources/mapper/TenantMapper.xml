@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.iam.infra.mapper.TenantMapper">
+
+    <!-- 可根据自己的需求，是否要使用 -->
+    <resultMap id="BaseResultMap" type="org.hzero.iam.domain.entity.Tenant">
+        <result column="tenant_id" property="tenantId" jdbcType="DECIMAL"/>
+        <result column="tenant_name" property="tenantName" jdbcType="VARCHAR"/>
+        <result column="tenant_num" property="tenantNum" jdbcType="VARCHAR"/>
+        <result column="enabled_flag" property="enabledFlag" jdbcType="DECIMAL"/>
+        <result column="object_version_number" property="objectVersionNumber" jdbcType="DECIMAL"/>
+        <result column="created_by" property="createdBy" jdbcType="DECIMAL"/>
+        <result column="creation_date" property="creationDate" jdbcType="DATE"/>
+        <result column="last_updated_by" property="lastUpdatedBy" jdbcType="DECIMAL"/>
+        <result column="last_update_date" property="lastUpdateDate" jdbcType="DATE"/>
+        <result column="limit_user_qty" property="limitUserQty" jdbcType="DECIMAL"/>
+        <collection property="tenantConfigs" ofType="org.hzero.iam.domain.entity.TenantConfig">
+            <id column="tenant_config_id" property="tenantConfigId" />
+            <result column="tenant_id" property="tenantId"/>
+            <result column="config_key" property="configKey" />
+            <result column="config_value" property="configValue" />
+            <result column="object_version_number" property="objectVersionNumber" />
+        </collection>
+    </resultMap>
+
+    <!-- 查询用户的租户 -->
+    <select id="selectUserTenant" parameterType="org.hzero.iam.api.dto.TenantDTO" resultType="org.hzero.iam.api.dto.TenantDTO">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        <bind name="now" value="@java.time.LocalDate@now()" />
+        SELECT
+          ht.tenant_id,
+          ht.tenant_num,
+          case when htt.tenant_name is null then ht.tenant_name else htt.tenant_name end as tenant_name,
+          hui.default_tenant_id
+        FROM hpfm_tenant ht
+        LEFT JOIN hpfm_tenant_tl htt ON ht.tenant_id = htt.tenant_id and htt.lang = #{lang}
+        JOIN (
+          SELECT
+            DISTINCT ir.h_tenant_id tenant_id
+          FROM iam_member_role imr
+          JOIN iam_role ir ON ir.id = imr.role_id AND ir.is_enabled = 1
+          WHERE imr.member_id = #{userId}
+            AND (
+                imr.start_date_active IS NULL
+                OR imr.start_date_active &lt;= #{now}
+            )
+            AND (
+                imr.end_date_active IS NULL OR
+                imr.end_date_active &gt;= #{now}
+            )
+        ) irt ON irt.tenant_id = ht.tenant_id
+        LEFT JOIN hiam_user_info hui ON (hui.user_id = #{userId} AND ht.tenant_id = hui.default_tenant_id)
+        WHERE ht.enabled_flag = 1
+        <if test="tenantNum != null and tenantNum != ''">
+            <bind name="tenantNum" value="'%' + tenantNum + '%'"/>
+            AND ht.tenant_num LIKE #{tenantNum}
+        </if>
+        <if test="tenantName != null and tenantName != ''">
+            <bind name="tenantName" value="'%' + tenantName + '%'"/>
+            AND htt.tenant_name LIKE #{tenantName}
+        </if>
+    </select>
+
+    <select id="selectRootTenant" resultType="org.hzero.iam.api.dto.TenantDTO">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        <bind name="tenantAdminLabel" value="@org.hzero.iam.domain.entity.Role@LABEL_TENANT_ADMIN"/>
+
+        SELECT
+          ht.tenant_id,
+          ht.tenant_num,
+          case when htt.tenant_name is null then ht.tenant_name else htt.tenant_name end as tenant_name,
+          hui.default_tenant_id
+        FROM hpfm_tenant ht
+        LEFT JOIN hpfm_tenant_tl htt ON ht.tenant_id = htt.tenant_id and htt.lang = #{lang}
+        LEFT JOIN hiam_user_info hui ON (hui.user_id = #{userId} AND ht.tenant_id = hui.default_tenant_id)
+        WHERE ht.enabled_flag = 1
+        <if test="tenantNum != null and tenantNum != ''">
+            <bind name="tenantNum" value="'%' + tenantNum + '%'"/>
+            AND ht.tenant_num LIKE #{tenantNum}
+        </if>
+        <if test="tenantName != null and tenantName != ''">
+            <bind name="tenantName" value="'%' + tenantName + '%'"/>
+            AND htt.tenant_name LIKE #{tenantName}
+        </if>
+        <!-- 至少包含一个启用的租户管理员角色 -->
+        AND EXISTS (
+            SELECT 1
+            FROM iam_role ir
+            JOIN hiam_label_rel hlr ON ir.id = hlr.data_id AND hlr.data_type = 'ROLE'
+            JOIN iam_label il ON hlr.label_id = il.id
+            WHERE
+                ir.h_tenant_id = ht.tenant_id
+                AND ir.is_enabled = 1
+                AND hlr.assign_type = 'A'
+                AND il.name = #{tenantAdminLabel}
+        )
+    </select>
+    <select id="selectTenantsList" resultType="org.hzero.iam.domain.entity.Tenant">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        select
+            ht.tenant_id,
+            case when htt.tenant_name is null then ht.tenant_name else htt.tenant_name end as tenant_name,
+            ht.tenant_num,
+            ht.enabled_flag,
+            ht.object_version_number,
+            ht.creation_date,
+            ht.limit_user_qty
+        from hpfm_tenant ht
+        left join hpfm_tenant_tl htt ON ht.tenant_id = htt.tenant_id and htt.lang = #{lang}
+        <where>
+            <if test="enabledFlag != null">
+                and ht.enabled_flag = #{enabledFlag}
+            </if>
+            <if test="tenantId != null">
+                and ht.tenant_id = #{tenantId}
+            </if>
+            <if test="tenantNum != null and tenantNum != ''">
+                <bind name="tenantNumLike" value="'%'+tenantNum+'%'" />
+                and ht.tenant_num LIKE #{tenantNumLike}
+            </if>
+            <if test="tenantName != null and tenantName != ''">
+                <bind name="tenantNameLike" value="'%'+tenantName+'%'" />
+                and htt.tenant_name LIKE #{tenantNameLike}
+            </if>
+        </where>
+    </select>
+    <select id="selectTenantDetails" resultMap="BaseResultMap">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        SELECT
+            ht.tenant_id,
+            htt.tenant_name,
+            ht.tenant_num,
+            ht.enabled_flag,
+            ht.limit_user_qty,
+            ht.object_version_number,
+            htc.tenant_config_id,
+            htc.tenant_id,
+            htc.config_key,
+            htc.config_value,
+            htc.object_version_number
+        FROM hpfm_tenant ht
+        LEFT JOIN hpfm_tenant_tl htt ON htt.tenant_id = ht.tenant_id AND htt.lang = #{lang}
+        LEFT JOIN hpfm_tenant_config htc ON htc.tenant_id = ht.tenant_id
+        WHERE ht.tenant_id = #{tenantId}
+    </select>
+    <select id="selectHavingCustomMenuTenant" resultType="org.hzero.iam.domain.entity.Tenant">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        <bind name="menuDirs" value="@org.hzero.iam.domain.entity.Menu@MENU_DIR"/>
+
+        SELECT
+        *
+        FROM
+        (
+        SELECT
+        ht.tenant_id,
+        htt.tenant_name,
+        ht.tenant_num,
+        ht.enabled_flag,
+        ht.object_version_number,
+        ht.creation_date,
+        ht.limit_user_qty,
+        (CASE WHEN (SELECT count(*) FROM iam_menu im WHERE
+        im.h_tenant_id = ht.tenant_id
+        AND im.h_custom_flag = 1
+        AND im.type IN
+            <foreach collection="menuDirs" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        ) > 0 THEN 1 ELSE 0 END) custom_menu_flag
+        FROM
+        hpfm_tenant ht
+        JOIN hpfm_tenant_tl htt ON ht.tenant_id = htt.tenant_id
+        AND htt.lang = #{lang}
+        <if test="tenantNum != null and tenantNum != ''">
+            <bind name="tenantNumLike" value="'%'+tenantNum+'%'"/>
+            and ht.tenant_num LIKE #{tenantNumLike}
+        </if>
+        <if test="tenantName != null and tenantName != ''">
+            <bind name="tenantNameLike" value="'%'+tenantName+'%'"/>
+            and htt.tenant_name LIKE #{tenantNameLike}
+        </if>
+        ) t
+        WHERE 1 = 1
+        <if test="customMenuFlag != null">
+            AND t.custom_menu_flag = #{customMenuFlag}
+        </if>
+    </select>
+    <select id="selectTenantByUserId" resultType="org.hzero.iam.domain.entity.Tenant">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        select
+            t.tenant_id,
+            htt.tenant_name,
+            t.tenant_num,
+            t.enabled_flag,
+            t.object_version_number,
+            t.created_by,
+            t.creation_date,
+            t.last_updated_by,
+            t.last_update_date,
+            t.limit_user_qty
+        from hpfm_tenant t
+        LEFT JOIN hpfm_tenant_tl htt ON t.tenant_id = htt.tenant_id and htt.lang = #{lang}
+        join iam_user u on u.organization_id = t.tenant_id
+        join hiam_user_info ui on ui.user_id = u.id
+        where
+        1 = 1
+        and not (t.tenant_id = 0 and ui.user_source = 1)
+        and u.id = #{userId}
+    </select>
+
+    <update id="assignTenantToUser">
+        update
+            iam_user
+        set
+            organization_id = #{tenantId}
+        where
+            id = #{userId}
+    </update>
+
+    <select id="checkRepeatCount" parameterType="org.hzero.iam.domain.entity.Tenant" resultType="java.lang.Integer">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        select
+        count(*)
+        from
+        hpfm_tenant t
+        LEFT JOIN hpfm_tenant_tl htt ON t.tenant_id = htt.tenant_id and htt.lang = #{lang}
+        where
+        1 = 1
+        <if test="tenantNum != null and tenantNum != ''">
+            and t.tenant_num = #{tenantNum}
+        </if>
+        <if test="tenantName != null and tenantName != ''">
+            and htt.tenant_name = #{tenantName}
+        </if>
+        <if test="tenantId != null">
+            and t.tenant_id != #{tenantId}
+        </if>
+    </select>
+
+</mapper>

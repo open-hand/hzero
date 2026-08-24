@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.platform.infra.mapper.DashboardClauseAssignMapper">
+
+    <select id="queryDbdClauseAssign" resultType="org.hzero.platform.domain.entity.DashboardClauseAssign">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        SELECT
+            hdca.clause_assign_id,
+            hdca.clause_id,
+            hdca.tenant_id,
+            hdca.object_version_number,
+            ht.tenant_num,
+            httl.tenant_name,
+            ht.creation_date
+        FROM
+        hpfm_dbd_clause_assign hdca
+        LEFT JOIN hpfm_tenant ht ON hdca.tenant_id = ht.tenant_id
+        LEFT JOIN hpfm_tenant_tl httl ON ht.tenant_id = httl.tenant_id AND httl.lang = #{lang}
+        <where>
+            <if test="clauseId != null">
+                and hdca.clause_id = #{clauseId}
+            </if>
+            <if test="tenantName != null and tenantName != ''">
+                <bind name="tenantNameLike" value="'%'+tenantName+'%'"/>
+                and  httl.tenant_name like #{tenantNameLike}
+            </if>
+            <if test="beginDate != null">
+                AND ht.creation_date &gt;= #{beginDate}
+            </if>
+            <if test="endDate != null">
+                AND ht.creation_date &lt;= #{endDate}
+            </if>
+        </where>
+    </select>
+</mapper>

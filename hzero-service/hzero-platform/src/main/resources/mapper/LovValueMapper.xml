@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.platform.infra.mapper.LovValueMapper">
+
+    <resultMap id="BaseResultMap" type="org.hzero.platform.domain.entity.LovValue">
+        <id property="lovValueId" column="lov_value_id" jdbcType="DECIMAL"/>
+        <result property="lovId" column="lov_id" jdbcType="DECIMAL"/>
+        <result property="lovCode" column="lov_code" jdbcType="VARCHAR"/>
+        <result property="value" column="value" jdbcType="VARCHAR"/>
+        <result property="meaning" column="meaning" jdbcType="VARCHAR"/>
+        <result property="description" column="description" jdbcType="VARCHAR"/>
+        <result property="tenantId" column="tenant_id" jdbcType="DECIMAL"/>
+        <result property="tag" column="tag" jdbcType="VARCHAR"/>
+        <result property="orderSeq" column="order_seq" jdbcType="DECIMAL"/>
+        <result property="parentValue" column="parent_value" jdbcType="VARCHAR"/>
+        <result property="startDateActive" column="start_date_active" jdbcType="DATE"/>
+        <result property="endDateActive" column="end_date_active" jdbcType="DATE"/>
+        <result property="enabledFlag" column="enabled_flag" jdbcType="DECIMAL"/>
+        <result property="objectVersionNumber" column="object_version_number" jdbcType="DECIMAL"/>
+        
+        <result property="parentMeaning" column="parent_meaning" jdbcType="VARCHAR"/>
+        <result property="tenantName" column="tenant_name" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <select id="listLovValueForCache" parameterType="org.hzero.platform.domain.entity.LovValue" resultMap="BaseResultMap">
+        <bind name="now" value="@org.apache.commons.lang3.time.DateUtils@truncate(new java.util.Date(), @java.util.Calendar@DATE)" />
+        SELECT
+            lv.lov_value_id,
+            lv.lov_id,
+            lv.lov_code,
+            lv.value,
+            lvt.meaning,
+            lvt.description,
+            lv.tenant_id,
+            lv.tag,
+            lv.order_seq,
+            lv.parent_value,
+            lv.start_date_active,
+            lv.end_date_active,
+            lv.enabled_flag,
+            lv.object_version_number
+        FROM
+            hpfm_lov_value lv
+        JOIN hpfm_lov_value_tl lvt on lvt.lov_value_id = lv.lov_value_id and lvt.lang = #{lang,jdbcType=VARCHAR}
+        <if test="queryParam.meaning != null and queryParam.meaning != ''">
+            <bind name="meaningLike" value="'%' + queryParam.meaning + '%'"/>
+            AND lvt.meaning like #{meaningLike}
+        </if>
+        WHERE
+            1 = 1
+        and lv.lov_code = #{queryParam.lovCode,jdbcType=VARCHAR}
+        AND (
+            lv.start_date_active IS NULL 
+            OR lv.start_date_active &lt;= #{now,jdbcType=DATE}
+        )
+        AND (
+            lv.end_date_active IS NULL OR
+            lv.end_date_active &gt;= #{now,jdbcType=DATE}
+        )
+        AND lv.enabled_flag = 1
+        AND lv.tenant_id = #{queryParam.tenantId,jdbcType=DECIMAL}
+        <if test="queryParam.value != null and queryParam.value != ''">
+            <bind name="valueLike" value="'%' + queryParam.value + '%'"/>
+            AND lv.value like #{valueLike}
+        </if>
+        ORDER BY lv.order_seq, lv.lov_value_id
+    </select>
+    
+    <update id="updateLovValueByHeaderInfo" parameterType="org.hzero.platform.domain.entity.Lov">
+        update
+            hpfm_lov_value
+        set
+            lov_code = #{lovCode,jdbcType=VARCHAR},
+            tenant_id = #{tenantId,jdbcType=DECIMAL}
+        where
+            1 = 1
+        and lov_id = #{lovId,jdbcType=DECIMAL}
+    </update>
+    
+    <delete id="deleteByLovId" parameterType="java.lang.Long">
+        delete from
+            hpfm_lov_value
+        where
+        lov_id = #{lovId,jdbcType=DECIMAL}
+    </delete>
+    
+    <select id="selectLovValueByLovId" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()" />
+        select
+            lv.lov_value_id,
+            lv.lov_id,
+            lv.lov_code,
+            lv.value,
+            lvt.meaning,
+            lvt.description,
+            lv.tenant_id,
+            httl.tenant_name,
+            lv.tag,
+            lv.order_seq,
+            lv.parent_value,
+            plvv.meaning as parent_meaning,
+            lv.start_date_active,
+            lv.end_date_active,
+            lv.enabled_flag,
+            lv.object_version_number
+        from
+            hpfm_lov_value lv
+        join hpfm_lov_value_tl lvt on lvt.lov_value_id = lv.lov_value_id and lvt.lang = #{lang}
+        join hpfm_lov l on l.lov_id = lv.lov_id
+        join hpfm_tenant ht on ht.tenant_id = lv.tenant_id
+        LEFT JOIN hpfm_tenant_tl httl ON ht.tenant_id = httl.tenant_id AND httl.lang = #{lang}
+        left join hpfm_lov pl on pl.lov_code = l.parent_lov_code and pl.tenant_id = l.parent_tenant_id
+        left join (
+            select
+                plv.lov_id,
+                plv.lov_code,
+                plv.value,
+                plvt.meaning
+            from
+                hpfm_lov_value plv
+            join hpfm_lov_value_tl plvt ON plvt.lov_value_id = plv.lov_value_id and plvt.lang = #{lang}
+        ) plvv on plvv.lov_id = pl.lov_id and plvv.value= lv.parent_value
+        where
+            1 = 1
+        and lv.lov_id = #{lovId,jdbcType=DECIMAL}
+        <if test="tenantId != null">
+            and (lv.tenant_id = #{tenantId,jdbcType=DECIMAL} or lv.tenant_id = 0)
+        </if>
+        <if test="value != null and value != ''">
+            <bind name="valueLike" value="'%' + value + '%'"/>
+            AND lv.value LIKE #{valueLike}
+        </if>
+        <if test="meaning != null and meaning != ''">
+            <bind name="meaningLike" value="'%' + meaning + '%'"/>
+            AND lvt.meaning LIKE #{meaningLike}
+        </if>
+    </select>
+
+    <select id="selectLovValueForDataGroup" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()" />
+        select
+        lv.lov_value_id,
+        lv.lov_id,
+        lv.lov_code,
+        lv.value,
+        lvt.meaning,
+        lvt.description,
+        lv.tenant_id,
+        httl.tenant_name,
+        lv.tag,
+        lv.order_seq,
+        lv.parent_value,
+        plvv.meaning as parent_meaning,
+        lv.start_date_active,
+        lv.end_date_active,
+        lv.enabled_flag,
+        lv.object_version_number
+        from
+        hpfm_lov_value lv
+        join hpfm_lov_value_tl lvt on lvt.lov_value_id = lv.lov_value_id and lvt.lang = #{lang}
+        join hpfm_lov l on l.lov_id = lv.lov_id
+        join hpfm_tenant ht on ht.tenant_id = lv.tenant_id
+        LEFT JOIN hpfm_tenant_tl httl ON ht.tenant_id = httl.tenant_id AND httl.lang = #{lang}
+        left join hpfm_lov pl on pl.lov_code = l.parent_lov_code and pl.tenant_id = l.parent_tenant_id
+        left join (
+        select
+        plv.lov_id,
+        plv.lov_code,
+        plv.value,
+        plvt.meaning
+        from
+        hpfm_lov_value plv
+        join hpfm_lov_value_tl plvt ON plvt.lov_value_id = plv.lov_value_id and plvt.lang = #{lang,jdbcType=VARCHAR}
+        ) plvv on plvv.lov_id = pl.lov_id and plvv.value= lv.parent_value
+        where
+        1 = 1
+        and lv.lov_id = #{lovId,jdbcType=DECIMAL}
+        and lv.enabled_flag = 1
+        <if test="tenantId != null">
+            and (lv.tenant_id = #{tenantId,jdbcType=DECIMAL} or lv.tenant_id = 0)
+        </if>
+    </select>
+
+    <select id="selectRepeatCodeCount" parameterType="org.hzero.platform.domain.entity.LovValue" resultType="java.lang.Integer">
+        SELECT
+            COUNT(*)
+        FROM
+            hpfm_lov_value lv
+        WHERE
+            1 = 1
+        AND lv.lov_id = #{lovId,jdbcType=DECIMAL}
+        AND lv.value = #{value,jdbcType=VARCHAR}
+        <choose>
+            <when test="parentValue != null and parentValue != ''">
+                AND lv.parent_value = #{parentValue}
+            </when>
+            <otherwise>
+                AND lv.parent_value is null
+            </otherwise>
+        </choose>
+        <if test="lovValueId != null">
+            AND lv.lov_value_id != #{lovValueId}
+        </if>
+    </select>
+</mapper>

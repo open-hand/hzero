@@ -1,0 +1,29 @@
+"iam": "平台设置"
+# site
+"iam.organization": "组织管理"
+"iam.menu-management": "菜单配置"
+"iam.role": "角色管理"
+"iam.member-role-global": "平台角色分配"
+"iam.root-user": "Root用户设置"
+
+"microservice": "微服务管理"
+"microservice.route-management": "路由管理"
+
+"rentsetting": 组织设置
+# organization
+"rentsetting.project": "项目管理"
+"rentsetting.user": "用户管理"
+"rentsetting.member-role-organization": "组织角色分配"
+"rentsetting.client": "客户端"
+"rentsetting.ldap": "LDAP"
+"rentsetting.password-policy": "密码策略"
+
+"prosetting": 项目设置
+# project
+"prosetting.proManage": "项目信息"
+"prosetting.member-role-project": "项目角色分配"
+
+"usercenter": 个人中心
+# user
+"usercenter.user-info": "个人信息"
+"usercenter.password": "修改密码"

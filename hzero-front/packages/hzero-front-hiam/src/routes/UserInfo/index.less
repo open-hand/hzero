@@ -1,0 +1,666 @@
+@import '~hzero-front/lib/assets/styles/variables.less';
+@import '~hzero-front/lib/assets/styles/mixins.less';
+@import '~hzero-front/lib/assets/styles/utils.less';
+
+//.user-info {
+//  font-size: 16px;
+//  padding: 0;
+//}
+
+.head-info-wrap {
+  background-color: #f8fafc;
+  padding: 10px 0;
+  height: 140px;
+}
+
+.font-12 {
+  font-size: 12px;
+}
+
+.font-14 {
+  font-size: 14px;
+}
+
+.color-unbind {
+  color: #de9b0a;
+}
+
+.color-bind {
+  color: #1cbc86;
+}
+
+// icon-info
+.icon-info {
+  margin: 32px 0;
+  display: flex;
+  flex-flow: row;
+
+  &-icon {
+    flex-basis: 16px;
+    margin-right: 12px;
+    font-size: 16px;
+  }
+
+  &-info {
+    flex-grow: 1;
+
+    :global(.ant-form-item-control-wrapper) {
+      margin-top: -7px;
+    }
+  }
+
+  &-btn {
+    flex-basis: 60px;
+    font-size: 12px;
+  }
+}
+
+.icon-info-info {
+  &-comment {
+    color: #999;
+    font-size: 12px;
+  }
+}
+
+.icon-info-info-content {
+  &-title {
+    font-size: 16px;
+  }
+
+  &-description {
+    font-size: 14px;
+  }
+}
+
+// icon-info
+
+// head-info
+
+.avatar-box {
+  text-align: center;
+  overflow: hidden;
+  position: relative;
+  width: 102px;
+  height: 102px;
+  border-radius: 50%;
+  font-size: 12px;
+  border: 1px solid #eee;
+
+  // 图片固定到 100px
+  img {
+    height: 100px;
+    width: 100px;
+  }
+}
+
+.avatar-box:after {
+  content: '';
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  opacity: 0;
+  border-radius: 50%;
+  background-color: rgba(0, 0, 0, 0.1);
+  transition: all 0.5s ease 0s;
+}
+
+.avatar-box:hover:after {
+  opacity: 1;
+}
+
+.avatar-box .box-content {
+  width: 100%;
+  background: rgba(0, 0, 0, 0.1);
+  color: #fff;
+  position: absolute;
+  cursor: pointer;
+  left: 0;
+  z-index: 1;
+  transition: all 0.5s ease 0s;
+  border-radius: 50%;
+}
+
+.avatar-uploader-trigger {
+  font-size: 30px;
+  line-height: 100px;
+}
+
+.avatar-box:hover .box-content {
+  bottom: 0;
+}
+
+.avatar-upload {
+  display: flex;
+  justify-content: flex-start;
+
+  .avatar-crop-wrap {
+    background: #f2f2f5;
+
+    .avatar-crop {
+      width: 300px;
+      height: 300px;
+
+      .cropper-modal {
+        background: #fafafa;
+      }
+
+      .cropper-view-box {
+        border-radius: 50%;
+      }
+    }
+  }
+
+  .avatar-preview-wrap {
+    margin-left: 12px;
+    // padding: 12px;
+    text-align: center;
+    height: 300px;
+
+    .preview {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      align-items: center;
+      padding: 8px 0;
+
+      .img-preview {
+        overflow: hidden;
+        border-radius: 50%;
+      }
+    }
+  }
+}
+
+.icon-style {
+  font-size: 40px;
+  cursor: pointer;
+}
+
+.avatar-uploader {
+  :global(.ant-upload-drag) {
+    height: 340px !important;
+  }
+}
+
+.head-info {
+  // 头像
+  &-avatar {
+    width: 100px;
+    height: 100px;
+    // margin-top: 20px;
+    cursor: pointer;
+  }
+
+  // 内容
+  &-content {
+    flex: 1;
+    margin-left: 50px;
+    line-height: 40px;
+
+    &-label {
+      text-align: left;
+      color: #999;
+
+      label {
+        color: #999;
+      }
+    }
+  }
+
+  :global {
+    .ant-form-item-with-help {
+      margin-bottom: 0;
+    }
+  }
+}
+
+//.main {
+//  width: 885px;
+//  margin: 0 auto;
+//  display: flex;
+//}
+
+// head-info
+
+// list
+
+.user-info-list {
+  margin: 48px auto 0;
+
+  &-title {
+    padding-left: 25px;
+
+    &:before {
+      content: '';
+      border-left: 3px solid @hzero-primary-color-2;
+      padding-right: 10px;
+    }
+  }
+}
+
+// list
+
+// 绑定按钮的样式
+//.btn-bind {
+//  color: #8393eb;
+//  background-color: #fff;
+//  border-color: #8393eb;
+//  outline: 0;
+//  text-decoration: none;
+//}
+
+.user-info-content {
+  padding: 0;
+  display: flex;
+  background-color: #f7f7fd;
+  &-tab-account,
+  &-tab-safeSetting,
+  &-tab-preferenceSetting,
+  &-tab-receiveSetting {
+    display: flex;
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    height: 100%;
+  }
+  &-tab-account-icon,
+  &-tab-safeSetting-icon,
+  &-tab-preferenceSetting-icon,
+  &-tab-receiveSetting-icon {
+    margin-right: 0 !important;
+    margin-bottom: 10px;
+    display: block;
+    background-repeat: no-repeat;
+  }
+  &-tab-account {
+    &-icon {
+      width: 32px;
+      height: 36px;
+      background-image: url('../../assets/userInfo/account-normal.png');
+      background-size: 32px 36px;
+      background-repeat: no-repeat;
+    }
+  }
+  &-tab-safeSetting {
+    &-icon {
+      width: 32px;
+      height: 36px;
+      background-image: url('../../assets/userInfo/security-normal.png');
+      background-size: 32px 36px;
+    }
+  }
+  &-tab-preferenceSetting {
+    &-icon {
+      width: 36px;
+      height: 32px;
+      background-image: url('../../assets/userInfo/preference-normal.png');
+      background-size: 36px 32px;
+    }
+  }
+  &-tab-receiveSetting {
+    &-icon {
+      width: 36px;
+      height: 33px;
+      background-image: url('../../assets/userInfo/receiving-normal.png');
+      background-size: 36px 33px;
+    }
+  }
+  :global {
+    // tabs 样式
+    .ant-tabs {
+      width: 100%;
+      border-left: none !important;
+      &-content {
+        background-color: #fff;
+        border-left: none !important;
+      }
+      &-ink-bar {
+        display: none !important;
+      }
+
+      &-bar {
+        float: none;
+        width: 200px;
+        height: 100%;
+        text-align: left;
+        font-size: 14px;
+        margin-right: 10px !important;
+        border-right: none !important;
+        background-color: #fff !important;
+
+        > .ant-tabs-nav-container {
+          > .ant-tabs-nav-wrap {
+            > .ant-tabs-nav-scroll {
+              > .ant-tabs-nav {
+                .ant-tabs-tab {
+                  height: 116px;
+                  font-size: 14px;
+                  padding-top: 12px;
+                  padding-bottom: 12px;
+                  padding-left: 40px;
+                  transition: none;
+                  // margin-right: 16px;
+
+                  &:hover {
+                    color: @hzero-primary-color-2;
+                  }
+
+                  &-active {
+                    color: @hzero-primary-color-2;
+                    background: linear-gradient(
+                      90deg,
+                      rgba(197, 234, 238, 0) 10%,
+                      rgba(147, 209, 216, 0.5) 300%
+                    );
+                    &::after {
+                      position: absolute;
+                      right: 0;
+                      top: 0;
+                      content: '';
+                      width: 8px;
+                      height: 100%;
+                      border-right: 8px solid @hzero-primary-color-2;
+                    }
+                    :local {
+                      .user-info-content-tab-account-icon {
+                        background-image: url('../../assets/userInfo/account-selected.png');
+                      }
+                      .user-info-content-tab-safe-setting-icon {
+                        background-image: url('../../assets/userInfo/security-selected.png');
+                      }
+                      .user-info-content-tab-preference-setting-icon {
+                        background-image: url('../../assets/userInfo/preference-selected.png');
+                      }
+                      .user-info-content-tab-receive-setting-icon {
+                        background-image: url('../../assets/userInfo/receiving-selected.png');
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+
+      &-content {
+        flex: auto;
+        overflow: auto;
+        padding: 32px;
+        height: 100%;
+      }
+
+      &-tabpane {
+        max-width: 1100px;
+      }
+    }
+  }
+
+  .main {
+    &-title {
+      position: relative;
+      margin-bottom: 17px;
+      font-size: 16px;
+      font-weight: normal;
+      color: #1e3255;
+    }
+  }
+
+  .sub-main {
+    padding-left: 24px;
+  }
+
+  .content {
+    .item {
+      display: flex;
+      align-items: center;
+      min-height: 40px; // 编辑框的高度
+      &-label {
+        width: 100px;
+        text-align: right;
+        padding-right: 24px;
+        color: #999;
+
+        &:after {
+          content: ':';
+        }
+      }
+
+      &-content {
+        flex: auto;
+        color: #666;
+      }
+    }
+
+    .line-item {
+      display: flex;
+      flex-flow: row;
+      margin: 24px 0;
+
+      &-label {
+        width: 100px;
+        text-align: right;
+        padding-right: 24px;
+        color: #999;
+
+        &:after {
+          content: ':';
+        }
+      }
+
+      &-content {
+        flex: auto;
+        color: #333;
+      }
+
+      &-btns {
+        flex-basis: 60px;
+        font-size: 12px;
+      }
+    }
+
+    .max-len-item {
+      display: flex;
+      flex-flow: row;
+      align-items: center;
+      margin-bottom: 8px;
+      padding: 12px;
+      &:hover {
+        background: rgba(147, 209, 216, 0.1);
+      }
+      &-icon {
+        flex-basis: 14px;
+        font-size: 14px;
+        line-height: 34px;
+      }
+
+      &-content-wrapper-safe {
+        margin-left: -12px;
+        padding-left: 0;
+      }
+
+      &-content-wrapper {
+        display: block;
+        padding-left: 24px;
+        flex-grow: 1;
+
+        .max-len-item-main-content-wrapper {
+          display: flex;
+          align-items: center;
+
+          .max-len-item-descriptions {
+            font-size: 12px;
+            margin-right: 8px;
+            color: #fff;
+            background-color: @hzero-primary-color-2;
+            border-radius: 2px;
+            padding: 2px 8px;
+          }
+          .max-len-item-description {
+            font-size: 14px;
+            margin-right: 8px;
+            color: #666;
+          }
+
+          .max-len-item-content {
+            color: #4c4c4c;
+            font-size: 14px;
+          }
+        }
+
+        .max-len-item-comment {
+          color: #aaadba;
+          font-size: 14px;
+        }
+      }
+
+      .max-len-item-btns {
+        flex-basis: 60px;
+        font-size: 12px;
+      }
+    }
+  }
+
+  .account {
+    .base-info {
+      height: 150px;
+      display: flex;
+      align-items: center;
+      border-bottom: 1px solid #eee;
+      &-left {
+        height: 100%;
+        max-width: 300px;
+        min-width: 300px;
+        border-radius: 5px 0 0 5px;
+        position: relative;
+      }
+
+      &-avatar {
+        flex-basis: 100px;
+      }
+
+      &-real-name {
+        display: flex;
+        margin-top: 8px;
+        white-space: nowrap;
+        width: 150px;
+        &-content {
+          display: inline-block;
+          font-size: 14px;
+          color: #666;
+          // width: 100px;
+          margin-right: 9px;
+          .textOverflow();
+        }
+        &-edit {
+          display: inline-block;
+          font-size: 14px;
+          color: #666;
+          &-save {
+            margin-left: 8px;
+            border: none;
+            box-shadow: none;
+            color: @hzero-primary-color-2;
+            background: transparent;
+            font-size: 12px;
+          }
+        }
+      }
+
+      &-right {
+        height: 100%;
+        flex: auto;
+        padding-top: 30px;
+        padding-bottom: 30px;
+        border-radius: 0 5px 5px 0;
+        position: relative;
+
+        .item {
+          min-height: 30px; // 去除item的 min-height: 30px;
+          line-height: 30px;
+          height: 30px;
+          align-items: baseline;
+
+          &-label {
+            .hzero-font-size(14px);
+            text-align: left;
+            padding-left: 8px;
+            padding-right: 0;
+            width: 120px;
+          }
+
+          &-content {
+            .hzero-font-size(14px);
+          }
+        }
+
+        // 所属集团
+        .group-item {
+          .item-content {
+            .text-over-flow();
+            max-width: 300px;
+          }
+        }
+      }
+    }
+
+    .btn {
+      margin-left: 24px;
+    }
+
+    .group {
+      margin-top: 24px;
+    }
+  }
+
+  .safe {
+    //
+    .security-level {
+      color: #333;
+      margin-right: 24px;
+    }
+
+    .open-app {
+      margin-top: 40px;
+      &-desc {
+        color: #aaadba;
+        font-size: 14px;
+        margin-bottom: 8px;
+      }
+    }
+  }
+
+  .preference {
+    // 内容区域包含描述 label 需要和 内容的输入区域对齐
+    .item {
+      align-items: start;
+
+      &-label {
+        line-height: 40px; // label 和内容区上方对齐
+      }
+
+      &-content {
+        min-height: 40px; // label 和内容区上方对齐
+        line-height: 40px; // label 和内容区上方对齐
+      }
+    }
+    .btn-wrap {
+      display: flex;
+    }
+  }
+}
+
+// 登录日志样式
+.login-log {
+  display: flex;
+  justify-content: space-between;
+  padding-right: 12px;
+  > div {
+    font-size: 16px;
+    color: #1e3255;
+  }
+}

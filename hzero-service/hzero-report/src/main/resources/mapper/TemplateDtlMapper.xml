@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.report.infra.mapper.TemplateDtlMapper">
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap id="BaseResultMap" type="org.hzero.report.domain.entity.TemplateDtl">
+        <result column="template_dtl_id" property="templateDtlId" jdbcType="DECIMAL"/>
+        <result column="template_id" property="templateId" jdbcType="DECIMAL"/>
+        <result column="template_url" property="templateUrl" jdbcType="VARCHAR"/>
+        <result column="template_content" property="templateContent" jdbcType="VARCHAR"/>
+        <result column="lang" property="lang" jdbcType="VARCHAR"/>
+        <result column="tenant_id" property="tenantId" jdbcType="DECIMAL"/>
+        <result column="object_version_number" property="objectVersionNumber" jdbcType="DECIMAL"/>
+        <result column="creation_date" property="creationDate" jdbcType="DATE"/>
+        <result column="created_by" property="createdBy" jdbcType="DECIMAL"/>
+        <result column="last_updated_by" property="lastUpdatedBy" jdbcType="DECIMAL"/>
+        <result column="last_update_date" property="lastUpdateDate" jdbcType="DATE"/>
+    </resultMap>
+    
+        <!-- 获取报表模板列表 -->
+    <select id="selectTemplateDtlsByTemplateId" resultMap="BaseResultMap">
+		SELECT
+        	htd.template_dtl_id,
+        	htd.template_id,
+        	htd.template_url,
+        	htd.lang,
+        	htd.object_version_number
+        FROM
+        	hrpt_template_dtl htd
+        WHERE
+        	htd.template_id = #{templateId}
+    </select>
+    
+</mapper>

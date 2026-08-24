@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.platform.infra.mapper.PermissionRuleMapper">
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap id="BaseResultMap" type="org.hzero.platform.domain.entity.PermissionRule">
+        <result column="rule_id" property="ruleId" jdbcType="DECIMAL"/>
+        <result column="rule_code" property="ruleCode" jdbcType="VARCHAR"/>
+        <result column="rule_name" property="ruleName" jdbcType="VARCHAR"/>
+        <result column="description" property="description" jdbcType="VARCHAR"/>
+        <result column="sql_value" property="sqlValue" jdbcType="VARCHAR"/>
+        <result column="tenant_id" property="tenantId" jdbcType="DECIMAL"/>
+        <result column="enabled_flag" property="enabledFlag" jdbcType="DECIMAL"/>
+        <result column="object_version_number" property="objectVersionNumber" jdbcType="DECIMAL"/>
+        <result column="creation_date" property="creationDate" jdbcType="DATE"/>
+        <result column="created_by" property="createdBy" jdbcType="DECIMAL"/>
+        <result column="last_updated_by" property="lastUpdatedBy" jdbcType="DECIMAL"/>
+        <result column="last_update_date" property="lastUpdateDate" jdbcType="DATE"/>
+    </resultMap>
+
+    <select id="selectSqlValueByRangeList" resultType="java.lang.String">
+        SELECT
+            sql_value
+        FROM
+            hpfm_permission_rule
+        WHERE enabled_flag = 1
+        <if test="list != null">
+            AND rule_id IN
+            <foreach collection="list" item="item" index="index" open="(" separator="," close=")">
+                #{item.ruleId}
+            </foreach>
+        </if>
+    </select>
+
+    <select id="selectPermissionRule" resultType="org.hzero.platform.api.dto.PermissionRuleDTO">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()" />
+        SELECT
+            hpr.rule_id,
+            hpr.rule_code,
+            hprt.rule_name,
+            hpr.description,
+            hpr.sql_value,
+            hpr.tenant_id,
+            hpr.enabled_flag,
+            hpr.object_version_number,
+            hpr.rule_type_code,
+            hpr.editable_flag,
+            httl.tenant_name
+        FROM
+            hpfm_permission_rule hpr
+        left join hpfm_permission_rule_tl hprt on hprt.rule_id = hpr.rule_id
+        and hprt.lang = #{lang}
+        join hpfm_tenant ht on ht.tenant_id = hpr.tenant_id
+        LEFT JOIN hpfm_tenant_tl httl ON ht.tenant_id = httl.tenant_id AND httl.lang = #{lang}
+        WHERE
+            1=1
+        <if test="tenantId != null">
+            AND hpr.tenant_id = #{tenantId}
+        </if>
+        <if test="ruleCode != null and ruleCode != ''">
+            <bind name="codeLike" value="'%' + ruleCode + '%'"/>
+            AND hpr.rule_code LIKE #{codeLike}
+        </if>
+        <if test="ruleName != null and ruleName != ''">
+            <bind name="nameLike" value="'%' + ruleName + '%'"/>
+            AND hprt.rule_name LIKE #{nameLike}
+        </if>
+        <if test="enabledFlag != null">
+            AND hpr.enabled_flag = #{enabledFlag}
+        </if>
+        <if test="description != null and description != ''">
+            <bind name="descriptionLike" value="'%' + description + '%'"/>
+            AND hpr.description LIKE #{descriptionLike}
+        </if>
+    </select>
+
+    <select id="selectOrgPermissionRule" resultType="org.hzero.platform.api.dto.PermissionRuleDTO">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()" />
+        SELECT
+        hpr.rule_id,
+        hpr.rule_code,
+        hprt.rule_name,
+        hpr.description,
+        hpr.sql_value,
+        hpr.tenant_id,
+        hpr.enabled_flag,
+        hpr.object_version_number,
+        hpr.rule_type_code,
+        hpr.editable_flag,
+        httl.tenant_name
+        FROM
+        hpfm_permission_rule hpr
+        left join hpfm_permission_rule_tl hprt on hprt.rule_id = hpr.rule_id
+        and hprt.lang = #{lang}
+        join hpfm_tenant ht on ht.tenant_id = hpr.tenant_id
+        LEFT JOIN hpfm_tenant_tl httl ON ht.tenant_id = httl.tenant_id AND httl.lang = #{lang}
+        WHERE
+        1=1
+        AND (hpr.tenant_id = #{tenantId} OR hpr.tenant_id = 0)
+        <if test="ruleCode != null and ruleCode != ''">
+            <bind name="codeLike" value="'%' + ruleCode + '%'"/>
+            AND hpr.rule_code LIKE #{codeLike}
+        </if>
+        <if test="ruleName != null and ruleName != ''">
+            <bind name="nameLike" value="'%' + ruleName + '%'"/>
+            AND hprt.rule_name LIKE #{nameLike}
+        </if>
+        <if test="enabledFlag != null">
+            AND hpr.enabled_flag = #{enabledFlag}
+        </if>
+        <if test="description != null and description != ''">
+            <bind name="descriptionLike" value="'%' + description + '%'"/>
+            AND hpr.description LIKE #{descriptionLike}
+        </if>
+    </select>
+    <select id="listRuleEnabled" resultType="org.hzero.platform.api.dto.PermissionRuleDTO">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()" />
+        SELECT
+            hpr.rule_id,
+            hpr.rule_code,
+            hprt.rule_name,
+            hpr.description,
+            hpr.sql_value,
+            hpr.tenant_id,
+            hpr.enabled_flag,
+            hpr.editable_flag,
+            hpr.object_version_number,
+            hpr.rule_type_code,
+            httl.tenant_name
+        FROM
+            hpfm_permission_rule hpr
+        left join hpfm_permission_rule_tl hprt on hprt.rule_id = hpr.rule_id
+        and hprt.lang = #{lang}
+        join hpfm_tenant ht on ht.tenant_id = hpr.tenant_id
+        LEFT JOIN hpfm_tenant_tl httl ON ht.tenant_id = httl.tenant_id AND httl.lang = #{lang}
+        WHERE
+            1=1
+        AND (hpr.tenant_id = #{tenantId} OR hpr.tenant_id = 0)
+        <if test="ruleCode != null and ruleCode != ''">
+            <bind name="codeLike" value="'%' + ruleCode + '%'"/>
+            AND hpr.rule_code LIKE #{codeLike}
+        </if>
+        <if test="ruleName != null and ruleName != ''">
+            <bind name="nameLike" value="'%' + ruleName + '%'"/>
+            AND hprt.rule_name LIKE #{nameLike}
+        </if>
+            AND hpr.enabled_flag = 1
+    </select>
+    <select id="queryPermissionRule" resultType="org.hzero.platform.domain.entity.PermissionRule">
+        SELECT
+            rule_id,
+            rule_code,
+            rule_type_code,
+            rule_name,
+            description,
+            sql_value,
+            tenant_id,
+            enabled_flag,
+            object_version_number
+        FROM hpfm_permission_rule
+        WHERE rule_code = #{ruleCode}
+        AND tenant_id = #{tenantId}
+    </select>
+    <select id="listEmptyRule" resultType="org.hzero.platform.domain.entity.PermissionRule">
+        SELECT
+                hpru.rule_id,
+                hpru.rule_code,
+                hpru.enabled_flag,
+                hpru.tenant_id,
+                hpru.object_version_number
+        FROM hpfm_permission_rule hpru
+        WHERE hpru.rule_id IN
+        <foreach collection="ruleIdList" item="ruleId" open="(" close=")">
+            #{ruleId}
+        </foreach>
+        AND NOT EXISTS(
+                SELECT 1 FROM hpfm_permission_rel hpre
+                WHERE hpre.rule_id = hpru.rule_id
+        )
+    </select>
+</mapper>

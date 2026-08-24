@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.iam.infra.mapper.HrUnitMapper">
+    <resultMap id="HrUnitMap" type="org.hzero.iam.domain.entity.HrUnit">
+        <association property="parentHrUnit" select="queryHrUnitParentTreeByUnitId" column="parent_unit_id"/>
+    </resultMap>
+    <select id="queryHrUnitBelongedByUserId" resultType="org.hzero.iam.domain.entity.HrUnit">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        select  hu.unit_id,
+                hu.unit_code,
+                hut.unit_name,
+                hu.unit_type_code,
+                hu.parent_unit_id,
+                hu.tenant_id
+        from hpfm_unit hu
+        join hpfm_unit_tl hut on hut.unit_id = hu.unit_id and hut.lang = #{lang}
+        join hpfm_employee_assign hea on hea.unit_id = hu.unit_id
+        join hiam_user_info iui on iui.employee_id = hea.employee_id
+        where iui.user_id = #{userId}
+    </select>
+
+    <select id="queryHrUnitParentTreeByUnitId" resultMap="HrUnitMap">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        select   hu.unit_id,
+                hu.unit_code,
+                hut.unit_name,
+                hu.unit_type_code,
+                hu.parent_unit_id,
+                hu.tenant_id
+        from hpfm_unit hu
+        join hpfm_unit_tl hut on hut.unit_id = hu.unit_id and hut.lang = #{lang}
+        where hu.unit_id = #{unitId}
+    </select>
+
+    <select id="batchQueryHrUnitsByUnitIds" resultType="org.hzero.iam.domain.entity.HrUnit">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        select  hu.unit_id,
+        hu.unit_code,
+        hu.unit_name,
+        hu.unit_type_code,
+        hu.parent_unit_id,
+        hu.tenant_id,
+        hu.level_path
+        from hpfm_unit hu
+        where hu.unit_id in
+        <foreach collection="unitIdList" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
+    <select id="queryHrUnitTreeBelongedByUserId" resultType="org.hzero.iam.domain.entity.HrUnit">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        select  hu.unit_id,
+        hu.unit_code,
+        hut.unit_name,
+        hu.unit_type_code,
+        hu.parent_unit_id,
+        hu.tenant_id
+        from hpfm_unit hu
+        join hpfm_unit_tl hut on hut.unit_id = hu.unit_id and hut.lang = #{lang}
+        where hu.tenant_id = #{tenantId}
+        and hu.enabled_flag = 1
+        <if test="userId != null">
+            and EXISTS (
+            select 'x'
+            from hpfm_unit hu_inner
+            join hpfm_employee_assign hea on hea.unit_id = hu_inner.unit_id
+            join hiam_user_info iui on iui.employee_id = hea.employee_id
+            join iam_user iu on iu.id = iui.user_id
+            where iui.user_id = #{userId}
+            and iu.organization_id = hu.tenant_id
+            and hu_inner.level_path like concat('%', concat(hu.level_path, '%'))
+            )
+        </if>
+    </select>
+
+    <select id="queryHrUnitSubTree" resultType="org.hzero.iam.domain.entity.HrUnit">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        select  hu.unit_id,
+        hu.unit_code,
+        hut.unit_name,
+        hu.unit_type_code,
+        hu.parent_unit_id,
+        hu.tenant_id
+        from hpfm_unit hu
+        join hpfm_unit_tl hut on hut.unit_id = hu.unit_id and hut.lang = #{lang}
+        where
+        hu.tenant_id = #{tenantId}
+        and hu.enabled_flag = 1
+        <if test="parentHrUnitId != null">
+            and EXISTS (
+            select 'x'
+            from hpfm_unit hu_parent
+            where hu_parent.unit_id = #{parentHrUnitId}
+            and hu.level_path like concat('%', concat(hu_parent.level_path, '%'))
+            )
+        </if>
+        ORDER BY hu.unit_id DESC
+    </select>
+</mapper>

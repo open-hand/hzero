@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.scheduler.infra.mapper.ExecutorMapper">
+
+    <select id="listExecutors" resultType="org.hzero.scheduler.domain.entity.Executor">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()" />
+        SELECT
+            he.executor_id,
+            he.executor_code,
+            het.executor_name,
+            he.order_seq,
+            he.executor_type,
+            he.address_list,
+            he.status,
+            he.tenant_id,
+            ht.tenant_name,
+            he.server_name,
+            he.object_version_number
+        FROM
+            hsdr_executor he
+        LEFT JOIN hpfm_tenant_tl ht ON ht.tenant_id = he.tenant_id AND ht.lang = #{lang}
+        LEFT JOIN hsdr_executor_tl het ON het.executor_id = he.executor_id AND het.lang = #{lang}
+        WHERE 1 = 1
+        <if test="executorCode != null and executorCode != ''">
+            <bind name="executorCodeLike" value="'%' + executorCode + '%'"/>
+            AND he.executor_code LIKE #{executorCodeLike}
+        </if>
+        <if test="executorName != null and executorName != ''">
+            <bind name="executorNameLike" value="'%' + executorName + '%'"/>
+            AND het.executor_name LIKE #{executorNameLike}
+        </if>
+        <if test="executorType != null">
+            AND he.executor_type = #{executorType}
+        </if>
+        <if test="status != null and status != ''">
+            AND he.status = #{status}
+        </if>
+        <if test="tenantId != null">
+            AND (he.tenant_id = #{tenantId} OR he.executor_type = 0 )
+        </if>
+    </select>
+</mapper>

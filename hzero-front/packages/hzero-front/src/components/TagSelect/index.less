@@ -1,0 +1,39 @@
+@import '~hzero-ui/es/style/themes/default.less';
+
+.tagSelect {
+  user-select: none;
+  margin-left: -8px;
+  position: relative;
+  overflow: hidden;
+  max-height: 32px;
+  line-height: 32px;
+  transition: all 0.3s;
+  :global {
+    .ant-tag {
+      padding: 0 8px;
+      margin-right: 24px;
+      font-size: @font-size-base;
+    }
+  }
+  &.expanded {
+    // TODO overflow 不是动画属性, overflow 会有一闪而过的 滚动条(当children 不能撑满全部的max-height时)
+    // transition-property: max-height, overflow;
+    // transition-duration: 0.3s, 0s;
+    // transition-delay: 0s, 0.3s;
+    transition: all 0.3s;
+    max-height: 200px;
+    // 父元素有 overflow: hidden 所以这里需要显示的设置 overflow: auto
+    overflow: auto;
+  }
+  .trigger {
+    position: absolute;
+    top: 0;
+    right: 0;
+    i {
+      font-size: 12px;
+    }
+  }
+  &.hasExpandTag {
+    padding-right: 50px;
+  }
+}

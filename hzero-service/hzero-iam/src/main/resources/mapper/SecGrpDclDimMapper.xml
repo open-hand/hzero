@@ -1,0 +1,561 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.iam.infra.mapper.SecGrpDclDimMapper">
+    <!-- 可根据自己的需求，是否要使用 -->
+    <resultMap id="BaseResultMap" type="org.hzero.iam.domain.entity.SecGrpDclDim">
+        <result column="sec_grp_dcl_dim_id" property="secGrpDclDimId" jdbcType="DECIMAL"/>
+        <result column="sec_grp_id" property="secGrpId" jdbcType="DECIMAL"/>
+        <result column="tenant_id" property="tenantId" jdbcType="DECIMAL"/>
+        <result column="auth_doc_type_id" property="authDocTypeId" jdbcType="DECIMAL"/>
+        <result column="auth_scope_code" property="authScopeCode" jdbcType="VARCHAR"/>
+        <result column="object_version_number" property="objectVersionNumber" jdbcType="DECIMAL"/>
+        <result column="creation_date" property="creationDate" jdbcType="DATE"/>
+        <result column="created_by" property="createdBy" jdbcType="DECIMAL"/>
+        <result column="last_updated_by" property="lastUpdatedBy" jdbcType="DECIMAL"/>
+        <result column="last_update_date" property="lastUpdateDate" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <resultMap id="ListSecGrpAssignableDimLineResultMap" type="org.hzero.iam.api.dto.SecGrpDclDimLineDTO">
+        <result column="sec_grp_dcl_dim_line_id" property="secGrpDclDimLineId" jdbcType="DECIMAL"/>
+        <result column="doc_type_id" property="docTypeId" jdbcType="DECIMAL"/>
+        <result column="auth_type_code" property="authTypeCode" jdbcType="VARCHAR"/>
+        <result column="dimension_type" property="dimensionType" jdbcType="VARCHAR"/>
+        <result column="auth_type_meaning" property="authTypeMeaning" jdbcType="VARCHAR"/>
+        <result column="dim_line_checked_flag" property="secGrpDclDimLineCheckedFlag" jdbcType="DECIMAL"/>
+        <result column="delete_enable_flag" property="deleteEnableFlag" jdbcType="DECIMAL"/>
+    </resultMap>
+
+    <select id="listSecGrpAssignableDim" resultType="org.hzero.iam.api.dto.SecGrpDclDimDTO">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        SELECT
+        hdt.doc_type_id,
+        hdtt.doc_type_name,
+        hsgdd.sec_grp_dcl_dim_id,
+        hsgdd.sec_grp_id,
+        hsgdd.tenant_id,
+        t.auth_scope_code,
+        hsgdd.object_version_number,
+        (CASE WHEN hsgdd.sec_grp_dcl_dim_id IS NOT NULL THEN 1 ELSE 0 END) sec_grp_dcl_dim_checked_flag,
+        <!--自动分配的不能编辑-->
+        (case when hsgdd.assign_type_code = 'SELF' OR hsgdd.assign_type_code IS NULL then 1 else 0 end) edit_enable_flag
+        FROM hiam_doc_type hdt
+        INNER JOIN hiam_doc_type_tl hdtt ON hdtt.doc_type_id = hdt.doc_type_id AND hdtt.lang = #{lang}
+        INNER JOIN
+        <choose>
+            <when test="_databaseId == 'oracle'">
+                (
+                SELECT 'USER' auth_scope_code FROM dual
+                UNION
+                SELECT 'BIZ' auth_scope_code FROM dual
+                )
+            </when>
+            <otherwise>
+                (
+                SELECT 'USER' auth_scope_code
+                UNION
+                SELECT 'BIZ' auth_scope_code
+                )
+            </otherwise>
+        </choose>
+        t ON 1=1
+        LEFT JOIN hiam_sec_grp_dcl_dim hsgdd ON (hsgdd.auth_doc_type_id = hdt.doc_type_id AND hsgdd.sec_grp_id =
+        #{secGrpId} AND hsgdd.auth_scope_code = t.auth_scope_code)
+        WHERE hdt.enabled_flag = 1
+        AND (
+        hdt.level_code = 'GLOBAL'
+        OR EXISTS (
+        SELECT 1
+        FROM hiam_doc_type_assign hdta
+        WHERE hdta.assign_value_id = #{tenantId} AND hdta.doc_type_id = hdt.doc_type_id
+        )
+        )
+        <if test="docTypeName != null and docTypeName != ''">
+            <bind name="docTypeNameLike" value="'%' + docTypeName + '%'"/>
+            AND hdtt.doc_type_name LIKE #{docTypeNameLike}
+        </if>
+        <if test="docTypeId != null ">
+            AND hdt.doc_type_id = #{docTypeId}
+        </if>
+    </select>
+
+    <select id="listSecGrpAssignedDim" resultType="org.hzero.iam.api.dto.SecGrpDclDimDTO">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        SELECT
+        hdt.doc_type_id,
+        hdtt.doc_type_name,
+        hsgdd.sec_grp_dcl_dim_id,
+        hsgdd.sec_grp_id,
+        hsgdd.tenant_id,
+        hsgdd.auth_scope_code,
+        hsgdd.object_version_number,
+        (CASE WHEN hsgdd.sec_grp_dcl_dim_id IS NOT NULL THEN 1 ELSE 0 END) sec_grp_dcl_dim_checked_flag
+        FROM hiam_doc_type hdt
+        LEFT JOIN hiam_doc_type_tl hdtt ON hdtt.doc_type_id = hdt.doc_type_id AND hdtt.lang = #{lang}
+        JOIN hiam_sec_grp_dcl_dim hsgdd ON (hsgdd.auth_doc_type_id = hdt.doc_type_id AND hsgdd.sec_grp_id = #{secGrpId})
+        WHERE hdt.enabled_flag = 1
+        <if test="docTypeName != null and docTypeName != ''">
+            <bind name="docTypeNameLike" value="'%' + docTypeName + '%'"/>
+            AND hdtt.doc_type_name LIKE #{docTypeNameLike}
+        </if>
+        <if test="docTypeId != null ">
+            AND hdt.doc_type_id = #{docTypeId}
+        </if>
+    </select>
+
+    <!--查询角色单据类型定义维度分配列表-->
+    <select id="listSecGrpAssignableDimLine"
+            resultMap="org.hzero.iam.infra.mapper.SecGrpDclDimMapper.ListSecGrpAssignableDimLineResultMap">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        <!--这里虽然查的是安全组权限维度行的数据，但是主表依旧是hiam_doc_type_auth_dim，表名是和实体类绑定的，最好遵循规范便于以后权限扩展-->
+        SELECT
+        hsgddl.sec_grp_dcl_dim_line_id,
+        hdtad.doc_type_id,
+        hdtad.auth_type_code,
+        hdtd.dimension_type,
+        hdtdt.dimension_name auth_type_meaning,
+        (CASE WHEN hsgddl.sec_grp_dcl_dim_line_id IS NOT NULL THEN 1 ELSE 0 END ) as dim_line_checked_flag,
+        (CASE WHEN hsgddl.assign_type_code = 'SELF' OR hsgddl.assign_type_code IS NULL THEN 1 ELSE 0 END) as delete_enable_flag
+        FROM hiam_doc_type_auth_dim hdtad
+        JOIN hiam_doc_type_dimension hdtd ON hdtad.auth_type_code = hdtd.dimension_code
+        LEFT JOIN hiam_doc_type_dimension_tl hdtdt ON hdtd.dimension_id = hdtdt.dimension_id AND hdtdt.lang = #{lang}
+        LEFT JOIN hiam_sec_grp_dcl_dim hsgdd ON hsgdd.auth_doc_type_id = hdtad.doc_type_id AND hsgdd.sec_grp_id =
+        #{secGrpId} AND hdtd.dimension_type = hsgdd.auth_scope_code
+        LEFT JOIN hiam_sec_grp_dcl_dim_line hsgddl ON hsgdd.sec_grp_dcl_dim_id = hsgddl.sec_grp_dcl_dim_id AND
+        hsgddl.auth_type_code = hdtad.auth_type_code
+        WHERE hdtad.doc_type_id IN
+        <foreach collection="docTypeIds" item="docTypeId" separator="," open="(" close=")">
+            #{docTypeId}
+        </foreach>
+    </select>
+
+    <!--查询角色单据类型定义维度已分配列表-->
+    <select id="listSecGrpAssignedDimLine" resultType="org.hzero.iam.api.dto.SecGrpDclDimLineDTO">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        SELECT
+        hsgddl.sec_grp_dcl_dim_line_id,
+        hdtad.doc_type_id,
+        hdtad.auth_type_code,
+        hdtd.dimension_type,
+        hdtdt.dimension_name auth_type_meaning
+        FROM hiam_doc_type_auth_dim hdtad
+        INNER JOIN hiam_doc_type_dimension hdtd ON hdtad.auth_type_code = hdtd.dimension_code
+        LEFT JOIN hiam_doc_type_dimension_tl hdtdt ON hdtd.dimension_id = hdtdt.dimension_id AND hdtdt.lang = #{lang}
+        INNER JOIN hiam_sec_grp_dcl_dim hsgdd ON hsgdd.auth_doc_type_id = hdtad.doc_type_id AND hsgdd.sec_grp_id =
+        #{secGrpId} AND hdtd.dimension_type = hsgdd.auth_scope_code
+        INNER JOIN hiam_sec_grp_dcl_dim_line hsgddl ON hsgdd.sec_grp_dcl_dim_id = hsgddl.sec_grp_dcl_dim_id AND
+        hsgddl.auth_type_code = hdtad.auth_type_code
+        WHERE hdtad.doc_type_id IN
+        <foreach collection="docTypeIds" item="docTypeId" separator="," open="(" close=")">
+            #{docTypeId}
+        </foreach>
+    </select>
+
+    <select id="selectSecGrpAssignedAuthTypeCode" resultType="java.lang.String">
+        SELECT hsgddl.auth_type_code
+        FROM hiam_sec_grp_dcl_dim hsgdd
+        JOIN hiam_sec_grp_dcl_dim_line hsgddl ON hsgdd.sec_grp_dcl_dim_id = hsgddl.sec_grp_dcl_dim_id
+        <!-- 实际上以上的sql已经能拿到对应的auth_type_code，但是还需要去原表去查一下看安全组保存的信息是否有效，如果发生改变是无法查出的 -->
+        JOIN hiam_doc_type hdt ON hdt.doc_type_id = hsgdd.auth_doc_type_id AND hdt.enabled_flag = 1
+        JOIN hiam_doc_type_auth_dim hdtad ON hdtad.doc_type_id = hsgdd.auth_doc_type_id AND hdtad.auth_type_code =
+        hsgddl.auth_type_code
+        -- 过滤掉非BIZ的维度值
+        JOIN hiam_doc_type_dimension hdtd ON hdtd.dimension_code = hsgddl.auth_type_code AND hdtd.dimension_type = 'BIZ'
+        WHERE hsgdd.sec_grp_id = #{secGrpId}
+        AND hsgdd.auth_scope_code = 'BIZ'
+    </select>
+
+    <!-- 查询角色分配的安全组中的数据权限维度 -->
+    <select id="selectRoleSecGrpDim" resultType="org.hzero.iam.domain.service.secgrp.dto.SecGrpDclDimDetailDTO">
+        <!-- 查询的是角色所有被分配的安全组包含的数据维度以及维度行值（打平）， -->
+        SELECT
+        hsgdd.sec_grp_id,
+        hsgdd.auth_doc_type_id,
+        hsgdd.auth_scope_code,
+        hsgddl.auth_type_code,
+        hsgddl.assign_type_code
+        FROM hiam_sec_grp_dcl_dim hsgdd
+        JOIN hiam_sec_grp hsg ON hsg.sec_grp_id = hsgdd.sec_grp_id
+        LEFT JOIN hiam_sec_grp_dcl_dim_line hsgddl ON hsgdd.sec_grp_dcl_dim_id = hsgddl.sec_grp_dcl_dim_id
+        WHERE EXISTS (
+        SELECT 1
+        FROM iam_role_permission irp
+        WHERE irp.role_id = #{roleId}
+        AND irp.type = 'SG'
+        AND (irp.h_create_flag = 'Y' or irp.h_inherit_flag = 'Y')
+        AND irp.permission_id = hsg.sec_grp_id
+        )
+        -- 没有被屏蔽角色屏蔽
+        AND NOT EXISTS (
+        SELECT 1
+        FROM hiam_sec_grp_revoke hsgr
+        WHERE (
+        hsgr.revoke_type = 'SHIELD'
+        AND hsgr.authority_id = hsgddl.sec_grp_dcl_dim_line_id
+        AND hsgr.authority_type = 'DCL_DIM'
+        AND hsgr.shield_role_id = #{roleId}
+        )
+        )
+    </select>
+
+    <select id="selectSelfManagementDimDetailInGrp"
+            resultType="org.hzero.iam.domain.service.secgrp.dto.SecGrpDclDimDetailDTO">
+
+        SELECT
+            hsg.sec_grp_id,
+            hsgdd.auth_doc_type_id,
+            hsgdd.auth_scope_code,
+            hsgddl.auth_type_code,
+            hsgddl.assign_type_code
+        FROM
+            hiam_sec_grp_dcl_dim hsgdd
+        LEFT JOIN hiam_sec_grp_dcl_dim_line hsgddl ON hsgdd.sec_grp_dcl_dim_id = hsgddl.sec_grp_dcl_dim_id AND  hsgddl.assign_type_code = 'SELF'
+        JOIN hiam_sec_grp hsg ON hsg.sec_grp_id = hsgdd.sec_grp_id
+        WHERE
+         hsgdd.sec_grp_id = #{secGrpId}
+        AND NOT EXISTS
+         (
+            SELECT
+                1
+            FROM
+                hiam_sec_grp_dcl_dim hsgdd_in
+            LEFT JOIN	 hiam_sec_grp_dcl_dim_line hsgddl_in ON hsgdd_in.sec_grp_dcl_dim_id = hsgddl_in.sec_grp_dcl_dim_id
+            JOIN hiam_sec_grp hsg_in ON hsg_in.sec_grp_id = hsgddl_in.sec_grp_id AND hsg_in.enabled_flag = 1
+            WHERE
+            hsgdd_in.auth_doc_type_id = hsgdd.auth_doc_type_id
+            AND hsgdd_in.auth_scope_code = hsgdd.auth_scope_code
+            AND hsgddl_in.auth_type_code = hsgddl.auth_type_code
+
+            AND EXISTS (
+                SELECT
+                    1
+                FROM
+                    iam_role_permission irp
+                WHERE
+                    irp.role_id = hsg.role_id
+                AND irp.type = 'SG'
+                AND (
+                    irp.h_create_flag = 'Y'
+                    OR irp.h_inherit_flag = 'Y'
+                )
+                AND irp.permission_id = hsg_in.sec_grp_id
+            )
+        )
+    </select>
+
+    <select id="selectAssignedDimDetailInGrp"
+            resultType="org.hzero.iam.domain.service.secgrp.dto.SecGrpDclDimDetailDTO">
+        SELECT
+        hsgdd.sec_grp_id,
+        hsgdd.auth_doc_type_id,
+        hsgdd.auth_scope_code,
+        hsgddl.auth_type_code
+        FROM
+        hiam_sec_grp_dcl_dim hsgdd
+        JOIN hiam_sec_grp_dcl_dim_line hsgddl ON hsgdd.sec_grp_dcl_dim_id = hsgddl.sec_grp_dcl_dim_id
+		JOIN hiam_sec_grp hsg ON hsgdd.sec_grp_id = hsg.sec_grp_id
+        WHERE
+        hsgdd.auth_scope_code = 'BIZ'
+        AND hsg.tenant_id !=0
+		AND hsg.enabled_flag = 1
+        AND EXISTS (
+                    SELECT
+                        1
+                    FROM
+                        iam_role_permission irp
+                    WHERE
+                        irp.type = 'SG'
+                    AND irp.permission_id = hsgdd.sec_grp_id
+                    AND (
+                        irp.h_create_flag = 'Y'
+                        OR irp.h_inherit_flag = 'Y'
+                    )
+                    AND irp.role_id = (
+                        SELECT
+                            hsg_out.role_id
+                        FROM
+                            hiam_sec_grp hsg_out
+                        WHERE
+                            hsg_out.sec_grp_id = #{secGrpId}
+                    )
+                )
+
+    </select>
+
+    <!-- 查询安全组中的维度 -->
+    <select id="selectSecGrpDim" resultType="org.hzero.iam.domain.service.secgrp.dto.SecGrpDclDimDetailDTO">
+        SELECT
+        hsg.sec_grp_id,
+        hsgdd.auth_doc_type_id,
+        hsgdd.auth_scope_code,
+        hsgddl.auth_type_code,
+        hsgddl.assign_type_code
+        FROM hiam_sec_grp_dcl_dim hsgdd
+        LEFT JOIN hiam_sec_grp_dcl_dim_line hsgddl ON hsgdd.sec_grp_dcl_dim_id = hsgddl.sec_grp_dcl_dim_id
+        JOIN hiam_sec_grp hsg ON hsg.sec_grp_id = hsgdd.sec_grp_id
+        WHERE hsgdd.sec_grp_id IN
+        <foreach item="item" collection="secGrpIds" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        ORDER BY hsgddl.assign_type_code DESC
+    </select>
+
+    <select id="selectExtraDimInAssignedRole" resultType="org.hzero.iam.domain.entity.SecGrpDclDim">
+        SELECT
+            hsgdd.sec_grp_dcl_dim_id,
+            hsgdd.sec_grp_id,
+            hsgdd.tenant_id,
+            hsgdd.auth_doc_type_id,
+            hsgdd.auth_scope_code,
+            hsgdd.object_version_number
+        FROM
+          hiam_sec_grp_dcl_dim hsgdd
+        WHERE
+        hsgdd.auth_doc_type_id = #{docTypeId}
+        -- 维度范围不同
+        AND   hsgdd.auth_scope_code &lt;&gt;  #{authScopeCode}
+        AND hsgdd.sec_grp_id IN (
+            SELECT
+              irp.permission_id AS secGrpId
+            FROM
+              iam_role_permission irp
+            WHERE
+            irp.type = 'SG'
+            AND (
+            irp.h_create_flag = 'Y'
+            OR irp.h_inherit_flag = 'Y'
+            )
+            -- 过滤当前安全组
+            AND irp.permission_id &lt;&gt; #{secGrpId}
+            -- 角色为当前安全组分配的角色
+            AND irp.role_id IN(
+                SELECT
+                  irp_in.role_id
+                FROM
+                  iam_role_permission irp_in
+                WHERE
+                irp_in.type = 'SG'
+                AND (
+                irp_in.h_create_flag = 'Y'
+                OR irp_in.h_inherit_flag = 'Y'
+                )
+                AND irp_in.permission_id = #{secGrpId}
+            )
+        )
+
+    </select>
+    <select id="selectBuildDimInAssignedRoleAndSubRole" resultType="org.hzero.iam.domain.entity.SecGrpDclDim">
+    SELECT
+        hsgdd.sec_grp_dcl_dim_id,
+        hsgdd.sec_grp_id,
+        hsgdd.tenant_id,
+        hsgdd.auth_doc_type_id,
+        hsgdd.auth_scope_code,
+        hsgdd.object_version_number
+    FROM
+        hiam_sec_grp_dcl_dim hsgdd
+    JOIN hiam_sec_grp hsg ON hsgdd.sec_grp_id = hsg.sec_grp_id
+    JOIN iam_role ir ON ir.id = hsg.role_id
+    WHERE
+        hsgdd.auth_doc_type_id = #{docTypeId}
+    AND EXISTS(
+        SELECT
+            1
+        FROM
+            iam_role_permission irp_in
+            JOIN iam_role ir_in ON irp_in.role_id = ir_in.id
+        WHERE
+            irp_in.type = 'SG'
+        AND (
+            irp_in.h_create_flag = 'Y'
+            OR irp_in.h_inherit_flag = 'Y'
+        )
+        AND irp_in.permission_id = #{secGrpId}
+        AND (ir.h_level_path LIKE CONCAT(ir_in.h_level_path,"|%")OR ir.h_level_path = ir_in.h_level_path)
+    )
+    </select>
+    <select id="selectDifferentAssignedDimInRoleFromSecGrp" resultType="org.hzero.iam.domain.entity.SecGrpDclDim">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        SELECT
+            hsgdd.sec_grp_dcl_dim_id,
+            hsgdd.sec_grp_id,
+            hsgdd.tenant_id,
+            hsgdd.auth_doc_type_id,
+            hsgdd.auth_scope_code,
+            hsgdd.object_version_number,
+            hdtt.doc_type_name
+        FROM
+            hiam_sec_grp_dcl_dim hsgdd
+        JOIN hiam_sec_grp hsg ON hsgdd.sec_grp_id = hsg.sec_grp_id
+        JOIN hiam_doc_type hdt ON hdt.doc_type_id = hsgdd.auth_doc_type_id
+        LEFT JOIN hiam_doc_type_tl hdtt ON hdtt.doc_type_id = hdt.doc_type_id AND hdtt.lang = #{lang}
+        WHERE
+            hsg.enabled_flag = 1
+        AND EXISTS (
+            SELECT
+                1
+            FROM
+                iam_role_permission irp_in
+            WHERE
+                irp_in.type = 'SG'
+            AND (
+                irp_in.h_create_flag = 'Y'
+                OR irp_in.h_inherit_flag = 'Y'
+            )
+            AND irp_in.role_id = #{roleId}
+            AND irp_in.permission_id = hsg.sec_grp_id
+
+        )
+        AND EXISTS (
+            SELECT
+                1
+            FROM
+                hiam_sec_grp_dcl_dim hsgdd_in
+            WHERE
+                hsgdd_in.sec_grp_id = #{secGrpId}
+            AND (
+                hsgdd.auth_doc_type_id = hsgdd_in.auth_doc_type_id
+                AND hsgdd.auth_scope_code != hsgdd_in.auth_scope_code
+            )
+        )
+    </select>
+
+    <select id="listSecGrpDimByUniqueKeys" resultType="org.hzero.iam.domain.entity.SecGrpDclDim">
+        SELECT
+        hsgdd.sec_grp_dcl_dim_id,
+        hsgdd.auth_doc_type_id,
+        hsgdd.sec_grp_id,
+        hsgdd.auth_scope_code,
+        hsgdd.assign_type_code
+        FROM hiam_sec_grp_dcl_dim hsgdd
+        <where>
+            hsgdd.sec_grp_id = #{secGrpId}
+            AND CONCAT(hsgdd.auth_doc_type_id, CONCAT('-', hsgdd.auth_scope_code))
+            <choose>
+                <when test="@org.apache.commons.collections.CollectionUtils@isNotEmpty(uniqueKeys)">
+                    IN
+                    <foreach collection="uniqueKeys" item="uniqueKey" open="(" separator="," close=")">
+                        #{uniqueKey}
+                    </foreach>
+                </when>
+                <otherwise>
+                    IS NULL
+                </otherwise>
+            </choose>
+        </where>
+    </select>
+
+    <select id="selectRoleIncludedAuthDoc" resultType="java.lang.Long">
+        SELECT
+        HSGDD.SEC_GRP_DCL_DIM_ID
+        FROM HIAM_SEC_GRP HSG
+        JOIN IAM_ROLE_PERMISSION IRP ON (
+            IRP.PERMISSION_ID = HSG.SEC_GRP_iD
+            AND IRP.ROLE_ID = #{roleId}
+            AND IRP.TYPE = 'SG'
+            AND (IRP.H_CREATE_FLAG = 'Y' OR IRP.H_INHERIT_FLAG = 'Y')
+        )
+        JOIN HIAM_SEC_GRP_DCL_DIM HSGDD ON (
+            HSGDD.SEC_GRP_ID = HSG.SEC_GRP_ID
+            AND HSGDD.AUTH_DOC_TYPE_ID = #{authDocTypeId}
+            AND HSGDD.AUTH_SCOPE_CODE = #{authScopeCode}
+        )
+        WHERE HSG.ENABLED_FLAG = 1
+        AND HSG.DRAFT_FLAG = 0
+        AND HSG.SEC_GRP_ID &lt;> #{excludeSecGrpId}
+    </select>
+
+    <select id="listRoleIncludedSecGrp" resultType="org.hzero.iam.domain.entity.SecGrp">
+        SELECT
+            HSG.SEC_GRP_ID,
+            HSG.SEC_GRP_CODE
+        FROM HIAM_SEC_GRP HSG
+        JOIN HIAM_SEC_GRP_DCL_DIM HSGDD ON (
+            HSG.SEC_GRP_ID = HSGDD.SEC_GRP_ID
+            AND HSGDD.AUTH_DOC_TYPE_ID = #{authDocTypeId}
+            AND HSGDD.AUTH_SCOPE_CODE = #{authScopeCode}
+        )
+        WHERE
+        HSG.ROLE_ID = #{roleId}
+        AND HSGDD.ASSIGN_TYPE_CODE IN ('PARENT', 'SELF_PARENT')
+    </select>
+
+    <select id="selectDimId" resultType="java.lang.Long">
+        SELECT
+        HSGDD.SEC_GRP_DCL_DIM_ID
+        FROM HIAM_SEC_GRP HSG
+        INNER JOIN HIAM_SEC_GRP_DCL_DIM HSGDD ON (
+        HSG.SEC_GRP_ID = HSGDD.SEC_GRP_ID
+        AND HSGDD.AUTH_DOC_TYPE_ID = #{authDocTypeId}
+        AND HSGDD.AUTH_SCOPE_CODE = #{authScopeCode}
+        )
+        <where>
+            NOT EXISTS (
+            SELECT 1
+            FROM HIAM_SEC_GRP_DCL_DIM_LINE HSGDDL
+            WHERE HSGDD.SEC_GRP_DCL_DIM_ID = HSGDDL.SEC_GRP_DCL_DIM_LINE_ID
+            AND HSGDDL.ASSIGN_TYPE_CODE = #{assignTypeCode}
+            )
+            AND HSGDD.ASSIGN_TYPE_CODE = #{assignTypeCode}
+            AND HSG.SEC_GRP_ID
+            <choose>
+                <when test="@org.apache.commons.collections.CollectionUtils@isNotEmpty(secGrpIds)">
+                    IN
+                    <foreach collection="secGrpIds" item="id" open="(" separator="," close=")">
+                        #{id}
+                    </foreach>
+                </when>
+                <otherwise>
+                    IS NULL
+                </otherwise>
+            </choose>
+        </where>
+    </select>
+
+    <select id="countSelfManagementDim" resultType="java.lang.Integer">
+        SELECT COUNT(1)
+        FROM hiam_sec_grp_dcl_dim_line hsgddl
+        INNER JOIN hiam_sec_grp hsg
+        ON hsgddl.sec_grp_id = #{secGrpId}
+        AND hsgddl.auth_type_code = #{authorityTypeCode}
+        AND hsgddl.assign_type_code = 'SELF'
+        AND hsg.role_id = #{roleId}
+        AND hsgddl.sec_grp_id = hsg.sec_grp_id
+    </select>
+
+    <delete id="batchDeleteBySql">
+        DELETE FROM HIAM_SEC_GRP_DCL_DIM
+        <where>
+            SEC_GRP_DCL_DIM_ID
+            <choose>
+                <when test="@org.apache.commons.collections.CollectionUtils@isNotEmpty(dimIds)">
+                    IN
+                    <foreach collection="dimIds" item="item" open="(" separator="," close=")">
+                        #{item}
+                    </foreach>
+                </when>
+                <otherwise>
+                    IS NULL
+                </otherwise>
+            </choose>
+        </where>
+    </delete>
+
+    <update id="batchUpdateBySql">
+        UPDATE HIAM_SEC_GRP_DCL_DIM
+        SET ASSIGN_TYPE_CODE = #{assignTypeCode}
+        <where>
+            SEC_GRP_DCL_DIM_ID
+            <choose>
+                <when test="@org.apache.commons.collections.CollectionUtils@isNotEmpty(dimIds)">
+                    IN
+                    <foreach collection="dimIds" item="item" open="(" separator="," close=")">
+                        #{item}
+                    </foreach>
+                </when>
+                <otherwise>
+                    IS NULL
+                </otherwise>
+            </choose>
+        </where>
+    </update>
+</mapper>

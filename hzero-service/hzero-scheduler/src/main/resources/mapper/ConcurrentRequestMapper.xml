@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.scheduler.infra.mapper.ConcurrentRequestMapper">
+    <!-- 可根据自己的需求，是否要使用 -->
+    <resultMap id="BaseResultMap" type="org.hzero.scheduler.domain.entity.ConcurrentRequest">
+        <result column="request_id" property="requestId" jdbcType="DECIMAL"/>
+        <result column="concurrent_id" property="concurrentId" jdbcType="DECIMAL"/>
+        <result column="executable_id" property="executableId" jdbcType="DECIMAL"/>
+        <result column="cycle_flag" property="cycleFlag" jdbcType="DECIMAL"/>
+        <result column="interval_type" property="intervalType" jdbcType="VARCHAR"/>
+        <result column="interval_number" property="intervalNumber" jdbcType="DECIMAL"/>
+        <result column="interval_hour" property="intervalHour" jdbcType="DECIMAL"/>
+        <result column="interval_minute" property="intervalMinute" jdbcType="DECIMAL"/>
+        <result column="interval_second" property="intervalSecond" jdbcType="DECIMAL"/>
+        <result column="cron" property="cron" jdbcType="VARCHAR"/>
+        <result column="request_param" property="requestParam" jdbcType="VARCHAR"/>
+        <result column="start_date" property="startDate" jdbcType="DATE"/>
+        <result column="end_date" property="endDate" jdbcType="DATE"/>
+        <result column="executor_id" property="executorId" jdbcType="DECIMAL"/>
+        <result column="job_id" property="jobId" jdbcType="DECIMAL"/>
+        <result column="tenant_id" property="tenantId" jdbcType="DECIMAL"/>
+        <result column="object_version_number" property="objectVersionNumber" jdbcType="DECIMAL"/>
+        <result column="creation_date" property="creationDate" jdbcType="DATE"/>
+        <result column="created_by" property="createdBy" jdbcType="DECIMAL"/>
+        <result column="last_updated_by" property="lastUpdatedBy" jdbcType="DECIMAL"/>
+        <result column="last_update_date" property="lastUpdateDate" jdbcType="DATE"/>
+    </resultMap>
+
+    <select id="listRequest" parameterType="org.hzero.scheduler.api.dto.RequestQueryDTO" resultType="org.hzero.scheduler.domain.entity.ConcurrentRequest">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()" />
+        SELECT
+            hcr.request_id,
+            hcr.concurrent_id,
+            hc.conc_code,
+            hct.conc_name,
+            hcr.cycle_flag,
+            hcr.request_param,
+            hcr.start_date,
+            hcr.end_date,
+            hcr.job_id,
+            hcr.job_id task_id,
+            hcr.tenant_id,
+            ht.tenant_name,
+            hji.parent_id,
+            iu.real_name username,
+            qt.TRIGGER_STATE job_status,
+            hcr.object_version_number
+        FROM
+            hsdr_conc_request hcr
+        JOIN hsdr_concurrent hc ON hc.concurrent_id = hcr.concurrent_id
+        LEFT JOIN hpfm_tenant_tl ht ON ht.tenant_id = hcr.tenant_id AND ht.lang = #{lang}
+        LEFT JOIN hsdr_concurrent_tl hct ON hc.concurrent_id = hct.concurrent_id AND hct.lang = #{lang}
+        JOIN iam_user iu ON iu.id = hcr.created_by
+        JOIN hsdr_job_info hji ON hcr.job_id = hji.job_id
+        LEFT JOIN qrtz_triggers qt ON qt.TRIGGER_NAME =  CONCAT('',hcr.job_id) AND qt.TRIGGER_GROUP = CONCAT('',hcr.tenant_id)
+        WHERE
+            1 = 1
+        <if test="tenantId != null">
+            AND hcr.tenant_id = #{tenantId}
+        </if>
+        <if test="cycleFlag != null">
+            AND hcr.cycle_flag = #{cycleFlag}
+        </if>
+        <if test="jobId != null">
+            AND hcr.job_id = #{jobId}
+        </if>
+        <if test="taskId != null">
+            AND hcr.job_id = #{taskId}
+        </if>
+        <if test="concCode != null and concCode != ''">
+            <bind name="concCodeLike" value="'%' + concCode + '%'"/>
+            AND hc.conc_code LIKE #{concCodeLike}
+        </if>
+        <if test="concName != null and concName != ''">
+            <bind name="concNameLike" value="'%' + concName + '%'"/>
+            AND hct.conc_name LIKE #{concNameLike}
+        </if>
+        <if test="triggerStatus != null">
+            AND qt.TRIGGER_STATE IN
+            <foreach collection="triggerStatus" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="includeNull == true">
+            OR qt.TRIGGER_STATE IS null
+        </if>
+        <if test="clientResult != null and clientResult != ''">
+            EXISTS ( SELECT 1 FROM hsdr_job_log hjl WHERE hjl.job_id = hcr.job_id AND hjl.client_result = #{clientResult} )
+        </if>
+    </select>
+
+    <select id="queryRequestById" resultType="org.hzero.scheduler.domain.entity.ConcurrentRequest">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()" />
+        SELECT
+        	hcr.request_id,
+        	hcr.concurrent_id,
+        	hc.conc_code,
+        	hct.conc_name,
+        	hcr.executable_id,
+        	hcr.cycle_flag,
+        	hcr.interval_type,
+        	hcr.interval_number,
+        	hcr.interval_hour,
+        	hcr.interval_minute,
+        	hcr.interval_second,
+        	hcr.cron,
+        	hcr.request_param,
+        	hcr.start_date,
+        	hcr.end_date,
+        	hcr.executor_id,
+        	hcr.job_id,
+        	hcr.tenant_id,
+        	ht.tenant_name,
+        	hji.parent_id,
+        	hcr.object_version_number
+        FROM
+	        hsdr_conc_request hcr
+	    JOIN hsdr_concurrent hc ON hc.concurrent_id = hcr.concurrent_id
+        LEFT JOIN hsdr_concurrent_tl hct ON hc.concurrent_id = hct.concurrent_id AND hct.lang = #{lang}
+	    LEFT JOIN hpfm_tenant_tl ht ON ht.tenant_id = hcr.tenant_id AND ht.lang = #{lang}
+	    LEFT JOIN hsdr_job_info hji ON hcr.job_id = hji.job_id
+	    WHERE hcr.request_id = #{requestId}
+        <if test="tenantId != null">
+            AND hcr.tenant_id = #{tenantId}
+        </if>
+    </select>
+</mapper>

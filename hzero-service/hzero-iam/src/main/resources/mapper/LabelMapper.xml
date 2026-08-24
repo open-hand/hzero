@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.hzero.iam.infra.mapper.LabelMapper">
+    <resultMap id="BaseResultMap" type="org.hzero.iam.domain.entity.Label">
+        <id column="id" property="id" jdbcType="DECIMAL"/>
+        <result column="name" property="name" jdbcType="VARCHAR"/>
+        <result column="type" property="type" jdbcType="VARCHAR"/>
+        <result column="enabled_flag" property="enabledFlag" jdbcType="DECIMAL"/>
+        <result column="fd_level" property="fdLevel" jdbcType="VARCHAR"/>
+        <result column="description" property="description" jdbcType="VARCHAR"/>
+        <result column="tag" property="tag" jdbcType="VARCHAR"/>
+        <result column="inherit_flag" property="inheritFlag" jdbcType="DECIMAL"/>
+        <result column="preset_flag" property="presetFlag" jdbcType="DECIMAL"/>
+        <result column="visible_flag" property="visibleFlag" jdbcType="DECIMAL"/>
+        <result column="object_version_number" jdbcType="DECIMAL"/>
+    </resultMap>
+
+    <sql id="BaseColumn">
+        il.id,
+        il.name as name,
+        il.type as type,
+        il.enabled_flag,
+        il.FD_LEVEL,
+        il.description o_description,
+        il.tag,
+        il.inherit_flag,
+        il.preset_flag,
+        il.visible_flag,
+        il.object_version_number
+    </sql>
+
+    <select id="pageLabelList" parameterType="org.hzero.iam.domain.entity.Label"
+            resultMap="org.hzero.iam.infra.mapper.LabelMapper.BaseResultMap">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        SELECT
+        <include refid="org.hzero.iam.infra.mapper.LabelMapper.BaseColumn"/>,
+        ilt.description
+        FROM iam_label il
+        JOIN iam_label_tl ilt ON il.id = ilt.id and ilt.lang = #{lang}
+        <where>
+            <if test="name != null and name != ''">
+                <bind name="nameLike" value="'%'+name+'%'"/>
+                AND il.name LIKE #{nameLike}
+            </if>
+            <if test="description != null and description != ''">
+                <bind name="descriptionLike" value="'%'+description+'%'"/>
+                AND ilt.description LIKE #{descriptionLike}
+            </if>
+            <if test="type != null and type != ''">
+                AND il.type = #{type}
+            </if>
+            <if test="fdLevel != null and fdLevel != ''">
+                AND il.fd_level = #{fdLevel}
+            </if>
+            <if test="@java.util.Objects@nonNull(enabledFlag)">
+                AND il.enabled_flag = #{enabledFlag}
+            </if>
+            <if test="@java.util.Objects@nonNull(inheritFlag)">
+                AND il.inherit_flag = #{inheritFlag}
+            </if>
+            <if test="@java.util.Objects@nonNull(presetFlag)">
+                AND il.preset_flag = #{presetFlag}
+            </if>
+            <if test="@java.util.Objects@nonNull(visibleFlag)">
+                AND il.visible_flag = #{visibleFlag}
+            </if>
+        </where>
+    </select>
+    <select id="getLabelListByType" resultType="org.hzero.iam.domain.entity.Label">
+        <bind name="lang" value="@io.choerodon.mybatis.helper.LanguageHelper@language()"/>
+        SELECT
+        il.id,
+        il.name as name,
+        il.tag,
+        ilt.DESCRIPTION
+        FROM iam_label il
+        JOIN iam_label_tl ilt ON il.id = ilt.id and ilt.lang = #{lang}
+        WHERE il.enabled_flag = 1
+        AND il.visible_flag = 1
+        AND il.type = #{type}
+    </select>
+    <select id="getLabelListByTypeAndNames" resultType="org.hzero.iam.domain.entity.Label">
+        SELECT
+        il.name as name,
+        il.tag
+        FROM iam_label il
+        WHERE il.enabled_flag = 1
+        AND il.visible_flag = 1
+        AND il.type = #{type}
+        <if test="labelName != null and labelName.length > 0">
+            AND il.name IN
+            <foreach collection="labelName" item="item" index="index" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+    </select>
+
+    <select id="countRoleTplLabel" resultType="java.lang.Integer">
+        <bind name="tplRoleLabel" value="@org.hzero.iam.domain.entity.Role@LABEL_ROLE_TPL_LIKE"/>
+        select count(*)
+        from iam_label il
+        where il.name like #{tplRoleLabel}
+        and il.id in
+        <foreach collection="list" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+</mapper>

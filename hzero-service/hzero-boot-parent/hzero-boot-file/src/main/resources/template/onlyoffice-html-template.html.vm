@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="renderer" content="webkit">
+    <link
+            type="image/x-icon"
+            href="https://www.hand-china.com/favicon.ico"
+            rel="icon">
+    <title>Hoffice</title>
+    <style>
+        body,
+        html {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+</head>
+<body>
+<div id="placeholder"></div>
+<script
+        type="text/javascript"
+        src="$!{docServerUrl}/web-apps/apps/api/documents/api.js">
+</script>
+
+<script type="text/javascript">
+    new DocsAPI.DocEditor("placeholder", {
+        "document": {
+            "fileType": "$!{fileType}",
+            "key": "$!{key}",
+            "title": "$!{title}",
+            "url": "$!{fileUrl}",
+            "permissions": {
+                "comment": $!{comment},
+                "download": $!{download},
+                "edit": $!{edit},
+                "print": $!{print},
+                "review": $!{review}
+            }
+        },
+        "documentType": "$!{documentType}",
+        "editorConfig": {
+            "lang": "$!{lang}",
+            "user": {
+                "id": "$!{userId}",
+                "name": "$!{userName}"
+            },
+            "callbackUrl": "$!{callbackUrl}"
+        },
+        "token": "$!{token}"
+    });
+</script>
+</body>
+</html>
